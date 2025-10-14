@@ -1,0 +1,1754 @@
+<template>
+  <!--begin::Basic info-->
+  <div class="card mb-5 mb-xl-10" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+    <!--begin::Card header-->
+    <div class="card-header border-0" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+      <!--begin::Card title-->
+      <div class="card-title m-0">
+        <div class="d-flex align-items-center">
+          <div class="symbol symbol-45px me-3">
+            <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+              <i class="ki-duotone ki-home fs-2 text-white">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </span>
+          </div>
+          <div>
+            <h3 class="fw-bold m-0 text-gray-900 fs-3">🏠 Aggiorna Immobile</h3>
+            <span class="text-muted fs-7 fw-semibold">Modifica i dati dell'immobile</span>
+          </div>
+        </div>
+      </div>
+      <!--end::Card title-->
+    </div>
+    <!--begin::Card header-->
+  </div>
+  <div v-if="loading" class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <!--begin::Content-->
+  <div v-else class="collapse show">
+    <!--begin::Form-->
+    <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
+      <!--begin::Card body-->
+      <div class="card-body border-top p-9">
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+            <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+              <span class="path4"></span>
+            </i>
+            Cliente
+          </label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <!--begin::Input group-->
+            <Multiselect v-model="formData.CustomerId" :options="inserModel.Customers" label="label" valueProp="Id"
+              :searchable="true" :close-on-select="true" :clear-on-select="false" placeholder="Seleziona il cliente" class="multiselect-modern" />
+            <!--end::Input group-->
+          </div>
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+            <i class="ki-duotone ki-user fs-5 me-2 text-primary">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Agente
+          </label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <!--begin::Input group-->
+            <div class="d-flex flex-column fv-row">
+              <!--begin::Input-->
+              <select class="form-select modern-select" v-model="formData.AgentId" required>
+                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.Name }} {{ user.LastName }}</option>
+              </select>
+              <!--end::Input-->
+            </div>
+            <!--end::Input group-->
+          </div>
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+            <i class="ki-duotone ki-text fs-5 me-2 text-primary">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Titolo
+          </label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.Title" type="text" placeholder="Inserisci il titolo dell'immobile" required />
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Categoria</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="Category" class="form-select modern-select"
+              v-model="formData.Category" required>
+              <option value>🏠 Seleziona una Categoria...</option>
+              <option value="Residenziale">🏠 Residenziale</option>
+              <option value="Capannone">🏭 Capannone</option>
+              <option value="Negozi-Locale Commerciale">🏬 Negozi/Locale Commerciale</option>
+              <option value="Magazzino">📦 Magazzino</option>
+              <option value="Garage">🚗 Garage</option>
+              <option value="Ufficio">🏢 Ufficio</option>
+              <option value="Terreno">🌾 Terreno</option>
+              <option value="Rustico / Casale">🏚️ Rustico / Casale</option>
+            </select>
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+        <!--begin::Input group Tipologia-->
+        <div v-if="showTipologia" class="d-flex flex-column mb-7 fv-row">
+          <label class="fs-6 fw-semobold mb-2">
+            <span class="required">Tipologia</span>
+            <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"
+              title="Seleziona una tipologia di immobile"></i>
+          </label>
+          <select class="form-select modern-select" v-model="formData.Typology">
+            <option v-for="tipologia in typesavailable" :key="tipologia" :value="tipologia">
+              {{ tipologia }}
+            </option>
+          </select>
+        </div>
+        <!--end::Input group Tipologia-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Stato vendita o affitto</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="Status" class="form-select modern-select" v-model="formData.Status"
+              required>
+              <option value="">Scegli tra vendita e affitto</option>
+              <option value="Vendita">Vendita</option>
+              <option value="Affitto">Affitto</option>
+            </select>
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Indirizzo</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.AddressLine" type="text"
+              required />
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+                <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Provincia</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select class="form-select modern-select" v-model="formData.State" required>
+              <option value="">Seleziona provincia</option>
+              <option v-for="(province, index) in provinces" :key="index" :value="province.Name">{{ province.Name }}</option>
+            </select>
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6 required">Comune</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <select class="form-select" v-model="formData.Town" required>
+                <option value="">Seleziona città</option>
+                <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
+              </select>
+            </div>
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+         <!--begin::Input group-->
+         <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6 required">Località</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <select class="form-select modern-select" v-model="formData.Location">
+                <option value="">Seleziona località</option>
+                <option v-for="(location, index) in locations" :key="index" :value="location.Name">{{ location.Name }}</option>
+              </select>
+            </div>
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Codice Postale</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.PostCode" type="text" required />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Superficie commerciale (m²)</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.CommercialSurfaceate"
+              type="number" required />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Piano</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="Floor" class="form-select modern-select" v-model="formData.Floor">
+              <option value="">Scegli</option>
+              <option value="Interrato -2">Interrato -2</option>
+              <option value="Interrato -1">Interrato -1</option>
+              <option value="Seminterrato">Seminterrato</option>
+              <option value="Piano Terra">Piano Terra</option>
+              <option value="Piano Rialzato">Piano Rialzato</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Totale piani edificio</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.TotalBuildingfloors" type="number"
+              required />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Giardino Mq</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.MQGarden" type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Ascensori</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.Elevators" type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Altri dettagli</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.MoreDetails" type="text" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Camere da letto</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.Bedrooms" type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Locali</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.WarehouseRooms" type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Cucine</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.Kitchens" type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Bagni</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.Bathrooms" type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Arredamento</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="Furniture" class="form-select modern-select"
+              v-model="formData.Furniture">
+              <option value="">Seleziona il tipo di arredamento</option>
+              <option value="Arredato">Arredato</option>
+              <option value="Non Arredato">Non Arredato</option>
+              <option value="Parzialmente Arredato">Parzialmente Arredato</option>
+              <option value="Arredato Solo Cucina">Arredato Solo Cucina</option>
+            </select>
+            <!--end::Input-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Altre Caratteristiche</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.MoreDetails" type="text" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Posti Auto</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.ParkingSpaces" type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Riscaldamento</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="Heating" class="form-select modern-select"
+              v-model="formData.Heating">
+              <option value="Nessuno">Nessuno</option>
+              <option value="Autonomo">Autonomo</option>
+              <option value="Centralizzato">Centralizzato</option>
+            </select>
+            <!--end::Input-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Esposizione</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="Exposure" class="form-select modern-select"
+              v-model="formData.Exposure">
+              <option value="">Selezionare l'esposizione</option>
+              <option value="Nord">Nord</option>
+              <option value="Sud">Sud</option>
+              <option value="Est">Est</option>
+              <option value="Ovest">Ovest</option>
+            </select>
+            <!--end::Input-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Classe energetica</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="EnergyClass" class="form-select modern-select"
+              v-model="formData.EnergyClass">
+              <option value="">Seleziona il tipo di Classe energetica</option>
+              <option value="Proprietà Esente">Proprietà Esente</option>
+              <option value="Non classificabile">Non classificabile</option>
+              <option value="A4">A4</option>
+              <option value="A3">A3</option>
+              <option value="A2">A2</option>
+              <option value="A1">A1</option>
+              <option value="A+">A+</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="G">G</option>
+            </select>
+            <!--end::Input-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Indica il tipo di proprietà</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.TypeOfProperty" type="text" />
+            <!-- <select as="select" name="TypeOfProperty" class="form-select modern-select"
+              v-model="formData.TypeOfProperty">
+              <option value="">Seleziona il tipo di proprietà</option>
+              <option value="Intera Proprietà">Intera Proprietà</option>
+              <option value="Nuda Proprietà">Nuda Proprietà</option>
+              <option value="Parziale Proprietà">Parziale Proprietà</option>
+              <option value="Usufrutto">Usufrutto</option>
+              <option value="Multiproprietà">Multiproprietà</option>
+              <option value="Diritto di Superficie">Diritto di Superficie</option>
+            </select> -->
+            <!--end::Input-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Stato dell'immobile</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="StateOfTheProperty" class="form-select modern-select"
+              v-model="formData.StateOfTheProperty">
+              <option value="">Seleziona lo Stato dell'immobile</option>
+              <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
+              <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
+              <option value="Buono / Abitabile">Buono / Abitabile</option>
+              <option value="Da Ristrutturare">Da Ristrutturare</option>
+            </select>
+            <!--end::Input-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Anno di costruzione</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.YearOfConstruction"
+              type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Trattativa riservata</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox" value="" v-model="isTrattativaRiservata" />
+            </div>
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div v-if="!isTrattativaRiservata" class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Prezzo</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.Price" type="number" required />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Prezzo Ribassato</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.PriceReduced" type="number"
+              required />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Spese condominiali</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.CondominiumExpenses"
+              type="number" />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Disponibilità</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <select as="select" name="Availability" class="form-select modern-select"
+              v-model="formData.Availability">
+              <option value="">Seleziona la Disponibilità</option>
+              <option value="Libero">Libero</option>
+              <option value="Occupato">Occupato</option>
+            </select>
+            <!--end::Input-->
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Descrizione</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <textarea class="form-control modern-input" v-model="formData.Description"
+              type="text"></textarea>
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Imposta in Home</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox" value="" v-model="formData.InHome" />
+            </div>
+
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Imposta in Evidenza</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox" value="" v-model="formData.Highlighted" />
+            </div>
+
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Asta</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox" value="" v-model="formData.Auction" />
+            </div>
+
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">In Trattativa</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox" value="" v-model="formData.Negotiation" />
+            </div>
+
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Venduto</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox" value="" v-model="formData.Sold" />
+            </div>
+
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Archiviato</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox" value="" v-model="formData.Archived" />
+            </div>
+
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Data fine incarico</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.AssignmentEnd" type="date"
+              placeholder="yyyy-MM-dd" required />
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="d-flex flex-column mb-7 fv-row">
+          <!--begin::Label-->
+          <label class="fs-6 fw-semobold mb-2">
+            <span class="required">Tipologia Incarico</span>
+            <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"></i>
+          </label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <select class="form-select modern-select" v-model="formData.TypeOfAssignment">
+            <option value="Verbale">Verbale</option>
+            <option value="Esclusivo">Esclusivo</option>
+            <option value="Semi-Verbale">Semi-Verbale</option>
+            <option value="Immobile MLS">Immobile MLS</option>
+          </select>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+         <!--begin::Col-->
+        <div class="col-md-4 fv-row">
+          <!--begin::Label-->
+          <label class="fs-6 fw-semobold mb-2">Provvigione Concordata</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <el-form-item prop="AgreedCommission">
+            <el-input v-model="formData.AgreedCommission" type="number" placeholder="Inserisci percentuale">
+              <template #append>
+                <span>%</span>
+              </template>
+            </el-input>
+          </el-form-item>
+          <!--end::Input-->
+        </div>
+        <!--end::Col-->
+
+        <!--begin::Col-->
+        <div class="col-md-4 fv-row">
+          <!--begin::Label-->
+          <label class="fs-6 fw-semobold mb-2">Provvigione Forfettaria</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <el-form-item prop="FlatRateCommission">
+            <el-input v-model="formData.FlatRateCommission" type="number" placeholder="Inserisci percentuale">
+              <template #append>
+                <span>%</span>
+              </template>
+            </el-input>
+          </el-form-item>
+          <!--end::Input-->
+        </div>
+        <!--end::Col-->
+
+        <!--begin::Col-->
+        <div class="col-md-4 fv-row">
+          <!--begin::Label-->
+          <label class="fs-6 fw-semobold mb-2">Storno Provvigione</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <el-form-item prop="StornoProvvigione">
+            <el-input v-model="formData.StornoProvvigione" type="number" placeholder="Inserisci percentuale">
+              <template #append>
+                <span>%</span>
+              </template>
+            </el-input>
+          </el-form-item>
+          <!--end::Input-->
+        </div>
+        <!--end::Col-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Url Video</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-control modern-input" v-model="formData.VideoUrl" type="text" />
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Carica immagini</label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <input class="form-select modern-select" type="file" multiple @change="onFileChanged">
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Riepilogo Note</label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div v-for="(note, index) in formData.RealEstatePropertyNotes" :key="index" class="col-lg-8 fv-row">
+            <div class="border border-secondary" v-html="note.Text"></div>
+            <hr>
+          </div>
+          <!--end::Col-->
+        </div>
+        <!--end::Input group-->
+
+        <div class="py-5">
+          <div class="rounded border p-10">
+            <div class="row justify-content-center">
+              <div class="col-lg-4">
+                <draggable :list="formData.Photos" :disabled="false" item-key="name" class="list-group"
+                  ghost-class="ghost" @start="true" @end="false" :move="checkMove" :animation="300">
+                  <template #item="{ element }">
+                    <div class="card overlay">
+                      <div class="card-body p-0">
+                        <div class="overlay-wrapper">
+                          <img :src="element.Url" alt="" class="w-100 card-rounded">
+                        </div>
+                        <div v-if="user.Id === formData.AgentId || user.Role === 'Admin' || formData.Agent.AgencyId === user.Id" class="overlay-layer card-rounded bg-dark bg-opacity-25">
+                          <button v-if="!element.Highlighted" type="button" class="btn btn-primary btn-shadow"
+                            @click="setPhotoHighlighted(element.Id)">Imposta immagine principale</button>
+                          <button class="btn btn-light-danger btn-shadow ms-2" type="button"
+                            @click="deleteFile(element.Id)">Elimina</button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </draggable>
+              </div>
+              <!-- <div v-for="(photo, index) in formData.Photos" :key="index" class="col-lg-4"> -->
+              <!--begin::Card-->
+              <!-- <div class="card  overlay">
+                  <div class="card-body p-0">
+                    <div class="overlay-wrapper">
+                      <img :src="photo.Url" alt="" class="w-100 card-rounded">
+                    </div>
+                    <div class="overlay-layer card-rounded bg-dark bg-opacity-25">
+                      <button v-if="!photo.Highlighted" type="button" class="btn btn-primary btn-shadow"
+                        @click="setPhotoHighlighted(photo.Id)">Imposta immagine principale</button>
+                      <button class="btn btn-light-danger btn-shadow ms-2" type="button"
+                        @click="deleteFile(photo.Id)">Elimina</button>
+                    </div>
+                  </div>
+                </div> -->
+              <!--end::Card-->
+              <!-- </div> -->
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div v-if="user.Id === formData.AgentId || user.Role === 'Admin' || formData.Agent.AgencyId === user.Id"
+        class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
+        <div>
+          <AddNewForm />
+          <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
+            data-bs-target="#kt_modal_scheda">
+            <KTIcon icon-name="file" icon-class="fs-2 me-1" />
+            Scheda
+          </button>
+          <AddNewPreventive />
+          <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
+            data-bs-target="#kt_modal_preventivo">
+            <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
+            Preventivo
+          </button>
+        </div>
+        <div>
+          <button v-if="user.Role === 'Admin' || (user.Role === 'Agenzia' && user.Id === formData.Agent.AgencyId )" type="button" @click="deleteItem()"
+            class="btn btn-modal-danger me-2">
+            <span class="btn-icon">
+              <i class="ki-duotone ki-trash fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </span>
+            <span class="btn-label">Elimina</span>
+          </button>
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
+            <span v-if="!loading" class="d-flex align-items-center">
+              <span class="btn-icon">
+                <i class="ki-duotone ki-check fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <span class="btn-label">Salva Modifiche</span>
+            </span>
+            <span v-if="loading" class="d-flex align-items-center">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              <span class="btn-label">Attendere...</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <!--end::Actions-->
+    </el-form>
+    <!--end::Form-->
+  </div>
+  <!--end::Content-->
+</template>
+
+<script lang="ts">
+import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
+import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
+import { getAssetPath } from "@/core/helpers/assets";
+import { getProvincesForSelect, getCitiesByProvinceName, getLocationsByCityName } from "@/core/data/locations";
+import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import {
+  updateRealEstateProperty,
+  RealEstateProperty,
+  getRealEstateProperty,
+  setRealEstatePropertyPhotoHighlighted,
+  deletePhoto,
+  deleteRealEstateProperty,
+  uploadFiles,
+  InsertModel,
+  getToInsert,
+  updatePhotosOrder
+} from "@/core/data/properties";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import draggable from 'vuedraggable';
+import Multiselect from '@vueform/multiselect'
+
+export default defineComponent({
+  name: "update",
+  components: { draggable, Multiselect, AddNewForm, AddNewPreventive },
+  setup() {
+    const store = useAuthStore();
+    const user = store.user;
+    const route = useRoute();
+    const router = useRouter();
+    const id = parseInt(route.params.id.toString());
+    const formRef = ref<null | HTMLFormElement>(null);
+    const updateModalRef = ref<null | HTMLElement>(null);
+    const typesavailable = ref<string[]>([]);
+    const provinces = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const locations = ref<Array<{Id: string, Name: string}>>([]);
+    const showTipologia = ref(false);
+    const loading = ref<boolean>(true);
+    const firtLoad = ref(false);
+    const isTrattativaRiservata = ref(false);
+
+    // Funzioni per caricare i dati dal database
+    const loadProvinces = async () => {
+      try {
+        const provincesData = await getProvincesForSelect();
+        provinces.value = provincesData;
+      } catch (error) {
+        console.error("Errore nel caricamento delle province:", error);
+      }
+    };
+
+    const loadCitiesByProvince = async (provinceName: string) => {
+      try {
+        if (provinceName) {
+          const citiesData = await getCitiesByProvinceName(provinceName);
+          cities.value = citiesData;
+        } else {
+          cities.value = [];
+        }
+      } catch (error) {
+        console.error("Errore nel caricamento delle città:", error);
+        cities.value = [];
+      }
+    };
+
+    const loadLocationsByCity = async (cityName: string) => {
+      try {
+        if (cityName) {
+          const locationsData = await getLocationsByCityName(cityName);
+          locations.value = locationsData;
+        } else {
+          locations.value = [];
+        }
+      } catch (error) {
+        console.error("Errore nel caricamento delle località:", error);
+        locations.value = [];
+      }
+    };
+
+
+    const formData = ref<RealEstateProperty>({
+      Title: "",
+      Category: "",
+      Typology: "",
+      InHome: false,
+      Highlighted: false,
+      Auction: false,
+      Negotiation: false,
+      Sold: false,
+      Archived: false,
+      Status: "",
+      AddressLine: "",
+      Town: "",
+      State: "",
+      Location: "",
+      PostCode: "",
+      CommercialSurfaceate: 0,
+      TotalBuildingfloors: 0,
+      Elevators: 0,
+      MoreDetails: "",
+      Bedrooms: 0,
+      WarehouseRooms: 0,
+      Kitchens: 0,
+      Bathrooms: 0,
+      Furniture: "",
+      OtherFeatures: "",
+      ParkingSpaces: 0,
+      Heating: "",
+      Exposure: "",
+      EnergyClass: "",
+      TypeOfProperty: "",
+      StateOfTheProperty: "",
+      YearOfConstruction: 0,
+      Price: 0,
+      PriceReduced: 0,
+      MQGarden: 0,
+      CondominiumExpenses: 0,
+      Availability: "",
+      Description: "",
+      CustomerId: null,
+      AgentId: "",
+      AssignmentEnd: "",
+      Agent: null,
+      VideoUrl: "",
+      AgreedCommission: 0,
+      FlatRateCommission: 0,
+      StornoProvvigione: 0,
+      TypeOfAssignment: "",
+    });
+
+    const inserModel = ref<InsertModel>({
+      Customers: [],
+      Users: []
+    });
+
+    const rules = ref({
+      Category: [
+        {
+          required: true,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      Typology: [
+        {
+          required: true,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      AddressLine: [
+        {
+          required: true,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      Town: [
+        {
+          required: true,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      State: [
+        {
+          required: true,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      PostCode: [
+        {
+          required: true,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      CommercialSurfaceate: [
+        {
+          required: false,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      Floor: [
+        {
+          required: false,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      TotalBuildingfloors: [
+        {
+          required: false,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      Price: [
+        {
+          required: true,
+          message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+    });
+
+
+    onMounted(async () => {
+      loading.value = true;
+      firtLoad.value = true;
+      formData.value = await getRealEstateProperty(id)
+      formData.value.AssignmentEnd = formData.value.AssignmentEnd.split('T')[0]
+      inserModel.value = await getToInsert(store.user.AgencyId);
+      if (inserModel.value.Users.length > 0) {
+        formData.value.AgentId = formData.value.AgentId;
+      }
+      
+      // Inizializza la checkbox "Trattativa riservata" in base al prezzo
+      isTrattativaRiservata.value = formData.value.Price === -1;
+      
+      // Carica le province
+      await loadProvinces();
+      
+      // Se c'è già una provincia selezionata, carica le città
+      if (formData.value.State) {
+        await loadCitiesByProvince(formData.value.State);
+      }
+      
+      // Se c'è già una città selezionata, carica le località
+      if (formData.value.Town) {
+        await loadLocationsByCity(formData.value.Town);
+      }
+      
+      loading.value = false;
+      firtLoad.value = false;
+    })
+
+     watch(
+    () => formData.value.State,
+    async (newProvince) => {
+      if (!firtLoad.value) {
+        console.log("watch state")
+        if (newProvince) {
+          await loadCitiesByProvince(newProvince);
+          formData.value.Town = "";
+          formData.value.Location = "";
+        } else {
+          cities.value = [];
+          locations.value = [];
+          formData.value.Town = "";
+          formData.value.Location = "";
+        }
+      }
+    }
+    );
+    watch(
+    () => formData.value.Town,
+    async (newTown) => {
+      if (!firtLoad.value) {
+        console.log("watch localita")
+        if (newTown) {
+          await loadLocationsByCity(newTown);
+          formData.value.Location = "";
+        } else {
+          locations.value = [];
+          formData.value.Location = "";
+        }
+      }
+    }
+);
+
+    const onFileChanged = async (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        formData.value.Files = target.files;
+        await uploadFiles(formData.value.Files, id)
+          .then(async () => {
+            loading.value = false;
+            const error = store.errors;
+
+            if (!error) {
+              Swal.fire({
+                text: "Operazione completata!",
+                icon: "success",
+                buttonsStyling: false,
+                confirmButtonText: "Continua!",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn fw-semobold btn-light-primary",
+                },
+              }).then(async function () {
+                formData.value = await getRealEstateProperty(id);
+              });
+            } else {
+              Swal.fire({
+                text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, capito!",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+              return false;
+            }
+          })
+          .catch(({ response }) => {
+            console.log(response);
+            loading.value = false;
+            Swal.fire({
+              text: "Attenzione, si è verificato un errore.",
+              icon: "error",
+              buttonsStyling: false,
+              confirmButtonText: "Continua!",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+          });
+      }
+    };
+
+    const setPhotoHighlighted = async (photoId) => {
+      await setRealEstatePropertyPhotoHighlighted(photoId)
+        .then(async () => {
+          loading.value = false;
+          const error = store.errors;
+
+          if (!error) {
+            Swal.fire({
+              text: "Operazione completata!",
+              icon: "success",
+              buttonsStyling: false,
+              confirmButtonText: "Continua!",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn fw-semobold btn-light-primary",
+              },
+            }).then(async function () {
+              formData.value = await getRealEstateProperty(id);
+            });
+          } else {
+            Swal.fire({
+              text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+              icon: "error",
+              buttonsStyling: false,
+              confirmButtonText: "Ok, capito!",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+            return false;
+          }
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          loading.value = false;
+          Swal.fire({
+            text: "Attenzione, si è verificato un errore.",
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Continua!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+        });
+    };
+
+    const deleteFile = async (photoId: number) => {
+      loading.value = true;
+      await deletePhoto(photoId)
+        .then(() => {
+          loading.value = false;
+
+          Swal.fire({
+            text: "Operazione terminata con successo!",
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Continua!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          }).then(async () => {
+            formData.value = await getRealEstateProperty(id)
+          });
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          loading.value = false;
+          Swal.fire({
+            text: "Attenzione, si è verificato un errore.",
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Continua!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+        });
+    }
+
+    watch(
+      () => formData.value.AssignmentEnd,
+      (newVal) => {
+        if (newVal && newVal.includes('T')) {
+          formData.value.AssignmentEnd = newVal.split('T')[0]
+        }
+      },
+      { immediate: true }
+    )
+
+    async function deleteItem() {
+      loading.value = true;
+      Swal.fire({
+        text: "Confermare l'eliminazione?",
+        icon: "warning",
+        buttonsStyling: false,
+        confirmButtonText: "Continua!",
+        heightAuto: false,
+        customClass: {
+          confirmButton: "btn btn-danger",
+        },
+      }).then(async () => {
+        loading.value = false;
+        await deleteRealEstateProperty(id)
+        router.push({ name: "properties" })
+      });
+
+    }
+
+    const submit = () => {
+      if (!formRef.value) {
+        return;
+      }
+      formRef.value.validate(async (valid: boolean) => {
+        if (valid) {
+          loading.value = true;
+          
+          // Se la checkbox "Trattativa riservata" è selezionata, imposta il prezzo a -1
+          if (isTrattativaRiservata.value) {
+            formData.value.Price = -1;
+          }
+          
+          await updatePhotosOrder(formData.value.Photos)
+          await updateRealEstateProperty(formData.value)
+            .then(() => {
+              loading.value = false;
+
+              Swal.fire({
+                text: "Il modulo è stato inviato con successo!",
+                icon: "success",
+                buttonsStyling: false,
+                confirmButtonText: "Continua!",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              }).then(() => {
+                // router.push({ name: 'properties' })
+              });
+            })
+            .catch(({ response }) => {
+              console.log(response);
+              loading.value = false;
+              Swal.fire({
+                text: "Attenzione, si è verificato un errore.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Continua!",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+            });
+          loading.value = false;
+        } else {
+          Swal.fire({
+            text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+          return false;
+        }
+      });
+    };
+
+    async function checkMove(log) {
+      // await updatePhotosOrder(formData.value.Photos)
+      // console.log(formData.value.Photos)
+    }
+
+    return {
+      formData,
+      rules,
+      submit,
+      formRef,
+      loading,
+      updateModalRef,
+      getAssetPath,
+      onFileChanged,
+      typesavailable,
+      showTipologia,
+      setPhotoHighlighted,
+      deleteFile,
+      deleteItem,
+      inserModel,
+      user,
+      checkMove,
+      provinces,
+      cities,
+      locations,
+      isTrattativaRiservata,
+    };
+  },
+});
+</script>
+
+<style scoped>
+/* Stili per select moderni */
+.modern-select {
+  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  border: 1px solid #e8f4ff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+  color: #3f4254;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.modern-select:hover {
+  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
+  border-color: #3699ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
+}
+
+.modern-select:focus {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-color: #3699ff;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+/* Stili per input moderni */
+.modern-input {
+  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  border: 1px solid #e8f4ff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+  color: #3f4254;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.modern-input:hover {
+  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
+  border-color: #3699ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
+}
+
+.modern-input:focus {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-color: #3699ff;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.modern-input::placeholder {
+  color: #a1a5b7;
+  font-weight: 400;
+}
+
+/* Stili per textarea moderna */
+.modern-textarea {
+  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  border: 1px solid #e8f4ff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+  color: #3f4254;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.modern-textarea:hover {
+  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
+  border-color: #3699ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
+}
+
+.modern-textarea:focus {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-color: #3699ff;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.modern-textarea::placeholder {
+  color: #a1a5b7;
+  font-weight: 400;
+}
+
+/* Multiselect moderno */
+.multiselect-modern {
+  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  border: 1px solid #e8f4ff;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+/* Stili per labels */
+label {
+  transition: all 0.3s ease;
+}
+
+label:hover {
+  color: #3699ff !important;
+}
+
+/* Icone */
+.ki-duotone {
+  transition: all 0.3s ease;
+}
+
+/* Form controls */
+.form-check-input:checked {
+  background-color: #3699ff;
+  border-color: #3699ff;
+}
+
+.form-check-input:focus {
+  border-color: #3699ff;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+}
+
+/* Bottoni Modal Moderni */
+.btn-modal-danger,
+.btn-modal-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.3px;
+}
+
+.btn-modal-danger::before,
+.btn-modal-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-modal-danger:hover::before,
+.btn-modal-primary:hover::before {
+  left: 100%;
+}
+
+.btn-modal-danger .btn-icon,
+.btn-modal-primary .btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.btn-modal-danger .btn-label,
+.btn-modal-primary .btn-label {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Bottone Elimina */
+.btn-modal-danger {
+  background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.35);
+}
+
+.btn-modal-danger:hover {
+  background: linear-gradient(135deg, #d63447 0%, #b92838 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(246, 78, 96, 0.5);
+  color: #ffffff;
+}
+
+.btn-modal-danger:hover .btn-icon {
+  transform: scale(1.15) rotate(-5deg);
+  animation: shake 0.5s ease;
+}
+
+.btn-modal-danger:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(246, 78, 96, 0.35);
+}
+
+/* Bottone Primario */
+.btn-modal-primary {
+  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.35);
+}
+
+.btn-modal-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.45);
+  color: #ffffff;
+}
+
+.btn-modal-primary:hover:not(:disabled) .btn-icon {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.btn-modal-primary:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(54, 153, 255, 0.35);
+}
+
+.btn-modal-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Animazione shake */
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg) scale(1.15); }
+  25% { transform: rotate(-5deg) scale(1.15); }
+  75% { transform: rotate(5deg) scale(1.15); }
+}
+
+/* Spinner loading */
+.btn-modal-primary .spinner-border-sm,
+.btn-modal-danger .spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15rem;
+}
+</style>
