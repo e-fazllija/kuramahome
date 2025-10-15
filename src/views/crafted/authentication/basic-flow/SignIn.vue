@@ -115,10 +115,10 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import { useAuthStore, type User } from "@/stores/auth";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
 
@@ -132,8 +132,26 @@ export default defineComponent({
   setup() {
     const store = useAuthStore();
     const router = useRouter();
+    const route = useRoute();
 
     const submitButton = ref<HTMLButtonElement | null>(null);
+
+    // Mostra un messaggio di successo se l'utente arriva da un pagamento completato
+    onMounted(() => {
+      if (route.query.payment === 'success') {
+        Swal.fire({
+          title: "Pagamento completato!",
+          text: "Il tuo abbonamento è stato attivato con successo. Accedi per iniziare.",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Accedi ora",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn fw-semobold btn-light-primary",
+          },
+        });
+      }
+    });
 
     //Create form validation object
     const login = Yup.object().shape({

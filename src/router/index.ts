@@ -181,6 +181,20 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/",
+    component: () => import("@/layouts/PricingLayout.vue"),
+    children: [
+      {
+        path: "/pricing/:email/:token(.*)",
+        name: "pricing",
+        component: () => import("@/views/crafted/billing/Pricing.vue"),
+        meta: {
+          pageTitle: "Scegli il tuo piano",
+        },
+      },
+    ],
+  },
+  {
+    path: "/",
     component: () => import("@/layouts/SystemLayout.vue"),
     children: [
       {

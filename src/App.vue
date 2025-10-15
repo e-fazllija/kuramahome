@@ -84,6 +84,7 @@ export default defineComponent({
 @import "assets/css/form-controls.css";
 @import "assets/css/widgets.css";
 @import "assets/css/datatable.css";
+@import "assets/css/pricing.css";
 
 #app {
   display: contents;
