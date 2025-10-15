@@ -190,31 +190,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-@keyframes numberPop {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.progress-bar {
-  transition: width 1.5s ease-in-out;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cursor-pointer:hover {
-  transform: translateY(-2px);
-}
-</style>
+<!-- CSS moved to global file: widgets.css -->

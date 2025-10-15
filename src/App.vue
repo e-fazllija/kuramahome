@@ -68,6 +68,23 @@ export default defineComponent({
 @import "assets/sass/plugins";
 @import "assets/sass/style";
 
+// Custom CSS imports
+@import "assets/css/dark-mode.css";
+@import "assets/css/buttons.css";
+@import "assets/css/layout.css";
+@import "assets/css/auth-layout.css";
+@import "assets/css/wizard.css";
+@import "assets/css/modal-forms.css";
+@import "assets/css/modal-buttons.css";
+@import "assets/css/select-styles.css";
+@import "assets/css/form-inputs.css";
+@import "assets/css/form-textarea.css";
+@import "assets/css/form-datetime.css";
+@import "assets/css/form-multiselect.css";
+@import "assets/css/form-controls.css";
+@import "assets/css/widgets.css";
+@import "assets/css/datatable.css";
+
 #app {
   display: contents;
 }

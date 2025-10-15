@@ -1,0 +1,77 @@
+/* ========================================
+   FORM TEXTAREA STYLES
+   Stili per textarea moderne
+   ======================================== */
+
+/* Modern Textarea */
+.modern-textarea {
+  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  border: 1px solid #e8f4ff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+  color: #3f4254;
+  font-weight: 500;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.modern-textarea:hover {
+  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
+  border-color: #3699ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
+}
+
+.modern-textarea:focus {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-color: #3699ff;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.modern-textarea::placeholder {
+  color: #a1a5b7;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.modern-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+
+/* Dark Mode Support */
+[data-bs-theme="dark"] .modern-textarea {
+  background: linear-gradient(135deg, #1e1e2d 0%, #25293c 100%);
+  border-color: #2d2d3f;
+  color: #f5f8fa;
+}
+
+[data-bs-theme="dark"] .modern-textarea:hover {
+  background: linear-gradient(135deg, #25293c 0%, #2d2d3f 100%);
+  border-color: #3699ff;
+}
+
+[data-bs-theme="dark"] .modern-textarea:focus {
+  background: linear-gradient(135deg, #2d2d3f 0%, #3a3e52 100%);
+  border-color: #3699ff;
+}
+
+[data-bs-theme="dark"] .modern-textarea::placeholder {
+  color: #6c757d;
+}
+
+[data-bs-theme="dark"] .modern-textarea:disabled {
+  background: linear-gradient(135deg, #1a1a27 0%, #1e1e2d 100%);
+  border-color: #2d2d3f;
+}
+

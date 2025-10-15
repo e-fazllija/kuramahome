@@ -1,18 +1,16 @@
 <template>
-  <!--begin::Wrapper-->
-  <div class="w-lg-500px p-10">
-    <!--begin::Form-->
-    <VForm
-      class="form w-100"
-      id="kt_login_signin_form"
-      @submit="onSubmitLogin"
-      :validation-schema="login"
-      :initial-values="{ email: 'admin@demo.com', password: 'demo' }"
-    >
+  <!--begin::Form-->
+  <VForm
+    class="form w-100"
+    id="kt_login_signin_form"
+    @submit="onSubmitLogin"
+    :validation-schema="login"
+    :initial-values="{ email: 'admin@demo.com', password: 'demo' }"
+  >
       <!--begin::Heading-->
       <div class="text-center mb-10">
         <!--begin::Title-->
-        <h1 class="text-dark mb-3">Accedi</h1>
+        <h1 class="text-gray-800 mb-3">Accedi</h1>
         <!--end::Title-->
 
         <!--begin::Link-->
@@ -37,7 +35,7 @@
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
-        <label class="form-label fs-6 fw-bold text-dark">Email</label>
+        <label class="form-label fs-6 fw-bold text-gray-800">Email</label>
         <!--end::Label-->
 
         <!--begin::Input-->
@@ -62,7 +60,7 @@
         <!--begin::Wrapper-->
         <div class="d-flex flex-stack mb-2">
           <!--begin::Label-->
-          <label class="form-label fw-bold text-dark fs-6 mb-0">Password</label>
+          <label class="form-label fw-bold text-gray-800 fs-6 mb-0">Password</label>
           <!--end::Label-->
 
           <!--begin::Link-->
@@ -114,8 +112,6 @@
       <!--end::Actions-->
     </VForm>
     <!--end::Form-->
-  </div>
-  <!--end::Wrapper-->
 </template>
 
 <script lang="ts">

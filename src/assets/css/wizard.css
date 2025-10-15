@@ -1,0 +1,193 @@
+/* ========================================
+   WIZARD/STEPPER STYLES
+   Stili per il componente wizard multi-step
+   ======================================== */
+
+/* Stepper Wrapper */
+.stepper-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.stepper-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e4e6ef;
+  z-index: 0;
+}
+
+[data-bs-theme="dark"] .stepper-wrapper::before {
+  background-color: #2d2d3f;
+}
+
+/* Stepper Item */
+.stepper-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  z-index: 1;
+}
+
+.stepper-item:not(:last-child) {
+  margin-right: 10px;
+}
+
+/* Step Counter */
+.step-counter {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f5f8fa;
+  border: 2px solid #e4e6ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #a1a5b7;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+}
+
+[data-bs-theme="dark"] .step-counter {
+  background-color: #1e1e2d;
+  border-color: #2d2d3f;
+  color: #565674;
+}
+
+/* Step Name */
+.step-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #a1a5b7;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .step-name {
+  color: #565674;
+}
+
+/* Active Step */
+.stepper-item.active .step-counter {
+  background-color: #3699ff;
+  border-color: #3699ff;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(54, 153, 255, 0.2);
+}
+
+.stepper-item.active .step-name {
+  color: #3699ff;
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .stepper-item.active .step-counter {
+  background-color: #3699ff;
+  border-color: #3699ff;
+  box-shadow: 0 0 0 4px rgba(54, 153, 255, 0.15);
+}
+
+[data-bs-theme="dark"] .stepper-item.active .step-name {
+  color: #3699ff;
+}
+
+/* Completed Step */
+.stepper-item.completed .step-counter {
+  background-color: #1bc5bd;
+  border-color: #1bc5bd;
+  color: #ffffff;
+}
+
+.stepper-item.completed .step-name {
+  color: #1bc5bd;
+}
+
+.stepper-item.completed .step-counter::after {
+  content: '✓';
+  font-size: 18px;
+  font-weight: bold;
+}
+
+[data-bs-theme="dark"] .stepper-item.completed .step-counter {
+  background-color: #1bc5bd;
+  border-color: #1bc5bd;
+}
+
+[data-bs-theme="dark"] .stepper-item.completed .step-name {
+  color: #1bc5bd;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .stepper-wrapper {
+    margin-bottom: 30px;
+  }
+
+  .step-counter {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+
+  .step-name {
+    font-size: 11px;
+  }
+
+  .stepper-item:not(:last-child) {
+    margin-right: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stepper-wrapper::before {
+    top: 17px;
+  }
+
+  .step-counter {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .step-name {
+    font-size: 10px;
+    max-width: 80px;
+    word-wrap: break-word;
+  }
+}
+
+/* Form Step Title */
+.form-step-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.form-step-description {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Wizard Buttons */
+.wizard-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .wizard-actions .btn {
+    flex: 1;
+    min-width: 0;
+  }
+}
+

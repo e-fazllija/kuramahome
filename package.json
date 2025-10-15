@@ -21,6 +21,7 @@
     "@fullcalendar/timegrid": "^6.1.8",
     "@fullcalendar/vue3": "^6.1.8",
     "@popperjs/core": "^2.11.8",
+    "@stripe/stripe-js": "^8.0.0",
     "@tinymce/tinymce-vue": "^5.1.0",
     "@types/leaflet": "^1.9.20",
     "@vueform/multiselect": "^1.5.0",

@@ -15,7 +15,7 @@
             </span>
           </div>
           <div>
-            <h3 class="fw-bold m-0 text-gray-900 fs-3">✏️ Aggiorna Richiesta</h3>
+            <h3 class="fw-bold m-0 text-gray-900 fs-3">âœï¸ Aggiorna Richiesta</h3>
             <span class="text-muted fs-7 fw-semibold">Modifica i dati della richiesta</span>
           </div>
         </div>
@@ -83,8 +83,8 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.Contract" required>
-              <option value="Vendita">💰 Vendita</option>
-              <option value="Affitto">🏠 Affitto</option>
+              <option value="Vendita">ðŸ’° Vendita</option>
+              <option value="Affitto">ðŸ  Affitto</option>
             </select>
           </div>
           <!--end::Col-->
@@ -105,16 +105,16 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
              <select class="form-select modern-select" multiple v-model="selectedPropertyTypes" required style="height: auto;">
-              <option value="Appartamenti">🏢 Appartamenti</option>
-              <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
-              <option value="Box">🚗 Box</option>
-              <option value="CapannoniLocArtigianali">🏭 Capannoni, Loc. Artigianali</option>
-              <option value="CasaliRuderi">🏚️ Casali e Ruderi</option>
-              <option value="CaseSemindipendenti">🏘️ Case Semindipendenti</option>
-              <option value="LocaliCommerciali">🏬 Locali Commerciali</option>
-              <option value="NuoveCostruzioni">🏗️ Nuove Costruzioni</option>
-              <option value="Terreni">🌾 Terreni</option>
-              <option value="VilleCaseIndipendenti">🏰 Ville e Case Indipendenti</option>
+              <option value="Appartamenti">ðŸ¢ Appartamenti</option>
+              <option value="AttivitaCommerciale">ðŸª AttivitÃ  Commerciale</option>
+              <option value="Box">ðŸš— Box</option>
+              <option value="CapannoniLocArtigianali">ðŸ­ Capannoni, Loc. Artigianali</option>
+              <option value="CasaliRuderi">ðŸšï¸ Casali e Ruderi</option>
+              <option value="CaseSemindipendenti">ðŸ˜ï¸ Case Semindipendenti</option>
+              <option value="LocaliCommerciali">ðŸ¬ Locali Commerciali</option>
+              <option value="NuoveCostruzioni">ðŸ—ï¸ Nuove Costruzioni</option>
+              <option value="Terreni">ðŸŒ¾ Terreni</option>
+              <option value="VilleCaseIndipendenti">ðŸ° Ville e Case Indipendenti</option>
             </select>
           </div>
           <!--end::Col-->
@@ -135,7 +135,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.Province" required>
-              <option value="">🗺️ Seleziona provincia</option>
+              <option value="">ðŸ—ºï¸ Seleziona provincia</option>
               <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
             </select>
           </div>
@@ -157,7 +157,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
               <select class="form-select modern-select" multiple v-model="selectedCities" required>
-                <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }} </option>
+                <option v-for="(city, index) in cities" :key="index" :value="city.Id">ðŸ™ï¸ {{ city.Name }} </option>
               </select>
           </div>
           <!--end::Col-->
@@ -172,13 +172,13 @@
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
-            Località
+            LocalitÃ 
           </label>
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
               <select class="form-select modern-select" v-model="selectedLocations" multiple>
-                <option v-for="(location, index) in locations" :key="index" :value="location.Id">📍 {{ location.Name }} </option>
+                <option v-for="(location, index) in locations" :key="index" :value="location.Id">ðŸ“ {{ location.Name }} </option>
               </select>
           </div>
           <!--end::Col-->
@@ -377,13 +377,13 @@
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.PropertyState">
-              <option value="">🏠 Seleziona Stato Immobile</option>
-              <option value="0">🔒 Affittato</option>
-              <option value="1">🏗️ In corso di costruzione</option>
-              <option value="2">✅ Libero</option>
-              <option value="3">📋 Libero al Rogito</option>
-              <option value="4">🏛️ Nuda Proprietà</option>
-              <option value="5">👥 Occupato</option>
+              <option value="">ðŸ  Seleziona Stato Immobile</option>
+              <option value="0">ðŸ”’ Affittato</option>
+              <option value="1">ðŸ—ï¸ In corso di costruzione</option>
+              <option value="2">âœ… Libero</option>
+              <option value="3">ðŸ“‹ Libero al Rogito</option>
+              <option value="4">ðŸ›ï¸ Nuda ProprietÃ </option>
+              <option value="5">ðŸ‘¥ Occupato</option>
             </select>
           </div>
           <!--end::Input-->
@@ -404,10 +404,10 @@
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.Heating">
-              <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
-              <option value="Autonomo">🏠 Autonomo</option>
-              <option value="Centralizzato">🏢 Centralizzato</option>
-              <option value="Inesistente">❌ Inesistente</option>
+              <option value="">ðŸ”¥ Seleziona Il Tipo Di Riscaldamento</option>
+              <option value="Autonomo">ðŸ  Autonomo</option>
+              <option value="Centralizzato">ðŸ¢ Centralizzato</option>
+              <option value="Inesistente">âŒ Inesistente</option>
             </select>
           </div>
           <!--end::Input-->
@@ -428,12 +428,12 @@
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.ParkingSpaces">
-              <option value="">🚗 Seleziona Posto Auto</option>
-              <option value="Assegnato">🎯 Assegnato</option>
-              <option value="Box Auto">🏠 Box Auto</option>
-              <option value="Condominiale">🏢 Condominiale</option>
-              <option value="Posto auto coperto">🏠 Posto auto coperto</option>
-              <option value="Posto auto scoperto">☀️ Posto auto scoperto</option>
+              <option value="">ðŸš— Seleziona Posto Auto</option>
+              <option value="Assegnato">ðŸŽ¯ Assegnato</option>
+              <option value="Box Auto">ðŸ  Box Auto</option>
+              <option value="Condominiale">ðŸ¢ Condominiale</option>
+              <option value="Posto auto coperto">ðŸ  Posto auto coperto</option>
+              <option value="Posto auto scoperto">â˜€ï¸ Posto auto scoperto</option>
             </select>
           </div>
           <!--end::Input-->
@@ -539,7 +539,7 @@
               </span>
             </div>
             <div>
-              <h3 class="fw-bold m-0 text-gray-900 fs-3">🏠 Immobili Richiesta</h3>
+              <h3 class="fw-bold m-0 text-gray-900 fs-3">ðŸ  Immobili Richiesta</h3>
               <span class="text-muted fs-7 fw-semibold">Elenco degli immobili associati</span>
             </div>
           </div>
@@ -742,7 +742,7 @@ export default defineComponent({
           cities.value = [];
         }
       } catch (error) {
-        console.error("Errore nel caricamento delle città:", error);
+        console.error("Errore nel caricamento delle cittÃ :", error);
         cities.value = [];
       }
     };
@@ -756,7 +756,7 @@ export default defineComponent({
           locations.value = [];
         }
       } catch (error) {
-        console.error("Errore nel caricamento delle località:", error);
+        console.error("Errore nel caricamento delle localitÃ :", error);
         locations.value = [];
       }
     };
@@ -776,12 +776,12 @@ export default defineComponent({
       // Carica le province
       await loadProvinces();
       
-      // Se c'è già una provincia selezionata, carica le città
+      // Se c'Ã¨ giÃ  una provincia selezionata, carica le cittÃ 
       if (formData.value.Province) {
         await loadCitiesByProvince(formData.value.Province);
       }
 
-      // Se ci sono città selezionate, carica le località
+      // Se ci sono cittÃ  selezionate, carica le localitÃ 
       if (selectedCities.value.length > 0) {
         await loadLocationsByCity(selectedCities.value[0]);
       }
@@ -866,7 +866,7 @@ export default defineComponent({
           loading.value = false;
 
           Swal.fire({
-            text: "Il modulo è stato inviato con successo!",
+            text: "Il modulo Ã¨ stato inviato con successo!",
             icon: "success",
             buttonsStyling: false,
             confirmButtonText: "Continua!",
@@ -882,7 +882,7 @@ export default defineComponent({
           console.log(response);
           loading.value = false;
           Swal.fire({
-            text: "Attenzione, si è verificato un errore.",
+            text: "Attenzione, si Ã¨ verificato un errore.",
             icon: "error",
             buttonsStyling: false,
             confirmButtonText: "Continua!",
@@ -959,396 +959,5 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-/* Stili per select moderni */
-.modern-select {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
 
-.modern-select:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.modern-select:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-/* Stili per input moderni */
-.modern-input {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.modern-input:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.modern-input:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.modern-input::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-/* Stili per textarea moderna */
-.modern-textarea {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.modern-textarea:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.modern-textarea:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.modern-textarea::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-/* Multiselect moderno */
-.multiselect-modern {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
-}
-
-/* Stili per labels */
-label {
-  transition: all 0.3s ease;
-}
-
-label:hover {
-  color: #3699ff !important;
-}
-
-/* Icone */
-.ki-duotone {
-  transition: all 0.3s ease;
-}
-
-/* Bottoni Modal Moderni */
-.btn-modal-danger,
-.btn-modal-primary {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.75rem;
-  border-radius: 0.75rem;
-  font-weight: 700;
-  font-size: 0.95rem;
-  border: none;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.3px;
-}
-
-.btn-modal-danger::before,
-.btn-modal-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-modal-danger:hover::before,
-.btn-modal-primary:hover::before {
-  left: 100%;
-}
-
-.btn-modal-danger .btn-icon,
-.btn-modal-primary .btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-.btn-modal-danger .btn-label,
-.btn-modal-primary .btn-label {
-  font-weight: 700;
-  letter-spacing: 0.3px;
-}
-
-/* Bottone Elimina */
-.btn-modal-danger {
-  background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.35);
-}
-
-.btn-modal-danger:hover {
-  background: linear-gradient(135deg, #d63447 0%, #b92838 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(246, 78, 96, 0.5);
-  color: #ffffff;
-}
-
-.btn-modal-danger:hover .btn-icon {
-  transform: scale(1.15) rotate(-5deg);
-  animation: shake 0.5s ease;
-}
-
-.btn-modal-danger:active {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(246, 78, 96, 0.35);
-}
-
-/* Bottone Primario */
-.btn-modal-primary {
-  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.35);
-}
-
-.btn-modal-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.45);
-  color: #ffffff;
-}
-
-.btn-modal-primary:hover:not(:disabled) .btn-icon {
-  transform: scale(1.15) rotate(5deg);
-}
-
-.btn-modal-primary:active:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(54, 153, 255, 0.35);
-}
-
-.btn-modal-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* Animazione shake */
-@keyframes shake {
-  0%, 100% { transform: rotate(0deg) scale(1.15); }
-  25% { transform: rotate(-5deg) scale(1.15); }
-  75% { transform: rotate(5deg) scale(1.15); }
-}
-
-/* Spinner loading */
-.btn-modal-primary .spinner-border-sm,
-.btn-modal-danger .spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.15rem;
-}
-
-/* Form controls */
-.form-check-input:checked {
-  background-color: #3699ff;
-  border-color: #3699ff;
-}
-
-.form-check-input:focus {
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-}
-
-/* Search bar semplice per tabella immobili */
-.search-wrapper-simple {
-  position: relative;
-  width: 300px;
-}
-
-.search-icon-simple {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #a1a5b7;
-  pointer-events: none;
-  z-index: 1;
-  transition: color 0.3s ease;
-}
-
-.search-input-simple {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%) !important;
-  border: 1px solid #e8f4ff !important;
-  border-radius: 0.75rem !important;
-  padding: 0.75rem 1rem 0.75rem 3rem !important;
-  font-weight: 500;
-  color: #3f4254;
-  transition: all 0.3s ease;
-  width: 100%;
-}
-
-.search-input-simple:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%) !important;
-  border-color: #3699ff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.search-input-simple:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-  border-color: #3699ff !important;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  outline: none;
-}
-
-.search-input-simple::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-.search-input-simple:focus ~ .search-icon-simple,
-.search-input-simple:hover ~ .search-icon-simple {
-  color: #3699ff;
-}
-
-/* Stili per note moderne */
-.modern-note {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 1rem;
-}
-
-.modern-note:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.note-content {
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.note-content p {
-  margin-bottom: 0.5rem;
-}
-
-.note-content p:last-child {
-  margin-bottom: 0;
-}
-
-/* Stili per bottoni azione nella tabella */
-.action-buttons {
-  gap: 0.5rem;
-}
-
-.btn-action {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  font-size: 0.875rem;
-  border: none;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.btn-action .btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-.btn-action .btn-label {
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.btn-action-info {
-  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);
-}
-
-.btn-action-info:hover {
-  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.4);
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.btn-action-info:hover .btn-icon {
-  transform: scale(1.15) rotate(5deg);
-}
-
-.btn-action-info:active {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(54, 153, 255, 0.3);
-}
-
-/* Allineamento tabella immobili - tutto centrato */
-:deep(table thead th) {
-  text-align: center !important;
-}
-
-:deep(table tbody td) {
-  text-align: center !important;
-}
-</style>
+<!-- Tutti gli stili sono stati spostati in file CSS dedicati -->

@@ -868,4 +868,3 @@ const processTopZones = (properties: RealEstatePropertyListItem[]) => {
     };
 
     export { getDetails, getRealEstateProperties, getAgencies, getAgents, getSoldProperties, getCalendarEvents, getRequests, getCustomers, getAllCustomers, processPropertiesForChart, processSoldPropertiesForChart, processTypologyDistribution, processTopZones, processAgentsRanking, processCalendarEvents, processRequestsForChart, processAppointmentsForChart, processAgentsForChart, processAgenciesForChart, processCustomersForChart, isPropertyAvailable }
-    export type { DashboardDetails, RealEstatePropertyHomeDetails, RequestHomeDetails }

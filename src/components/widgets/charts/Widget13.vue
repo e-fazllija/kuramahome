@@ -641,12 +641,12 @@ export default defineComponent({
         });
         
         // Show popup on hover
-        marker.on('mouseover', function(e) {
-          this.openPopup();
+        marker.on('mouseover', () => {
+          marker.openPopup();
         });
         
-        marker.on('mouseout', function(e) {
-          this.closePopup();
+        marker.on('mouseout', () => {
+          marker.closePopup();
         });
         
         // Click event to select agency (and keep popup open)

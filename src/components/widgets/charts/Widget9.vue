@@ -165,9 +165,7 @@ export default defineComponent({
             colors: labelColor,
           },
           markers: {
-            width: 8,
-            height: 8,
-            radius: 2,
+            size: 8,
           },
         },
         dataLabels: {

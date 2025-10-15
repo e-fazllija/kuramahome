@@ -1,0 +1,336 @@
+/* ========================================
+   WIDGETS STYLES
+   Stili per componenti widget
+   ======================================== */
+
+/* ========================================
+   WIDGET 10 - Stats Widget
+   ======================================== */
+
+@keyframes numberPop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.progress-bar {
+  transition: width 1.5s ease-in-out;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cursor-pointer:hover {
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   WIDGET 11 - Analytics Dashboard
+   ======================================== */
+
+.hover-elevate-up {
+  transition: all 0.3s ease;
+}
+
+.hover-elevate-up:hover {
+  box-shadow: 0 1rem 2rem 0.5rem rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.symbol-label {
+  border-radius: 0.95rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* Layout adattivo per la sezione info */
+.info-section-container {
+  height: 350px;
+  overflow: visible;
+}
+
+/* Agencies List Container per Widget11 */
+.agencies-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Agency Item Styles per Widget11 */
+.agency-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+}
+
+.agency-item:last-child {
+  border-bottom: none;
+}
+
+.agency-item:hover {
+  background-color: transparent;
+}
+
+/* KPI Cards Layout */
+.row.h-100 {
+  height: 100% !important;
+}
+
+.row.h-100 .col-6 {
+  height: calc(50% - 0.5rem);
+  margin-bottom: 1rem;
+}
+
+.row.h-100 .col-6:last-child,
+.row.h-100 .col-6:nth-last-child(2) {
+  margin-bottom: 0;
+}
+
+/* Stili specifici per le agenzie */
+.agencies-grid {
+  display: grid;
+  gap: 1.5rem;
+  height: 100%;
+  align-content: stretch;
+}
+
+/* Layout adattivo per le agenzie */
+.agencies-grid.single {
+  grid-template-columns: 1fr;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.agencies-grid.single-large {
+  grid-template-columns: 1fr;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.agencies-grid.double {
+  grid-template-columns: 1fr 1fr;
+}
+
+.agencies-grid.triple {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.agencies-grid.triple .agency-card:last-child {
+  grid-column: 1 / -1;
+}
+
+.agencies-grid.multiple {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Classi per le card delle agenzie */
+.agency-card.full-width {
+  width: 100%;
+}
+
+.agency-card.full-width-large {
+  width: 100%;
+  min-height: 500px;
+}
+
+.agency-card.half-width {
+  width: 50%;
+}
+
+.agency-card.third-width {
+  width: 33.333%;
+}
+
+.agency-card.auto-width {
+  width: auto;
+}
+
+/* Stili per le card delle agenzie */
+.agency-card {
+  height: 100%;
+}
+
+.agency-card-inner {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.agency-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3699ff 0%, #0bb7af 100%);
+}
+
+.agency-card-inner:hover {
+  box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Stili specifici per la vista grande dell'agenzia */
+.agencies-grid.single-large .agency-card-inner {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.agencies-grid.single-large .agency-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #3699ff 0%, #0bb7af 50%, #1bc5bd 100%);
+}
+
+.agencies-grid.single-large .agency-card-inner:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Stili per il simbolo più grande */
+.agencies-grid.single-large .symbol-80px {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Stili per i dettagli in layout a griglia */
+.agencies-grid.single-large .row.g-4 > div {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.agencies-grid.single-large .row.g-4 > div:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Stili per distinguere i due gruppi di KPI */
+.static-kpi-card {
+  position: relative;
+}
+
+.static-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 0.75rem;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.filtered-kpi-card {
+  position: relative;
+}
+
+.filtered-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  border-radius: 0.75rem;
+  z-index: -1;
+  opacity: 0.1;
+}
+
+/* Indicatore visivo per i KPI filtrati */
+.filtered-kpi-card .symbol-label::after {
+  content: '📅';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.static-kpi-card .symbol-label::after {
+  content: '🏢';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+/* Responsive per agenzie */
+@media (max-width: 1200px) {
+  .agencies-grid.double,
+  .agencies-grid.triple,
+  .agencies-grid.multiple {
+    grid-template-columns: 1fr;
+  }
+  
+  .agency-card.half-width,
+  .agency-card.third-width {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .agencies-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .agency-card {
+    width: 100% !important;
+  }
+}
+

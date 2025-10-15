@@ -150,15 +150,15 @@ const routes: Array<RouteRecordRaw> = [
           pageTitle: "Sign In",
         },
       },
-      // {
-      //   path: "/sign-up",
-      //   name: "sign-up",
-      //   component: () =>
-      //     import("@/views/crafted/authentication/basic-flow/SignUp.vue"),
-      //   meta: {
-      //     pageTitle: "Sign Up",
-      //   },
-      // },
+      {
+        path: "/sign-up",
+        name: "sign-up",
+        component: () =>
+          import("@/views/crafted/authentication/basic-flow/SignUp.vue"),
+        meta: {
+          pageTitle: "Sign Up",
+        },
+      },
       {
         path: "/password-reset",
         name: "password-reset",
@@ -178,15 +178,6 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
     ],
-  },
-  {
-    path: "/multi-step-sign-up",
-    name: "multi-step-sign-up",
-    component: () =>
-      import("@/views/crafted/authentication/MultiStepSignUp.vue"),
-    meta: {
-      pageTitle: "Multi-step Sign up"
-    },
   },
   {
     path: "/",

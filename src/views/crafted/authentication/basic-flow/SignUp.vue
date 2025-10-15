@@ -1,60 +1,64 @@
 <template>
-  <!--begin::Wrapper-->
-  <div class="w-lg-500px p-10">
-    <!--begin::Form-->
-    <VForm
-      class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework"
-      novalidate
-      @submit="onSubmitRegister"
-      id="kt_login_signup_form"
-      :validation-schema="registration"
-    >
+  <div class="w-100">
       <!--begin::Heading-->
       <div class="mb-10 text-center">
         <!--begin::Title-->
-        <h1 class="text-dark mb-3">Create an Account</h1>
+      <h1 class="text-gray-800 mb-3">Crea un Account</h1>
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="text-gray-400 fw-semobold fs-4">
-          Already have an account?
-
-          <router-link to="/sign-in" class="link-primary fw-bold">
-            Sign in here
+      <div class="text-muted fw-semobold fs-6">
+        Hai già un account?
+        <router-link to="/sign-in" class="link-primary fw-bold ms-1">
+          Accedi qui
           </router-link>
         </div>
         <!--end::Link-->
       </div>
       <!--end::Heading-->
 
-      <!--begin::Action-->
-      <button type="button" class="btn btn-light-primary fw-bold w-100 mb-10">
-        <img
-          alt="Logo"
-          :src="getAssetPath('media/svg/brand-logos/google-icon.svg')"
-          class="h-20px me-3"
-        />
-        Sign in with Google
-      </button>
-      <!--end::Action-->
-
-      <!--begin::Separator-->
-      <div class="d-flex align-items-center mb-10">
-        <div class="border-bottom border-gray-300 mw-50 w-100"></div>
-        <span class="fw-semobold text-gray-400 fs-7 mx-2">OR</span>
-        <div class="border-bottom border-gray-300 mw-50 w-100"></div>
+    <!--begin::Stepper-->
+    <div class="stepper-wrapper mb-8">
+      <div class="stepper-item" :class="{ 'active': currentStep >= 1, 'completed': currentStep > 1 }">
+        <div class="step-counter">1</div>
+        <div class="step-name">Dati Personali</div>
       </div>
-      <!--end::Separator-->
+      <div class="stepper-item" :class="{ 'active': currentStep >= 2, 'completed': currentStep > 2 }">
+        <div class="step-counter">2</div>
+        <div class="step-name">Info Aggiuntive</div>
+      </div>
+      <div class="stepper-item" :class="{ 'active': currentStep >= 3, 'completed': currentStep > 3 }">
+        <div class="step-counter">3</div>
+        <div class="step-name">Sicurezza</div>
+      </div>
+    </div>
+    <!--end::Stepper-->
+
+    <!--begin::Form-->
+    <VForm
+      class="form w-100"
+      @submit="handleSubmit"
+      :validation-schema="currentValidationSchema"
+      v-slot="{ errors }"
+      ref="formRef"
+    >
+
+      <!--begin::Step 1-->
+      <div v-show="currentStep === 1">
+        <div class="mb-8 text-center">
+          <h3 class="text-gray-800 fw-bold mb-3">Informazioni Personali</h3>
+          <p class="text-muted fs-6">Inserisci i tuoi dati personali</p>
+        </div>
 
       <!--begin::Input group-->
       <div class="row fv-row mb-7">
         <!--begin::Col-->
         <div class="col-xl-6">
-          <label class="form-label fw-bold text-dark fs-6">First Name</label>
+            <label class="form-label fw-bold text-gray-800 fs-6">Nome *</label>
           <Field
+              v-model="formData.name"
             class="form-control form-control-lg form-control-solid"
             type="text"
-            placeholder=""
             name="name"
             autocomplete="off"
           />
@@ -68,18 +72,18 @@
 
         <!--begin::Col-->
         <div class="col-xl-6">
-          <label class="form-label fw-bold text-dark fs-6">Last Name</label>
+            <label class="form-label fw-bold text-gray-800 fs-6">Cognome *</label>
           <Field
+              v-model="formData.lastName"
             class="form-control form-control-lg form-control-solid"
             type="text"
-            placeholder=""
-            name="LastName"
+              name="lastName"
             autocomplete="off"
           />
           <div class="fv-plugins-message-container">
             <div class="fv-help-block">
-              <ErrorMessage name="LastName" />
-            </div>
+                <ErrorMessage name="lastName" />
+              </div>
           </div>
         </div>
         <!--end::Col-->
@@ -88,11 +92,11 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-7">
-        <label class="form-label fw-bold text-dark fs-6">Email</label>
+          <label class="form-label fw-bold text-gray-800 fs-6">Email *</label>
         <Field
+            v-model="formData.email"
           class="form-control form-control-lg form-control-solid"
           type="email"
-          placeholder=""
           name="email"
           autocomplete="off"
         />
@@ -105,19 +109,120 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="mb-10 fv-row" data-kt-password-meter="true">
+        <div class="fv-row mb-7">
+          <label class="form-label fw-bold text-gray-800 fs-6">Telefono</label>
+          <Field
+            v-model="formData.phone"
+            class="form-control form-control-lg form-control-solid"
+            type="tel"
+            name="phone"
+            autocomplete="off"
+          />
+          <div class="fv-plugins-message-container">
+            <div class="fv-help-block">
+              <ErrorMessage name="phone" />
+            </div>
+          </div>
+        </div>
+        <!--end::Input group-->
+      </div>
+      <!--end::Step 1-->
+
+      <!--begin::Step 2-->
+      <div v-show="currentStep === 2">
+        <div class="mb-8 text-center">
+          <h3 class="text-gray-800 fw-bold mb-3">Informazioni Aggiuntive</h3>
+          <p class="text-muted fs-6">Questi campi sono opzionali</p>
+        </div>
+
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+          <label class="form-label fw-bold text-gray-800 fs-6">Data di Nascita</label>
+          <Field
+            v-model="formData.birthDate"
+            class="form-control form-control-lg form-control-solid"
+            type="date"
+            name="birthDate"
+            autocomplete="off"
+          />
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+          <label class="form-label fw-bold text-gray-800 fs-6">Indirizzo</label>
+          <Field
+            v-model="formData.address"
+            class="form-control form-control-lg form-control-solid"
+            type="text"
+            name="address"
+            autocomplete="off"
+          />
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row fv-row mb-7">
+          <div class="col-xl-6">
+            <label class="form-label fw-bold text-gray-800 fs-6">Città</label>
+            <Field
+              v-model="formData.city"
+              class="form-control form-control-lg form-control-solid"
+              type="text"
+              name="city"
+              autocomplete="off"
+            />
+          </div>
+          <div class="col-xl-6">
+            <label class="form-label fw-bold text-gray-800 fs-6">CAP</label>
+            <Field
+              v-model="formData.zipCode"
+              class="form-control form-control-lg form-control-solid"
+              type="text"
+              name="zipCode"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="fv-row mb-7">
+          <label class="form-label fw-bold text-gray-800 fs-6">Note/Bio</label>
+          <Field
+            v-model="formData.bio"
+            as="textarea"
+            class="form-control form-control-lg form-control-solid"
+            name="bio"
+            rows="3"
+            autocomplete="off"
+          />
+        </div>
+        <!--end::Input group-->
+      </div>
+      <!--end::Step 2-->
+
+      <!--begin::Step 3-->
+      <div v-show="currentStep === 3">
+        <div class="mb-8 text-center">
+          <h3 class="text-gray-800 fw-bold mb-3">Sicurezza</h3>
+          <p class="text-muted fs-6">Crea una password sicura per il tuo account</p>
+        </div>
+
+        <!--begin::Input group-->
+        <div class="mb-7 fv-row" data-kt-password-meter="true">
         <!--begin::Wrapper-->
         <div class="mb-1">
           <!--begin::Label-->
-          <label class="form-label fw-bold text-dark fs-6"> Password </label>
+            <label class="form-label fw-bold text-gray-800 fs-6">Password *</label>
           <!--end::Label-->
 
           <!--begin::Input wrapper-->
           <div class="position-relative mb-3">
             <Field
+                v-model="formData.password"
               class="form-control form-control-lg form-control-solid"
               type="password"
-              placeholder=""
               name="password"
               autocomplete="off"
             />
@@ -151,21 +256,19 @@
         <!--end::Wrapper-->
         <!--begin::Hint-->
         <div class="text-muted">
-          Use 8 or more characters with a mix of letters, numbers & symbols.
+            Usa 8 o più caratteri con lettere, numeri e simboli.
         </div>
         <!--end::Hint-->
       </div>
       <!--end::Input group--->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-5">
-        <label class="form-label fw-bold text-dark fs-6"
-          >Confirm Password</label
-        >
+        <div class="fv-row mb-7">
+          <label class="form-label fw-bold text-gray-800 fs-6">Conferma Password *</label>
         <Field
+            v-model="formData.password_confirmation"
           class="form-control form-control-lg form-control-solid"
           type="password"
-          placeholder=""
           name="password_confirmation"
           autocomplete="off"
         />
@@ -178,36 +281,65 @@
       <!--end::Input group-->
 
       <!--begin::Input group-->
-      <div class="fv-row mb-10">
+        <div class="fv-row mb-7">
         <label class="form-check form-check-custom form-check-solid">
           <Field
+              v-model="formData.toc"
             class="form-check-input"
             type="checkbox"
             name="toc"
             value="1"
           />
           <span class="form-check-label fw-semobold text-gray-700 fs-6">
-            I Agree &
-            <a href="#" class="ms-1 link-primary">Terms and conditions</a>.
+              Accetto i
+              <a href="#" class="ms-1 link-primary">Termini e Condizioni</a> *
           </span>
         </label>
+          <div class="fv-plugins-message-container">
+            <div class="fv-help-block">
+              <ErrorMessage name="toc" />
+            </div>
+          </div>
+        </div>
+        <!--end::Input group-->
       </div>
-      <!--end::Input group-->
+      <!--end::Step 3-->
 
       <!--begin::Actions-->
-      <div class="text-center">
+      <div class="d-flex justify-content-between">
         <button
-          id="kt_sign_up_submit"
-          ref="submitButton"
-          type="submit"
+          v-if="currentStep > 1"
+          type="button"
+          @click="previousStep"
+          class="btn btn-lg btn-light-primary"
+        >
+          <i class="ki-outline ki-arrow-left fs-3"></i>
+          Indietro
+        </button>
+        <div v-else></div>
+
+        <button
+          v-if="currentStep < 3"
+          type="button"
+          @click="nextStep"
           class="btn btn-lg btn-primary"
         >
-          <span class="indicator-label"> Submit </span>
+          Avanti
+          <i class="ki-outline ki-arrow-right fs-3"></i>
+        </button>
+
+        <button
+          v-else
+          type="submit"
+          ref="submitButton"
+          class="btn btn-lg btn-primary"
+        >
+          <span class="indicator-label">
+            Completa Registrazione
+          </span>
           <span class="indicator-progress">
-            Please wait...
-            <span
-              class="spinner-border spinner-border-sm align-middle ms-2"
-            ></span>
+            Attendere...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
           </span>
         </button>
       </div>
@@ -215,12 +347,11 @@
     </VForm>
     <!--end::Form-->
   </div>
-  <!--end::Wrapper-->
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, nextTick, onMounted, ref } from "vue";
+import { defineComponent, nextTick, onMounted, ref, computed, reactive } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import * as Yup from "yup";
 import { useAuthStore, type User } from "@/stores/auth";
@@ -240,16 +371,67 @@ export default defineComponent({
     const router = useRouter();
 
     const submitButton = ref<HTMLButtonElement | null>(null);
+    const formRef = ref<InstanceType<typeof VForm> | null>(null);
+    const currentStep = ref(1);
 
-    const registration = Yup.object().shape({
-      name: Yup.string().required().label("Name"),
-      LastName: Yup.string().required().label("Surname"),
-      email: Yup.string().min(4).required().email().label("Email"),
-      password: Yup.string().required().label("Password"),
+    // Form data
+    const formData = reactive({
+      name: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      birthDate: "",
+      address: "",
+      city: "",
+      zipCode: "",
+      bio: "",
+      password: "",
+      password_confirmation: "",
+      toc: false,
+    });
+
+    // Validation schemas per step
+    const step1Schema = Yup.object().shape({
+      name: Yup.string().required("Il nome è obbligatorio").label("Nome"),
+      lastName: Yup.string().required("Il cognome è obbligatorio").label("Cognome"),
+      email: Yup.string().required("L'email è obbligatoria").email("Inserisci un'email valida").label("Email"),
+      phone: Yup.string().nullable().label("Telefono"),
+    });
+
+    const step2Schema = Yup.object().shape({
+      birthDate: Yup.string().nullable().label("Data di Nascita"),
+      address: Yup.string().nullable().label("Indirizzo"),
+      city: Yup.string().nullable().label("Città"),
+      zipCode: Yup.string().nullable().label("CAP"),
+      bio: Yup.string().nullable().label("Bio"),
+    });
+
+    const step3Schema = Yup.object().shape({
+      password: Yup.string()
+        .required("La password è obbligatoria")
+        .min(8, "La password deve contenere almeno 8 caratteri")
+        .label("Password"),
       password_confirmation: Yup.string()
-        .required()
-        .oneOf([Yup.ref("password")], "Passwords must match")
-        .label("Password Confirmation"),
+        .required("Conferma la password")
+        .oneOf([Yup.ref("password")], "Le password non coincidono")
+        .label("Conferma Password"),
+      toc: Yup.boolean()
+        .oneOf([true], "Devi accettare i termini e condizioni")
+        .required("Devi accettare i termini e condizioni"),
+    });
+
+    // Get current validation schema based on step
+    const currentValidationSchema = computed(() => {
+      switch (currentStep.value) {
+        case 1:
+          return step1Schema;
+        case 2:
+          return step2Schema;
+        case 3:
+          return step3Schema;
+        default:
+          return step1Schema;
+      }
     });
 
     onMounted(() => {
@@ -258,8 +440,32 @@ export default defineComponent({
       });
     });
 
-    const onSubmitRegister = async (values: any) => {
-      values = values as User;
+    // Navigate to next step
+    const nextStep = async () => {
+      if (formRef.value) {
+        const { valid } = await formRef.value.validate();
+        if (valid) {
+          currentStep.value++;
+          // Scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    };
+
+    // Navigate to previous step
+    const previousStep = () => {
+      if (currentStep.value > 1) {
+        currentStep.value--;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    // Handle form submission
+    const handleSubmit = async () => {
+      if (formRef.value) {
+        const { valid } = await formRef.value.validate();
+        if (!valid) return;
+      }
 
       // Clear existing errors
       store.logout();
@@ -270,24 +476,48 @@ export default defineComponent({
       // Activate indicator
       submitButton.value?.setAttribute("data-kt-indicator", "on");
 
-      // Send login request
-      await store.register(values);
+      // Prepare data for API
+      const userData = {
+        name: formData.name,
+        LastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        birthDate: formData.birthDate,
+        address: formData.address,
+        city: formData.city,
+        zipCode: formData.zipCode,
+        bio: formData.bio,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation,
+      };
+
+      // Send registration request
+      await store.register(userData as any);
 
       const error = store.errors;
 
       if (!error) {
         Swal.fire({
-          text: "You have successfully logged in!",
+          title: "Registrazione Completata!",
+          html: `
+            <p class="mb-3">Il tuo account è stato creato con successo.</p>
+            <p class="text-muted">
+              Ti abbiamo inviato un'email di conferma all'indirizzo:<br>
+              <strong>${formData.email}</strong>
+            </p>
+            <p class="text-muted mt-3">
+              Controlla la tua casella di posta e clicca sul link di conferma per attivare il tuo account.
+            </p>
+          `,
           icon: "success",
           buttonsStyling: false,
-          confirmButtonText: "Continua!",
+          confirmButtonText: "Vai al Login",
           heightAuto: false,
           customClass: {
-            confirmButton: "btn fw-semobold btn-light-primary",
+            confirmButton: "btn fw-semobold btn-primary",
           },
         }).then(function () {
-          // Go to page after successfully login
-          router.push({ name: "dashboard" });
+          router.push({ name: "sign-in" });
         });
       } else {
         Swal.fire({
@@ -308,8 +538,13 @@ export default defineComponent({
     };
 
     return {
-      registration,
-      onSubmitRegister,
+      currentStep,
+      formData,
+      formRef,
+      currentValidationSchema,
+      nextStep,
+      previousStep,
+      handleSubmit,
       submitButton,
       getAssetPath,
     };

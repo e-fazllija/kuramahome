@@ -51,11 +51,11 @@
         </div>
         <div class="card-body">
           <div class="row g-4">
-            <div class="col-xl-6">
+            <div class="col-12 col-xl-6">
               <Chart3 widget-classes="card-xl-stretch" chart-height="300" title="Immobili Inseriti"
               subTitle="Andamento immobili inseriti" :chartData="chartData"/>
             </div>
-            <div class="col-xl-6">
+            <div class="col-12 col-xl-6">
               <Chart3 widget-classes="card-xl-stretch" chart-height="300" title="Immobili Venduti"
               subTitle="Andamento immobili venduti" :chartData="soldChartData" chartType="bar"/>
             </div>
@@ -79,13 +79,13 @@
         <div class="card-body">
           <div class="row g-4">
             <!--begin::Tipologie-->
-            <div class="col-xl-6">
+            <div class="col-12 col-xl-6">
               <Chart4 widget-classes="card-xl-stretch" title="Distribuzione Tipologie Immobili"
               :datas="typologyData"/>
             </div>
             <!--end::Tipologie-->
             <!--begin::Zone-->
-            <div class="col-xl-6">
+            <div class="col-12 col-xl-6">
               <div class="card h-100">
                 <div class="card-header border-0 pt-4 pb-2">
                   <h4 class="card-title fw-bold fs-5 mb-1">🏆 Top Zone Strategiche</h4>
@@ -156,7 +156,7 @@
         <div class="card-body">
           <div class="row g-4">
             <!--begin::Distribuzione Immobili-->
-    <div class="col-xl-4">
+    <div class="col-12 col-lg-6 col-xl-4">
               <div class="card h-100">
                 <div class="card-header border-0 pt-4 pb-2">
                   <h4 class="card-title fw-bold fs-5 mb-1">🏠 Distribuzione Immobili</h4>
@@ -224,7 +224,7 @@
             <!--end::Distribuzione Immobili-->
 
             <!--begin::Top Agenzie-->
-     <div class="col-xl-4">
+     <div class="col-12 col-lg-6 col-xl-4">
               <div class="card h-100">
                 <div class="card-header border-0 pt-4 pb-2">
                   <h4 class="card-title fw-bold fs-5 mb-1">🏢 Top Agenzie</h4>
@@ -298,7 +298,7 @@
             <!--end::Top Agenzie-->
 
             <!--begin::Top Agenti-->
-    <div class="col-xl-4">
+    <div class="col-12 col-lg-6 col-xl-4">
               <div class="card h-100">
                 <div class="card-header border-0 pt-4 pb-2">
                   <h4 class="card-title fw-bold fs-5 mb-1">🏆 Top Agenti</h4>
@@ -909,133 +909,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-/* Light mode buttons */
-.btn-light-primary {
-  background-color: #f1f3ff;
-  border-color: #3699ff;
-  color: #000;
-}
-
-.btn-light-primary:hover {
-  background-color: #e8f4ff;
-  border-color: #3699ff;
-}
-
-.btn-light-success {
-  background-color: #e8fff5;
-  border-color: #1bc5bd;
-  color: #000;
-}
-
-.btn-light-success:hover {
-  background-color: #d4f7e8;
-  border-color: #1bc5bd;
-}
-
-.btn-light-warning {
-  background-color: #fff8e1;
-  border-color: #ffa800;
-  color: #000;
-}
-
-.btn-light-warning:hover {
-  background-color: #fff2cc;
-  border-color: #ffa800;
-}
-
-/* Dark mode styles */
-[data-bs-theme="dark"] .card {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .card-header {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .card-body {
-  background-color: #1e1e2d;
-}
-
-[data-bs-theme="dark"] .card-title,
-[data-bs-theme="dark"] .card-label {
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .text-gray-800 {
-  color: #f5f8fa !important;
-}
-
-[data-bs-theme="dark"] .text-muted {
-  color: #a1a5b7 !important;
-}
-
-[data-bs-theme="dark"] .bg-light-primary {
-  background-color: rgba(54, 153, 255, 0.15) !important;
-}
-
-[data-bs-theme="dark"] .bg-light-info {
-  background-color: rgba(142, 84, 233, 0.15) !important;
-}
-
-[data-bs-theme="dark"] .bg-light-secondary {
-  background-color: rgba(61, 61, 77, 0.15) !important;
-}
-
-[data-bs-theme="dark"] .border-primary {
-  border-color: rgba(54, 153, 255, 0.3) !important;
-}
-
-[data-bs-theme="dark"] .border-info {
-  border-color: rgba(142, 84, 233, 0.3) !important;
-}
-
-[data-bs-theme="dark"] .border-secondary {
-  border-color: rgba(61, 61, 77, 0.3) !important;
-}
-
-[data-bs-theme="dark"] .btn-light-primary {
-  background-color: rgba(54, 153, 255, 0.15);
-  border-color: #3699ff;
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .btn-light-primary:hover {
-  background-color: rgba(54, 153, 255, 0.25);
-  border-color: #3699ff;
-}
-
-[data-bs-theme="dark"] .btn-light-success {
-  background-color: rgba(27, 197, 189, 0.15);
-  border-color: #1bc5bd;
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .btn-light-success:hover {
-  background-color: rgba(27, 197, 189, 0.25);
-  border-color: #1bc5bd;
-}
-
-[data-bs-theme="dark"] .btn-light-warning {
-  background-color: rgba(255, 168, 0, 0.15);
-  border-color: #ffa800;
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .btn-light-warning:hover {
-  background-color: rgba(255, 168, 0, 0.25);
-  border-color: #ffa800;
-}
-
-[data-bs-theme="dark"] .progress {
-  background-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .spinner-border {
-  color: #3699ff;
-}
-</style>
-

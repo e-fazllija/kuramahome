@@ -12,13 +12,13 @@ export interface MenuItem {
 const MainMenuConfig: Array<MenuItem> = [
   {
     pages: [
-      {
-        heading: "dashboard",
-        route: "/dashboard",
-        keenthemesIcon: "element-11",
-        bootstrapIcon: "bi-app-indicator",
-        roleEnabled: ["Admin", "Agenzia", "Agente"],
-      },
+      // {
+      //   heading: "dashboard",
+      //   route: "/dashboard",
+      //   keenthemesIcon: "element-11",
+      //   bootstrapIcon: "bi-app-indicator",
+      //   roleEnabled: ["Admin", "Agenzia", "Agente"],
+      // },
       {
         heading: "Agenzie",
         route: "/agencies",

@@ -1,0 +1,182 @@
+/* ========================================
+   MODAL BUTTONS STYLES
+   Stili per bottoni delle modal
+   ======================================== */
+
+/* Base Modal Button Styles */
+.btn-modal-cancel,
+.btn-modal-primary,
+.btn-modal-danger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.3px;
+  cursor: pointer;
+}
+
+/* Shine Effect */
+.btn-modal-cancel::before,
+.btn-modal-primary::before,
+.btn-modal-danger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-modal-cancel:hover::before,
+.btn-modal-primary:hover::before,
+.btn-modal-danger:hover::before {
+  left: 100%;
+}
+
+/* Button Icons */
+.btn-modal-cancel .btn-icon,
+.btn-modal-primary .btn-icon,
+.btn-modal-danger .btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+/* Button Labels */
+.btn-modal-cancel .btn-label,
+.btn-modal-primary .btn-label,
+.btn-modal-danger .btn-label {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ========================================
+   CANCEL BUTTON
+   ======================================== */
+.btn-modal-cancel {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  color: #6c757d;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.15);
+}
+
+.btn-modal-cancel:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(108, 117, 125, 0.25);
+  color: #495057;
+}
+
+.btn-modal-cancel:hover .btn-icon {
+  transform: scale(1.1) rotate(-90deg);
+}
+
+.btn-modal-cancel:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(108, 117, 125, 0.2);
+}
+
+/* ========================================
+   PRIMARY BUTTON (Save)
+   ======================================== */
+.btn-modal-primary {
+  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.35);
+}
+
+.btn-modal-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.45);
+  color: #ffffff;
+}
+
+.btn-modal-primary:hover:not(:disabled) .btn-icon {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.btn-modal-primary:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(54, 153, 255, 0.35);
+}
+
+.btn-modal-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   DANGER BUTTON (Delete)
+   ======================================== */
+.btn-modal-danger {
+  background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.35);
+}
+
+.btn-modal-danger:hover {
+  background: linear-gradient(135deg, #d63447 0%, #b92838 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(246, 78, 96, 0.45);
+  color: #ffffff;
+}
+
+.btn-modal-danger:hover .btn-icon {
+  transform: scale(1.15) rotate(-5deg);
+  animation: shake 0.5s ease;
+}
+
+.btn-modal-danger:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(246, 78, 96, 0.35);
+}
+
+/* Shake Animation for Delete Icon */
+@keyframes shake {
+  0%, 100% { 
+    transform: rotate(0deg) scale(1.15); 
+  }
+  25% { 
+    transform: rotate(-5deg) scale(1.15); 
+  }
+  75% { 
+    transform: rotate(5deg) scale(1.15); 
+  }
+}
+
+/* ========================================
+   LOADING SPINNER
+   ======================================== */
+.btn-modal-primary .spinner-border-sm,
+.btn-modal-danger .spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15rem;
+}
+
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+[data-bs-theme="dark"] .btn-modal-cancel {
+  background: linear-gradient(135deg, #2d2d3f 0%, #25293c 100%);
+  border-color: #3a3e52;
+  color: #a1a5b7;
+}
+
+[data-bs-theme="dark"] .btn-modal-cancel:hover {
+  background: linear-gradient(135deg, #25293c 0%, #1e1e2d 100%);
+  color: #f5f8fa;
+}
+

@@ -1,0 +1,67 @@
+/* ========================================
+   FORM INPUTS STYLES
+   Stili per input moderni (Element Plus)
+   ======================================== */
+
+/* Modern Input (Element Plus) */
+:deep(.modern-input .el-input__wrapper) {
+  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  border: 1px solid #e8f4ff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+}
+
+:deep(.modern-input .el-input__wrapper:hover) {
+  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
+  border-color: #3699ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
+}
+
+:deep(.modern-input .el-input__wrapper.is-focus) {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-color: #3699ff;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+:deep(.modern-input .el-input__inner) {
+  color: #3f4254;
+  font-weight: 500;
+  font-size: 0.95rem;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+:deep(.modern-input .el-input__inner::placeholder) {
+  color: #a1a5b7;
+  font-weight: 400;
+}
+
+/* Dark Mode Support */
+[data-bs-theme="dark"] :deep(.modern-input .el-input__wrapper) {
+  background: linear-gradient(135deg, #1e1e2d 0%, #25293c 100%);
+  border-color: #2d2d3f;
+}
+
+[data-bs-theme="dark"] :deep(.modern-input .el-input__wrapper:hover) {
+  background: linear-gradient(135deg, #25293c 0%, #2d2d3f 100%);
+  border-color: #3699ff;
+}
+
+[data-bs-theme="dark"] :deep(.modern-input .el-input__wrapper.is-focus) {
+  background: linear-gradient(135deg, #2d2d3f 0%, #3a3e52 100%);
+  border-color: #3699ff;
+}
+
+[data-bs-theme="dark"] :deep(.modern-input .el-input__inner) {
+  color: #f5f8fa;
+}
+
+[data-bs-theme="dark"] :deep(.modern-input .el-input__inner::placeholder) {
+  color: #6c757d;
+}
+

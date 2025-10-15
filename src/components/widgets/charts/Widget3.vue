@@ -93,11 +93,15 @@ export default defineComponent({
     const getCategoryBaseColor = (cat: 'sale' | 'rent' | 'auction') => categoryToColors[cat].base;
     const getCategoryLightColor = (cat: 'sale' | 'rent' | 'auction') => categoryToColors[cat].light;
 
-    const getButtonStyle = (cat: 'sale' | 'rent' | 'auction') => ({
-      color: '#000',
-      border: `1px solid ${getCategoryBaseColor(cat)}`,
-      backgroundColor: getCategoryLightColor(cat),
-    });
+    const getButtonStyle = (cat: 'sale' | 'rent' | 'auction') => {
+      const isDark = themeMode.value === 'dark';
+      return {
+        color: isDark ? '#fff' : getCategoryBaseColor(cat),
+        border: `1px solid ${getCategoryBaseColor(cat)}`,
+        backgroundColor: isDark ? getCategoryBaseColor(cat) : getCategoryLightColor(cat),
+        fontWeight: '600'
+      };
+    };
 
     const getKeysAndValues = () => {
       const chartData = props.chartData as any ?? {};
@@ -233,6 +237,10 @@ export default defineComponent({
         show: false,
       },
       labels: {
+        rotate: -45,
+        rotateAlways: false,
+        hideOverlappingLabels: true,
+        trim: true,
         style: {
           colors: labelColor,
           fontSize: "12px",
@@ -306,6 +314,76 @@ export default defineComponent({
       strokeColors: baseColorSale,
       strokeWidth: 3,
     },
+    responsive: [
+      {
+        breakpoint: 768,
+        options: {
+          chart: {
+            height: 300,
+          },
+          plotOptions: props.chartType === 'bar' ? {
+            bar: {
+              horizontal: false,
+              columnWidth: "70%",
+              borderRadius: 3,
+            },
+          } : {},
+          xaxis: {
+            labels: {
+              rotate: -45,
+              rotateAlways: true,
+              hideOverlappingLabels: true,
+              style: {
+                fontSize: "10px",
+              },
+            },
+          },
+          yaxis: {
+            labels: {
+              style: {
+                fontSize: "10px",
+              },
+            },
+          },
+          legend: {
+            show: false,
+          },
+        },
+      },
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            height: 280,
+          },
+          plotOptions: props.chartType === 'bar' ? {
+            bar: {
+              horizontal: false,
+              columnWidth: "80%",
+              borderRadius: 2,
+            },
+          } : {},
+          xaxis: {
+            labels: {
+              rotate: -60,
+              rotateAlways: true,
+              hideOverlappingLabels: true,
+              maxHeight: 60,
+              style: {
+                fontSize: "9px",
+              },
+            },
+          },
+          yaxis: {
+            labels: {
+              style: {
+                fontSize: "9px",
+              },
+            },
+          },
+        },
+      },
+    ],
   };
 };
 
@@ -321,32 +399,4 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
-/* Dark mode styles */
-[data-bs-theme="dark"] .card {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .card-header {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .card-body {
-  background-color: #1e1e2d;
-}
-
-[data-bs-theme="dark"] .card-title,
-[data-bs-theme="dark"] .card-label {
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .text-muted {
-  color: #a1a5b7 !important;
-}
-
-[data-bs-theme="dark"] .btn {
-  color: #f5f8fa !important;
-}
-</style>
+<!-- CSS moved to global file: dark-mode.css -->

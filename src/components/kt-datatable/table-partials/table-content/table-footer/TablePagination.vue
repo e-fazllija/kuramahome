@@ -1,60 +1,38 @@
 <template>
-  <div
-    class="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end"
-  >
+  <div class="pagination-container">
     <div class="dataTables_paginate paging_simple_numbers">
       <ul class="pagination">
+        <!-- Previous button -->
         <li
           class="paginate_button page-item"
           :class="{ disabled: isInFirstPage }"
-          :style="{ cursor: !isInFirstPage ? 'pointer' : 'auto' }"
         >
-          <a class="page-link" @click="onClickFirstPage">
-            <KTIcon icon-name="double-left" icon-class="fs-2" />
+          <a class="page-link" @click="onClickPreviousPage" :class="{ 'pe-none': isInFirstPage }">
+            <KTIcon icon-name="left" icon-class="fs-3" />
           </a>
         </li>
 
-        <li
-          class="paginate_button page-item"
-          :class="{ disabled: isInFirstPage }"
-          :style="{ cursor: !isInFirstPage ? 'pointer' : 'auto' }"
-        >
-          <a class="page-link" @click="onClickPreviousPage">
-            <KTIcon icon-name="left" icon-class="fs-2" />
-          </a>
-        </li>
-
+        <!-- Page numbers -->
         <li
           v-for="(page, i) in pages"
-          class="paginate_button page-item"
+          class="paginate_button page-item page-number"
           :class="{
             active: isPageActive(page.name),
           }"
-          :style="{ cursor: !page.isDisabled ? 'pointer' : 'auto' }"
           :key="i"
         >
-          <a class="page-link" @click="onClickPage(page.name)">
+          <a class="page-link" @click="onClickPage(page.name)" :class="{ 'pe-none': page.isDisabled }">
             {{ page.name }}
           </a>
         </li>
 
+        <!-- Next button -->
         <li
           class="paginate_button page-item"
           :class="{ disabled: isInLastPage }"
-          :style="{ cursor: !isInLastPage ? 'pointer' : 'auto' }"
         >
-          <a class="paginate_button page-link" @click="onClickNextPage">
-            <KTIcon icon-name="right" icon-class="fs-2" />
-          </a>
-        </li>
-
-        <li
-          class="paginate_button page-item"
-          :class="{ disabled: isInLastPage }"
-          :style="{ cursor: !isInLastPage ? 'pointer' : 'auto' }"
-        >
-          <a class="paginate_button page-link" @click="onClickLastPage">
-            <KTIcon icon-name="double-right" icon-class="fs-2" />
+          <a class="page-link" @click="onClickNextPage" :class="{ 'pe-none': isInLastPage }">
+            <KTIcon icon-name="right" icon-class="fs-3" />
           </a>
         </li>
       </ul>
@@ -74,7 +52,7 @@ export default defineComponent({
     maxVisibleButtons: {
       type: Number,
       required: false,
-      default: 5,
+      default: 3,
     },
     totalPages: {
       type: Number,
@@ -143,20 +121,20 @@ export default defineComponent({
       return props.currentPage === props.totalPages;
     });
 
-    const onClickFirstPage = () => {
-      emit("page-change", 1);
-    };
     const onClickPreviousPage = () => {
-      emit("page-change", props.currentPage - 1);
+      if (!isInFirstPage.value) {
+        emit("page-change", props.currentPage - 1);
+      }
     };
     const onClickPage = (page: number) => {
-      emit("page-change", page);
+      if (page !== props.currentPage) {
+        emit("page-change", page);
+      }
     };
     const onClickNextPage = () => {
-      emit("page-change", props.currentPage + 1);
-    };
-    const onClickLastPage = () => {
-      emit("page-change", props.totalPages);
+      if (!isInLastPage.value) {
+        emit("page-change", props.currentPage + 1);
+      }
     };
     const isPageActive = (page: number) => {
       return props.currentPage === page;
@@ -168,11 +146,9 @@ export default defineComponent({
       pages,
       isInFirstPage,
       isInLastPage,
-      onClickFirstPage,
       onClickPreviousPage,
       onClickPage,
       onClickNextPage,
-      onClickLastPage,
       isPageActive,
       getAssetPath,
     };
@@ -180,8 +156,36 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-.pagination .page-item .page-link i {
-  font-size: 1.5rem;
+<style scoped>
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination {
+  margin: 0;
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+}
+
+.page-item {
+  margin: 0;
+}
+
+.pe-none {
+  pointer-events: none;
+  cursor: default !important;
+}
+
+/* Hide page numbers on very small screens, keep only prev/next */
+@media (max-width: 480px) {
+  .page-number {
+    display: none;
+  }
+  
+  .page-number.active {
+    display: list-item;
+  }
 }
 </style>

@@ -183,6 +183,80 @@ export default defineComponent({
             },
           },
         },
+        responsive: [
+          {
+            breakpoint: 768,
+            options: {
+              chart: {
+                height: 350,
+              },
+              legend: {
+                position: "bottom",
+                horizontalAlign: "center",
+                fontSize: "11px",
+                itemMargin: {
+                  horizontal: 5,
+                  vertical: 4,
+                },
+              },
+              plotOptions: {
+                pie: {
+                  donut: {
+                    size: "65%",
+                    labels: {
+                      show: true,
+                      name: {
+                        fontSize: "14px",
+                      },
+                      value: {
+                        fontSize: "18px",
+                      },
+                      total: {
+                        fontSize: "12px",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            breakpoint: 480,
+            options: {
+              chart: {
+                height: 320,
+              },
+              legend: {
+                position: "bottom",
+                horizontalAlign: "center",
+                fontSize: "10px",
+                itemMargin: {
+                  horizontal: 4,
+                  vertical: 3,
+                },
+              },
+              plotOptions: {
+                pie: {
+                  donut: {
+                    size: "60%",
+                    labels: {
+                      show: true,
+                      name: {
+                        fontSize: "12px",
+                      },
+                      value: {
+                        fontSize: "16px",
+                      },
+                      total: {
+                        fontSize: "11px",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
       };
     };
     
@@ -212,24 +286,4 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
-/* Dark mode styles */
-[data-bs-theme="dark"] .card {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .card-header {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .card-body {
-  background-color: #1e1e2d;
-}
-
-[data-bs-theme="dark"] .card-title,
-[data-bs-theme="dark"] .card-label {
-  color: #f5f8fa;
-}
-</style>
+<!-- CSS moved to global file: dark-mode.css -->

@@ -15,7 +15,7 @@
             </span>
           </div>
           <div>
-            <h3 class="fw-bold m-0 text-gray-900 fs-3">🏠 Aggiorna Immobile</h3>
+            <h3 class="fw-bold m-0 text-gray-900 fs-3">Aggiorna Immobile</h3>
             <span class="text-muted fs-7 fw-semibold">Modifica i dati dell'immobile</span>
           </div>
         </div>
@@ -75,7 +75,7 @@
             <div class="d-flex flex-column fv-row">
               <!--begin::Input-->
               <select class="form-select modern-select" v-model="formData.AgentId" required>
-                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.Name }} {{ user.LastName }}</option>
+                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.Name }} {{ user.LastName }}</option>
               </select>
               <!--end::Input-->
             </div>
@@ -112,15 +112,15 @@
           <div class="col-lg-8 fv-row">
             <select as="select" name="Category" class="form-select modern-select"
               v-model="formData.Category" required>
-              <option value>🏠 Seleziona una Categoria...</option>
-              <option value="Residenziale">🏠 Residenziale</option>
-              <option value="Capannone">🏭 Capannone</option>
-              <option value="Negozi-Locale Commerciale">🏬 Negozi/Locale Commerciale</option>
-              <option value="Magazzino">📦 Magazzino</option>
-              <option value="Garage">🚗 Garage</option>
-              <option value="Ufficio">🏢 Ufficio</option>
-              <option value="Terreno">🌾 Terreno</option>
-              <option value="Rustico / Casale">🏚️ Rustico / Casale</option>
+              <option value>Seleziona una Categoria...</option>
+              <option value="Residenziale">Residenziale</option>
+              <option value="Capannone">Capannone</option>
+              <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
+              <option value="Magazzino">Magazzino</option>
+              <option value="Garage">Garage</option>
+              <option value="Ufficio">Ufficio</option>
+              <option value="Terreno">Terreno</option>
+              <option value="Rustico / Casale">Rustico / Casale</option>
             </select>
           </div>
           <!--end::Col-->
@@ -241,7 +241,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Superficie commerciale (m²)</label>
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Superficie commerciale (mÂ²)</label>
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
@@ -1507,248 +1507,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-/* Stili per select moderni */
-.modern-select {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.modern-select:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.modern-select:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-/* Stili per input moderni */
-.modern-input {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.modern-input:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.modern-input:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.modern-input::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-/* Stili per textarea moderna */
-.modern-textarea {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.modern-textarea:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.modern-textarea:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.modern-textarea::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-/* Multiselect moderno */
-.multiselect-modern {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
-}
-
-/* Stili per labels */
-label {
-  transition: all 0.3s ease;
-}
-
-label:hover {
-  color: #3699ff !important;
-}
-
-/* Icone */
-.ki-duotone {
-  transition: all 0.3s ease;
-}
-
-/* Form controls */
-.form-check-input:checked {
-  background-color: #3699ff;
-  border-color: #3699ff;
-}
-
-.form-check-input:focus {
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
-}
-
-/* Bottoni Modal Moderni */
-.btn-modal-danger,
-.btn-modal-primary {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.75rem;
-  border-radius: 0.75rem;
-  font-weight: 700;
-  font-size: 0.95rem;
-  border: none;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.3px;
-}
-
-.btn-modal-danger::before,
-.btn-modal-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-modal-danger:hover::before,
-.btn-modal-primary:hover::before {
-  left: 100%;
-}
-
-.btn-modal-danger .btn-icon,
-.btn-modal-primary .btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-.btn-modal-danger .btn-label,
-.btn-modal-primary .btn-label {
-  font-weight: 700;
-  letter-spacing: 0.3px;
-}
-
-/* Bottone Elimina */
-.btn-modal-danger {
-  background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.35);
-}
-
-.btn-modal-danger:hover {
-  background: linear-gradient(135deg, #d63447 0%, #b92838 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(246, 78, 96, 0.5);
-  color: #ffffff;
-}
-
-.btn-modal-danger:hover .btn-icon {
-  transform: scale(1.15) rotate(-5deg);
-  animation: shake 0.5s ease;
-}
-
-.btn-modal-danger:active {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(246, 78, 96, 0.35);
-}
-
-/* Bottone Primario */
-.btn-modal-primary {
-  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.35);
-}
-
-.btn-modal-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.45);
-  color: #ffffff;
-}
-
-.btn-modal-primary:hover:not(:disabled) .btn-icon {
-  transform: scale(1.15) rotate(5deg);
-}
-
-.btn-modal-primary:active:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(54, 153, 255, 0.35);
-}
-
-.btn-modal-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* Animazione shake */
-@keyframes shake {
-  0%, 100% { transform: rotate(0deg) scale(1.15); }
-  25% { transform: rotate(-5deg) scale(1.15); }
-  75% { transform: rotate(5deg) scale(1.15); }
-}
-
-/* Spinner loading */
-.btn-modal-primary .spinner-border-sm,
-.btn-modal-danger .spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.15rem;
-}
-</style>

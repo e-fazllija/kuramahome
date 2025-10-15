@@ -1,17 +1,15 @@
 <template>
-  <!--begin::Wrapper-->
-  <div class="w-lg-500px p-10">
-    <!--begin::Form-->
-    <VForm
-      class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework"
-      @submit="onSubmitForgotPassword"
-      id="kt_login_password_reset_form"
-      :validation-schema="forgotPassword"
-    >
+  <!--begin::Form-->
+  <VForm
+    class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework"
+    @submit="onSubmitForgotPassword"
+    id="kt_login_password_reset_form"
+    :validation-schema="forgotPassword"
+  >
       <!--begin::Heading-->
       <div class="text-center mb-10">
         <!--begin::Title-->
-        <h1 class="text-dark mb-3">Password Dimenticata?</h1>
+        <h1 class="text-gray-800 mb-3">Password Dimenticata?</h1>
         <!--end::Title-->
 
         <!--begin::Link-->
@@ -24,7 +22,7 @@
 
       <!--begin::Input group-->
       <div class="fv-row mb-10">
-        <label class="form-label fw-bold text-gray-900 fs-6">Email</label>
+        <label class="form-label fw-bold text-gray-800 fs-6">Email</label>
         <Field
           class="form-control form-control-solid"
           type="email"
@@ -64,8 +62,6 @@
       <!--end::Actions-->
     </VForm>
     <!--end::Form-->
-  </div>
-  <!--end::Wrapper-->
 </template>
 
 <script lang="ts">

@@ -1,0 +1,116 @@
+/* ========================================
+   FORM CONTROLS STYLES
+   Stili per checkbox, labels e controlli form
+   ======================================== */
+
+/* Checkbox & Switch Styles */
+.form-check-input {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: #3699ff;
+  border-color: #3699ff;
+}
+
+.form-check-input:focus {
+  border-color: #3699ff;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+}
+
+.form-check-input:hover:not(:disabled) {
+  border-color: #3699ff;
+}
+
+.form-check-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-check-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Labels */
+label {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+label:hover {
+  color: #3699ff !important;
+}
+
+label .required {
+  color: #f64e60;
+}
+
+/* Icons in Labels */
+.ki-duotone {
+  transition: all 0.3s ease;
+}
+
+label:hover .ki-duotone {
+  transform: scale(1.1);
+}
+
+/* Collapsible Sections */
+.collapsible {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.collapsible:hover {
+  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%) !important;
+  border-color: #3699ff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
+}
+
+.collapsible:hover .ki-duotone {
+  transform: scale(1.1);
+}
+
+/* Form Validation */
+.is-invalid {
+  border-color: #f64e60 !important;
+}
+
+.is-valid {
+  border-color: #0bb7af !important;
+}
+
+.invalid-feedback {
+  color: #f64e60;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.valid-feedback {
+  color: #0bb7af;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Dark Mode Support */
+[data-bs-theme="dark"] .form-check-input:checked {
+  background-color: #3699ff;
+  border-color: #3699ff;
+}
+
+[data-bs-theme="dark"] .form-check-input {
+  background-color: #1e1e2d;
+  border-color: #2d2d3f;
+}
+
+[data-bs-theme="dark"] .form-check-label {
+  color: #f5f8fa;
+}
+
+[data-bs-theme="dark"] .collapsible:hover {
+  background: linear-gradient(135deg, #25293c 0%, #2d2d3f 100%) !important;
+  border-color: #3699ff !important;
+}
+

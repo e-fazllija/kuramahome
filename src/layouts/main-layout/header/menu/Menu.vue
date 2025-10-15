@@ -15,7 +15,7 @@
   >
     <!--begin::Menu-->
     <div
-      class="menu menu-rounded menu-column menu-lg-row my-5 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0 justify-content-start"
+      class="menu menu-rounded menu-column menu-lg-row my-5 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0"
       id="kt_app_header_menu"
       data-kt-menu="true"
     >
@@ -85,91 +85,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Header Menu Styling */
+/* CSS moved to global file: layout.css */
+
+/* Only menu-item specific styling */
 .menu-item {
   position: relative;
-}
-
-.menu-link {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-radius: 0.475rem;
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: var(--bs-gray-700);
-  transition: all 0.2s ease;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.menu-link:hover {
-  background-color: var(--bs-gray-100);
-  color: var(--bs-primary);
-}
-
-.menu-link.active {
-  background-color: var(--bs-primary);
-  color: #fff;
-}
-
-.menu-link.active .menu-icon {
-  color: #fff;
-}
-
-.menu-icon {
-  margin-right: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--bs-gray-600);
-  transition: color 0.2s ease;
-}
-
-.menu-link:hover .menu-icon {
-  color: var(--bs-primary);
-}
-
-.menu-title {
-  font-weight: 500;
-}
-
-.menu-link.active .menu-title {
-  font-weight: 600;
-}
-
-/* Dark Mode */
-[data-bs-theme="dark"] .menu-link {
-  color: var(--bs-gray-300);
-}
-
-[data-bs-theme="dark"] .menu-link:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--bs-primary);
-}
-
-[data-bs-theme="dark"] .menu-link.active {
-  background-color: var(--bs-primary);
-  color: #fff;
-}
-
-[data-bs-theme="dark"] .menu-icon {
-  color: var(--bs-gray-400);
-}
-
-[data-bs-theme="dark"] .menu-link:hover .menu-icon {
-  color: var(--bs-primary);
-}
-
-/* Responsive */
-@media (max-width: 991px) {
-  .menu-link {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-  }
-  
-  .menu-icon {
-    margin-right: 0.375rem;
-  }
 }
 </style>

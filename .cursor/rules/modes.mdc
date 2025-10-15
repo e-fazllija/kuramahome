@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+Il progetto ha la versione dark e light, pertanto ogni stile che verrà aggiunto deve tenere conto di questo. 
