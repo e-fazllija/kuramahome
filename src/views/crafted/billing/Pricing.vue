@@ -341,6 +341,9 @@ import { createPaymentIntent } from '@/core/data/billing';
 import { useAuthStore } from '@/stores/auth';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
+// Importa gli stili della pagina pricing
+import '@/assets/css/pricing.css';
+
 export default defineComponent({
   name: 'pricing-page',
   setup() {
@@ -392,18 +395,19 @@ export default defineComponent({
 
     const initializeStripe = async () => {
       try {
-        // TODO: Sostituisci con la tua Publishable Key di Stripe
-        const publishableKey = 'pk_test_XUIpXpyaGuuw0Dc9Ng80xFWs';
+        // Publishable Key di Stripe (sostituisci con la tua chiave)
+        // In produzione, considera di usare una variabile d'ambiente
+        const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51QKcFhRqGJAUKRpKJFVUUcNqjdJbgkX8RhqxrZR3ioKEjfTqBxkQ4AqfQ5aMq9dW6mAH5vUH0bjqCn5s6NJmRN7a00GJfLQlcA';
+        
         stripe = await loadStripe(publishableKey);
 
         if (!stripe) {
           console.error('Stripe failed to load');
+          showMessage('Errore nel caricamento di Stripe. Riprova più tardi.');
           return;
         }
 
-        // TODO: Chiama il tuo backend per creare un PaymentIntent
-        console.log("stripe",stripe)
-        // e ottenere il clientSecret
+        // Chiama il backend per creare un PaymentIntent
         const clientSecret = await fetchClientSecret();
         const appearance = {
           theme: 'stripe' as const,
@@ -442,11 +446,16 @@ export default defineComponent({
           email: userEmail.value // Invia l'email dell'utente verificato
         });
         
+        if (!paymentIntent || !paymentIntent.clientSecret) {
+          throw new Error('Risposta non valida dal server');
+        }
+        
         return paymentIntent.clientSecret;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching client secret:', error);
-        // Fallback per sviluppo - rimuovi in produzione
-        throw new Error('Impossibile creare il pagamento. Controlla la configurazione del backend.');
+        const errorMessage = error?.response?.data?.message || error?.message || 'Impossibile creare il pagamento';
+        showMessage(`Errore: ${errorMessage}`);
+        throw new Error(errorMessage);
       }
     };
 
@@ -507,9 +516,8 @@ export default defineComponent({
       }
 
       userEmail.value = email;
-      isVerifying.value = true;
-      isVerified.value = true; //togliere questa riga in produzione
-      isVerifying.value = false;//togliere questa riga in produzione
+      isVerifying.value = false;
+      isVerified.value = true;
       // try {
       //   await store.verifyCredentials(email, token);
       //   const error = store.errors;

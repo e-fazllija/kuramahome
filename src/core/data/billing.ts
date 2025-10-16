@@ -6,11 +6,14 @@ export interface PaymentIntent {
 }
 
 export interface SubscriptionPlan {
-  id: string;
-  name: string;
-  price: number;
-  currency: string;
-  interval: 'month' | 'year';
+  Id: number;
+  Name: string;
+  Description?: string;
+  Price: number;
+  BillingPeriod: string;
+  MaxUsers?: number;
+  MaxProperties?: number;
+  Active: boolean;
 }
 
 export interface CreatePaymentIntentRequest {
@@ -21,11 +24,15 @@ export interface CreatePaymentIntentRequest {
 }
 
 export interface SubscriptionStatus {
-  id: string;
-  status: string;
-  currentPeriodEnd: Date;
-  plan: string;
-  cancelAtPeriodEnd: boolean;
+  Id: number;
+  UserId: string;
+  SubscriptionPlanId: number;
+  Status: string;
+  StartDate: Date;
+  EndDate?: Date;
+  AutoRenew: boolean;
+  StripeSubscriptionId?: string;
+  StripeCustomerId?: string;
 }
 
 /**
@@ -61,14 +68,11 @@ export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
 
 /**
  * Recupera lo stato dell'abbonamento corrente dell'utente
- * @param userId ID dell'utente
- * @returns Stato dell'abbonamento
+ * @returns Stato dell'abbonamento (usa il token JWT per identificare l'utente)
  */
-export const getSubscriptionStatus = async (
-  userId: string
-): Promise<SubscriptionStatus> => {
+export const getSubscriptionStatus = async (): Promise<SubscriptionStatus> => {
   try {
-    const response = await ApiService.get(`/billing/subscription/${userId}`, "json");
+    const response = await ApiService.get("/billing/subscription-status", "json");
     return response.data;
   } catch (error) {
     console.error("Error fetching subscription status:", error);
@@ -77,15 +81,12 @@ export const getSubscriptionStatus = async (
 };
 
 /**
- * Annulla un abbonamento
- * @param subscriptionId ID dell'abbonamento da annullare
- * @returns Stato aggiornato dell'abbonamento
+ * Annulla l'abbonamento corrente dell'utente
+ * @returns Messaggio di conferma
  */
-export const cancelSubscription = async (
-  subscriptionId: string
-): Promise<SubscriptionStatus> => {
+export const cancelSubscription = async (): Promise<string> => {
   try {
-    const response = await ApiService.post(`/billing/subscription/${subscriptionId}/cancel`, {});
+    const response = await ApiService.post("/billing/cancel-subscription", {});
     return response.data;
   } catch (error) {
     console.error("Error cancelling subscription:", error);
