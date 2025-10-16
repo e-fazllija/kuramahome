@@ -1,8 +1,8 @@
 import ApiService from "@/core/services/ApiService";
 
 export interface PaymentIntent {
-  clientSecret: string;
-  paymentIntentId: string;
+  ClientSecret: string;
+  PaymentIntentId: string;
 }
 
 export interface SubscriptionPlan {

@@ -476,19 +476,22 @@ export default defineComponent({
       // Activate indicator
       submitButton.value?.setAttribute("data-kt-indicator", "on");
 
-      // Prepare data for API
+      // Prepare data for API - mappato ai campi del backend
       const userData = {
-        name: formData.name,
+        FirstName: formData.name,           // Backend si aspetta FirstName
         LastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
+        Email: formData.email,              // Backend si aspetta Email con maiuscola
+        PhoneNumber: formData.phone,        // Backend si aspetta PhoneNumber
+        Password: formData.password,        // Backend si aspetta Password con maiuscola
+        Role: "Agency",                     // Campo obbligatorio - default Agency
+        Address: formData.address || "",    // Required nel backend
+        City: formData.city || "",          // Required nel backend
+        MobilePhone: formData.phone,        // Campo opzionale
+        UserName: formData.lastName + formData.name,  // Costruito qui per evitare problemi
+        // Campi opzionali/extra
         birthDate: formData.birthDate,
-        address: formData.address,
-        city: formData.city,
         zipCode: formData.zipCode,
         bio: formData.bio,
-        password: formData.password,
-        password_confirmation: formData.password_confirmation,
       };
 
       // Send registration request
@@ -497,27 +500,42 @@ export default defineComponent({
       const error = store.errors;
 
       if (!error) {
+        // Log per modalità test
+        console.log('========================================');
+        console.log('MODALITÀ TEST ATTIVA');
+        console.log('Controlla la console del BACKEND per il link di conferma!');
+        console.log('Email registrata:', formData.email);
+        console.log('========================================');
+
         Swal.fire({
           title: "Registrazione Completata!",
           html: `
             <p class="mb-3">Il tuo account è stato creato con successo.</p>
-            <p class="text-muted">
-              Ti abbiamo inviato un'email di conferma all'indirizzo:<br>
-              <strong>${formData.email}</strong>
-            </p>
-            <p class="text-muted mt-3">
-              Controlla la tua casella di posta e clicca sul link di conferma per attivare il tuo account.
+            <div class="alert alert-warning d-flex align-items-center mt-4 mb-4" role="alert" style="background-color: #fff4de; border: 1px solid #ffa800;">
+              <i class="ki-duotone ki-information-5 fs-2x text-warning me-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+              <div class="text-start">
+                <strong>MODALITÀ TEST</strong><br>
+                <span style="font-size: 0.9em;">Controlla la <strong>console del backend</strong> per il link di conferma email.</span>
+              </div>
+            </div>
+            <p class="text-muted" style="font-size: 0.9em;">
+              Email: <strong>${formData.email}</strong>
             </p>
           `,
           icon: "success",
           buttonsStyling: false,
-          confirmButtonText: "Vai al Login",
+          confirmButtonText: "OK, Ho Capito",
           heightAuto: false,
           customClass: {
             confirmButton: "btn fw-semobold btn-primary",
           },
         }).then(function () {
-          router.push({ name: "sign-in" });
+          // Non reindirizzare automaticamente, l'utente deve usare il link dalla console
+          // router.push({ name: "sign-in" });
         });
       } else {
         Swal.fire({

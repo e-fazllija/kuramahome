@@ -71,7 +71,8 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function register(credentials: User) {
-    credentials.Username = credentials.LastName + credentials.Name;
+    // Username è già costruito nel componente SignUp
+    // credentials.Username = credentials.LastName + credentials.Name;
     return await ApiService.post("auth/register", credentials)
       .then(({ data }) => {
         // setAuth(data);

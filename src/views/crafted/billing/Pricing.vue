@@ -395,9 +395,9 @@ export default defineComponent({
 
     const initializeStripe = async () => {
       try {
-        // Publishable Key di Stripe (sostituisci con la tua chiave)
+        // Publishable Key di Stripe (deve corrispondere alla secret key nel backend)
         // In produzione, considera di usare una variabile d'ambiente
-        const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51QKcFhRqGJAUKRpKJFVUUcNqjdJbgkX8RhqxrZR3ioKEjfTqBxkQ4AqfQ5aMq9dW6mAH5vUH0bjqCn5s6NJmRN7a00GJfLQlcA';
+        const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51SHzsSAgB3yYA7UTCqLukEvta52GEgLfLrtBk0b2EpSOaGfSvJq3Fxt0s92TvNOBuzZV6UamEf6oEOOsvploebJW00BXjVNBBL';
         
         stripe = await loadStripe(publishableKey);
 
@@ -409,6 +409,7 @@ export default defineComponent({
 
         // Chiama il backend per creare un PaymentIntent
         const clientSecret = await fetchClientSecret();
+        
         const appearance = {
           theme: 'stripe' as const,
           variables: {
@@ -446,11 +447,11 @@ export default defineComponent({
           email: userEmail.value // Invia l'email dell'utente verificato
         });
         
-        if (!paymentIntent || !paymentIntent.clientSecret) {
+        if (!paymentIntent || !paymentIntent.ClientSecret) {
           throw new Error('Risposta non valida dal server');
         }
         
-        return paymentIntent.clientSecret;
+        return paymentIntent.ClientSecret;
       } catch (error: any) {
         console.error('Error fetching client secret:', error);
         const errorMessage = error?.response?.data?.message || error?.message || 'Impossibile creare il pagamento';
