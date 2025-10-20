@@ -1,0 +1,62 @@
+---
+alwaysApply: true
+---
+Utilizzare la seguente palette colori per lo stile.
+
+
+  "modalita": {
+    "light": {
+      "sfondo_principale": {
+        "ruolo": "Sfondo Principale",
+        "nome": "Bianco Puro",
+        "hex": "#FFFFFF"
+      },
+      "testo_principale": {
+        "ruolo": "Testo Principale",
+        "nome": "Grigio Scuro (Antracite)",
+        "hex": "#333333"
+      },
+      "accento_principale": {
+        "ruolo": "Azione/CTA",
+        "nome": "Blu Professionale",
+        "hex": "#0077CC"
+      },
+      "sfondo_secondario": {
+        "ruolo": "Sfondo Secondario/Separatore",
+        "nome": "Grigio Chiaro",
+        "hex": "#F0F0F0"
+      },
+      "testo_secondario": {
+        "ruolo": "Testo/Icone Secondarie",
+        "nome": "Grigio Medio",
+        "hex": "#666666"
+      }
+    },
+    "dark": {
+      "sfondo_principale": {
+        "ruolo": "Sfondo Principale",
+        "nome": "Grigio Scuro Profondo",
+        "hex": "#1A1A1A"
+      },
+      "testo_principale": {
+        "ruolo": "Testo Principale",
+        "nome": "Bianco Tenue",
+        "hex": "#E0E0E0"
+      },
+      "accento_principale": {
+        "ruolo": "Azione/CTA (Stessa Coerenza)",
+        "nome": "Blu Professionale",
+        "hex": "#0077CC"
+      },
+      "sfondo_secondario": {
+        "ruolo": "Sfondo Secondario/Separatore",
+        "nome": "Grigio Medio Caldo",
+        "hex": "#2C2C2C"
+      },
+      "testo_secondario": {
+        "ruolo": "Testo/Icone Secondarie",
+        "nome": "Grigio Chiaro Freddo",
+        "hex": "#AAAAAA"
+      }
+    }
+  }
