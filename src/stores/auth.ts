@@ -22,6 +22,7 @@ export interface User {
   CreationDate?: Date;
   UpdateDate?: Date;
   AgencyId?: string;
+  CompanyName?: string;
   label?: string;
   Color?: "#ffffff"
 }

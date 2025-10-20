@@ -120,20 +120,41 @@
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    <span class="fs-7 fw-bold text-gray-900">{{ formatDate(subscription.startDate) }}</span>
+                    <span class="fs-7 fw-bold text-gray-900">{{ formatDate(subscription.StartDate) }}</span>
                   </div>
                 </div>
 
                 <!-- Data Scadenza -->
-                <div>
+                <div class="mb-5">
                   <label class="text-muted fs-8 fw-semibold mb-2 d-block">DATA SCADENZA</label>
                   <div class="d-flex align-items-center">
                     <i class="ki-duotone ki-calendar-tick fs-2 text-success me-2">
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    <span class="fs-7 fw-bold text-gray-900">{{ formatDate(subscription.endDate) }}</span>
+                    <span class="fs-7 fw-bold text-gray-900">{{ formatDate(subscription.EndDate) }}</span>
                   </div>
+                </div>
+
+                <div class="separator separator-dashed my-5"></div>
+
+                <!-- Pulsante Rinnova -->
+                <div class="text-center">
+                  <button 
+                    @click="renewSubscription" 
+                    class="btn w-100"
+                    :class="daysRemaining <= 7 ? 'btn-danger' : daysRemaining <= 15 ? 'btn-warning' : 'btn-primary'"
+                  >
+                    <i class="ki-duotone fs-2 me-2" :class="daysRemaining <= 7 ? 'ki-notification-on' : 'ki-arrows-circle'">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span v-if="daysRemaining <= 7" class="path3"></span>
+                    </i>
+                    {{ daysRemaining <= 7 ? 'Rinnova Ora!' : daysRemaining <= 15 ? 'Rinnova Presto' : 'Rinnova Abbonamento' }}
+                  </button>
+                  <p class="text-muted fs-9 mt-3 mb-0">
+                    Prolunga il tuo piano {{ subscription.SubscriptionPlan.Name }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -172,11 +193,11 @@
                       <div class="col-md-6 mb-4 mb-md-0">
                         <label class="form-label text-muted fs-8 fw-semibold mb-2">PIANO ATTUALE</label>
                         <div class="d-flex align-items-baseline">
-                          <span class="fs-2 fw-bolder text-primary me-2">{{ subscription.subscriptionPlan.name }}</span>
-                          <span class="fs-5 fw-bold text-gray-900">€{{ subscription.subscriptionPlan.price }}</span>
+                          <span class="fs-2 fw-bolder text-primary me-2">{{ subscription.SubscriptionPlan.Name }}</span>
+                          <span class="fs-5 fw-bold text-gray-900">€{{ subscription.SubscriptionPlan.Price }}</span>
                           <span class="text-muted fs-7 ms-1">/mese</span>
                         </div>
-                        <div class="text-muted fs-8 mt-1">{{ subscription.subscriptionPlan.description }}</div>
+                        <div class="text-muted fs-8 mt-1">{{ subscription.SubscriptionPlan.Description }}</div>
                       </div>
                       <div class="col-md-6">
                         <label class="form-label text-muted fs-8 fw-semibold mb-3">FUNZIONALITÀ INCLUSE</label>
@@ -295,11 +316,11 @@ export default defineComponent({
     const pricingMode = ref<'new' | 'upgrade'>('upgrade');
 
     const currentPlanName = computed(() => {
-      return subscription.value?.subscriptionPlan?.name?.toLowerCase() || '';
+      return subscription.value?.SubscriptionPlan?.Name?.toLowerCase() || '';
     });
 
     const statusBadgeClass = computed(() => {
-      const status = subscription.value?.status || '';
+      const status = subscription.value?.Status || '';
       switch (status.toLowerCase()) {
         case 'active':
           return 'badge-light-success';
@@ -313,7 +334,7 @@ export default defineComponent({
     });
 
     const statusText = computed(() => {
-      const status = subscription.value?.status || '';
+      const status = subscription.value?.Status || '';
       switch (status.toLowerCase()) {
         case 'active':
           return '✓ Attivo';
@@ -327,14 +348,15 @@ export default defineComponent({
     });
 
     const planFeatures = computed(() => {
-      if (!subscription.value?.subscriptionPlan?.features) return [];
+      if (!subscription.value?.SubscriptionPlan?.Features) return [];
       
-      // Parse features string (assuming it's JSON or comma-separated)
-      try {
-        return JSON.parse(subscription.value.subscriptionPlan.features);
-      } catch {
-        return subscription.value.subscriptionPlan.features.split(',').map(f => f.trim());
+      // Features è già un array di oggetti SubscriptionFeature dal backend
+      // Estraiamo solo i nomi delle feature
+      if (Array.isArray(subscription.value.SubscriptionPlan.Features)) {
+        return subscription.value.SubscriptionPlan.Features.map((f: any) => f.FeatureName || f.featureName);
       }
+      
+      return [];
     });
 
     const formatDate = (dateString: string): string => {
@@ -348,12 +370,12 @@ export default defineComponent({
     };
 
     const daysRemaining = computed(() => {
-      if (!subscription.value?.endDate) return 0;
+      if (!subscription.value?.EndDate) return 0;
       
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      const endDate = new Date(subscription.value.endDate);
+      const endDate = new Date(subscription.value.EndDate);
       endDate.setHours(0, 0, 0, 0);
       
       const diffTime = endDate.getTime() - today.getTime();
@@ -365,7 +387,7 @@ export default defineComponent({
     const daysRemainingClass = computed(() => {
       const days = daysRemaining.value;
       
-      if (days === 0 || subscription.value?.status?.toLowerCase() !== 'active') {
+      if (days === 0 || subscription.value?.Status?.toLowerCase() !== 'active') {
         return 'countdown-expired';
       } else if (days <= 7) {
         return 'countdown-warning';
@@ -380,6 +402,7 @@ export default defineComponent({
       isLoading.value = true;
       try {
         subscription.value = await getCurrentSubscription();
+        
         if (!subscription.value) {
           pricingMode.value = 'new';
         }
@@ -406,6 +429,13 @@ export default defineComponent({
 
     const closePricingModal = () => {
       showPricingModal.value = false;
+    };
+
+    const renewSubscription = () => {
+      // Apre la modale in modalità rinnovo
+      // La modale mostrerà il piano attuale per il rinnovo
+      pricingMode.value = 'upgrade';
+      showPricingModal.value = true;
     };
 
     const handleUpgradeSuccess = async () => {
@@ -446,6 +476,7 @@ export default defineComponent({
       daysRemainingClass,
       openPricingModal,
       closePricingModal,
+      renewSubscription,
       handleUpgradeSuccess,
     };
   },
@@ -600,6 +631,59 @@ export default defineComponent({
     opacity: 0.8;
     transform: scale(1.05);
   }
+}
+
+/* Pulsante Rinnova */
+.countdown-card .btn.w-100 {
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.countdown-card .btn-primary.w-100 {
+  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  box-shadow: 0 4px 15px rgba(54, 153, 255, 0.3);
+}
+
+.countdown-card .btn-primary.w-100:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(54, 153, 255, 0.4);
+}
+
+.countdown-card .btn-warning.w-100 {
+  background: linear-gradient(135deg, #ffc700 0%, #ffb800 100%);
+  box-shadow: 0 4px 15px rgba(255, 199, 0, 0.3);
+  color: #1e1e2d;
+}
+
+.countdown-card .btn-warning.w-100:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 199, 0, 0.4);
+  color: #1e1e2d;
+}
+
+.countdown-card .btn-danger.w-100 {
+  background: linear-gradient(135deg, #f1416c 0%, #e0315d 100%);
+  box-shadow: 0 4px 15px rgba(241, 65, 108, 0.3);
+  animation: pulse-button 2s ease-in-out infinite;
+}
+
+.countdown-card .btn-danger.w-100:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(241, 65, 108, 0.4);
+}
+
+@keyframes pulse-button {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(241, 65, 108, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 25px rgba(241, 65, 108, 0.6);
+  }
+}
+
+.fs-9 {
+  font-size: 0.75rem;
 }
 
 /* Dark Mode */

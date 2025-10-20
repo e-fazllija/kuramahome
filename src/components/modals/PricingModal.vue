@@ -45,213 +45,91 @@
               <p class="text-muted fs-5 fw-semibold">Benvenuto <span class="text-primary">{{ displayEmail }}</span>! Seleziona il piano che meglio si adatta alle tue esigenze</p>
             </div>
 
-            <!-- Pricing Cards -->
-            <div class="row g-5 mb-10" v-if="!selectedPlan">
-              <!-- Basic Plan -->
-              <div class="col-lg-4">
-                <div class="card pricing-card h-100 shadow-sm hover-elevate-up">
-                  <div class="card-body d-flex flex-column p-8">
-                    <div class="text-center mb-7">
-                      <div class="pricing-icon-wrapper mb-5">
-                        <i class="ki-duotone ki-rocket fs-3x text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                      </div>
-                      <h3 class="fw-bold text-gray-900 mb-2">Basic</h3>
-                      <div class="pricing-price mb-3">
-                        <span class="fs-2x fw-bolder text-gray-900">€19</span>
-                        <span class="fs-6 text-muted fw-semibold">/mese</span>
-                      </div>
-                      <p class="text-muted fs-7">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
-                    </div>
-                    
-                    <div class="flex-grow-1 mb-7">
-                      <div class="pricing-features">
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Fino a 10 immobili</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Supporto email</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Dashboard base</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Gestione clienti</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button 
-                      @click="selectPlan('basic')"
-                      class="btn btn-lg btn-light-primary w-100 pricing-btn"
-                    >
-                      <span class="fw-bold">Seleziona Basic</span>
-                    </button>
-                  </div>
-                </div>
+            <!-- Loading State -->
+            <div v-if="isLoadingPlans" class="text-center py-20">
+              <div class="spinner-border text-primary mb-5" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Caricamento piani...</span>
               </div>
+              <h3 class="fw-bold text-gray-900 mb-2">Caricamento piani di abbonamento...</h3>
+            </div>
 
-              <!-- Pro Plan -->
-              <div class="col-lg-4">
-                <div class="card pricing-card pricing-card-featured h-100 shadow-lg hover-elevate-up">
-                  <div class="pricing-badge">
+            <!-- Pricing Cards -->
+            <div v-else-if="!selectedPlan" class="row g-5 mb-10">
+              <!-- Dynamic Plan Cards -->
+              <div v-for="(plan, index) in plans" :key="plan.Id" class="col-lg-4">
+                <div class="card pricing-card h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
+                  <!-- Badge "Consigliato" solo per il secondo piano -->
+                  <div v-if="index === 1" class="pricing-badge">
                     <span class="badge badge-primary">Consigliato</span>
                   </div>
+                  
                   <div class="card-body d-flex flex-column p-8">
                     <div class="text-center mb-7">
                       <div class="pricing-icon-wrapper mb-5">
-                        <i class="ki-duotone ki-crown fs-3x text-primary">
+                        <!-- Icone dinamiche basate sull'indice -->
+                        <i v-if="index === 0" class="ki-duotone ki-rocket fs-3x text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <i v-else-if="index === 1" class="ki-duotone ki-crown fs-3x text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <i v-else class="ki-duotone ki-shield-tick fs-3x text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
-                      <h3 class="fw-bold text-gray-900 mb-2">Pro</h3>
+                      <h3 class="fw-bold text-gray-900 mb-2">{{ plan.Name }}</h3>
                       <div class="pricing-price mb-3">
-                        <span class="fs-2x fw-bolder text-gray-900">€49</span>
-                        <span class="fs-6 text-muted fw-semibold">/mese</span>
+                        <span class="fs-2x fw-bolder text-gray-900">€{{ plan.Price }}</span>
+                        <span class="fs-6 text-muted fw-semibold">/{{ plan.BillingPeriod === 'monthly' ? 'mese' : 'anno' }}</span>
                       </div>
-                      <p class="text-muted fs-7">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
+                      <p class="text-muted fs-7 mb-0" style="min-height: 60px; line-height: 1.5;">
+                        {{ plan.Description ? plan.Description.substring(0, 100) + (plan.Description.length > 100 ? '...' : '') : 'Piano di abbonamento' }}
+                      </p>
                     </div>
                     
                     <div class="flex-grow-1 mb-7">
                       <div class="pricing-features">
-                        <div class="pricing-feature mb-4">
+                        <!-- Features dinamiche dal database -->
+                        <div v-for="feature in plan.Features" :key="feature.Id" class="pricing-feature mb-4">
                           <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold text-gray-700">Immobili illimitati</span>
+                          <span class="fw-semibold text-gray-700">{{ feature.FeatureName }}</span>
                         </div>
-                        <div class="pricing-feature mb-4">
+                        
+                        <!-- Info aggiuntive se presenti -->
+                        <div v-if="plan.MaxProperties" class="pricing-feature mb-4">
                           <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold text-gray-700">Supporto prioritario</span>
+                          <span class="fw-semibold text-gray-700">
+                            {{ plan.MaxProperties === -1 ? 'Immobili illimitati' : `Fino a ${plan.MaxProperties} immobili` }}
+                          </span>
                         </div>
-                        <div class="pricing-feature mb-4">
+                        
+                        <div v-if="plan.MaxUsers" class="pricing-feature mb-4">
                           <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold text-gray-700">Dashboard avanzata</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Report personalizzati</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">API access</span>
+                          <span class="fw-semibold text-gray-700">
+                            {{ plan.MaxUsers === -1 ? 'Utenti illimitati' : `Fino a ${plan.MaxUsers} utenti` }}
+                          </span>
                         </div>
                       </div>
                     </div>
 
                     <button 
-                      @click="selectPlan('pro')"
-                      class="btn btn-lg btn-primary w-100 pricing-btn"
+                      @click="selectPlan(plan.Name.toLowerCase())"
+                      class="btn btn-lg w-100 pricing-btn"
+                      :class="index === 1 ? 'btn-primary' : 'btn-light-primary'"
                     >
-                      <span class="fw-bold">Seleziona Pro</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Premium Plan -->
-              <div class="col-lg-4">
-                <div class="card pricing-card h-100 shadow-sm hover-elevate-up">
-                  <div class="card-body d-flex flex-column p-8">
-                    <div class="text-center mb-7">
-                      <div class="pricing-icon-wrapper mb-5">
-                        <i class="ki-duotone ki-shield-tick fs-3x text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                      </div>
-                      <h3 class="fw-bold text-gray-900 mb-2">Premium</h3>
-                      <div class="pricing-price mb-3">
-                        <span class="fs-2x fw-bolder text-gray-900">€99</span>
-                        <span class="fs-6 text-muted fw-semibold">/mese</span>
-                      </div>
-                      <p class="text-muted fs-7">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
-                    </div>
-                    
-                    <div class="flex-grow-1 mb-7">
-                      <div class="pricing-features">
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Tutto di Pro</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Supporto 24/7</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Account manager dedicato</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">White label</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Personalizzazione completa</span>
-                        </div>
-                        <div class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold text-gray-700">Training personalizzato</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button 
-                      @click="selectPlan('premium')"
-                      class="btn btn-lg btn-light-primary w-100 pricing-btn"
-                    >
-                      <span class="fw-bold">Seleziona Premium</span>
+                      <span class="fw-bold">Seleziona {{ plan.Name }}</span>
                     </button>
                   </div>
                 </div>
@@ -352,10 +230,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed } from 'vue';
+import { defineComponent, ref, watch, computed, onMounted } from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe, StripeElements } from '@stripe/stripe-js';
 import { createPaymentIntent } from '@/core/data/billing';
+import { getActivePlans, type SubscriptionPlan } from '@/core/data/subscription-plans';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
 // Importa gli stili
@@ -398,16 +277,39 @@ export default defineComponent({
     const isProcessing = ref(false);
     const isVerifying = ref(false);
     const isVerified = ref(true); // Start as verified for modal usage
+    const isLoadingPlans = ref(true);
+    const plans = ref<SubscriptionPlan[]>([]);
     let stripe: Stripe | null = null;
     let elements: StripeElements | null = null;
 
-    const planPrices = {
-      basic: 19,
-      pro: 49,
-      premium: 99
+    const displayEmail = computed(() => props.email || 'utente');
+
+    // Carica i piani dal database
+    const loadPlans = async () => {
+      isLoadingPlans.value = true;
+      try {
+        const activePlans = await getActivePlans();
+        plans.value = activePlans;
+      } catch (error) {
+        console.error('Errore nel caricamento dei piani:', error);
+        Swal.fire({
+          text: "Errore nel caricamento dei piani di abbonamento. Riprova più tardi.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn fw-semobold btn-light-danger",
+          },
+        });
+      } finally {
+        isLoadingPlans.value = false;
+      }
     };
 
-    const displayEmail = computed(() => props.email || 'utente');
+    onMounted(() => {
+      loadPlans();
+    });
 
     const selectPlan = async (plan: string) => {
       selectedPlan.value = plan;
@@ -430,17 +332,22 @@ export default defineComponent({
       }
     };
 
-    const getPlanPrice = (plan: string): number => {
-      return planPrices[plan as keyof typeof planPrices] || 0;
+    const getPlanPrice = (planName: string): number => {
+      const plan = plans.value.find(p => p.Name.toLowerCase() === planName.toLowerCase());
+      return plan ? Number(plan.Price) : 0;
     };
 
-    const getPlanDescription = (plan: string): string => {
-      const descriptions = {
-        basic: 'Perfetto per iniziare',
-        pro: 'La scelta migliore per professionisti',
-        premium: 'Soluzioni aziendali complete'
-      };
-      return descriptions[plan as keyof typeof descriptions] || '';
+    const getPlanDescription = (planName: string): string => {
+      const plan = plans.value.find(p => p.Name.toLowerCase() === planName.toLowerCase());
+      return plan?.Description || '';
+    };
+
+    const getPlanById = (planId: number): SubscriptionPlan | undefined => {
+      return plans.value.find(p => p.Id === planId);
+    };
+
+    const getPlanByName = (planName: string): SubscriptionPlan | undefined => {
+      return plans.value.find(p => p.Name.toLowerCase() === planName.toLowerCase());
     };
 
     const initializeStripe = async () => {
@@ -516,15 +423,18 @@ export default defineComponent({
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/#/sign-in?payment=success&email=${encodeURIComponent(props.email)}`,
           receipt_email: props.email,
         },
+        redirect: 'if_required' // Evita il redirect automatico
       });
 
       if (error) {
         showMessage(error.message || 'Si è verificato un errore durante il pagamento.');
         isProcessing.value = false;
       } else {
+        // Pagamento completato con successo
+        // Il webhook gestirà la creazione dell'abbonamento
+        isProcessing.value = false;
         emit('success');
       }
     };
@@ -566,12 +476,16 @@ export default defineComponent({
       isProcessing,
       isVerifying,
       isVerified,
+      isLoadingPlans,
+      plans,
       displayEmail,
       selectPlan,
       cancelPayment,
       handleClose,
       getPlanPrice,
       getPlanDescription,
+      getPlanById,
+      getPlanByName,
       handleSubmit,
     };
   },

@@ -9,47 +9,65 @@ import ApiService from "@/core/services/ApiService";
  * Interface per l'abbonamento corrente dell'utente
  */
 export interface UserSubscription {
-  id: number;
-  userId: string;
-  subscriptionPlanId: number;
-  subscriptionPlan: {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    billingPeriod: string;
-    features: string;
+  Id: number;
+  UserId: string;
+  SubscriptionPlanId: number;
+  SubscriptionPlan: {
+    Id: number;
+    Name: string;
+    Description: string;
+    Price: number;
+    BillingPeriod: string;
+    Features: Array<{
+      Id: number;
+      FeatureName: string;
+      FeatureValue?: string;
+    }>;
   };
-  status: string;
-  startDate: string;
-  endDate: string;
-  autoRenew: boolean;
-  stripeSubscriptionId?: string;
-  lastPaymentId?: number;
-  createdAt: string;
-  updatedAt: string;
+  Status: string;
+  StartDate: string;
+  EndDate: string;
+  AutoRenew: boolean;
+  StripeSubscriptionId?: string;
+  LastPaymentId?: number;
+  CreationDate: string;
+  UpdateDate: string;
 }
 
 /**
  * Interface per la lista di piani disponibili
  */
 export interface SubscriptionPlan {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  billingPeriod: string;
-  features: string;
-  isActive: boolean;
+  Id: number;
+  Name: string;
+  Description: string;
+  Price: number;
+  BillingPeriod: string;
+  Features: Array<{
+    Id: number;
+    FeatureName: string;
+    FeatureValue?: string;
+  }>;
+  IsActive: boolean;
 }
 
 /**
  * Ottiene l'abbonamento attivo dell'utente corrente
- * GET /api/subscription/current
+ * GET /api/UserSubscription/user/{userId}/active
  */
 export const getCurrentSubscription = async (): Promise<UserSubscription | null> => {
   try {
-    const response = await ApiService.get("subscription/current");
+    // Recupera userId dall'auth store
+    const { useAuthStore } = await import('@/stores/auth');
+    const authStore = useAuthStore();
+    const userId = authStore.user?.Id;
+    
+    if (!userId) {
+      console.warn('UserId non disponibile');
+      return null;
+    }
+    
+    const response = await ApiService.get(`UserSubscription/user/${userId}/active`, "json");
     return response.data;
   } catch (error: any) {
     // Se non ha abbonamento attivo, ritorna null invece di lanciare errore
@@ -65,7 +83,7 @@ export const getCurrentSubscription = async (): Promise<UserSubscription | null>
  * GET /api/subscriptionplan
  */
 export const getAvailablePlans = async (): Promise<SubscriptionPlan[]> => {
-  const response = await ApiService.get("subscriptionplan");
+  const response = await ApiService.get("subscriptionplan", "json");
   return response.data;
 };
 
@@ -75,7 +93,7 @@ export const getAvailablePlans = async (): Promise<SubscriptionPlan[]> => {
  */
 export const getUserSubscription = async (userId: string): Promise<UserSubscription | null> => {
   try {
-    const response = await ApiService.get(`subscription/user/${userId}`);
+    const response = await ApiService.get(`subscription/user/${userId}`, "json");
     return response.data;
   } catch (error: any) {
     if (error?.response?.status === 404) {
