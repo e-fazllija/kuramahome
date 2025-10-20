@@ -135,6 +135,15 @@ const routes: Array<RouteRecordRaw> = [
           breadcrumbs: ["Calendario"],
         },
       },
+      {
+        path: "subscription/manage",
+        name: "manage-subscription",
+        component: () => import("@/views/crafted/subscription/ManageSubscription.vue"),
+        meta: {
+          pageTitle: "Gestisci Abbonamento",
+          breadcrumbs: ["Abbonamento"],
+        },
+      },
     ],
   },
   {

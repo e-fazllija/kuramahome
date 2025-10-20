@@ -58,14 +58,36 @@
     <!--begin::Menu item-->
     <div v-if="user.Id != undefined" class="menu-item px-5 my-1">
       <router-link :to="{ name: 'profile_details', params: { id: user.Id }}" class="menu-link px-5">
+        <i class="ki-duotone ki-setting-2 fs-5 me-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
         Impostazioni
       </router-link>
     </div>
     <!--end::Menu item-->
 
     <!--begin::Menu item-->
+    <div class="menu-item px-5 my-1">
+      <router-link :to="{ name: 'manage-subscription' }" class="menu-link px-5">
+        <i class="ki-duotone ki-credit-cart fs-5 me-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+        Gestisci Abbonamento
+      </router-link>
+    </div>
+    <!--end::Menu item-->
+
+    <!--begin::Menu item-->
     <div class="menu-item px-5">
-      <a @click="signOut()" class="menu-link px-5"> Sign Out </a>
+      <a @click="signOut()" class="menu-link px-5">
+        <i class="ki-duotone ki-exit-right fs-5 me-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+        Sign Out
+      </a>
     </div>
     <!--end::Menu item-->
   </div>
