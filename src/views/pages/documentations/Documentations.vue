@@ -20,25 +20,70 @@
         </div>
       </div>
       <div class="card-toolbar">
-        <label class="btn btn-sm btn-primary" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25); cursor: pointer;">
-          <i class="ki-duotone ki-file-up fs-3 me-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <span class="fw-bold">Carica Documenti</span>
-          <input 
-            type="file" 
-            multiple 
-            @change="handleFileUpload"
-            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"
-            style="display: none;"
-          />
-        </label>
+        <div class="d-flex gap-2">
+          <button 
+            @click="showCreateFolderModal = true" 
+            class="btn btn-sm btn-success"
+            style="background: linear-gradient(135deg, #1bc5bd 0%, #0bb783 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(27, 197, 189, 0.25);">
+            <i class="ki-duotone ki-folder-added fs-3 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Nuova Cartella</span>
+          </button>
+          <button 
+            @click="openFileUploadDialog" 
+            class="btn btn-sm btn-primary"
+            style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);">
+            <i class="ki-duotone ki-file-up fs-3 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Carica File</span>
+          </button>
+        </div>
       </div>
     </div>
     <!--end::Header-->
     
     <div class="card-body pt-0 pb-6">
+      <!-- Breadcrumb Navigation -->
+      <div class="breadcrumb-section" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb-custom">
+            <li class="breadcrumb-item-custom">
+              <a href="#" @click.prevent="navigateToFolder(null)" class="breadcrumb-link">
+                <i class="ki-duotone ki-home fs-4 me-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Home
+              </a>
+            </li>
+            <li 
+              v-for="(folder, index) in breadcrumbPath" 
+              :key="index"
+              class="breadcrumb-item-custom"
+              :class="{ 'active': index === breadcrumbPath.length - 1 }"
+            >
+              <i class="ki-duotone ki-right fs-5 breadcrumb-separator">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              <a 
+                v-if="index < breadcrumbPath.length - 1"
+                href="#" 
+                @click.prevent="navigateToFolder(folder.path)" 
+                class="breadcrumb-link"
+              >
+                {{ folder.name }}
+              </a>
+              <span v-else class="breadcrumb-active">{{ folder.name }}</span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      
       <!-- Barra di ricerca moderna con più respiro -->
       <div class="search-section" style="margin-top: 2rem; margin-bottom: 2.5rem;">
         <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -81,7 +126,7 @@
               </i>
               <div class="results-info">
                 <span class="results-number">{{ tableData.length }}</span>
-                <span class="results-label">Documenti</span>
+                <span class="results-label">Elementi</span>
               </div>
             </div>
           </div>
@@ -130,23 +175,79 @@
       
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
         :loading="loading" :enable-items-per-page-dropdown="true" :checkbox-enabled="true" checkbox-label="Id">
-        <template v-slot:FileName="{ row: documentations }">
-          <div class="d-flex align-items-center">
+        <template v-slot:DisplayName="{ row: documentations }">
+          <div 
+            class="d-flex align-items-center"
+            :style="documentations.IsFolder ? 'cursor: pointer;' : ''"
+            @dblclick="documentations.IsFolder ? navigateToFolder(getCurrentPath(documentations)) : null"
+          >
             <div class="symbol symbol-35px me-3">
-              <div class="symbol-label" style="background: linear-gradient(135deg, #8950fc 0%, #6610f2 100%);">
-                <i class="ki-duotone ki-file fs-3 text-white">
+              <div 
+                class="symbol-label" 
+                :style="documentations.IsFolder 
+                  ? 'background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);' 
+                  : documentations.IsPrivate 
+                    ? 'background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);'
+                    : 'background: linear-gradient(135deg, #8950fc 0%, #6610f2 100%);'"
+              >
+                <i 
+                  v-if="documentations.IsFolder"
+                  class="ki-duotone ki-folder fs-3 text-white"
+                >
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                <i 
+                  v-else-if="documentations.IsPrivate"
+                  class="ki-duotone ki-lock fs-3 text-white"
+                >
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
+                <i 
+                  v-else
+                  class="ki-duotone ki-file fs-3 text-white"
+                >
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </div>
             </div>
-            <span class="fw-semibold">{{ documentations.FileName.split("/")[1] }}</span>
+            <div class="d-flex flex-column">
+              <span class="fw-semibold">{{ documentations.DisplayName }}</span>
+              <span v-if="documentations.IsPrivate && !documentations.IsFolder" class="text-muted fs-8">
+                <i class="ki-duotone ki-lock fs-8 me-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
+                Privato
+              </span>
+            </div>
           </div>
         </template>
         <template v-slot:Actions="{ row: documentations }">
           <div class="d-flex gap-2 justify-content-center action-buttons">
-            <!-- Anteprima nel browser -->
+            <!-- Apri cartella -->
+            <button 
+              v-if="documentations.IsFolder"
+              @click="navigateToFolder(getCurrentPath(documentations))"
+              class="btn btn-action btn-action-info"
+              title="Apri cartella"
+            >
+              <span class="btn-icon">
+                <i class="ki-duotone ki-folder-open fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <span class="btn-label">Apri</span>
+            </button>
+            
+            <!-- Anteprima nel browser (solo per file) -->
             <a 
+              v-if="!documentations.IsFolder"
               class="btn btn-action btn-action-success" 
               :href="getBrowserPreviewUrl(documentations.FileName, documentations.FileUrl)"
               target="_blank"
@@ -161,7 +262,10 @@
               </span>
               <span class="btn-label">Anteprima</span>
             </a>
+            
+            <!-- Scarica (solo per file) -->
             <a 
+              v-if="!documentations.IsFolder"
               class="btn btn-action btn-action-info" 
               download 
               :href="documentations.FileUrl"
@@ -178,10 +282,12 @@
               </span>
               <span class="btn-label">Scarica</span>
             </a>
+            
+            <!-- Elimina -->
             <button 
               @click="deleteItem(documentations.Id)" 
               class="btn btn-action btn-action-danger"
-              title="Elimina documento"
+              :title="documentations.IsFolder ? 'Elimina cartella' : 'Elimina documento'"
             >
               <span class="btn-icon">
                 <i class="ki-duotone ki-trash fs-3">
@@ -205,13 +311,125 @@
       </Datatable>
     </div>
     </div>
+    
+    <!-- Modal Crea Cartella -->
+    <div v-if="showCreateFolderModal" class="modal-overlay" @click.self="showCreateFolderModal = false">
+      <div class="modal-dialog-custom">
+        <div class="modal-content-custom">
+          <div class="modal-header-custom">
+            <h3 class="modal-title">
+              <i class="ki-duotone ki-folder-added fs-2 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Crea Nuova Cartella
+            </h3>
+            <button @click="showCreateFolderModal = false" class="btn-close-custom">
+              <i class="ki-duotone ki-cross fs-1">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+          </div>
+          <div class="modal-body-custom">
+            <div class="form-group">
+              <label class="form-label">Nome Cartella</label>
+              <input 
+                v-model="newFolderName" 
+                type="text" 
+                class="form-control" 
+                placeholder="Inserisci il nome della cartella"
+                @keyup.enter="createNewFolder"
+              />
+            </div>
+          </div>
+          <div class="modal-footer-custom">
+            <button @click="showCreateFolderModal = false" class="btn btn-secondary">
+              Annulla
+            </button>
+            <button @click="createNewFolder" class="btn btn-primary" :disabled="!newFolderName">
+              <i class="ki-duotone ki-check fs-3 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Crea Cartella
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Upload File -->
+    <div v-if="showUploadModal" class="modal-overlay" @click.self="showUploadModal = false">
+      <div class="modal-dialog-custom">
+        <div class="modal-content-custom">
+          <div class="modal-header-custom">
+            <h3 class="modal-title">
+              <i class="ki-duotone ki-file-up fs-2 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Carica File
+            </h3>
+            <button @click="showUploadModal = false" class="btn-close-custom">
+              <i class="ki-duotone ki-cross fs-1">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+          </div>
+          <div class="modal-body-custom">
+            <div class="form-group mb-4">
+              <label class="form-label">Seleziona File</label>
+              <input 
+                type="file" 
+                ref="fileInputRef"
+                @change="handleFileSelect"
+                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.xls,.xlsx"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <div class="form-check form-switch">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  v-model="isPrivateFile"
+                  id="privateFileSwitch"
+                />
+                <label class="form-check-label" for="privateFileSwitch">
+                  <i class="ki-duotone ki-lock fs-3 me-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                  </i>
+                  File Privato (visibile solo a te)
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer-custom">
+            <button @click="showUploadModal = false" class="btn btn-secondary">
+              Annulla
+            </button>
+            <button @click="uploadSelectedFile" class="btn btn-primary" :disabled="!selectedFile">
+              <i class="ki-duotone ki-cloud-upload fs-3 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Carica File
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Documentation, getDocumentations, uploadFile, deleteDocumentation } from "@/core/data/documentations";
+import { Documentation, getDocumentations, uploadFile, deleteDocumentation, createFolder, CreateFolderRequest } from "@/core/data/documentations";
 import Swal from "sweetalert2";
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, computed } from "vue";
 import { MenuComponent } from "@/assets/ts/components";
 import arraySort from "array-sort";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
@@ -225,21 +443,26 @@ export default defineComponent({
   setup() {
     const store = useAuthStore();
     const selectedIds = ref<Array<number>>([]);
-    const fileInput = ref<HTMLInputElement | null>(null);
+    const fileInputRef = ref<HTMLInputElement | null>(null);
     let loading = ref<boolean>(true);
     const tableData = ref<Array<Documentation>>([]);
-    const initItems = ref([]);
-
-    const formData = ref<Documentation>({
-      File: null,
-      FileName: "",
-      FolderName: "Moduli",
-    });
+    const initItems = ref<Array<Documentation>>([]);
+    
+    // Navigazione
+    const currentPath = ref<string | null>(null);
+    const breadcrumbPath = ref<Array<{name: string, path: string | null}>>([]);
+    
+    // Modals
+    const showCreateFolderModal = ref<boolean>(false);
+    const showUploadModal = ref<boolean>(false);
+    const newFolderName = ref<string>("");
+    const selectedFile = ref<File | null>(null);
+    const isPrivateFile = ref<boolean>(false);
 
     const tableHeader = ref([
       {
-        columnName: "File",
-        columnLabel: "FileName",
+        columnName: "Nome",
+        columnLabel: "DisplayName",
         sortEnabled: true,
         columnWidth: 175,
       },
@@ -251,67 +474,132 @@ export default defineComponent({
       },
     ]);
 
-    const handleFileUpload = async (event: Event) => {
-      loading.value = true;
-      const input = event.target as HTMLInputElement;
-      if (input?.files) {
-        formData.value.File = input.files[0];
-        event = null;
-        await addFile();
-        loading.value = false;
+    // Helper: assicura che il path includa sempre l'agencyId
+    const ensureAgencyPath = (path: string | null): string | undefined => {
+      if (!path) return undefined;
+      
+      const agencyId = store.user?.AgencyId;
+      if (!agencyId) return path;
+      
+      // Se il path già inizia con agencyId, restituiscilo così com'è
+      const agencyPrefix = `${agencyId}/`;
+      if (path.startsWith(agencyPrefix)) {
+        return path;
       }
+      
+      // Altrimenti, aggiungi agencyId all'inizio
+      return `${agencyId}/${path}`;
     };
 
+    // Naviga a una cartella specifica
+    const navigateToFolder = async (path: string | null) => {
+      currentPath.value = path;
+      updateBreadcrumb(path);
+      await getItems();
+    };
+
+    // Aggiorna il breadcrumb in base al path corrente
+    const updateBreadcrumb = (path: string | null) => {
+      if (!path) {
+        breadcrumbPath.value = [];
+        return;
+      }
+
+      const agencyId = store.user?.AgencyId;
+      const parts = path.split('/').filter(p => p);
+      
+      // Rimuove l'agencyId dal breadcrumb se presente (primo elemento)
+      const startIndex = (agencyId && parts[0] === agencyId) ? 1 : 0;
+      const displayParts = parts.slice(startIndex);
+      
+      breadcrumbPath.value = displayParts.map((part, index) => {
+        // Costruisce il path completo con agencyId per la navigazione
+        const fullPathParts = parts.slice(0, startIndex + index + 1);
+        return {
+          name: decodeURIComponent(part),
+          path: fullPathParts.join('/')
+        };
+      });
+    };
+
+    // Ottiene il path completo di un documento/cartella con agencyId incluso
+    const getCurrentPath = (doc: Documentation): string => {
+      const agencyId = store.user?.AgencyId;
+      
+      // Se c'è un ParentPath, usalo e aggiungi DisplayName
+      if (doc.ParentPath) {
+        // Assicura che il ParentPath abbia l'agencyId
+        const fullParentPath = ensureAgencyPath(doc.ParentPath);
+        return fullParentPath ? `${fullParentPath}/${doc.DisplayName}` : `${agencyId}/${doc.DisplayName}`;
+      }
+      
+      // Se non c'è ParentPath, crea il path con agencyId/DisplayName
+      return agencyId ? `${agencyId}/${doc.DisplayName}` : doc.DisplayName || '';
+    };
+
+    // Carica i documenti dalla cartella corrente
     const getItems = async () => {
       try {
-        const result = await getDocumentations();
+        loading.value = true;
+        // Passa il path al backend (con agencyId se presente)
+        const result = await getDocumentations(currentPath.value || undefined);
         tableData.value = result || [];
-        initItems.value.splice(0, tableData.value.length, ...tableData.value);
+        initItems.value = [...tableData.value];
       } catch (error) {
         console.error('Error fetching documentations:', error);
         tableData.value = [];
         initItems.value = [];
+      } finally {
+        loading.value = false;
       }
     };
 
-    onMounted(async () => {
-      loading.value = true;
-      await getItems();
-      loading.value = false;
+    // Apre il dialog di upload
+    const openFileUploadDialog = () => {
+      selectedFile.value = null;
+      isPrivateFile.value = false;
+      showUploadModal.value = true;
+    };
 
-    });
+    // Gestisce la selezione del file
+    const handleFileSelect = (event: Event) => {
+      const input = event.target as HTMLInputElement;
+      if (input?.files && input.files.length > 0) {
+        selectedFile.value = input.files[0];
+      }
+    };
 
-    const addFile = async () => {
-      await uploadFile(formData.value);
-      Swal.fire({
-        text: "File caricati con successo!",
-        icon: "success",
-        confirmButtonText: "Continua!",
-      });
-      const error = store.errors;
+    // Upload del file selezionato
+    const uploadSelectedFile = async () => {
+      if (!selectedFile.value) return;
 
-      if (!error) {
+      try {
+        loading.value = true;
+        showUploadModal.value = false;
+
+        // Passa il path al backend (con agencyId se presente)
+        await uploadFile(selectedFile.value, currentPath.value || undefined, isPrivateFile.value);
+
         Swal.fire({
-          text: "Il modulo è stato inviato con successo!",
+          text: "File caricato con successo!",
           icon: "success",
+          confirmButtonText: "Ok",
           buttonsStyling: false,
-          confirmButtonText: "Continua!",
-          heightAuto: false,
           customClass: {
-            confirmButton: "btn fw-semobold btn-light-primary",
+            confirmButton: "btn fw-semibold btn-light-primary",
           },
-        }).then(async function () {
-          await getItems();
-          loading.value = false;
         });
-      } else {
+
+        await getItems();
+        selectedFile.value = null;
+        isPrivateFile.value = false;
+      } catch (error) {
         loading.value = false;
         Swal.fire({
-          text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+          text: "Errore durante l'upload del file",
           icon: "error",
-          buttonsStyling: false,
           confirmButtonText: "Ok",
-          heightAuto: false,
+          buttonsStyling: false,
           customClass: {
             confirmButton: "btn btn-primary",
           },
@@ -319,14 +607,67 @@ export default defineComponent({
       }
     };
 
-    const deleteFewItems = async () => {
-      loading.value = true;
-      selectedIds.value.forEach(async (item) => {
-        await deleteDocumentation(item)
-      });
-      selectedIds.value.length = 0;
+    // Crea una nuova cartella
+    const createNewFolder = async () => {
+      if (!newFolderName.value.trim()) return;
+
+      try {
+        loading.value = true;
+        showCreateFolderModal.value = false;
+
+        // Passa il path al backend (con agencyId se presente)
+        const request: CreateFolderRequest = {
+          FolderName: newFolderName.value.trim(),
+          ParentPath: currentPath.value || undefined
+        };
+
+        await createFolder(request);
+
+        Swal.fire({
+          text: "Cartella creata con successo!",
+          icon: "success",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn fw-semibold btn-light-primary",
+          },
+        });
+
+        await getItems();
+        newFolderName.value = "";
+      } catch (error) {
+        loading.value = false;
+        Swal.fire({
+          text: "Errore durante la creazione della cartella",
+          icon: "error",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
+    };
+
+    onMounted(async () => {
       await getItems();
-      loading.value = false;
+    });
+
+
+    const deleteFewItems = async () => {
+      try {
+        loading.value = true;
+        // Elimina tutti i documenti selezionati in parallelo
+        await Promise.all(
+          selectedIds.value.map(item => deleteDocumentation(item))
+        );
+        selectedIds.value.length = 0;
+        await getItems();
+      } catch (error) {
+        console.error('Error deleting items:', error);
+      } finally {
+        loading.value = false;
+      }
     };
 
     const search = ref<string>("");
@@ -396,38 +737,63 @@ export default defineComponent({
     };
 
     async function deleteItem(id: number) {
-      loading.value = true;
-      Swal.fire({
+      const result = await Swal.fire({
         text: "Confermare l'eliminazione?",
         icon: "warning",
+        showCancelButton: true,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
+        confirmButtonText: "Elimina",
+        cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary",
         },
-      }).then(async () => {
-        await deleteDocumentation(id)
-        await getItems();
-        loading.value = false;
-        MenuComponent.reinitialization();
       });
+
+      // Procedi con l'eliminazione solo se l'utente ha confermato
+      if (result.isConfirmed) {
+        try {
+          loading.value = true;
+          await deleteDocumentation(id);
+          await getItems();
+          MenuComponent.reinitialization();
+        } catch (error) {
+          console.error('Error deleting item:', error);
+        } finally {
+          loading.value = false;
+        }
+      }
     }
 
 
     return {
-      handleFileUpload,
-      fileInput,
-      addFile,
+      // Variabili
       loading,
       tableData,
       search,
-      searchItems,
       selectedIds,
+      tableHeader,
+      currentPath,
+      breadcrumbPath,
+      showCreateFolderModal,
+      showUploadModal,
+      newFolderName,
+      selectedFile,
+      isPrivateFile,
+      fileInputRef,
+      
+      // Funzioni
+      navigateToFolder,
+      getCurrentPath,
+      openFileUploadDialog,
+      handleFileSelect,
+      uploadSelectedFile,
+      createNewFolder,
+      searchItems,
       deleteFewItems,
       sort,
       onItemSelect,
-      tableHeader,
       deleteItem,
       clearAllFilters,
       getBrowserPreviewUrl
@@ -437,12 +803,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
+@import '@/assets/css/documentations.css';
 /* Sfondo univoco della pagina */
 .documentations-page-wrapper {
   background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
   min-height: 100vh;
   padding: 2rem 0;
   position: relative;
+}
+
+[data-bs-theme="dark"] .documentations-page-wrapper {
+  background: linear-gradient(135deg, #1a1a27 0%, #1e1e2d 100%);
 }
 
 .documentations-page-wrapper::before {
@@ -460,11 +831,22 @@ export default defineComponent({
   z-index: 0;
 }
 
+[data-bs-theme="dark"] .documentations-page-wrapper::before {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(54, 153, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(11, 183, 175, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(54, 153, 255, 0.03) 0%, transparent 50%);
+}
+
 .documentations-page-wrapper > .card {
   position: relative;
   z-index: 1;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
+}
+
+[data-bs-theme="dark"] .documentations-page-wrapper > .card {
+  background: rgba(30, 30, 45, 0.95);
 }
 
 /* Search Bar Moderna con icona interna */
@@ -494,15 +876,31 @@ export default defineComponent({
   transition: all 0.3s ease;
 }
 
+[data-bs-theme="dark"] .search-input {
+  background-color: #1e1e2d !important;
+  border: 1px solid #323248 !important;
+  color: #f5f8fa;
+}
+
 .search-input:focus {
   background-color: #ffffff !important;
   border-color: #3699ff !important;
   box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15);
 }
 
+[data-bs-theme="dark"] .search-input:focus {
+  background-color: #2b2b40 !important;
+  border-color: #3699ff !important;
+  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+}
+
 .search-input::placeholder {
   color: #a1a5b7;
   font-weight: 400;
+}
+
+[data-bs-theme="dark"] .search-input::placeholder {
+  color: #565674;
 }
 
 .btn-clear {
@@ -544,10 +942,20 @@ export default defineComponent({
   box-shadow: 0 2px 8px rgba(11, 183, 175, 0.15);
 }
 
+[data-bs-theme="dark"] .results-badge {
+  background: linear-gradient(135deg, #1e2129 0%, #2b2b40 100%);
+  border: 1px solid #0bb7af;
+  box-shadow: 0 2px 8px rgba(11, 183, 175, 0.25);
+}
+
 .results-badge:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(11, 183, 175, 0.25);
   border-color: #0aa39a;
+}
+
+[data-bs-theme="dark"] .results-badge:hover {
+  box-shadow: 0 6px 16px rgba(11, 183, 175, 0.35);
 }
 
 .results-info {
@@ -885,6 +1293,11 @@ tbody tr:hover .symbol-label {
 
 .bg-light-primary {
   background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%) !important;
+  border-color: #0bb7af !important;
+}
+
+[data-bs-theme="dark"] .bg-light-primary {
+  background: linear-gradient(135deg, #1e2129 0%, #2b2b40 100%) !important;
   border-color: #0bb7af !important;
 }
 

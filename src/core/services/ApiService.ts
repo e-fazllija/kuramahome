@@ -22,6 +22,20 @@ class ApiService {
     ApiService.vueInstance.axios.defaults.baseURL =
       //"https://thinkhomebe.azurewebsites.net/api/";
       "https://localhost:7267/api/";
+    
+    // Interceptor per aggiungere automaticamente il token a ogni richiesta
+    ApiService.vueInstance.axios.interceptors.request.use(
+      (config) => {
+        const token = JwtService.getToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
   }
 
   /**
@@ -30,7 +44,7 @@ class ApiService {
   public static setHeader(): void {
     ApiService.vueInstance.axios.defaults.headers.common[
       "Authorization"
-    ] = `Token ${JwtService.getToken()}`;
+    ] = `Bearer ${JwtService.getToken()}`;
     ApiService.vueInstance.axios.defaults.headers.common["Accept"] =
       "application/json";
   }
