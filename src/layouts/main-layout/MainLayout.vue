@@ -1,10 +1,6 @@
 <template>
   <!--begin::App-->
   <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-    <!--begin::Subscription Expiry Banner (Fixed Left)-->
-    <SubscriptionExpiryBanner />
-    <!--end::Subscription Expiry Banner-->
-    
     <!--begin::Page-->
     <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
       <KTHeader />
@@ -49,7 +45,6 @@ import KTContent from "@/layouts/main-layout/content/Content.vue";
 import KTToolbar from "@/layouts/main-layout/toolbar/Toolbar.vue";
 import KTFooter from "@/layouts/main-layout/footer/Footer.vue";
 import KTScrollTop from "@/layouts/main-layout/extras/ScrollTop.vue";
-import SubscriptionExpiryBanner from "@/views/crafted/subscription/SubscriptionExpiryBanner.vue";
 import { useRoute } from "vue-router";
 import { reinitializeComponents } from "@/core/plugins/keenthemes";
 import LayoutService from "@/core/services/LayoutService";
@@ -64,8 +59,7 @@ export default defineComponent({
     KTContent,
     KTToolbar,
     KTFooter,
-    KTScrollTop,
-    SubscriptionExpiryBanner
+    KTScrollTop
   },
   setup() {
     const route = useRoute();

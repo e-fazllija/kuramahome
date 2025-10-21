@@ -23,7 +23,7 @@ export default defineComponent({
     const bodyStore = useBodyStore();
     const authStore = useAuthStore();
 
-    onBeforeMount(async () => {
+    onMounted(async () => {
       /**
        * Overrides the layout config using saved data from localStorage
        * remove this to use static config (@/core/config/DefaultLayoutConfig.ts)
@@ -36,7 +36,8 @@ export default defineComponent({
       themeStore.setThemeMode(themeConfigValue.value);
 
       /**
-       * Verifies the authentication token on app load
+       * Verifica l'autenticazione solo all'avvio dell'app o al refresh
+       * Non viene chiamato ad ogni cambio di route
        */
       await authStore.verifyAuth();
     });

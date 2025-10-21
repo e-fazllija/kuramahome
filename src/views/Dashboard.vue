@@ -1,4 +1,6 @@
 <template>
+ 
+
   <div v-if="loading" class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
       <span class="sr-only">Loading...</span>
@@ -6,6 +8,9 @@
   </div>
 
   <div v-if="!subscriptionExpired">
+     <!--begin::Subscription Expiry Banner (Fixed Left)-->
+  <SubscriptionExpiryBanner v-if="!loading" />
+  <!--end::Subscription Expiry Banner-->
   <!--begin::Agencies Map-->
   <div v-if="!loading" class="row mb-8">
     <div class="col-xl-12">
@@ -443,6 +448,7 @@ import Chart4 from "@/components/widgets/charts/Widget4.vue";
 import Chart10 from "@/components/widgets/charts/Widget10.vue";
 import Chart11 from "@/components/widgets/charts/Widget11.vue";
 import Chart13 from "@/components/widgets/charts/Widget13.vue";
+import SubscriptionExpiryBanner from "@/views/crafted/subscription/SubscriptionExpiryBanner.vue";
 
 import { getAssetPath } from "@/core/helpers/assets";
 import { getDetails, getRealEstateProperties, getAgencies, getAgents, getSoldProperties, getCalendarEvents, getRequests, getCustomers, getAllCustomers, processPropertiesForChart, processSoldPropertiesForChart, processTypologyDistribution, processTopZones, processAgentsRanking, processCalendarEvents, processRequestsForChart, processAppointmentsForChart, processAgentsForChart, processCustomersForChart } from "@/core/data/dashboard";
@@ -457,7 +463,8 @@ export default defineComponent({
     Chart4,
     Chart10,
     Chart11,
-    Chart13
+    Chart13,
+    SubscriptionExpiryBanner
   },
   setup() {
         const store = useAuthStore();

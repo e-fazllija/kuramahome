@@ -1,5 +1,5 @@
 import type { App } from "vue";
-import type { AxiosResponse } from "axios";
+import type { AxiosResponse, AxiosInstance } from "axios";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import JwtService, { getToken } from "@/core/services/JwtService";
@@ -15,22 +15,39 @@ class ApiService {
   public static vueInstance: App;
 
   /**
+   * @description istanza axios dedicata
+   */
+  public static axiosInstance: AxiosInstance;
+
+  /**
    * @description initialize vue axios
    */
   public static init(app: App<Element>) {
     ApiService.vueInstance = app;
-    ApiService.vueInstance.use(VueAxios, axios);
-    ApiService.vueInstance.axios.defaults.baseURL =
-      //"https://thinkhomebe.azurewebsites.net/api/";
-      "https://localhost:7267/api/";
+    
+    // Crea un'istanza axios dedicata
+    ApiService.axiosInstance = axios.create({
+      baseURL: "https://localhost:7267/api/"
+      //"https://thinkhomebe.azurewebsites.net/api/"
+    });
+
+    // Mantieni la compatibilità con VueAxios per eventuali utilizzi legacy
+    ApiService.vueInstance.use(VueAxios, ApiService.axiosInstance);
     
     // Interceptor per aggiungere automaticamente il token a ogni richiesta
-    ApiService.vueInstance.axios.interceptors.request.use(
+    ApiService.axiosInstance.interceptors.request.use(
       (config) => {
         const token = getToken();
+        
+        // Assicuriamoci che headers sia inizializzato
+        if (!config.headers) {
+          config.headers = {} as any;
+        }
+        
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
+        
         return config;
       },
       (error) => {
@@ -39,7 +56,7 @@ class ApiService {
     );
 
     // Interceptor per gestire le risposte HTTP
-    ApiService.vueInstance.axios.interceptors.response.use(
+    ApiService.axiosInstance.interceptors.response.use(
       (response) => {
         // Status 200 - continua normalmente
         return response;
@@ -51,11 +68,12 @@ class ApiService {
         if (error.response) {
           const status = error.response.status;
           
-          if (status === 401 && !originalRequest._retry && !originalRequest.url.includes("/auth/refresh")) {
+          if (status === 401 && !originalRequest._retry 
+            && (!originalRequest.url.includes("/auth/refresh") && !originalRequest.url.includes("/auth/VerifyToken"))) {
             originalRequest._retry = true;
             try {
               await authStore.refreshToken();
-              return ApiService.vueInstance.axios(originalRequest); // ripeti la richiesta originale
+              return ApiService.axiosInstance(originalRequest); // ripeti la richiesta originale
             } catch (refreshError) {
               authStore.logout();
             }
@@ -76,10 +94,10 @@ class ApiService {
    * @description set the default HTTP request headers
    */
   public static setHeader(): void {
-    ApiService.vueInstance.axios.defaults.headers.common[
+    ApiService.axiosInstance.defaults.headers.common[
       "Authorization"
     ] = `Bearer ${getToken()}`;
-    ApiService.vueInstance.axios.defaults.headers.common["Accept"] =
+    ApiService.axiosInstance.defaults.headers.common["Accept"] =
       "application/json";
   }
 
@@ -90,7 +108,7 @@ class ApiService {
    * @returns Promise<AxiosResponse>
    */
   public static query(resource: string, params: any): Promise<AxiosResponse> {
-    return ApiService.vueInstance.axios.get(resource, params);
+    return ApiService.axiosInstance.get(resource, params);
   }
 
   /**
@@ -102,7 +120,7 @@ class ApiService {
     resource: string,
     response_type
   ): Promise<AxiosResponse> {
-    return await ApiService.vueInstance.axios.get(`${resource}`, { responseType: response_type});
+    return await ApiService.axiosInstance.get(`${resource}`, { responseType: response_type});
   }
 
   /**
@@ -112,7 +130,7 @@ class ApiService {
    * @returns Promise<AxiosResponse>
    */
   public static async post(resource: string, params: any): Promise<AxiosResponse> {
-    return await ApiService.vueInstance.axios.post(`${resource}`, params);
+    return await ApiService.axiosInstance.post(`${resource}`, params);
   }
 
   /**
@@ -127,7 +145,7 @@ class ApiService {
     slug: string,
     params: any
   ): Promise<AxiosResponse> {
-    return await ApiService.vueInstance.axios.put(`${resource}/${slug}`, params);
+    return await ApiService.axiosInstance.put(`${resource}/${slug}`, params);
   }
 
   /**
@@ -137,7 +155,7 @@ class ApiService {
    * @returns Promise<AxiosResponse>
    */
   public static async put(resource: string, params: any): Promise<AxiosResponse> {
-    return await ApiService.vueInstance.axios.put(`${resource}`, params);
+    return await ApiService.axiosInstance.put(`${resource}`, params);
   }
 
   /**
@@ -146,7 +164,7 @@ class ApiService {
    * @returns Promise<AxiosResponse>
    */
   public static async delete(resource: string): Promise<AxiosResponse> {
-    return await ApiService.vueInstance.axios.delete(resource);
+    return await ApiService.axiosInstance.delete(resource);
   }
 }
 
