@@ -115,6 +115,20 @@ export const useAuthStore = defineStore("auth", () => {
       purgeAuth();
     }
   }
+
+  async function refreshToken() {
+    if (JwtService.getToken()) {
+      ApiService.setHeader();
+      await ApiService.post("auth/RefreshToken", { Token: JwtService.getToken() })
+        .then(({ data }) => {
+          setAuth(data);
+        })
+        .catch(({ response }) => {
+          setError(response.data.Message);
+          // In caso di errore, non facciamo il logout per non perdere la sessione
+        });
+    }
+  }
   
   const sendResetLink = async (_email: string) : Promise<string> =>  {
     return await ApiService.post("auth/SendResetLink?email=" + _email, "")
@@ -170,6 +184,7 @@ export const useAuthStore = defineStore("auth", () => {
     register,
     forgotPassword,
     verifyAuth,
+    refreshToken,
     verifyCredentials,
     setError,
     getUser,

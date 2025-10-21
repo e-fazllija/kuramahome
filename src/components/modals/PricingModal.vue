@@ -235,6 +235,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe, StripeElements } from '@stripe/stripe-js';
 import { createPaymentIntent } from '@/core/data/billing';
 import { getActivePlans, type SubscriptionPlan } from '@/core/data/subscription-plans';
+import { useAuthStore } from '@/stores/auth';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
 // Importa gli stili
@@ -273,6 +274,7 @@ export default defineComponent({
   },
   emits: ['close', 'success', 'cancel'],
   setup(props, { emit }) {
+    const authStore = useAuthStore();
     const selectedPlan = ref<string | null>(null);
     const isProcessing = ref(false);
     const isVerifying = ref(false);
@@ -435,6 +437,18 @@ export default defineComponent({
         // Pagamento completato con successo
         // Il webhook gestirà la creazione dell'abbonamento
         isProcessing.value = false;
+        
+        // Attendi un momento per permettere al webhook di processare il pagamento
+        // prima di aggiornare il token JWT
+        setTimeout(async () => {
+          try {
+            await authStore.refreshToken();
+          } catch (error) {
+            console.warn('Errore durante l\'aggiornamento del token:', error);
+            // Non bloccare il flow anche se l'aggiornamento del token fallisce
+          }
+        }, 2000);
+        
         emit('success');
       }
     };

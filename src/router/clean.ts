@@ -104,7 +104,7 @@ router.beforeEach((to, from, next) => {
   configStore.resetLayoutConfig();
 
   // verify auth token before each page change
-  authStore.verifyAuth();
+  //authStore.verifyAuth();
 
   // before page access check if page requires authentication
   if (to.meta.middleware == "auth") {

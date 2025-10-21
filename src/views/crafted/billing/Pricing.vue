@@ -14,6 +14,7 @@
 import { defineComponent, ref, onBeforeMount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import PricingModal from '@/components/modals/PricingModal.vue';
+import { useAuthStore } from '@/stores/auth';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
 export default defineComponent({
@@ -24,6 +25,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const authStore = useAuthStore();
     
     const userEmail = ref<string>('');
     const verificationToken = ref<string>('');
@@ -34,7 +36,14 @@ export default defineComponent({
       router.push({ name: "sign-in" });
     };
 
-    const handlePaymentSuccess = () => {
+    const handlePaymentSuccess = async () => {
+      // Aggiorna il token per assicurarsi che contenga le informazioni aggiornate dell'abbonamento
+      try {
+        await authStore.refreshToken();
+      } catch (error) {
+        console.warn('Errore durante l\'aggiornamento del token in handlePaymentSuccess:', error);
+      }
+
       Swal.fire({
         title: "Pagamento completato!",
         text: "Il tuo abbonamento è stato attivato con successo.",
