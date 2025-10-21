@@ -8,6 +8,7 @@ import { RouterView } from "vue-router";
 import { useConfigStore } from "@/stores/config";
 import { useThemeStore } from "@/stores/theme";
 import { useBodyStore } from "@/stores/body";
+import { useAuthStore } from "@/stores/auth";
 import { themeConfigValue } from "@/core/helpers/config";
 import { initializeComponents } from "@/core/plugins/keenthemes";
 
@@ -20,6 +21,7 @@ export default defineComponent({
     const configStore = useConfigStore();
     const themeStore = useThemeStore();
     const bodyStore = useBodyStore();
+    const authStore = useAuthStore();
 
     onBeforeMount(async () => {
       /**
@@ -32,6 +34,11 @@ export default defineComponent({
        *  Sets a mode from configuration
        */
       themeStore.setThemeMode(themeConfigValue.value);
+
+      /**
+       * Verifies the authentication token on app load
+       */
+      await authStore.verifyAuth();
     });
 
     onMounted(() => {
