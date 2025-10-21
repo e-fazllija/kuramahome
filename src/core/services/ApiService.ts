@@ -2,7 +2,7 @@ import type { App } from "vue";
 import type { AxiosResponse } from "axios";
 import axios from "axios";
 import VueAxios from "vue-axios";
-import JwtService from "@/core/services/JwtService";
+import JwtService, { getToken } from "@/core/services/JwtService";
 import { useAuthStore } from "@/stores/auth";
 
 /**
@@ -27,7 +27,7 @@ class ApiService {
     // Interceptor per aggiungere automaticamente il token a ogni richiesta
     ApiService.vueInstance.axios.interceptors.request.use(
       (config) => {
-        const token = JwtService.getToken();
+        const token = getToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -44,13 +44,21 @@ class ApiService {
         // Status 200 - continua normalmente
         return response;
       },
-      (error) => {
+      async (error) => {
         const authStore = useAuthStore();
-        
+        const originalRequest = error.config;
+
         if (error.response) {
           const status = error.response.status;
           
-          if (status === 401) {
+          if (status === 401 && !originalRequest._retry && !originalRequest.url.includes("/auth/refresh")) {
+            originalRequest._retry = true;
+            try {
+              await authStore.refreshToken();
+              return ApiService.vueInstance.axios(originalRequest); // ripeti la richiesta originale
+            } catch (refreshError) {
+              authStore.logout();
+            }
             // Status 401 - effettua logout
             authStore.logout();
           } else if (status === 403) {
@@ -70,7 +78,7 @@ class ApiService {
   public static setHeader(): void {
     ApiService.vueInstance.axios.defaults.headers.common[
       "Authorization"
-    ] = `Bearer ${JwtService.getToken()}`;
+    ] = `Bearer ${getToken()}`;
     ApiService.vueInstance.axios.defaults.headers.common["Accept"] =
       "application/json";
   }
