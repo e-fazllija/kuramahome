@@ -11,7 +11,7 @@
     >
       <!--begin::Logo-->
       <div class="d-none d-lg-flex align-items-center me-3">
-        <router-link to="/">
+        <router-link to="/dashboard">
           <img
             alt="Logo"
             :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"

@@ -2,7 +2,7 @@
   <!--begin::Logo-->
   <div class="app-sidebar-logo px-15" id="kt_app_sidebar_logo">
     <!--begin::Logo image-->
-    <router-link to="/" class="logo-link d-flex align-items-center">
+    <router-link to="/dashboard" class="logo-link d-flex align-items-center">
       <div class="logo-container">
         <!-- Logo per dark theme -->
         <img
