@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import ApiService from "@/core/services/ApiService";
-import JwtService from "@/core/services/JwtService";
+import JwtService, { getToken, getRefreshToken, saveToken, saveRefreshToken, destroyToken } from "@/core/services/JwtService";
 
 export interface User {
   Id: string,
@@ -13,6 +13,7 @@ export interface User {
   Role: string;
   Password: string;
   Token: string;
+  RefreshToken?: string;
   PhoneNumber: number;
   MobilePhone?: number;
   Referent?: string;
@@ -30,7 +31,7 @@ export interface User {
 export const useAuthStore = defineStore("auth", () => {
   const errors = ref("");
   const user = ref<User>({} as User);
-  const isAuthenticated = ref(!!JwtService.getToken());
+  const isAuthenticated = ref(!!getToken());
   const isSubscriptionExpired = ref(false);
 
   function setAuth(authUser: User) {
@@ -38,7 +39,10 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = authUser;
     errors.value = "";
     isSubscriptionExpired.value = false;
-    JwtService.saveToken(user.value.Token);
+    saveToken(user.value.Token);
+    if (authUser.RefreshToken) {
+      saveRefreshToken(authUser.RefreshToken);
+    }
   }
 
   function setError(error: any, status?: number) {
@@ -57,7 +61,7 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = {} as User;
     errors.value = "";
     isSubscriptionExpired.value = false;
-    JwtService.destroyToken();
+    destroyToken();
   }
 
   function setSubscriptionExpired(value: boolean) {
@@ -101,9 +105,9 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function verifyAuth() {
-    if (JwtService.getToken()) {
+    if (getToken()) {
       ApiService.setHeader();
-      await ApiService.post("auth/VerifyToken", { api_token: JwtService.getToken() })
+      await ApiService.post("auth/VerifyToken", { api_token: getToken() })
         .then(({ data }) => {
           setAuth(data);
         })
@@ -117,16 +121,23 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function refreshToken() {
-    if (JwtService.getToken()) {
-      ApiService.setHeader();
-      await ApiService.post("auth/RefreshToken", { Token: JwtService.getToken() })
+    const refreshToken = getRefreshToken();
+    if (refreshToken) {
+      // Non aggiungere l'header di authorization per questa richiesta
+      await ApiService.post("auth/RefreshToken", { Token: refreshToken })
         .then(({ data }) => {
           setAuth(data);
         })
         .catch(({ response }) => {
           setError(response.data.Message);
-          // In caso di errore, non facciamo il logout per non perdere la sessione
+          // In caso di errore, facciamo il logout se il refresh token è scaduto
+          if (response.status === 401) {
+            purgeAuth();
+          }
         });
+    } else {
+      // Se non c'è refresh token, facciamo logout
+      purgeAuth();
     }
   }
   
