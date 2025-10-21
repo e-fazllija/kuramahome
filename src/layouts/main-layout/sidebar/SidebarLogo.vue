@@ -11,21 +11,21 @@
             (themeMode === 'dark' && layout === 'light-sidebar')) &&
             !isSidebarMinimized
           "
-          alt="ThinkHome Logo"
+          alt="KuramaHome Logo"
           :src="getAssetPath('media/logos/TH-6.jpg')"
           class="logo-image logo-default"
         />
         <!-- Logo per light theme -->
         <img
           v-if="themeMode === 'light' && layout === 'light-sidebar' && !isSidebarMinimized"
-          alt="ThinkHome Logo"
-          :src="getAssetPath('media/logos/TH-4.jpg')"
+          alt="KuramaHome Logo"
+          :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
           class="logo-image logo-default"
         />
         <!-- Logo minimizzato -->
         <img
           v-if="isSidebarMinimized"
-          alt="ThinkHome Logo"
+          alt="KuramaHome Logo"
           :src="getAssetPath('media/logos/default-small.svg')"
           class="logo-image logo-minimize"
         />

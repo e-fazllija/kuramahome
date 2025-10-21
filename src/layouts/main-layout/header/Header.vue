@@ -14,8 +14,8 @@
         <router-link to="/">
           <img
             alt="Logo"
-            :src="getAssetPath('media/logos/TH-40.png')"
-            style="height: 75px;"
+            :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
+            style="height: 50px;"
           />
         </router-link>
       </div>
@@ -26,7 +26,7 @@
         <router-link to="/">
           <img
             alt="Logo"
-            :src="getAssetPath('media/logos/TH-40.png')"
+            :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
             class="h-50px"
           />
         </router-link>
@@ -79,7 +79,7 @@
           <div class="d-flex align-items-center">
             <img
               alt="Logo"
-              :src="getAssetPath('media/logos/TH-40.png')"
+              :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
               style="height: 50px;"
             />
           </div>

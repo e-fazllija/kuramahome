@@ -9,14 +9,27 @@ import { useConfigStore } from "@/stores/config";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/dashboard",
+    component: () => import("@/layouts/LandingLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "landing",
+        component: () => import("@/views/LandingPage.vue"),
+        meta: {
+          pageTitle: "KuramaHome - Gestione Immobiliare",
+        },
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
     component: () => import("@/layouts/main-layout/MainLayout.vue"),
     meta: {
       middleware: "auth",
     },
     children: [
       {
-        path: "/dashboard",
+        path: "",
         name: "dashboard",
         component: () => import("@/views/Dashboard.vue"),
         meta: {
@@ -157,6 +170,7 @@ const routes: Array<RouteRecordRaw> = [
           import("@/views/crafted/authentication/basic-flow/SignIn.vue"),
         meta: {
           pageTitle: "Sign In",
+          middleware: "no-auth",
         },
       },
       {
@@ -166,6 +180,7 @@ const routes: Array<RouteRecordRaw> = [
           import("@/views/crafted/authentication/basic-flow/SignUp.vue"),
         meta: {
           pageTitle: "Sign Up",
+          middleware: "no-auth",
         },
       },
       {
@@ -175,6 +190,7 @@ const routes: Array<RouteRecordRaw> = [
           import("@/views/crafted/authentication/basic-flow/PasswordReset.vue"),
         meta: {
           pageTitle: "Password reset",
+          middleware: "no-auth",
         },
       },
       {
@@ -184,6 +200,7 @@ const routes: Array<RouteRecordRaw> = [
           import("@/views/crafted/authentication/basic-flow/EmailConfirmation.vue"),
         meta: {
           pageTitle: "Password reset",
+          middleware: "no-auth",
         },
       },
     ],
@@ -206,6 +223,24 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     component: () => import("@/layouts/SystemLayout.vue"),
     children: [
+      {
+        // Privacy Policy route
+        path: "/privacy-policy",
+        name: "privacy-policy",
+        component: () => import("@/views/pages/legal/PrivacyPolicy.vue"),
+        meta: {
+          pageTitle: "Privacy Policy",
+        },
+      },
+      {
+        // Cookie Policy route
+        path: "/cookie-policy",
+        name: "cookie-policy",
+        component: () => import("@/views/pages/legal/CookiePolicy.vue"),
+        meta: {
+          pageTitle: "Cookie Policy",
+        },
+      },
       {
         // the 404 route, when none of the above matches
         path: "/404",
@@ -241,7 +276,7 @@ router.beforeEach(async (to, from, next) => {
   const configStore = useConfigStore();
 
   // current page view title
-  document.title = `${to.meta.pageTitle} - ThinkHome`;
+  document.title = `${to.meta.pageTitle} - KuramaHome`;
 
   // reset config to initial state
   configStore.resetLayoutConfig();
@@ -273,10 +308,17 @@ router.beforeEach(async (to, from, next) => {
       authStore.logout()
       next({ name: "sign-in" });
     }
+  } else if (to.meta.middleware == "no-auth") {
+    // Se l'utente è già autenticato, reindirizza alla dashboard
+    if (authStore.isAuthenticated) {
+      next({ name: "dashboard" });
+    } else {
+      // Se non è autenticato, permette l'accesso alla pagina (sign-in, sign-up, etc.)
+      next();
+    }
   } else {
     next();
   }
-  
 
   // Scroll page to top on every route change
   window.scrollTo({

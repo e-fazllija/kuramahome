@@ -660,8 +660,9 @@
                   />
                   <span class="form-check-label text-gray-700 fs-6 ms-2">
                     Accetto i
-                    <a href="#" class="link-primary fw-bold">Termini e Condizioni</a> e la
-                    <a href="#" class="link-primary fw-bold">Privacy Policy</a> *
+                    <a href="#" class="link-primary fw-bold">Termini e Condizioni</a>, la
+                    <router-link to="/privacy-policy" target="_blank" class="link-primary fw-bold">Privacy Policy</router-link> e la
+                    <router-link to="/cookie-policy" target="_blank" class="link-primary fw-bold">Cookie Policy</router-link> *
                   </span>
                 </label>
                 <div class="fv-plugins-message-container mt-2">

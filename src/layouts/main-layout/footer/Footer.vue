@@ -16,37 +16,27 @@
           href="https://keenthemes.com"
           target="_blank"
           class="text-gray-800 text-hover-primary"
-          >ThinkHome</a
+          >KuramaHome</a
         >
       </div>
       <!--end::Copyright-->
       <!--begin::Menu-->
-      <!-- <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
+      <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
         <li class="menu-item">
-          <a
-            href="https://keenthemes.com"
+          <router-link
+            to="/privacy-policy"
             target="_blank"
             class="menu-link px-2"
-            >About</a
-          >
+            >Privacy Policy</router-link>
         </li>
         <li class="menu-item">
-          <a
-            href="https://devs.keenthemes.com"
+          <router-link
+            to="/cookie-policy"
             target="_blank"
             class="menu-link px-2"
-            >Support</a
-          >
+            >Cookie Policy</router-link>
         </li>
-        <li class="menu-item">
-          <a
-            href="https://1.envato.market/EA4JP"
-            target="_blank"
-            class="menu-link px-2"
-            >Purchase</a
-          >
-        </li>
-      </ul> -->
+      </ul>
       <!--end::Menu-->
     </div>
     <!--end::Footer container-->

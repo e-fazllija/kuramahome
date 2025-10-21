@@ -55,7 +55,7 @@ const getAgent = (id: String) : Promise<Agent> => {
 
 const createAgent = async (formData: any) => {
   const values = formData as User;
-  values.Password = "ThinkHome!24";
+  values.Password = "KuramaHome!24";
   return await store.register(values);
 };
 
