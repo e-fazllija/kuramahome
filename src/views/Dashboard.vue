@@ -5,7 +5,7 @@
     </div>
   </div>
 
-  <div v-if="!subscriptionExpired" class="alert alert-danger">
+  <div v-if="!subscriptionExpired">
   <!--begin::Agencies Map-->
   <div v-if="!loading" class="row mb-8">
     <div class="col-xl-12">
