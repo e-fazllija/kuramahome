@@ -31,11 +31,13 @@ export const useAuthStore = defineStore("auth", () => {
   const errors = ref("");
   const user = ref<User>({} as User);
   const isAuthenticated = ref(!!JwtService.getToken());
+  const isSubscriptionExpired = ref(false);
 
   function setAuth(authUser: User) {
     isAuthenticated.value = true;
     user.value = authUser;
     errors.value = "";
+    isSubscriptionExpired.value = false;
     JwtService.saveToken(user.value.Token);
   }
 
@@ -54,7 +56,12 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated.value = false;
     user.value = {} as User;
     errors.value = "";
+    isSubscriptionExpired.value = false;
     JwtService.destroyToken();
+  }
+
+  function setSubscriptionExpired(value: boolean) {
+    isSubscriptionExpired.value = value;
   }
 
   async function login(credentials: User) {
@@ -157,6 +164,7 @@ export const useAuthStore = defineStore("auth", () => {
     errors,
     user,
     isAuthenticated,
+    isSubscriptionExpired,
     login,
     logout,
     register,
@@ -166,6 +174,7 @@ export const useAuthStore = defineStore("auth", () => {
     setError,
     getUser,
     sendResetLink,
-    resetPassword
+    resetPassword,
+    setSubscriptionExpired
   };
 });

@@ -3,6 +3,7 @@ import type { AxiosResponse } from "axios";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import JwtService from "@/core/services/JwtService";
+import { useAuthStore } from "@/stores/auth";
 
 /**
  * @description service to call HTTP request via Axios
@@ -33,6 +34,31 @@ class ApiService {
         return config;
       },
       (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // Interceptor per gestire le risposte HTTP
+    ApiService.vueInstance.axios.interceptors.response.use(
+      (response) => {
+        // Status 200 - continua normalmente
+        return response;
+      },
+      (error) => {
+        const authStore = useAuthStore();
+        
+        if (error.response) {
+          const status = error.response.status;
+          
+          if (status === 401) {
+            // Status 401 - effettua logout
+            authStore.logout();
+          } else if (status === 403) {
+            // Status 403 - marca sottoscrizione come scaduta
+            authStore.setSubscriptionExpired(true);
+          }
+        }
+        
         return Promise.reject(error);
       }
     );
