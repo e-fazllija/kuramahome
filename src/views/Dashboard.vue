@@ -1,5 +1,4 @@
 <template>
- 
 
   <div v-if="loading" class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
@@ -378,7 +377,7 @@
     </div>
   </div>
   <!--end::Performance Teams-->
-</div>
+  </div>
 
   <!--begin::Subscription Expired-->
   <div v-else class="subscription-expired-page d-flex flex-column align-items-center justify-content-center py-10">
