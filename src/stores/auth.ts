@@ -185,13 +185,27 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function verifyCredentials(email: string, token: string) {
-      await ApiService.post("auth/ConfirmCredentials", { Email: email, Token: token })
-      .then((data) => {
-        console.log(data)
-      })
-      .catch(({ response }) => {
-        setError(response.data.Message);
-      });
+    try {
+      const response = await ApiService.post("auth/ConfirmCredentials", { Email: email, Token: token });
+      
+      // Clear any existing errors on success
+      setError("");
+      
+      return response;
+    } catch (error: any) {
+      console.error("Errore nella verifica delle credenziali:", error);
+      
+      // Set appropriate error message
+      if (error.response?.data?.Message) {
+        setError(error.response.data.Message);
+      } else if (error.response?.status === 500) {
+        setError("Token non valido o scaduto. Riprova con un nuovo link di conferma.");
+      } else {
+        setError("Si è verificato un errore durante la verifica delle credenziali. Riprova più tardi.");
+      }
+      
+      throw error;
+    }
   }
 
   return {
