@@ -11,82 +11,8 @@
     <!-- Content -->
     <div v-else class="container-fluid px-4">
 
-      <!-- No Subscription State -->
-      <div v-if="!subscription" class="row">
-        <div class="col-12">
-          <!-- Countdown Banner - No Subscription -->
-          <div class="card shadow-sm countdown-card mb-6">
-            <div class="card-body p-6">
-              <div class="row align-items-center">
-                <!-- Data Sottoscrizione -->
-                <div class="col-lg-4 text-center text-lg-start mb-4 mb-lg-0">
-                  <label class="text-muted fs-7 fw-semibold mb-2 d-block">DATA SOTTOSCRIZIONE</label>
-                  <div class="d-flex align-items-center justify-content-center justify-content-lg-start">
-                    <i class="ki-duotone ki-calendar fs-2x text-gray-400 me-3">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span class="fs-4 text-muted">-</span>
-                  </div>
-                </div>
-
-                <!-- Status -->
-                <div class="col-lg-4 text-center mb-4 mb-lg-0">
-                  <label class="text-muted fs-7 fw-semibold mb-2 d-block">STATO ABBONAMENTO</label>
-                  <div class="countdown-display">
-                    <span class="badge badge-light-danger fs-3 px-6 py-4">
-                      <i class="ki-duotone ki-cross-circle fs-2 me-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      NON ATTIVO
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Data Scadenza -->
-                <div class="col-lg-4 text-center text-lg-end">
-                  <label class="text-muted fs-7 fw-semibold mb-2 d-block">DATA SCADENZA</label>
-                  <div class="d-flex align-items-center justify-content-center justify-content-lg-end">
-                    <i class="ki-duotone ki-calendar-tick fs-2x text-gray-400 me-3">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span class="fs-4 text-muted">-</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Call to Action -->
-          <div class="card shadow-sm">
-            <div class="card-body text-center py-20">
-              <div class="symbol symbol-100px mx-auto mb-7">
-                <span class="symbol-label bg-light-warning">
-                  <i class="ki-duotone ki-information fs-3x text-warning">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                  </i>
-                </span>
-              </div>
-              <h3 class="fw-bold text-gray-900 mb-4">Nessun abbonamento attivo</h3>
-              <p class="text-muted fs-5 mb-8">Non hai ancora sottoscritto un abbonamento. Scegli il piano perfetto per te!</p>
-              <button @click="openPricingModal" class="btn btn-lg btn-primary">
-                <i class="ki-duotone ki-rocket fs-2 me-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                Scegli un Piano
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Active Subscription State -->
-      <div v-else>
+      <!-- Subscription Management Layout -->
+      <div>
         <div class="row g-5">
           <!-- Left Sidebar - Countdown Banner Vertical -->
           <div class="col-lg-3">
@@ -120,7 +46,7 @@
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    <span class="fs-7 fw-bold text-gray-900">{{ formatDate(subscription.StartDate) }}</span>
+                    <span class="fs-7 fw-bold text-gray-900">{{ subscription ? formatDate(subscription.StartDate) : '-' }}</span>
                   </div>
                 </div>
 
@@ -132,7 +58,7 @@
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    <span class="fs-7 fw-bold text-gray-900">{{ formatDate(subscription.EndDate) }}</span>
+                    <span class="fs-7 fw-bold text-gray-900">{{ subscription ? formatDate(subscription.EndDate) : '-' }}</span>
                   </div>
                 </div>
 
@@ -143,17 +69,17 @@
                   <button 
                     @click="renewSubscription" 
                     class="btn w-100"
-                    :class="daysRemaining <= 7 ? 'btn-danger' : daysRemaining <= 15 ? 'btn-warning' : 'btn-primary'"
+                    :class="!subscription ? 'btn-primary' : daysRemaining <= 7 ? 'btn-danger' : daysRemaining <= 15 ? 'btn-warning' : 'btn-primary'"
                   >
-                    <i class="ki-duotone fs-2 me-2" :class="daysRemaining <= 7 ? 'ki-notification-on' : 'ki-arrows-circle'">
+                    <i class="ki-duotone fs-2 me-2" :class="!subscription ? 'ki-rocket' : daysRemaining <= 7 ? 'ki-notification-on' : 'ki-arrows-circle'">
                       <span class="path1"></span>
                       <span class="path2"></span>
-                      <span v-if="daysRemaining <= 7" class="path3"></span>
+                      <span v-if="!subscription || daysRemaining <= 7" class="path3"></span>
                     </i>
-                    {{ daysRemaining <= 7 ? 'Rinnova Ora!' : daysRemaining <= 15 ? 'Rinnova Presto' : 'Rinnova Abbonamento' }}
+                    {{ !subscription ? 'Scegli un Piano' : daysRemaining <= 7 ? 'Rinnova Ora!' : daysRemaining <= 15 ? 'Rinnova Presto' : 'Rinnova Abbonamento' }}
                   </button>
                   <p class="text-muted fs-9 mt-3 mb-0">
-                    Prolunga il tuo piano {{ subscription.SubscriptionPlan.Name }}
+                    {{ !subscription ? 'Sottoscrivi il tuo primo abbonamento' : `Prolunga il tuo piano ${subscription.SubscriptionPlan?.Name || ''}` }}
                   </p>
                 </div>
               </div>
@@ -185,23 +111,39 @@
                         {{ user.Name }} {{ user.LastName }}
                         <span v-if="user.CompanyName" class="text-muted fs-6 ms-2">({{ user.CompanyName }})</span>
                       </div>
-                      <div class="text-muted fs-7">{{ user.Email }}</div>
+                      <div class="text-muted fs-7 mb-2">{{ user.Email }}</div>
+                      
+                      <!-- Data Registrazione -->
+                      <div class="d-flex align-items-center mt-3">
+                        <i class="ki-duotone ki-user-tick fs-3 text-info me-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                        </i>
+                        <div>
+                          <div class="text-muted fs-8 fw-semibold">Membro dal</div>
+                          <div class="fs-7 fw-bold text-gray-900">{{ subscription ? formatDate(subscription.StartDate) : '-' }}</div>
+                        </div>
+                      </div>
                     </div>
 
                     <!-- Plan Details -->
                     <div class="row mb-5">
                       <div class="col-md-6 mb-4 mb-md-0">
                         <label class="form-label text-muted fs-8 fw-semibold mb-2">PIANO ATTUALE</label>
-                        <div class="d-flex align-items-baseline">
+                        <div v-if="subscription" class="d-flex align-items-baseline">
                           <span class="fs-2 fw-bolder text-primary me-2">{{ subscription.SubscriptionPlan.Name }}</span>
                           <span class="fs-5 fw-bold text-gray-900">€{{ subscription.SubscriptionPlan.Price }}</span>
                           <span class="text-muted fs-7 ms-1">/mese</span>
                         </div>
-                        <div class="text-muted fs-8 mt-1">{{ subscription.SubscriptionPlan.Description }}</div>
+                        <div v-else class="d-flex align-items-center">
+                          <span class="fs-2 fw-bolder text-muted me-2">Nessun piano attivo</span>
+                        </div>
+                        <div class="text-muted fs-8 mt-1">{{ subscription ? subscription.SubscriptionPlan.Description : 'Scegli un piano per iniziare' }}</div>
                       </div>
                       <div class="col-md-6">
                         <label class="form-label text-muted fs-8 fw-semibold mb-3">FUNZIONALITÀ INCLUSE</label>
-                        <div class="features-list-compact">
+                        <div v-if="subscription && planFeatures.length > 0" class="features-list-compact">
                           <div v-for="(feature, index) in planFeatures.slice(0, 3)" :key="index" class="feature-item-compact mb-2">
                             <i class="ki-duotone ki-check-circle fs-3 text-success me-2">
                               <span class="path1"></span>
@@ -211,11 +153,20 @@
                           </div>
                           <div v-if="planFeatures.length > 3" class="text-muted fs-8 ms-7">+{{ planFeatures.length - 3 }} altre</div>
                         </div>
+                        <div v-else class="text-muted fs-8">
+                          <i class="ki-duotone ki-information fs-3 text-muted me-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                          </i>
+                          Scegli un piano per vedere le funzionalità
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+
 
               <!-- Upgrade Card -->
               <div class="col-md-6">
@@ -253,25 +204,47 @@
                         <span class="path3"></span>
                       </i>
                       <div>
-                        <h5 class="fw-bold text-gray-900 mb-0">Supporto</h5>
-                        <p class="text-muted fs-8 mb-0">Contattaci</p>
+                        <h5 class="fw-bold text-gray-900 mb-0">Supporto & Assistenza</h5>
+                        <p class="text-muted fs-8 mb-0">Siamo qui per aiutarti</p>
                       </div>
                     </div>
                     <div class="separator separator-dashed mb-4"></div>
-                    <div class="info-item mb-3">
-                      <i class="ki-duotone ki-sms fs-3 text-primary me-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      <span class="text-gray-700 fs-8">support@kurama.com</span>
+                    
+                    <!-- Contatti -->
+                    <div class="mb-4">
+                      <h6 class="fw-bold text-gray-900 mb-3 fs-7">CONTATTI</h6>
+                      <div class="info-item mb-3">
+                        <i class="ki-duotone ki-sms fs-3 text-primary me-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <div>
+                          <div class="text-gray-700 fs-8 fw-semibold">Email</div>
+                          <div class="text-muted fs-9">support@kurama.com</div>
+                        </div>
+                      </div>
+                      <div class="info-item mb-3">
+                        <i class="ki-duotone ki-phone fs-3 text-primary me-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <div>
+                          <div class="text-gray-700 fs-8 fw-semibold">Telefono</div>
+                          <div class="text-muted fs-9">+39 123 456 7890</div>
+                        </div>
+                      </div>
+                      <div class="info-item">
+                        <i class="ki-duotone ki-clock fs-3 text-primary me-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <div>
+                          <div class="text-gray-700 fs-8 fw-semibold">Orari</div>
+                          <div class="text-muted fs-9">Lun-Ven 9:00-18:00</div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="info-item">
-                      <i class="ki-duotone ki-phone fs-3 text-primary me-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      <span class="text-gray-700 fs-8">+39 123 456 7890</span>
-                    </div>
+
                   </div>
                 </div>
               </div>
@@ -398,6 +371,31 @@ export default defineComponent({
       }
     });
 
+    const subscriptionDuration = computed(() => {
+      if (!subscription.value?.StartDate) return 'N/A';
+      
+      const startDate = new Date(subscription.value.StartDate);
+      const today = new Date();
+      
+      const diffTime = today.getTime() - startDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 30) {
+        return `${diffDays} giorni`;
+      } else if (diffDays < 365) {
+        const months = Math.floor(diffDays / 30);
+        return `${months} ${months === 1 ? 'mese' : 'mesi'}`;
+      } else {
+        const years = Math.floor(diffDays / 365);
+        const remainingMonths = Math.floor((diffDays % 365) / 30);
+        let result = `${years} ${years === 1 ? 'anno' : 'anni'}`;
+        if (remainingMonths > 0) {
+          result += ` e ${remainingMonths} ${remainingMonths === 1 ? 'mese' : 'mesi'}`;
+        }
+        return result;
+      }
+    });
+
     const loadSubscription = async () => {
       isLoading.value = true;
       try {
@@ -495,6 +493,7 @@ export default defineComponent({
       formatDate,
       daysRemaining,
       daysRemainingClass,
+      subscriptionDuration,
       openPricingModal,
       closePricingModal,
       renewSubscription,
