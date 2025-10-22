@@ -39,11 +39,7 @@
     </div>
   </div>
   <!--end::Analytics Overview-->
-
-
-
-
-
+  
   <!--begin::Andamento Immobili-->
   <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
