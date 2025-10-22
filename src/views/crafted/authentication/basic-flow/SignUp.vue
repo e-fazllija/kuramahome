@@ -444,6 +444,8 @@
               autocomplete="off"
               maxlength="16"
               placeholder="16 caratteri"
+              @input="formData.fiscalCode = formData.fiscalCode.toUpperCase()"
+              style="text-transform: uppercase;"
             />
             <div class="fv-plugins-message-container">
               <div class="fv-help-block">
@@ -505,6 +507,8 @@
                   placeholder="SDI (7 caratteri)"
                   autocomplete="off"
                   maxlength="7"
+                  @input="formData.sdiCode = formData.sdiCode.toUpperCase()"
+                  style="text-transform: uppercase;"
                 />
                 <div class="fv-plugins-message-container">
                   <div class="fv-help-block">

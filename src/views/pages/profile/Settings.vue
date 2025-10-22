@@ -32,7 +32,7 @@
                 <!--begin::Col-->
                 <div class="col-lg-6 fv-row">
                   <Field type="text" name="Name" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                    placeholder="Nome" v-model="profileDetails.Name" />
+                    placeholder="Nome" v-model="profileDetails.FirstName" />
                   <div class="fv-plugins-message-container">
                     <div class="fv-help-block">
                       <ErrorMessage name="Name" />
@@ -163,11 +163,23 @@
 
                 <!--begin::Col-->
                 <div class="col-lg-4 fv-row">
-                  <Field type="text" name="Town" class="form-control form-control-lg form-control-solid"
-                    placeholder="Città" v-model="profileDetails.Town" />
+                  <Field type="text" name="City" class="form-control form-control-lg form-control-solid"
+                    placeholder="Città" v-model="profileDetails.City" />
                   <div class="fv-plugins-message-container">
                     <div class="fv-help-block">
-                      <ErrorMessage name="Town" />
+                      <ErrorMessage name="City" />
+                    </div>
+                  </div>
+                </div>
+                <!--end::Col-->
+
+                <!--begin::Col-->
+                <div class="col-lg-4 fv-row">
+                  <Field type="text" name="ZipCode" class="form-control form-control-lg form-control-solid"
+                    placeholder="CAP" v-model="profileDetails.ZipCode" maxlength="10" />
+                  <div class="fv-plugins-message-container">
+                    <div class="fv-help-block">
+                      <ErrorMessage name="ZipCode" />
                     </div>
                   </div>
                 </div>
@@ -208,6 +220,208 @@
             <!--end::Col-->
           </div>
           <!--end::Input group-->
+
+          <!--begin::Separator-->
+          <div class="separator separator-content my-10">
+            <span class="w-250px fw-bold text-gray-700 fs-5">
+              <i class="ki-duotone ki-bill fs-2 text-info me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+                <span class="path6"></span>
+              </i>
+              Dati Fiscali
+            </span>
+          </div>
+          <!--end::Separator-->
+
+          <!--begin::Notice-->
+          <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-8 p-6">
+            <i class="ki-duotone ki-information-5 fs-2tx text-warning me-4">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+            </i>
+            <div class="d-flex flex-column">
+              <h5 class="fw-bold text-gray-900 mb-2">Modifica Dati Fiscali</h5>
+              <span class="text-gray-700 fs-6">
+                I dati fiscali sono protetti e possono essere modificati solo su richiesta. 
+                Clicca sul pulsante "Richiedi Modifica" per contattare il supporto.
+              </span>
+            </div>
+          </div>
+          <!--end::Notice-->
+
+          <!--begin::Dati Fiscali - Persona Fisica-->
+          <div class="row mb-6">
+            <!--begin::Label-->
+            <label class="col-lg-4 col-form-label fw-semobold fs-6">Codice Fiscale</label>
+            <!--end::Label-->
+
+            <!--begin::Col-->
+            <div class="col-lg-8">
+              <div class="d-flex align-items-center">
+                <input 
+                  type="text" 
+                  class="form-control form-control-lg form-control-solid me-3" 
+                  :value="profileDetails.FiscalCode || 'Non inserito'" 
+                  disabled 
+                />
+                <button 
+                  type="button" 
+                  class="btn btn-light-primary btn-sm flex-shrink-0"
+                  @click="requestFiscalDataChange('FiscalCode')"
+                >
+                  <i class="ki-duotone ki-sms fs-4 me-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Richiedi Modifica
+                </button>
+              </div>
+            </div>
+            <!--end::Col-->
+          </div>
+          <!--end::Dati Fiscali - Persona Fisica-->
+
+          <!--begin::Separator-->
+          <div class="separator separator-dashed my-8"></div>
+          <!--end::Separator-->
+
+          <!--begin::Dati Fiscali - Persona Giuridica-->
+          <div>
+            <!--begin::Input group - Ragione Sociale-->
+            <div class="row mb-6">
+              <!--begin::Label-->
+              <label class="col-lg-4 col-form-label fw-semobold fs-6">Ragione Sociale</label>
+              <!--end::Label-->
+
+              <!--begin::Col-->
+              <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                  <input 
+                    type="text" 
+                    class="form-control form-control-lg form-control-solid me-3" 
+                    :value="profileDetails.CompanyName || 'Non inserito'" 
+                    disabled 
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-light-primary btn-sm flex-shrink-0"
+                    @click="requestFiscalDataChange('CompanyName')"
+                  >
+                    <i class="ki-duotone ki-sms fs-4 me-1">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Richiedi Modifica
+                  </button>
+                </div>
+              </div>
+              <!--end::Col-->
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group - Partita IVA-->
+            <div class="row mb-6">
+              <!--begin::Label-->
+              <label class="col-lg-4 col-form-label fw-semobold fs-6">Partita IVA</label>
+              <!--end::Label-->
+
+              <!--begin::Col-->
+              <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                  <input 
+                    type="text" 
+                    class="form-control form-control-lg form-control-solid me-3" 
+                    :value="profileDetails.VATNumber || 'Non inserito'" 
+                    disabled 
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-light-primary btn-sm flex-shrink-0"
+                    @click="requestFiscalDataChange('VATNumber')"
+                  >
+                    <i class="ki-duotone ki-sms fs-4 me-1">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Richiedi Modifica
+                  </button>
+                </div>
+              </div>
+              <!--end::Col-->
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group - PEC-->
+            <div class="row mb-6">
+              <!--begin::Label-->
+              <label class="col-lg-4 col-form-label fw-semobold fs-6">PEC</label>
+              <!--end::Label-->
+
+              <!--begin::Col-->
+              <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                  <input 
+                    type="text" 
+                    class="form-control form-control-lg form-control-solid me-3" 
+                    :value="profileDetails.PEC || 'Non inserito'" 
+                    disabled 
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-light-primary btn-sm flex-shrink-0"
+                    @click="requestFiscalDataChange('PEC')"
+                  >
+                    <i class="ki-duotone ki-sms fs-4 me-1">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Richiedi Modifica
+                  </button>
+                </div>
+              </div>
+              <!--end::Col-->
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group - Codice SDI-->
+            <div class="row mb-6">
+              <!--begin::Label-->
+              <label class="col-lg-4 col-form-label fw-semobold fs-6">Codice Destinatario SDI</label>
+              <!--end::Label-->
+
+              <!--begin::Col-->
+              <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                  <input 
+                    type="text" 
+                    class="form-control form-control-lg form-control-solid me-3" 
+                    :value="profileDetails.SDICode || 'Non inserito'" 
+                    disabled 
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-light-primary btn-sm flex-shrink-0"
+                    @click="requestFiscalDataChange('SDICode')"
+                  >
+                    <i class="ki-duotone ki-sms fs-4 me-1">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Richiedi Modifica
+                  </button>
+                </div>
+              </div>
+              <!--end::Col-->
+            </div>
+            <!--end::Input group-->
+          </div>
+          <!--end::Dati Fiscali - Persona Giuridica-->
+
         </div>
         <!--end::Card body-->
 
@@ -443,7 +657,8 @@ export default defineComponent({
       MobilePhone: Yup.string().label("MobilePhone"),
       Referent: Yup.string().label("Referent"),
       Address: Yup.string().required().label("Address"),
-      Town: Yup.string().required().label("Town"),
+      City: Yup.string().required().label("City"),
+      ZipCode: Yup.string().label("ZipCode"),
       Region: Yup.string().label("Region"),
       Color: Yup.string().label("Color"),
     });
@@ -555,6 +770,34 @@ export default defineComponent({
         }
     };
 
+    const requestFiscalDataChange = (fieldName: string) => {
+      const fieldLabels = {
+        FiscalCode: 'Codice Fiscale',
+        CompanyName: 'Ragione Sociale',
+        VATNumber: 'Partita IVA',
+        PEC: 'PEC',
+        SDICode: 'Codice Destinatario SDI'
+      };
+
+      const currentValue = profileDetails[fieldName] || 'Non inserito';
+      const fieldLabel = fieldLabels[fieldName] || fieldName;
+      
+      const subject = encodeURIComponent(`Richiesta Modifica Dati Fiscali - ${fieldLabel}`);
+      const body = encodeURIComponent(
+        `Gentile Team di Supporto,\n\n` +
+        `Vorrei richiedere la modifica del seguente dato fiscale:\n\n` +
+        `Campo: ${fieldLabel}\n` +
+        `Valore Attuale: ${currentValue}\n` +
+        `Nuovo Valore: [Inserire qui il nuovo valore]\n\n` +
+        `Dati Utente:\n` +
+        `Nome: ${profileDetails.Name} ${profileDetails.LastName}\n` +
+        `Email: ${profileDetails.Email}\n\n` +
+        `Cordiali saluti`
+      );
+
+      window.location.href = `mailto:support@kurama.com?subject=${subject}&body=${body}`;
+    };
+
     return {
       submitButton1,
       submitButton2,
@@ -574,7 +817,8 @@ export default defineComponent({
       updatePassword,
       getAssetPath,
       sendLink,
-      newPassword
+      newPassword,
+      requestFiscalDataChange
     };
   },
 });
