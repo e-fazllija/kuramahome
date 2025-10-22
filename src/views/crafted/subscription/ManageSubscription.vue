@@ -441,20 +441,41 @@ export default defineComponent({
     const handleUpgradeSuccess = async () => {
       showPricingModal.value = false;
       
-      Swal.fire({
-        title: "Upgrade completato!",
-        text: "Il tuo piano è stato aggiornato con successo.",
-        icon: "success",
-        buttonsStyling: false,
-        confirmButtonText: "Ottimo!",
-        heightAuto: false,
-        customClass: {
-          confirmButton: "btn fw-semobold btn-light-primary",
-        },
-      });
-
-      // Ricarica i dati dell'abbonamento
-      await loadSubscription();
+      // Mostra loading mentre aggiorna i dati
+      isLoading.value = true;
+      
+      // Attendi un momento per permettere al webhook di processare
+      setTimeout(async () => {
+        try {
+          // Ricarica i dati dell'abbonamento
+          await loadSubscription();
+          
+          Swal.fire({
+            title: "Upgrade completato!",
+            text: "Il tuo piano è stato aggiornato con successo.",
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Ottimo!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-primary",
+            },
+          });
+        } catch (error) {
+          console.error('Errore durante l\'aggiornamento:', error);
+          Swal.fire({
+            title: "Aggiornamento completato!",
+            text: "Il tuo piano è stato aggiornato. Ricarica la pagina per vedere le modifiche.",
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-primary",
+            },
+          });
+        }
+      }, 2000); // Attendi 2 secondi per il webhook
     };
 
     onMounted(() => {

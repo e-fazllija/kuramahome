@@ -37,13 +37,11 @@ export default defineComponent({
     };
 
     const handlePaymentSuccess = async () => {
-      // Aggiorna il token per assicurarsi che contenga le informazioni aggiornate dell'abbonamento
-      try {
-        await authStore.refreshToken();
-      } catch (error) {
-        console.warn('Errore durante l\'aggiornamento del token in handlePaymentSuccess:', error);
-      }
-
+      // Il PricingModal gestisce l'aggiornamento del token
+      // I componenti si aggiornano automaticamente in modo reattivo
+      console.log('Pagamento completato - aggiornamento reattivo in corso');
+      
+      // Mostra messaggio di successo e redirect alla dashboard
       Swal.fire({
         title: "Pagamento completato!",
         text: "Il tuo abbonamento è stato attivato con successo.",

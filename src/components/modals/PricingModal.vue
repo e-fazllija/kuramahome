@@ -435,11 +435,23 @@ export default defineComponent({
         isProcessing.value = false;
       } else {
         // Pagamento completato con successo
-        // Il webhook gestirà la creazione dell'abbonamento
         isProcessing.value = false;
         
-        // Attendi un momento per permettere al webhook di processare il pagamento
-        // prima di aggiornare il token JWT
+        // Mostra messaggio di aggiornamento in corso
+        Swal.fire({
+          title: "Pagamento completato!",
+          text: "Stiamo aggiornando il tuo abbonamento, attendi qualche secondo...",
+          icon: "success",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          heightAuto: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        // Attendi che il webhook processi il pagamento e aggiorna il token
         setTimeout(async () => {
           try {
             await authStore.refreshToken();
@@ -447,7 +459,10 @@ export default defineComponent({
             console.warn('Errore durante l\'aggiornamento del token:', error);
             // Non bloccare il flow anche se l'aggiornamento del token fallisce
           }
-        }, 2000);
+          
+          // Chiudi il loading - i componenti si aggiorneranno automaticamente
+          Swal.close();
+        }, 3000);
         
         emit('success');
       }
