@@ -281,8 +281,8 @@ router.beforeEach(async (to, from, next) => {
   // reset config to initial state
   configStore.resetLayoutConfig();
 
-  // verify auth token before each page change
-  //await authStore.verifyAuth();
+  // La verifica del token viene fatta solo all'avvio dell'app (App.vue onMounted)
+  // Non serve chiamare verifyAuth() ad ogni cambio di route
 
   // before page access check if page requires authentication
   if (to.meta.middleware == "auth") {

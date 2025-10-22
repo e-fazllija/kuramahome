@@ -46,6 +46,7 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = authUser;
     errors.value = "";
     isSubscriptionExpired.value = false;
+    
     saveToken(user.value.Token);
     if (authUser.RefreshToken) {
       saveRefreshToken(authUser.RefreshToken);
@@ -113,14 +114,15 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function verifyAuth() {
     if (getToken()) {
-      ApiService.setHeader();
+      // Non serve più setHeader() perché l'interceptor aggiunge automaticamente il token
       await ApiService.post("auth/VerifyToken", { api_token: getToken() })
         .then(({ data }) => {
           setAuth(data);
         })
         .catch(({ response }) => {
           setError(response.data.Message);
-          purgeAuth();
+          refreshToken();
+          //purgeAuth();
         });
     } else {
       purgeAuth();

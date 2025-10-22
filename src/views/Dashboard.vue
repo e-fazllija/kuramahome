@@ -5,9 +5,9 @@
     </div>
   </div>
 
-  <div v-else-if="!subscriptionExpired">
+  <div v-if="!subscriptionExpired" class="alert alert-danger">
   <!--begin::Agencies Map-->
-  <div class="row mb-8">
+  <div v-if="!loading" class="row mb-8">
     <div class="col-xl-12">
       <Chart13 
         :agencies-list="agenciesList"
@@ -26,7 +26,7 @@
   <!--end::Agencies Map-->
 
   <!--begin::Analytics Overview-->
-  <div class="row mb-8">
+  <div v-if="!loading" class="row mb-8">
     <div class="col-xl-12">
       <Chart11 
         :kpi-data="kpiAnalyticsData"
@@ -36,8 +36,12 @@
   </div>
   <!--end::Analytics Overview-->
 
+
+
+
+
   <!--begin::Andamento Immobili-->
-  <div class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -64,7 +68,7 @@
   <!--end::Andamento Immobili-->
 
   <!--begin::Distribuzione & Zone-->
-  <div class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -141,7 +145,7 @@
   <!--end::Distribuzione & Zone-->
 
   <!--begin::Performance Teams-->
-  <div class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -375,64 +379,6 @@
   <!--end::Performance Teams-->
 </div>
 
-  <!--begin::Subscription Expired-->
-  <div v-else class="subscription-expired-page d-flex flex-column align-items-center justify-content-center py-10">
-    <div class="card shadow-lg border-0" style="max-width: 1100px; width: 100%;">
-      <div class="card-body text-center px-12 py-20">
-        <!--begin::Logo Container-->
-        <div class="mb-16">
-          <div class="subscription-logo-wrapper d-inline-block position-relative">
-            <div class="subscription-logo-bg"></div>
-            <img 
-              :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-              alt="KuramaHome Logo"
-              class="subscription-logo"
-            />
-          </div>
-        </div>
-        <!--end::Logo Container-->
-        
-        <!--begin::Title-->
-        <h1 class="fw-bolder mb-6 text-gray-900" style="font-size: 2.5rem; letter-spacing: -0.5px;">
-          Abbonamento Scaduto
-        </h1>
-        <!--end::Title-->
-        
-        <!--begin::Description-->
-        <p class="text-gray-600 mb-12 lh-lg" style="font-size: 1.15rem;">
-          Il tuo abbonamento è scaduto e l'accesso alla dashboard è stato bloccato.
-          <br>
-          <span class="fw-semibold">Rinnova ora</span> per continuare ad utilizzare tutte le funzionalità premium.
-        </p>
-        <!--end::Description-->
-        
-        <!--begin::Action Button-->
-        <router-link to="/dashboard/subscription/manage" class="btn btn-primary btn-lg px-10 py-4 mb-6 subscription-cta-btn">
-          <i class="ki-duotone ki-shield-tick fs-1 me-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <span class="fs-4 fw-bold">Rinnova Abbonamento</span>
-        </router-link>
-        <!--end::Action Button-->
-        
-        <!--begin::Support Link-->
-        <div class="mt-8">
-          <a href="mailto:support@kurama.com" class="text-gray-600 text-hover-primary fs-6 fw-semibold">
-            <i class="ki-duotone ki-message-text-2 fs-5 me-2">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-            </i>
-            Hai bisogno di aiuto? Contatta il supporto
-          </a>
-        </div>
-        <!--end::Support Link-->
-      </div>
-    </div>
-  </div>
-  <!--end::Subscription Expired-->
-
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed } from "vue";
@@ -457,7 +403,8 @@ export default defineComponent({
     Chart4,
     Chart10,
     Chart11,
-    Chart13
+    Chart13,
+    
   },
   setup() {
         const store = useAuthStore();
@@ -967,175 +914,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-/* Stili per la pagina di abbonamento scaduto */
-.subscription-expired-page {
-  min-height: 75vh;
-}
-
-/* Logo Animation */
-.subscription-logo-wrapper {
-  animation: logoPulse 2s ease-in-out infinite;
-}
-
-@keyframes logoPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-.subscription-logo-bg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
-  opacity: 0.1;
-  z-index: 0;
-}
-
-.subscription-logo {
-  position: relative;
-  width: 180px;
-  height: auto;
-  object-fit: contain;
-  z-index: 1;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
-}
-
-/* CTA Button */
-.subscription-cta-btn {
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 119, 204, 0.3);
-}
-
-.subscription-cta-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 119, 204, 0.4);
-}
-
-/* Separator */
-.separator.separator-dashed {
-  border-top-width: 2px;
-  opacity: 0.5;
-}
-
-/* Light Mode */
-[data-bs-theme="light"] .subscription-expired-page .card {
-  background-color: #FFFFFF;
-  border: none;
-}
-
-[data-bs-theme="light"] .subscription-logo-bg {
-  background: linear-gradient(135deg, #0077CC 0%, #005FA3 100%);
-}
-
-[data-bs-theme="light"] .subscription-expired-page .text-gray-900 {
-  color: #333333 !important;
-}
-
-[data-bs-theme="light"] .subscription-expired-page .text-gray-800 {
-  color: #333333 !important;
-}
-
-[data-bs-theme="light"] .subscription-expired-page .text-gray-700 {
-  color: #666666 !important;
-}
-
-[data-bs-theme="light"] .subscription-expired-page .text-gray-600 {
-  color: #666666 !important;
-}
-
-[data-bs-theme="light"] .separator.separator-dashed {
-  border-top-color: #F0F0F0;
-}
-
-/* Dark Mode */
-[data-bs-theme="dark"] .subscription-expired-page .card {
-  background-color: #2C2C2C;
-  border: none;
-}
-
-[data-bs-theme="dark"] .subscription-logo-bg {
-  background: linear-gradient(135deg, #0077CC 0%, #005FA3 100%);
-}
-
-[data-bs-theme="dark"] .subscription-expired-page .text-gray-900 {
-  color: #E0E0E0 !important;
-}
-
-[data-bs-theme="dark"] .subscription-expired-page .text-gray-800 {
-  color: #E0E0E0 !important;
-}
-
-[data-bs-theme="dark"] .subscription-expired-page .text-gray-700 {
-  color: #E0E0E0 !important;
-}
-
-[data-bs-theme="dark"] .subscription-expired-page .text-gray-600 {
-  color: #AAAAAA !important;
-}
-
-[data-bs-theme="dark"] .subscription-expired-page .card-body {
-  background-color: #2C2C2C;
-}
-
-[data-bs-theme="dark"] .separator.separator-dashed {
-  border-top-color: #1A1A1A;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-  .subscription-expired-page .card {
-    margin: 1rem;
-    max-width: 95% !important;
-  }
-  
-  .subscription-expired-page .card-body {
-    padding: 2.5rem 2rem !important;
-  }
-  
-  .subscription-expired-page h1 {
-    font-size: 2rem !important;
-  }
-  
-  .subscription-logo {
-    width: 140px;
-  }
-  
-  .subscription-logo-bg {
-    width: 160px;
-    height: 160px;
-  }
-}
-
-@media (max-width: 576px) {
-  .subscription-expired-page .card-body {
-    padding: 2rem 1.5rem !important;
-  }
-  
-  .subscription-expired-page h1 {
-    font-size: 1.75rem !important;
-  }
-  
-  .subscription-logo {
-    width: 120px;
-  }
-  
-  .subscription-logo-bg {
-    width: 140px;
-    height: 140px;
-  }
-  
-  .subscription-cta-btn {
-    font-size: 0.95rem !important;
-    padding: 1rem 2rem !important;
-  }
-}
-</style>
