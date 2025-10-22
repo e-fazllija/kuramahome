@@ -4,14 +4,15 @@ const store = useAuthStore();
 
 export class Agent {
   Id?: number;
-  Name: string;
+  FirstName: string;
   LastName: string;
   Email: string;
   PhoneNumber: number;
   MobilePhone?: number;
   Referent?: string;
   Address: string;
-  Town: string;
+  City: string;
+  ZipCode?: string;
   Region?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
@@ -20,6 +21,13 @@ export class Agent {
   Password?: string;
   AgencyId: string;
   Color: string;
+  // Dati Fiscali
+  UserType?: number;
+  FiscalCode?: string;
+  CompanyName?: string;
+  VATNumber?: string;
+  PEC?: string;
+  SDICode?: string;
 }
 
 export class InsertModel {

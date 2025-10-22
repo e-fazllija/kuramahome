@@ -18,14 +18,21 @@ export interface User {
   MobilePhone?: number;
   Referent?: string;
   Address: string;
-  Town: string;
+  City: string;
+  ZipCode?: string;
   Region?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
   AgencyId?: string;
-  CompanyName?: string;
   label?: string;
-  Color?: "#ffffff"
+  Color?: "#ffffff";
+  // Dati Fiscali
+  UserType?: number;
+  FiscalCode?: string;
+  CompanyName?: string;
+  VATNumber?: string;
+  PEC?: string;
+  SDICode?: string;
 }
 
 export const useAuthStore = defineStore("auth", () => {

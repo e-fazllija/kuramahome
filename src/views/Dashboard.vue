@@ -5,9 +5,9 @@
     </div>
   </div>
 
-  <div v-if="!subscriptionExpired">
+  <div v-else-if="!subscriptionExpired">
   <!--begin::Agencies Map-->
-  <div v-if="!loading" class="row mb-8">
+  <div class="row mb-8">
     <div class="col-xl-12">
       <Chart13 
         :agencies-list="agenciesList"
@@ -26,7 +26,7 @@
   <!--end::Agencies Map-->
 
   <!--begin::Analytics Overview-->
-  <div v-if="!loading" class="row mb-8">
+  <div class="row mb-8">
     <div class="col-xl-12">
       <Chart11 
         :kpi-data="kpiAnalyticsData"
@@ -37,7 +37,7 @@
   <!--end::Analytics Overview-->
 
   <!--begin::Andamento Immobili-->
-  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
+  <div class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -64,7 +64,7 @@
   <!--end::Andamento Immobili-->
 
   <!--begin::Distribuzione & Zone-->
-  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
+  <div class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -141,7 +141,7 @@
   <!--end::Distribuzione & Zone-->
 
   <!--begin::Performance Teams-->
-  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
+  <div class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
