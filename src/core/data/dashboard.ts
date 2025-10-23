@@ -18,7 +18,7 @@ export interface RealEstatePropertyListItem {
   AddressLine?: string;
   AssignmentEnd?: string;
   CommercialSurfaceate?: number;
-  Region?: string;
+  Province?: string;
   StateOfTheProperty?: string;
   FirstPhotoUrl?: string;
 }
@@ -51,7 +51,7 @@ export interface Agent {
   MobilePhone?: string;
   Address?: string;
   Town?: string;
-  Region?: string;
+  Province?: string;
   AgencyId?: string;
   Color?: string;
   CreationDate?: string;

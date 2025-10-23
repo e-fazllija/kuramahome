@@ -245,8 +245,8 @@
             </div>
           </div>
         </template>
-        <template v-slot:Name="{ row: agent }">
-          {{ agent.Name }}
+        <template v-slot:FirstName="{ row: agent }">
+          {{ agent.FirstName }}
         </template>
         <template v-slot:LastName="{ row: agent }">
           {{ agent.LastName }}
@@ -370,7 +370,7 @@ export default defineComponent({
       },
       {
         columnName: "Nome",
-        columnLabel: "Name",
+        columnLabel: "FirstName",
         sortEnabled: true,
         columnWidth: 165,
       },

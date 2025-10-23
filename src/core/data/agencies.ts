@@ -4,15 +4,15 @@ const store = useAuthStore();
 
 export class Agency {
   Id?: string;
-  Name: string;
+  FirstName: string;
   LastName: string;
   Email: string;
   PhoneNumber: number;
   MobilePhone?: number;
   Referent?: string;
   Address: string;
-  Town: string;
-  Region?: string;
+  City: string;
+  Province?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
   Token?: string;
@@ -20,6 +20,13 @@ export class Agency {
   Password?: string;
   EmailConfirmed?: boolean;
   Color?: string;
+  // Dati Fiscali
+  UserType?: number;
+  CompanyName?: string;
+  FiscalCode?: string;
+  VATNumber?: string;
+  PEC?: string;
+  SDICode?: string;
 }
 
 const getAgencies = (filterRequest: string) : Promise<Array<Agency>> => {
@@ -50,9 +57,15 @@ const getAgency = (id: String) : Promise<Agency> => {
 };
 
 const createAgency = async (formData: any) => {
-  const values = formData as User;
-  values.Password = "KuramaHome!24";
-  return await store.register(values);
+  return ApiService.post("Agencies/Create", formData)
+    .then(({ data }) => {
+      // Il backend restituisce AuthResponseModel, non Agency
+      return data;
+    })
+    .catch(({ response }) => {
+      store.setError(response.data.Message, response.status);
+      return undefined;
+    });
 };
 
 const updateAgency = async (formData: any) => {
