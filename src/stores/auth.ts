@@ -20,7 +20,7 @@ export interface User {
   Address: string;
   City: string;
   ZipCode?: string;
-  Region?: string;
+  Province?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
   AgencyId?: string;

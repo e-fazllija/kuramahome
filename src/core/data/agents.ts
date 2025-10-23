@@ -13,7 +13,7 @@ export class Agent {
   Address: string;
   City: string;
   ZipCode?: string;
-  Region?: string;
+  Province?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
   Token?: string;

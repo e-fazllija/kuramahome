@@ -190,12 +190,12 @@ interface Agency {
   name: string;
   address: string;
   town: string;
-  region: string;
+  province: string;
   phone?: string;
   color?: string;
   Address?: string;
   Town?: string;
-  Region?: string;
+  Province?: string;
   PhoneNumber?: string;
   Color?: string;
   UserName?: string;
@@ -263,14 +263,14 @@ export default defineComponent({
     // Get main agency coordinates (first agency or agency with specific criteria)
     const getMainAgencyCoords = (): [number, number] => {
       if (props.agenciesList.length === 0) {
-        return [41.9, 12.5]; // Default to Lazio region
+        return [41.9, 12.5]; // Default to Lazio province
       }
 
       // Use the first agency as main agency
       const mainAgency = props.agenciesList[0];
       const address = mainAgency.Address || mainAgency.address || '';
       const town = mainAgency.Town || mainAgency.town || '';
-      const region = mainAgency.Region || mainAgency.region || '';
+      const province = mainAgency.Province || mainAgency.province || '';
 
       // Try to geocode the main agency
       if (address && town) {
@@ -284,7 +284,7 @@ export default defineComponent({
         }
       }
 
-      return [41.9, 12.5]; // Default to Lazio region
+      return [41.9, 12.5]; // Default to Lazio province
     };
 
     // Initialize Leaflet map
@@ -546,18 +546,18 @@ export default defineComponent({
         const agency = props.agenciesList[index];
         const address = agency.Address || agency.address || '';
         const town = agency.Town || agency.town || '';
-        const region = agency.Region || agency.region || '';
+        const province = agency.Province || agency.province || '';
         const agencyName = agency.UserName || agency.userName || agency.name || 'Agenzia';
         
         let coords: [number, number] | null = null;
 
-        // Try to geocode the full address with region
+        // Try to geocode the full address with province
         if (address && town) {
-          coords = await geocodeAddress(address, town, region);
+          coords = await geocodeAddress(address, town, province);
           
           if (!coords) {
             // Try again with just town and province if full address fails
-            coords = await geocodeAddress('', town, region);
+            coords = await geocodeAddress('', town, province);
           }
           
           // Add small delay to respect rate limits

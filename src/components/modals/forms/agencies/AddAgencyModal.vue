@@ -26,8 +26,8 @@
               </span>
             </div>
             <div>
-              <h2 class="fw-bold m-0 text-palette-primary fs-3">🏢 Aggiungi Agenzia</h2>
-              <span class="text-palette-secondary fs-7 fw-semibold">Inserisci i dati della nuova agenzia</span>
+              <h2 class="fw-bold m-0 text-gray-900 fs-3"> Aggiungi Agenzia</h2>
+              <span class="text-muted fs-7 fw-semibold">Inserisci i dati della nuova agenzia</span>
             </div>
           </div>
           <!--end::Modal title-->
@@ -64,58 +64,145 @@
               data-kt-scroll-wrappers="#kt_modal_add_agency_scroll"
               data-kt-scroll-offset="300px"
             >
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
-                  <i class="ki-duotone ki-user fs-5 me-2 text-primary">
+              <!--begin::Input group - Tipo Utente-->
+              <div class="fv-row mb-8">
+                <label class="form-label fw-bold text-gray-900 fs-5 mb-4">
+                  <i class="ki-duotone ki-user-tick fs-2 text-primary me-2">
                     <span class="path1"></span>
                     <span class="path2"></span>
                     <span class="path3"></span>
-                    <span class="path4"></span>
                   </i>
-                  Nome
+                  Tipo di Utente *
                 </label>
-                <!--end::Label-->
-
-                <!--begin::Input-->
-                <el-form-item prop="name">
-                  <el-input
-                    v-model="formData.Name"
-                    type="text"
-                    placeholder="Inserisci il nome dell'agenzia"
-                    class="modern-input"
-                  />
-                </el-form-item>
-                <!--end::Input-->
+                <div class="row g-4">
+                  <div class="col-6">
+                    <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-column align-items-center p-5 h-100 w-100" :class="{ 'active': formData.UserType === 1 }">
+                      <input
+                        v-model="formData.UserType"
+                        class="btn-check"
+                        type="radio"
+                        name="userType"
+                        :value="1"
+                      />
+                      <i class="ki-duotone ki-profile-user fs-3x text-primary mb-3">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                      </i>
+                      <span class="fw-bold fs-5 text-gray-800">Persona Fisica</span>
+                      <span class="text-muted fs-7 mt-1">Per privati</span>
+                    </label>
+                  </div>
+                  <div class="col-6">
+                    <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-column align-items-center p-5 h-100 w-100" :class="{ 'active': formData.UserType === 2 }">
+                      <input
+                        v-model="formData.UserType"
+                        class="btn-check"
+                        type="radio"
+                        name="userType"
+                        :value="2"
+                      />
+                      <i class="ki-duotone ki-office-bag fs-3x text-primary mb-3">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                      </i>
+                      <span class="fw-bold fs-5 text-gray-800">Persona Giuridica</span>
+                      <span class="text-muted fs-7 mt-1">Per aziende</span>
+                    </label>
+                  </div>
+                </div>
               </div>
               <!--end::Input group-->
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
-                  <i class="ki-duotone ki-user fs-5 me-2 text-primary">
+
+              <!--begin::Campi PERSONA FISICA-->
+              <div v-if="formData.UserType === 1">
+                <!--begin::Input group - Nome e Cognome-->
+                <div class="row fv-row mb-7">
+                  <div class="col-xl-6">
+                    <label class="form-label fw-bold text-gray-800 fs-6">Nome *</label>
+                    <el-form-item prop="FirstName">
+                      <el-input
+                        v-model="formData.FirstName"
+                        type="text"
+                        placeholder="Inserisci il nome"
+                        class="modern-input"
+                      />
+                    </el-form-item>
+                  </div>
+                  <div class="col-xl-6">
+                    <label class="form-label fw-bold text-gray-800 fs-6">Cognome *</label>
+                    <el-form-item prop="LastName">
+                      <el-input
+                        v-model="formData.LastName"
+                        type="text"
+                        placeholder="Inserisci il cognome"
+                        class="modern-input"
+                      />
+                    </el-form-item>
+                  </div>
+                </div>
+                <!--end::Input group-->
+              </div>
+              <!--end::Campi Persona Fisica-->
+
+              <!--begin::Campi PERSONA GIURIDICA-->
+              <div v-if="formData.UserType === 2">
+                <!--begin::Input group - Ragione Sociale-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">Ragione Sociale *</label>
+                  <el-form-item prop="companyName">
+                    <el-input
+                      v-model="formData.CompanyName"
+                      type="text"
+                      placeholder="Es. Rossi Immobiliare S.r.l."
+                      class="modern-input"
+                    />
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Separator-->
+                <div class="separator separator-dashed my-6"></div>
+                <h5 class="text-gray-800 fw-bold mb-4">
+                  <i class="ki-duotone ki-user fs-2 text-primary me-2">
                     <span class="path1"></span>
                     <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
                   </i>
-                  Cognome
-                </label>
-                <!--end::Label-->
+                  Referente Aziendale
+                </h5>
+                <!--end::Separator-->
 
-                <!--begin::Input-->
-                <el-form-item prop="LastName">
-                  <el-input
-                    v-model="formData.LastName"
-                    type="text"
-                    placeholder="Inserisci il cognome"
-                    class="modern-input"
-                  />
-                </el-form-item>
-                <!--end::Input-->
+                <!--begin::Input group - Nome e Cognome Referente-->
+                <div class="row fv-row mb-7">
+                  <div class="col-xl-6">
+                    <label class="form-label fw-bold text-gray-800 fs-6">Nome Referente *</label>
+                    <el-form-item prop="FirstName">
+                      <el-input
+                        v-model="formData.FirstName"
+                        type="text"
+                        placeholder="Nome del referente"
+                        class="modern-input"
+                      />
+                    </el-form-item>
+                  </div>
+                  <div class="col-xl-6">
+                    <label class="form-label fw-bold text-gray-800 fs-6">Cognome Referente *</label>
+                    <el-form-item prop="LastName">
+                      <el-input
+                        v-model="formData.LastName"
+                        type="text"
+                        placeholder="Cognome del referente"
+                        class="modern-input"
+                      />
+                    </el-form-item>
+                  </div>
+                </div>
+                <!--end::Input group-->
               </div>
-              <!--end::Input group-->
+              <!--end::Campi Persona Giuridica-->
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
@@ -311,13 +398,13 @@
                   <!--end::Label-->
 
                   <!--begin::Input-->
-                  <el-form-item prop="Town">
-                    <el-input 
-                      v-model="formData.Town" 
-                      placeholder="Nome del comune"
-                      class="modern-input"
-                    />
-                  </el-form-item>
+                    <el-form-item prop="City">
+                      <el-input 
+                        v-model="formData.City" 
+                        placeholder="Nome del comune"
+                        class="modern-input"
+                      />
+                    </el-form-item>
                   <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -339,9 +426,9 @@
                     <!--end::Label-->
 
                     <!--begin::Input-->
-                    <el-form-item prop="state">
+                    <el-form-item prop="province">
                       <el-input 
-                        v-model="formData.Region" 
+                        v-model="formData.Province" 
                         placeholder="Es. MI, RM, NA"
                         class="modern-input"
                       />
@@ -367,12 +454,29 @@
 
                     <!--begin::Input-->
                     <el-form-item prop="color">
-                      <el-input 
-                        v-model="formData.Color" 
-                        type="color" 
-                        class="modern-color-input"
-                        style="height: 40px; border-radius: 0.75rem;"
-                      />
+                      <div class="color-picker-container">
+                        <div class="color-options">
+                          <div 
+                            v-for="color in colorOptions" 
+                            :key="color.value"
+                            class="color-option"
+                            :class="{ 'selected': formData.Color === color.value }"
+                            :style="{ backgroundColor: color.value }"
+                            @click="selectColor(color.value)"
+                            :title="color.name"
+                          >
+                            <i v-if="formData.Color === color.value" class="ki-duotone ki-check fs-4 text-white">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                            </i>
+                          </div>
+                        </div>
+                        <div class="selected-color-display">
+                          <span class="color-label">Colore selezionato:</span>
+                          <div class="current-color" :style="{ backgroundColor: formData.Color }"></div>
+                          <span class="color-value">{{ formData.Color }}</span>
+                        </div>
+                      </div>
                     </el-form-item>
                     <!--end::Input-->
                   </div>
@@ -383,6 +487,94 @@
 
               </div>
               <!--end::Billing form-->
+
+              <!--begin::Separator-->
+              <div class="separator separator-content my-8">
+                <span class="w-250px fw-bold text-gray-700 fs-6">
+                  <i class="ki-duotone ki-bill fs-2 text-info me-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                    <span class="path5"></span>
+                    <span class="path6"></span>
+                  </i>
+                  Dati Fiscali <span class="text-muted fs-7 fw-normal">(Opzionali)</span>
+                </span>
+              </div>
+              <!--end::Separator-->
+
+              <!--begin::Campi PERSONA FISICA-->
+              <div v-if="formData.UserType === 1">
+                <!--begin::Input group - Codice Fiscale-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">Codice Fiscale</label>
+                  <el-form-item prop="fiscalCode">
+                    <el-input
+                      v-model="formData.FiscalCode"
+                      type="text"
+                      placeholder="16 caratteri"
+                      maxlength="16"
+                      class="modern-input"
+                      @input="formData.FiscalCode = formData.FiscalCode.toUpperCase()"
+                      style="text-transform: uppercase;"
+                    />
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
+              </div>
+              <!--end::Campi Persona Fisica-->
+
+              <!--begin::Campi PERSONA GIURIDICA-->
+              <div v-if="formData.UserType === 2">
+                <!--begin::Input group - Partita IVA-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">Partita IVA</label>
+                  <el-form-item prop="vatNumber">
+                    <el-input
+                      v-model="formData.VATNumber"
+                      type="text"
+                      placeholder="11 cifre"
+                      maxlength="11"
+                      class="modern-input"
+                    />
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Input group - PEC o Codice SDI-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">PEC o Codice Destinatario SDI</label>
+                  <div class="row">
+                    <div class="col-xl-8">
+                      <el-form-item prop="pec">
+                        <el-input
+                          v-model="formData.PEC"
+                          type="email"
+                          placeholder="pec@example.com"
+                          class="modern-input"
+                        />
+                      </el-form-item>
+                    </div>
+                    <div class="col-xl-4">
+                      <el-form-item prop="sdiCode">
+                        <el-input
+                          v-model="formData.SDICode"
+                          type="text"
+                          placeholder="SDI (7 caratteri)"
+                          maxlength="7"
+                          class="modern-input"
+                          @input="formData.SDICode = formData.SDICode.toUpperCase()"
+                          style="text-transform: uppercase;"
+                        />
+                      </el-form-item>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Input group-->
+              </div>
+              <!--end::Campi Persona Giuridica-->
+
             </div>
             <!--end::Scroll-->
           </div>
@@ -455,22 +647,49 @@ export default defineComponent({
     const addAgencyModalRef = ref<null | HTMLElement>(null);
     const loading = ref<boolean>(false);
     const store = useAuthStore();
-    const formData = ref<Agency>({
-      Name: "",
+    const formData = ref<any>({
+      FirstName: "",
       LastName: "",
       Email: "",
+      UserName: "",
       PhoneNumber: null,
       MobilePhone: null,
       Referent: "",
       Address: "",
-      Town: "",
-      Region: "",
+      City: "",
+      Province: "",
       Password: "",
-      Color: ""
+      Color: "#00FFFF", // Default: Ciano
+      // Dati Fiscali
+      UserType: 1, // Default: Persona Fisica
+      CompanyName: "",
+      FiscalCode: "",
+      VATNumber: "",
+      PEC: "",
+      SDICode: ""
     });
 
+    // Opzioni colori predefinite
+    const colorOptions = ref([
+      { name: "Ciano", value: "#00FFFF" },
+      { name: "Magenta", value: "#FF00FF" },
+      { name: "Oro", value: "#FFD700" },
+      { name: "Azzurro", value: "#007FFF" },
+      { name: "Verde Lime", value: "#00FF00" },
+      { name: "Indaco", value: "#4B0082" },
+      { name: "Turchese", value: "#40E0D0" },
+      { name: "Salmone", value: "#FA8072" },
+      { name: "Oliva", value: "#808000" },
+      { name: "Lavanda", value: "#E6E6FA" }
+    ]);
+
+    // Funzione per selezionare un colore
+    const selectColor = (color: string) => {
+      formData.value.Color = color;
+    };
+
     const rules = ref({
-      Name: [
+      FirstName: [
         {
           required: true,
           message: "Nome obligatorio",
@@ -505,11 +724,53 @@ export default defineComponent({
           trigger: "change",
         },
       ],
-      Town: [
+      City: [
         {
           required: true,
-          message: "CittÃ  obligatoria",
+          message: "Città obligatoria",
           trigger: "change",
+        },
+      ],
+      CompanyName: [
+        {
+          required: true,
+          message: "Ragione Sociale obligatoria per Persona Giuridica",
+          trigger: "change",
+          validator: (rule: any, value: any, callback: any) => {
+            if (formData.value.UserType === 2 && !value) {
+              callback(new Error("Ragione Sociale obligatoria per Persona Giuridica"));
+            } else {
+              callback();
+            }
+          }
+        },
+      ],
+      FiscalCode: [
+        {
+          pattern: /^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/,
+          message: "Codice Fiscale non valido",
+          trigger: "blur",
+        },
+      ],
+      VATNumber: [
+        {
+          pattern: /^[0-9]{11}$/,
+          message: "Partita IVA deve contenere 11 cifre",
+          trigger: "blur",
+        },
+      ],
+      PEC: [
+        {
+          type: "email",
+          message: "PEC non valida",
+          trigger: "blur",
+        },
+      ],
+      SDICode: [
+        {
+          pattern: /^[A-Z0-9]{7}$/,
+          message: "Codice SDI deve contenere 7 caratteri alfanumerici",
+          trigger: "blur",
         },
       ]
     });
@@ -523,13 +784,11 @@ export default defineComponent({
           loading.value = true;
           
           formData.value.Role = "Agency"
-          await createAgency(formData.value);
+          const result = await createAgency(formData.value);
           
-          const error = store.errors;
-
-          if (!error) {
+          if (result) {
             Swal.fire({
-              text: "Operazione completata!",
+              text: "Agenzia creata con successo!",
               icon: "success",
               buttonsStyling: false,
               confirmButtonText: "Continua!",
@@ -544,8 +803,9 @@ export default defineComponent({
             });
           } else {
             loading.value = false;
+            const error = store.errors;
             Swal.fire({
-              text: error as string,
+              text: error || "Errore durante la creazione dell'agenzia",
               icon: "error",
               buttonsStyling: false,
               confirmButtonText: "Riprova!",
@@ -568,6 +828,8 @@ export default defineComponent({
       addAgencyModalRef,
       getAssetPath,
       countries,
+      colorOptions,
+      selectColor,
     };
   },
 });
@@ -575,3 +837,141 @@ export default defineComponent({
 
 
 <!-- Tutti gli stili sono stati spostati in file CSS dedicati -->
+
+<style scoped>
+/* Color Picker Styles */
+.color-picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.color-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #dee2e6;
+}
+
+.color-option {
+  width: 50px;
+  height: 50px;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border-color: #ffffff;
+}
+
+.color-option.selected {
+  transform: scale(1.15);
+  border-color: #3699ff;
+  box-shadow: 0 6px 20px rgba(54, 153, 255, 0.4);
+}
+
+.color-option.selected::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid #3699ff;
+  border-radius: 0.75rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(54, 153, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(54, 153, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(54, 153, 255, 0);
+  }
+}
+
+.selected-color-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #0bb7af;
+}
+
+.color-label {
+  font-weight: 600;
+  color: #0bb7af;
+  font-size: 0.9rem;
+}
+
+.current-color {
+  width: 30px;
+  height: 30px;
+  border-radius: 0.5rem;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #0bb7af;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .color-options {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .color-option {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .selected-color-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+/* Dark mode support */
+[data-bs-theme="dark"] .color-options {
+  background: linear-gradient(135deg, #1e1e2d 0%, #2d2d3f 100%);
+  border-color: #3c3c4a;
+}
+
+[data-bs-theme="dark"] .selected-color-display {
+  background: linear-gradient(135deg, #1e1e2d 0%, #2d2d3f 100%);
+  border-color: #0bb7af;
+}
+
+[data-bs-theme="dark"] .color-label,
+[data-bs-theme="dark"] .color-value {
+  color: #0bb7af;
+}
+</style>

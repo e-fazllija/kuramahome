@@ -397,19 +397,19 @@
         </div>
         <!--end::Input group-->
 
-        <!--begin::Input group - Regione-->
+        <!--begin::Input group - Provincia-->
         <div class="fv-row mb-7">
-          <label class="form-label fw-bold text-gray-800 fs-6">Regione</label>
+          <label class="form-label fw-bold text-gray-800 fs-6">Provincia</label>
           <Field
-            v-model="formData.region"
+            v-model="formData.province"
             class="form-control form-control-lg form-control-solid"
             type="text"
-            name="region"
+            name="province"
             autocomplete="off"
           />
           <div class="fv-plugins-message-container">
             <div class="fv-help-block">
-              <ErrorMessage name="region" />
+              <ErrorMessage name="province" />
             </div>
           </div>
         </div>
@@ -767,7 +767,7 @@ export default defineComponent({
       address: "",
       city: "",
       zipCode: "",
-      region: "",
+      province: "",
       fiscalCode: "",
       companyName: "",
       vatNumber: "",
@@ -797,7 +797,7 @@ export default defineComponent({
       address: Yup.string().required("L'indirizzo è obbligatorio").label("Indirizzo"),
       city: Yup.string().required("La città è obbligatoria").label("Città"),
       zipCode: Yup.string().required("Il CAP è obbligatorio").label("CAP"),
-      region: Yup.string().nullable().label("Regione"),
+      province: Yup.string().nullable().label("Provincia"),
       // Campi fiscali opzionali
       fiscalCode: Yup.string().nullable().matches(/^[A-Z0-9]{0,16}$/, "Formato codice fiscale non valido").label("Codice Fiscale"),
       vatNumber: Yup.string().nullable().matches(/^(\d{11})?$/, "La partita IVA deve contenere 11 cifre").label("Partita IVA"),
@@ -893,7 +893,7 @@ export default defineComponent({
         ZipCode: formData.zipCode,
         UserType: parseInt(formData.userType), // 1 o 2
         // Campi opzionali
-        Region: formData.region || null,
+        Province: formData.province || null,
         MobilePhone: formData.phone,
         // Campi fiscali condizionali in base al UserType
         FiscalCode: formData.userType === '1' ? (formData.fiscalCode || null) : null,

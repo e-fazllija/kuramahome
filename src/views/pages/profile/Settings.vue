@@ -187,11 +187,11 @@
 
                 <!--begin::Col-->
                 <div class="col-lg-4 fv-row">
-                  <Field type="text" name="Region" class="form-control form-control-lg form-control-solid"
-                    placeholder="Regione" v-model="profileDetails.Region" />
+                  <Field type="text" name="Province" class="form-control form-control-lg form-control-solid"
+                    placeholder="Provincia" v-model="profileDetails.Province" />
                   <div class="fv-plugins-message-container">
                     <div class="fv-help-block">
-                      <ErrorMessage name="Region" />
+                      <ErrorMessage name="Province" />
                     </div>
                   </div>
                 </div>
@@ -659,7 +659,7 @@ export default defineComponent({
       Address: Yup.string().required().label("Address"),
       City: Yup.string().required().label("City"),
       ZipCode: Yup.string().label("ZipCode"),
-      Region: Yup.string().label("Region"),
+      Province: Yup.string().label("Province"),
       Color: Yup.string().label("Color"),
     });
 

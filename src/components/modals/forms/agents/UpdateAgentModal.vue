@@ -17,7 +17,7 @@
               </span>
             </div>
             <div>
-              <h2 class="fw-bold m-0 text-gray-900 fs-3">👤 Aggiorna Agente</h2>
+              <h2 class="fw-bold m-0 text-gray-900 fs-3">Aggiorna Agente</h2>
               <span class="text-muted fs-7 fw-semibold">Modifica i dati dell'agente selezionato</span>
             </div>
           </div>
@@ -80,7 +80,7 @@
                 <!--begin::Input-->
                 <el-form-item prop="Name">
                   <el-input 
-                    v-model="formData.Name" 
+                    v-model="formData.FirstName" 
                     type="text" 
                     placeholder="Inserisci il nome"
                     class="modern-input"
@@ -306,7 +306,7 @@
                   <!--begin::Input-->
                   <el-form-item prop="Town">
                     <el-input 
-                      v-model="formData.Town"
+                      v-model="formData.City"
                       placeholder="Nome del comune"
                       class="modern-input"
                     />
@@ -330,9 +330,9 @@
                     <!--end::Label-->
 
                     <!--begin::Input-->
-                    <el-form-item prop="state">
+                    <el-form-item prop="province">
                       <el-input 
-                        v-model="formData.Region"
+                        v-model="formData.Province"
                         placeholder="Es. MI, RM, NA"
                         class="modern-input"
                       />
@@ -441,15 +441,15 @@ export default defineComponent({
     ];
     const formData = ref<Agent>({
       Id: 0,
-      Name: "",
+      FirstName: "",
       LastName: "",
       Email: "",
       PhoneNumber: null,
       MobilePhone: null,
       Referent: "",
       Address: "",
-      Town: "",
-      Region: "",
+      City: "",
+      Province: "",
       Password: "",
       AgencyId: "",
       Color: "#ffffff"

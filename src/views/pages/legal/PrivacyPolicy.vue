@@ -105,7 +105,7 @@
                     <ul class="list-unstyled text-gray-700 fs-6">
                       <li class="mb-2"><i class="ki-duotone ki-check-circle fs-5 text-success me-2"><span class="path1"></span><span class="path2"></span></i>Indirizzo di residenza</li>
                       <li class="mb-2"><i class="ki-duotone ki-check-circle fs-5 text-success me-2"><span class="path1"></span><span class="path2"></span></i>Città e CAP</li>
-                      <li class="mb-2"><i class="ki-duotone ki-check-circle fs-5 text-success me-2"><span class="path1"></span><span class="path2"></span></i>Regione</li>
+                      <li class="mb-2"><i class="ki-duotone ki-check-circle fs-5 text-success me-2"><span class="path1"></span><span class="path2"></span></i>Provincia</li>
                       <li class="mb-2"><i class="ki-duotone ki-check-circle fs-5 text-success me-2"><span class="path1"></span><span class="path2"></span></i>Dati fiscali (Codice Fiscale/P.IVA)</li>
                     </ul>
                   </div>
