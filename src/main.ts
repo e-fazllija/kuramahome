@@ -19,6 +19,9 @@ import { initKtIcon } from "@/core/plugins/keenthemes";
 
 import "@/core/plugins/prismjs";
 
+// Import palette colori globale
+import "@/assets/css/palette-variables.css";
+
 const app = createApp(App);
 
 app.use(createPinia());

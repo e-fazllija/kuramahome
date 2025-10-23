@@ -3,13 +3,13 @@
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
       <!--begin::Modal content-->
-      <div class="modal-content" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+      <div class="modal-content card-palette" style="border-radius: 0.95rem; box-shadow: 0 10px 30px var(--bs-shadow-color);">
         <!--begin::Modal header-->
-        <div class="modal-header" id="kt_modal_add_property_header" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+        <div class="modal-header card-palette-header" id="kt_modal_add_property_header" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%); border-radius: 0.95rem 0.95rem 0 0;">
           <!--begin::Modal title-->
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+              <span class="symbol-label" style="background: linear-gradient(135deg, #0077CC 0%, #0077CC 100%); box-shadow: 0 4px 12px rgba(0, 119, 204, 0.3);">
                 <i class="ki-duotone ki-home fs-2 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -17,8 +17,8 @@
               </span>
             </div>
             <div>
-              <h2 class="fw-bold m-0 text-gray-900 fs-3">🏠 Aggiungi Immobile</h2>
-              <span class="text-muted fs-7 fw-semibold">Inserisci i dati del nuovo immobile</span>
+              <h2 class="fw-bold m-0 text-palette-primary fs-3">🏠 Aggiungi Immobile</h2>
+              <span class="text-palette-secondary fs-7 fw-semibold">Inserisci i dati del nuovo immobile</span>
             </div>
           </div>
           <!--end::Modal title-->
@@ -28,7 +28,7 @@
             id="kt_modal_add_property_close"
             data-bs-dismiss="modal"
             class="btn btn-icon btn-sm btn-active-icon-primary"
-            style="border-radius: 0.5rem; background: rgba(255, 255, 255, 0.8); border: 1px solid #e9ecef;"
+            style="border-radius: 0.5rem; background: var(--bs-bg-primary); border: 1px solid var(--bs-border-color);"
           >
             <KTIcon icon-name="cross" icon-class="fs-1" />
           </div>
@@ -50,7 +50,7 @@
               <!--begin::Input group-->
               <div class="d-flex flex-column mb-5 fv-row">
                 <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-user fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -59,7 +59,7 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <select class="form-select modern-select" v-model="formData.AgentId">
+                <select class="form-select modern-select form-control-palette" v-model="formData.AgentId">
                   <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.Name }} {{ user.LastName }}</option>
                 </select>
                 <!--end::Input-->
@@ -69,7 +69,7 @@
               <!--begin::Input group-->
               <div class="fv-row mb-9">
                 <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -90,7 +90,7 @@
                 :close-on-select="true"
                 :clear-on-select="false"
                 placeholder="Seleziona il cliente"
-                class="multiselect-modern"
+                class="multiselect-modern form-control-palette"
               />
                 <!--end::Input-->
               </div>
@@ -99,7 +99,7 @@
               <!--begin::Input group-->
               <div class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-text fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -109,7 +109,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Title">
-                  <el-input v-model="formData.Title" type="text" class="modern-input" placeholder="Inserisci il titolo dell'immobile" />
+                  <el-input v-model="formData.Title" type="text" class="modern-input form-control-palette" placeholder="Inserisci il titolo dell'immobile" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -118,7 +118,7 @@
               <!--begin::Input group-->
               <div class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -131,7 +131,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Description">
-                  <textarea class="form-control modern-textarea" v-model="formData.Description" rows="3" placeholder="Descrivi le caratteristiche dell'immobile..."></textarea>
+                  <textarea class="form-control modern-textarea form-control-palette" v-model="formData.Description" rows="3" placeholder="Descrivi le caratteristiche dell'immobile..."></textarea>
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -142,7 +142,7 @@
               <!--begin::Col-->
               <div class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="fs-6 fw-semobold mb-2">Trattativa riservata</label>
+                <label class="fs-6 fw-semobold mb-2 text-palette-primary">Trattativa riservata</label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <div class="form-check form-switch form-check-custom form-check-solid">
@@ -155,7 +155,7 @@
               <!--begin::Col-->
               <div v-if="!isTrattativaRiservata" class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -165,7 +165,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Price">
-                  <el-input v-model="formData.Price" type="number" class="modern-input" placeholder="Inserisci il prezzo" />
+                  <el-input v-model="formData.Price" type="number" class="modern-input form-control-palette" placeholder="Inserisci il prezzo" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -174,7 +174,7 @@
               <!--begin::Col-->
               <div class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-calendar fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -184,7 +184,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="AssignmentEnd">
-                  <el-input v-model="formData.AssignmentEnd" type="date" class="modern-input" />
+                  <el-input v-model="formData.AssignmentEnd" type="date" class="modern-input form-control-palette" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -350,7 +350,7 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-7 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-category fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -375,7 +375,7 @@
 
                 <!--begin::Input group Tipologia-->
                 <div v-if="showTipologia" class="d-flex flex-column mb-7 fv-row">
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -393,7 +393,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-document fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -440,7 +440,7 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-7 fv-row">
                   <!--begin::Label-->
-                  <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-map fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -459,7 +459,7 @@
                 <!--begin::Input group-->
                <div class="d-flex flex-column mb-5 fv-row">
                     <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-map fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -479,7 +479,7 @@
                 <!--begin::Input group-->
                <div class="d-flex flex-column mb-5 fv-row">
                     <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -501,7 +501,7 @@
                 <!--begin::Input group-->
                <div class="d-flex flex-column mb-5 fv-row">
                     <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-position fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -520,7 +520,7 @@
                 <!--begin::Col-->
                   <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-code fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -567,7 +567,7 @@
                   <!--begin::Col-->
                   <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -586,7 +586,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -607,7 +607,7 @@
                   <!--begin::Col-->
                   <div class="d-flex flex-column mb-7 fv-row">
                     <!--begin::Label-->
-                    <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                    <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -627,7 +627,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-arrow-up fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -661,7 +661,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -680,7 +680,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-arrow-up fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -699,7 +699,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -723,7 +723,7 @@
                   <!--begin::Col-->
                   <div class="col-md-6 fv-row">
                     <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -743,7 +743,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -764,7 +764,7 @@
                   <!--begin::Col-->
                   <div class="col-md-6 fv-row">
                     <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-coffee fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -784,7 +784,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-water fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -803,7 +803,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -825,7 +825,7 @@
 
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -846,7 +846,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-car fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -865,7 +865,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-fire fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -886,7 +886,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-compass fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -908,7 +908,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-element-11 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -941,7 +941,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-abstract-26 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -960,7 +960,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -983,7 +983,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-calendar fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -1001,7 +1001,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-check-circle fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -1021,7 +1021,7 @@
                         <!--begin::Input group-->
         <div class="d-flex flex-column mb-7 fv-row">
           <!--begin::Label-->
-          <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
             <i class="ki-duotone ki-document fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -1043,7 +1043,7 @@
         <!--begin::Col-->
         <div class="col-md-4 fv-row">
           <!--begin::Label-->
-          <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
             <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -1066,7 +1066,7 @@
         <!--begin::Col-->
         <div class="col-md-4 fv-row">
           <!--begin::Label-->
-          <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
             <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -1089,7 +1089,7 @@
         <!--begin::Col-->
         <div class="col-md-4 fv-row">
           <!--begin::Label-->
-          <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
             <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -1112,7 +1112,7 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-2 fv-row">
                   <!--begin::Label-->
-                  <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="required fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-youtube fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>

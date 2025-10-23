@@ -1,7 +1,25 @@
 /* ========================================
    PRICING MODAL STYLES
    Stili per la modale dei piani di abbonamento
+   Utilizza la palette colori personalizzata
    ======================================== */
+
+/* CSS Variables per la palette colori */
+:root {
+  --bs-text-primary: #333333; /* testo_principale light */
+  --bs-text-secondary: #666666; /* testo_secondario light */
+  --bs-bg-primary: #FFFFFF; /* sfondo_principale light */
+  --bs-bg-secondary: #F0F0F0; /* sfondo_secondario light */
+  --bs-accent-primary: #0077CC; /* accent_principale */
+}
+
+[data-bs-theme="dark"] {
+  --bs-text-primary: #E0E0E0; /* testo_principale dark */
+  --bs-text-secondary: #AAAAAA; /* testo_secondario dark */
+  --bs-bg-primary: #1A1A1A; /* sfondo_principale dark */
+  --bs-bg-secondary: #2C2C2C; /* sfondo_secondario dark */
+  --bs-accent-primary: #0077CC; /* accent_principale (stesso per entrambe le modalità) */
+}
 
 /* Modal Backdrop */
 .pricing-modal-backdrop {
@@ -22,7 +40,7 @@
 
 /* Modal Container */
 .pricing-modal-container {
-  background: #ffffff;
+  background: var(--bs-bg-primary);
   border-radius: 1.5rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
@@ -59,8 +77,8 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #e9ecef;
+  background: var(--bs-bg-primary);
+  border: 1px solid var(--bs-bg-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,7 +100,7 @@
 }
 
 .pricing-modal-close .ki-duotone {
-  color: #7e8299;
+  color: var(--bs-text-secondary);
   transition: color 0.3s ease;
 }
 
@@ -203,6 +221,7 @@
 
 /* ========================================
    DARK MODE STYLES
+   Utilizza la palette colori dark fornita
    ======================================== */
 
 [data-bs-theme="dark"] .pricing-modal-backdrop {
@@ -210,13 +229,12 @@
 }
 
 [data-bs-theme="dark"] .pricing-modal-container {
-  background: #1e1e2d;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
 [data-bs-theme="dark"] .pricing-modal-close {
-  background: rgba(30, 30, 45, 0.95);
-  border-color: #2d2d3f;
+  background: var(--bs-bg-primary);
+  border-color: var(--bs-bg-secondary);
 }
 
 [data-bs-theme="dark"] .pricing-modal-close:hover {
@@ -224,31 +242,44 @@
   border-color: #f1416c;
 }
 
+[data-bs-theme="dark"] .pricing-modal-close .ki-duotone {
+  color: var(--bs-text-secondary);
+}
+
 [data-bs-theme="dark"] .pricing-modal-content::-webkit-scrollbar-thumb {
-  background-color: #3f4254;
+  background-color: var(--bs-bg-secondary);
 }
 
 [data-bs-theme="dark"] .pricing-modal-content::-webkit-scrollbar-thumb:hover {
-  background-color: #565674;
+  background-color: var(--bs-text-secondary);
 }
 
 /* Adjustments for card headers in dark mode */
 [data-bs-theme="dark"] .pricing-modal-container .card-header {
-  background: linear-gradient(135deg, rgba(54, 153, 255, 0.15) 0%, rgba(11, 183, 175, 0.15) 100%) !important;
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.15) 0%, rgba(0, 119, 204, 0.1) 100%) !important;
 }
 
 [data-bs-theme="dark"] .pricing-modal-container .payment-summary {
-  background: linear-gradient(135deg, rgba(54, 153, 255, 0.15) 0%, rgba(11, 183, 175, 0.15) 100%) !important;
-  border-color: #2d2d3f !important;
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.15) 0%, rgba(0, 119, 204, 0.1) 100%) !important;
+  border-color: var(--bs-bg-secondary) !important;
 }
 
 [data-bs-theme="dark"] .pricing-modal-container #payment-element-modal {
-  background: #151521;
+  background: var(--bs-bg-primary);
 }
 
 /* Smooth scrolling */
 .pricing-modal-content {
   scroll-behavior: smooth;
+}
+
+/* Text color classes using palette */
+.pricing-text-primary {
+  color: var(--bs-text-primary);
+}
+
+.pricing-text-secondary {
+  color: var(--bs-text-secondary);
 }
 
 /* Overlay gradient effect for better visual hierarchy */
@@ -266,7 +297,7 @@
 }
 
 [data-bs-theme="dark"] .pricing-modal-container::before {
-  background: linear-gradient(180deg, rgba(54, 153, 255, 0.03) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(0, 119, 204, 0.03) 0%, transparent 100%);
 }
 
 

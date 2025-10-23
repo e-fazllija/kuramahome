@@ -1,11 +1,11 @@
 <template>
   <div class="modal fade" id="kt_modal_add_city" ref="addCityModalRef" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
-      <div class="modal-content" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
-        <div class="modal-header" id="kt_modal_add_city_header" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+      <div class="modal-content card-palette" style="border-radius: 0.95rem; box-shadow: 0 10px 30px var(--bs-shadow-color);">
+        <div class="modal-header card-palette-header" id="kt_modal_add_city_header" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%); border-radius: 0.95rem 0.95rem 0 0;">
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+              <span class="symbol-label" style="background: linear-gradient(135deg, #0077CC 0%, #0077CC 100%); box-shadow: 0 4px 12px rgba(0, 119, 204, 0.3);">
                 <i class="ki-duotone ki-building fs-2 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -13,15 +13,15 @@
               </span>
             </div>
             <div>
-              <h2 class="fw-bold m-0 text-gray-900 fs-3">Aggiungi Città</h2>
-              <span class="text-muted fs-7 fw-semibold">Inserisci i dati della nuova città</span>
+              <h2 class="fw-bold m-0 text-palette-primary fs-3">Aggiungi Città</h2>
+              <span class="text-palette-secondary fs-7 fw-semibold">Inserisci i dati della nuova città</span>
             </div>
           </div>
           <div
             id="kt_modal_add_city_close"
             data-bs-dismiss="modal"
             class="btn btn-icon btn-sm btn-active-icon-primary"
-            style="border-radius: 0.5rem; background: rgba(255, 255, 255, 0.8); border: 1px solid #e9ecef;"
+            style="border-radius: 0.5rem; background: var(--bs-bg-primary); border: 1px solid var(--bs-border-color);"
           >
             <KTIcon icon-name="cross" icon-class="fs-1" />
           </div>
@@ -38,7 +38,7 @@
                  data-kt-scroll-wrappers="#kt_modal_add_city_scroll"
                  data-kt-scroll-offset="300px">
               <div class="fv-row mb-9">
-                <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-building fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -48,13 +48,13 @@
                 <input
                   type="text"
                   v-model="formData.Name"
-                  class="form-control modern-input"
+                  class="form-control modern-input form-control-palette"
                   placeholder="Inserisci il nome della città"
                   required
                 />
               </div>
               <div class="fv-row mb-9">
-                <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-map fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>

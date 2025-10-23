@@ -8,11 +8,11 @@
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
       <!--begin::Modal content-->
-      <div class="modal-content">
+      <div class="modal-content card-palette">
         <!--begin::Modal header-->
-        <div class="modal-header">
+        <div class="modal-header card-palette-header">
           <!--begin::Modal title-->
-          <h2 class="fw-bold">Export Customers</h2>
+          <h2 class="fw-bold text-palette-primary">Export Customers</h2>
           <!--end::Modal title-->
 
           <!--begin::Close-->
@@ -39,7 +39,7 @@
             <!--begin::Input group-->
             <div class="fv-row mb-10">
               <!--begin::Label-->
-              <label class="fs-5 fw-semobold form-label mb-5"
+              <label class="fs-5 fw-semobold form-label mb-5 text-palette-primary"
                 >Select Date Range:</label
               >
               <!--end::Label-->

@@ -1,0 +1,178 @@
+/* ========================================
+   PALETTE COLORI GLOBALE
+   Variabili CSS per la palette colori personalizzata
+   Supporto completo per modalità light e dark
+   ======================================== */
+
+/* CSS Variables per la palette colori */
+:root {
+  /* Modalità Light */
+  --bs-text-primary: #333333; /* testo_principale light - Grigio Scuro (Antracite) */
+  --bs-text-secondary: #666666; /* testo_secondario light - Grigio Medio */
+  --bs-bg-primary: #FFFFFF; /* sfondo_principale light - Bianco Puro */
+  --bs-bg-secondary: #F0F0F0; /* sfondo_secondario light - Grigio Chiaro */
+  --bs-accent-primary: #0077CC; /* accent_principale - Blu Professionale */
+  
+  /* Colori aggiuntivi per coerenza */
+  --bs-border-color: #F0F0F0;
+  --bs-shadow-color: rgba(0, 0, 0, 0.1);
+  --bs-hover-bg: rgba(0, 119, 204, 0.05);
+  --bs-focus-color: rgba(0, 119, 204, 0.2);
+}
+
+[data-bs-theme="dark"] {
+  /* Modalità Dark */
+  --bs-text-primary: #E0E0E0; /* testo_principale dark - Bianco Tenue */
+  --bs-text-secondary: #AAAAAA; /* testo_secondario dark - Grigio Chiaro Freddo */
+  --bs-bg-primary: #1A1A1A; /* sfondo_principale dark - Grigio Scuro Profondo */
+  --bs-bg-secondary: #2C2C2C; /* sfondo_secondario dark - Grigio Medio Caldo */
+  --bs-accent-primary: #0077CC; /* accent_principale - Blu Professionale (stesso per coerenza) */
+  
+  /* Colori aggiuntivi per coerenza */
+  --bs-border-color: #2C2C2C;
+  --bs-shadow-color: rgba(0, 0, 0, 0.3);
+  --bs-hover-bg: rgba(0, 119, 204, 0.1);
+  --bs-focus-color: rgba(0, 119, 204, 0.3);
+}
+
+/* Classi utility per la palette colori */
+.text-palette-primary {
+  color: var(--bs-text-primary) !important;
+}
+
+.text-palette-secondary {
+  color: var(--bs-text-secondary) !important;
+}
+
+.bg-palette-primary {
+  background-color: var(--bs-bg-primary) !important;
+}
+
+.bg-palette-secondary {
+  background-color: var(--bs-bg-secondary) !important;
+}
+
+.border-palette {
+  border-color: var(--bs-border-color) !important;
+}
+
+.btn-palette-primary {
+  background-color: var(--bs-accent-primary) !important;
+  border-color: var(--bs-accent-primary) !important;
+  color: white !important;
+}
+
+.btn-palette-primary:hover {
+  background-color: var(--bs-accent-primary) !important;
+  border-color: var(--bs-accent-primary) !important;
+  opacity: 0.9;
+}
+
+.btn-palette-outline {
+  background-color: transparent !important;
+  border-color: var(--bs-accent-primary) !important;
+  color: var(--bs-accent-primary) !important;
+}
+
+.btn-palette-outline:hover {
+  background-color: var(--bs-accent-primary) !important;
+  color: white !important;
+}
+
+/* Card styles con palette */
+.card-palette {
+  background-color: var(--bs-bg-primary) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.card-palette-header {
+  background-color: var(--bs-bg-secondary) !important;
+  border-bottom-color: var(--bs-border-color) !important;
+  color: var(--bs-text-primary) !important;
+}
+
+/* Form styles con palette */
+.form-control-palette {
+  background-color: var(--bs-bg-primary) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.form-control-palette:focus {
+  background-color: var(--bs-bg-primary) !important;
+  border-color: var(--bs-accent-primary) !important;
+  box-shadow: 0 0 0 0.2rem var(--bs-focus-color) !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.form-label-palette {
+  color: var(--bs-text-primary) !important;
+}
+
+/* Modal styles con palette */
+.modal-palette {
+  background-color: var(--bs-bg-primary) !important;
+}
+
+.modal-palette-header {
+  background-color: var(--bs-bg-secondary) !important;
+  border-bottom-color: var(--bs-border-color) !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.modal-palette-body {
+  background-color: var(--bs-bg-primary) !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.modal-palette-footer {
+  background-color: var(--bs-bg-secondary) !important;
+  border-top-color: var(--bs-border-color) !important;
+}
+
+/* Table styles con palette */
+.table-palette {
+  color: var(--bs-text-primary) !important;
+}
+
+.table-palette th {
+  background-color: var(--bs-bg-secondary) !important;
+  color: var(--bs-text-primary) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+.table-palette td {
+  background-color: var(--bs-bg-primary) !important;
+  color: var(--bs-text-primary) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+.table-palette tbody tr:hover {
+  background-color: var(--bs-hover-bg) !important;
+}
+
+/* Alert styles con palette */
+.alert-palette-info {
+  background-color: rgba(0, 119, 204, 0.1) !important;
+  border-color: var(--bs-accent-primary) !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.alert-palette-success {
+  background-color: rgba(40, 167, 69, 0.1) !important;
+  border-color: #28a745 !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.alert-palette-warning {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+  border-color: #ffc107 !important;
+  color: var(--bs-text-primary) !important;
+}
+
+.alert-palette-danger {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  border-color: #dc3545 !important;
+  color: var(--bs-text-primary) !important;
+}

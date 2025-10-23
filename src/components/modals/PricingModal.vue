@@ -24,8 +24,8 @@
             <div class="spinner-border text-primary mb-5" role="status" style="width: 3rem; height: 3rem;">
               <span class="visually-hidden">Caricamento...</span>
             </div>
-            <h3 class="fw-bold text-gray-900 mb-2">Verifica in corso...</h3>
-            <p class="text-muted fs-5">Stiamo verificando il tuo indirizzo email</p>
+            <h3 class="fw-bold mb-2 pricing-text-primary">Verifica in corso...</h3>
+            <p class="fs-5 pricing-text-secondary">Stiamo verificando il tuo indirizzo email</p>
           </div>
 
           <!-- Content (shown only after verification) -->
@@ -33,7 +33,7 @@
             <!-- Header Section -->
             <div class="text-center mb-10">
               <div class="symbol symbol-60px mx-auto mb-5">
-                <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 20px rgba(54, 153, 255, 0.4);">
+                <span class="symbol-label" style="background: linear-gradient(135deg, #0077CC 0%, #0077CC 100%); box-shadow: 0 4px 20px rgba(0, 119, 204, 0.4);">
                   <i class="ki-duotone ki-dollar fs-2x text-white">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -41,8 +41,8 @@
                   </i>
                 </span>
               </div>
-              <h1 class="fw-bolder text-gray-900 mb-3 fs-2x">Scegli il piano perfetto per te</h1>
-              <p class="text-muted fs-5 fw-semibold">Benvenuto <span class="text-primary">{{ displayEmail }}</span>! Seleziona il piano che meglio si adatta alle tue esigenze</p>
+              <h1 class="fw-bolder mb-3 fs-2x pricing-text-primary">Scegli il piano perfetto per te</h1>
+              <p class="fs-5 fw-semibold pricing-text-secondary">Benvenuto <span class="text-primary">{{ displayEmail }}</span>! Seleziona il piano che meglio si adatta alle tue esigenze</p>
             </div>
 
             <!-- Loading State -->
@@ -50,7 +50,7 @@
               <div class="spinner-border text-primary mb-5" role="status" style="width: 3rem; height: 3rem;">
                 <span class="visually-hidden">Caricamento piani...</span>
               </div>
-              <h3 class="fw-bold text-gray-900 mb-2">Caricamento piani di abbonamento...</h3>
+              <h3 class="fw-bold mb-2 pricing-text-primary">Caricamento piani di abbonamento...</h3>
             </div>
 
             <!-- Pricing Cards -->
@@ -80,12 +80,12 @@
                           <span class="path2"></span>
                         </i>
                       </div>
-                      <h3 class="fw-bold text-gray-900 mb-2">{{ plan.Name }}</h3>
+                      <h3 class="fw-bold mb-2 pricing-text-primary">{{ plan.Name }}</h3>
                       <div class="pricing-price mb-3">
-                        <span class="fs-2x fw-bolder text-gray-900">€{{ plan.Price }}</span>
-                        <span class="fs-6 text-muted fw-semibold">/{{ plan.BillingPeriod === 'monthly' ? 'mese' : 'anno' }}</span>
+                        <span class="fs-2x fw-bolder pricing-text-primary">€{{ plan.Price }}</span>
+                        <span class="fs-6 fw-semibold pricing-text-secondary">/{{ plan.BillingPeriod === 'monthly' ? 'mese' : 'anno' }}</span>
                       </div>
-                      <p class="text-muted fs-7 mb-0" style="min-height: 60px; line-height: 1.5;">
+                      <p class="fs-7 mb-0 pricing-text-secondary" style="min-height: 60px; line-height: 1.5;">
                         {{ plan.Description ? plan.Description.substring(0, 100) + (plan.Description.length > 100 ? '...' : '') : 'Piano di abbonamento' }}
                       </p>
                     </div>
@@ -98,7 +98,7 @@
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold text-gray-700">{{ feature.FeatureName }}</span>
+                          <span class="fw-semibold pricing-text-primary">{{ feature.FeatureName }}</span>
                         </div>
                         
                         <!-- Info aggiuntive se presenti -->
@@ -107,7 +107,7 @@
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold text-gray-700">
+                          <span class="fw-semibold pricing-text-primary">
                             {{ plan.MaxProperties === -1 ? 'Immobili illimitati' : `Fino a ${plan.MaxProperties} immobili` }}
                           </span>
                         </div>
@@ -117,7 +117,7 @@
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold text-gray-700">
+                          <span class="fw-semibold pricing-text-primary">
                             {{ plan.MaxUsers === -1 ? 'Utenti illimitati' : `Fino a ${plan.MaxUsers} utenti` }}
                           </span>
                         </div>
@@ -140,9 +140,9 @@
             <div class="row" v-if="selectedPlan">
               <div class="col-12">
                 <div class="card shadow-sm">
-                  <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);">
+                  <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
                     <div class="card-title">
-                      <h3 class="fw-bold text-gray-900 mb-0">
+                      <h3 class="fw-bold mb-0 pricing-text-primary">
                         <i class="ki-duotone ki-credit-cart fs-2 me-2 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
@@ -165,15 +165,15 @@
                   </div>
                   <div class="card-body p-8">
                     <!-- Selected Plan Summary -->
-                    <div class="payment-summary mb-8 p-6 rounded" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);">
+                    <div class="payment-summary mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
                       <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                          <h4 class="fw-bold text-gray-900 mb-1">Piano {{ selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1) }}</h4>
-                          <p class="text-muted mb-0">{{ getPlanDescription(selectedPlan) }}</p>
+                          <h4 class="fw-bold mb-1 pricing-text-primary">Piano {{ selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1) }}</h4>
+                          <p class="mb-0 pricing-text-secondary">{{ getPlanDescription(selectedPlan) }}</p>
                         </div>
                         <div class="text-end">
                           <div class="fs-1 fw-bolder text-primary">€{{ getPlanPrice(selectedPlan) }}</div>
-                          <span class="text-muted fs-7">/mese</span>
+                          <span class="fs-7 pricing-text-secondary">/mese</span>
                         </div>
                       </div>
                     </div>
@@ -191,7 +191,7 @@
                         @click="handleSubmit"
                         :disabled="isProcessing"
                         class="btn btn-lg btn-primary w-100"
-                        style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none;"
+                        style="background: linear-gradient(135deg, #0077CC 0%, #0077CC 100%); border: none;"
                       >
                         <span v-if="!isProcessing" class="fw-bold">
                           <i class="ki-duotone ki-lock fs-2 me-2">
@@ -207,7 +207,7 @@
                       </button>
 
                       <div class="text-center mt-4">
-                        <p class="text-muted fs-7 mb-0">
+                        <p class="fs-7 mb-0 pricing-text-secondary">
                           <i class="ki-duotone ki-shield-tick fs-5 text-success me-1">
                             <span class="path1"></span>
                             <span class="path2"></span>
@@ -369,9 +369,9 @@ export default defineComponent({
         const appearance = {
           theme: 'stripe' as const,
           variables: {
-            colorPrimary: '#3699ff',
-            colorBackground: '#ffffff',
-            colorText: '#3f4254',
+            colorPrimary: '#0077CC', // accent_principale
+            colorBackground: '#FFFFFF', // sfondo_principale light
+            colorText: '#333333', // testo_principale light
             colorDanger: '#f1416c',
             fontFamily: 'Inter, sans-serif',
             spacingUnit: '4px',
