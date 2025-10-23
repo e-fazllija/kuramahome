@@ -327,12 +327,13 @@
   <!--end::Properties page wrapper-->
 
   <ExportCustomerModal></ExportCustomerModal>
-  <AddPropertyModal @formAddSubmitted="getItems(agencyId, '')"></AddPropertyModal>
+  <AddPropertyModal @formAddSubmitted="getItems(agencyId, '')" @redirectToEdit="redirectToEdit"></AddPropertyModal>
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
+import { useRouter } from "vue-router";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
@@ -353,6 +354,7 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore();
+    const router = useRouter();
     const tableHeader = ref([
       {
         columnName: "Codice",
@@ -615,6 +617,10 @@ export default defineComponent({
       await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, locations.value);
     });
 
+    const redirectToEdit = (propertyId: number) => {
+      router.push({ name: "update-property", params: { id: propertyId } });
+    };
+
           return {
         tableData,
         tableHeader,
@@ -647,7 +653,8 @@ export default defineComponent({
         filteredLocations,
         onProvinceChange,
         onCityChange,
-        clearAllFilters
+        clearAllFilters,
+        redirectToEdit
       };
   },
   data() {

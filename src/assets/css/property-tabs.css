@@ -1,0 +1,203 @@
+/* Property Tabs Styles */
+.property-tabs {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #dee2e6;
+  margin-bottom: 2rem;
+}
+
+.property-tabs .nav-tabs {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.property-tabs .nav-tabs .nav-link {
+  border: none;
+  border-radius: 0.75rem 0.75rem 0 0;
+  margin-right: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  color: #666666;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.property-tabs .nav-tabs .nav-link:hover {
+  color: #0077CC;
+  background: rgba(0, 119, 204, 0.1);
+}
+
+.property-tabs .nav-tabs .nav-link.active {
+  color: #0077CC;
+  background: #FFFFFF;
+  border-bottom: 3px solid #0077CC;
+  box-shadow: 0 -2px 8px rgba(0, 119, 204, 0.15);
+}
+
+.property-tabs .tab-content {
+  background: #FFFFFF;
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding: 2rem;
+  min-height: 400px;
+}
+
+/* Dark mode styles */
+[data-bs-theme="dark"] .property-tabs {
+  background: linear-gradient(135deg, #2C2C2C 0%, #1A1A1A 100%);
+  border-color: #444444;
+}
+
+[data-bs-theme="dark"] .property-tabs .nav-tabs .nav-link {
+  color: #AAAAAA;
+}
+
+[data-bs-theme="dark"] .property-tabs .nav-tabs .nav-link:hover {
+  color: #0077CC;
+  background: rgba(0, 119, 204, 0.2);
+}
+
+[data-bs-theme="dark"] .property-tabs .nav-tabs .nav-link.active {
+  color: #0077CC;
+  background: #1A1A1A;
+  border-bottom-color: #0077CC;
+}
+
+[data-bs-theme="dark"] .property-tabs .tab-content {
+  background: #1A1A1A;
+  color: #E0E0E0;
+}
+
+/* Image Gallery Styles */
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.image-gallery .image-card {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-gallery .image-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.image-gallery .image-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.image-gallery .image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-gallery .image-card:hover .image-overlay {
+  opacity: 1;
+}
+
+.image-gallery .image-overlay .btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.image-gallery .image-overlay .btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Drag and Drop Styles */
+.drag-handle {
+  cursor: grab;
+  padding: 0.5rem;
+  background: rgba(0, 119, 204, 0.1);
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.drag-handle:hover {
+  background: rgba(0, 119, 204, 0.2);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+}
+
+.sortable-chosen {
+  transform: scale(1.02);
+}
+
+/* Upload Area Styles */
+.upload-area {
+  border: 2px dashed #dee2e6;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-area:hover {
+  border-color: #0077CC;
+  background: rgba(0, 119, 204, 0.05);
+}
+
+.upload-area.dragover {
+  border-color: #0077CC;
+  background: rgba(0, 119, 204, 0.1);
+}
+
+.upload-area .upload-icon {
+  font-size: 3rem;
+  color: #666666;
+  margin-bottom: 1rem;
+}
+
+.upload-area .upload-text {
+  color: #666666;
+  font-weight: 500;
+}
+
+/* Dark mode upload area */
+[data-bs-theme="dark"] .upload-area {
+  border-color: #444444;
+  background: #2C2C2C;
+}
+
+[data-bs-theme="dark"] .upload-area:hover {
+  border-color: #0077CC;
+  background: rgba(0, 119, 204, 0.1);
+}
+
+[data-bs-theme="dark"] .upload-area .upload-icon {
+  color: #AAAAAA;
+}
+
+[data-bs-theme="dark"] .upload-area .upload-text {
+  color: #AAAAAA;
+}

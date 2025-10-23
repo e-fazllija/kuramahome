@@ -53,7 +53,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Name" type="text" placeholder="Inserisci il nome" required />
+            <input class="form-control modern-input" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required />
           </div>
           <!--end::Col-->
         </div>
@@ -236,7 +236,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.AdressLine" type="text" placeholder="Via, numero civico" />
+            <input class="form-control modern-input" v-model="formData.Address" type="text" placeholder="Via, numero civico" />
           </div>
           <!--end::Col-->
         </div>
@@ -255,7 +255,7 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Town" type="text" placeholder="Nome del comune" />
+            <input class="form-control modern-input" v-model="formData.City" type="text" placeholder="Nome del comune" />
           </div>
           <!--end::Input-->
         </div>
@@ -490,13 +490,13 @@ export default defineComponent({
       Builder: false,
       Other: false,
       GoldCustomer: false,
-      Name: "",
+      FirstName: "",
       LastName: "",
       Email: "",
-      Phone: null,
+      Phone: 0,
       Description: "",
-      AdressLine: "",
-      Town: "",
+      Address: "",
+      City: "",
       State: "",
       Code: "0",
       AcquisitionDone: false,
@@ -550,7 +550,7 @@ export default defineComponent({
           for(const key in results){
             const item = {
               Id: results[key].Id,
-              CustomerName: results[key].Customer.Name,
+              CustomerName: results[key].Customer.FirstName,
               CustomerLastName: results[key].Customer.LastName,
               CustomerEmail: results[key].Customer.Email,
               CustomerPhone: results[key].Customer.Phone.toString(),

@@ -170,7 +170,7 @@ const getToInsert = (agencyId?: string) : Promise<InsertModel> => {
     .then(({ data }) => {
       const agents = data.Agents as Array<User>;
       const customers = data.Customers as Array<Customer>;
-      customers.forEach(customer => customer.label = customer.Name + ' ' + customer.LastName );
+      customers.forEach(customer => customer.label = customer.FirstName + ' ' + customer.LastName );
       agents.forEach(agent => agent.label = agent.Name + ' ' + agent.LastName );
       const result = <InsertModel>({
         Users: agents,
@@ -256,22 +256,13 @@ const createRealEstateProperty = async (form: any) => {
   const formData = new FormData();
 
   for (const key in values) {
-    if (key === "Files" && values.Files) {
-      const filesArray = Array.from(values.Files);
-      const compressedFiles = await Promise.all(
-        filesArray.map(file => compressTo500KB(file))
-      );
-      
-      compressedFiles.forEach(file => {
-        formData.append("Files", file);
-      });
-    } else if (values[key as keyof RealEstateProperty] !== undefined) {
+    if (key !== "Files" && values[key as keyof RealEstateProperty] !== undefined) {
       formData.append(key, values[key as keyof RealEstateProperty]?.toString() || "");
     }
   }
 
   return await ApiService.post("RealEstateProperty/Create", formData)
-    .then(({ data }) => data as Partial<RealEstateProperty>)
+    .then(({ data }) => data as Partial<RealEstateProperty> & { Id?: number })
     .catch(({ response }) => {
       store.setError(response.data.Message, response.status);
       return undefined;

@@ -31,8 +31,54 @@
   </div>
   <!--begin::Content-->
   <div v-else class="collapse show">
-    <!--begin::Form-->
-    <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
+    <!--begin::Tabs-->
+    <div class="property-tabs">
+      <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button 
+            class="nav-link active" 
+            id="data-tab" 
+            data-bs-toggle="tab" 
+            data-bs-target="#data-pane" 
+            type="button" 
+            role="tab" 
+            aria-controls="data-pane" 
+            aria-selected="true"
+          >
+            <i class="ki-duotone ki-notepad fs-4 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+              <span class="path4"></span>
+              <span class="path5"></span>
+            </i>
+            Dati Immobile
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button 
+            class="nav-link" 
+            id="images-tab" 
+            data-bs-toggle="tab" 
+            data-bs-target="#images-pane" 
+            type="button" 
+            role="tab" 
+            aria-controls="images-pane" 
+            aria-selected="false"
+          >
+            <i class="ki-duotone ki-picture fs-4 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Immagini
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="propertyTabsContent">
+        <!--begin::Data Tab-->
+        <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
+          <!--begin::Form-->
+          <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
       <!--begin::Card body-->
       <div class="card-body border-top p-9">
         <!--begin::Input group-->
@@ -846,17 +892,6 @@
         </div>
         <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Carica immagini</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-select modern-select" type="file" multiple @change="onFileChanged">
-          </div>
-          <!--end::Input-->
-        </div>
         <!--end::Input group-->
 
         <!--begin::Input group-->
@@ -872,51 +907,6 @@
           <!--end::Col-->
         </div>
         <!--end::Input group-->
-
-        <div class="py-5">
-          <div class="rounded border p-10">
-            <div class="row justify-content-center">
-              <div class="col-lg-4">
-                <draggable :list="formData.Photos" :disabled="false" item-key="name" class="list-group"
-                  ghost-class="ghost" @start="true" @end="false" :move="checkMove" :animation="300">
-                  <template #item="{ element }">
-                    <div class="card overlay">
-                      <div class="card-body p-0">
-                        <div class="overlay-wrapper">
-                          <img :src="element.Url" alt="" class="w-100 card-rounded">
-                        </div>
-                        <div v-if="user.Id === formData.AgentId || user.Role === 'Admin' || formData.Agent.AgencyId === user.Id" class="overlay-layer card-rounded bg-dark bg-opacity-25">
-                          <button v-if="!element.Highlighted" type="button" class="btn btn-primary btn-shadow"
-                            @click="setPhotoHighlighted(element.Id)">Imposta immagine principale</button>
-                          <button class="btn btn-light-danger btn-shadow ms-2" type="button"
-                            @click="deleteFile(element.Id)">Elimina</button>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                </draggable>
-              </div>
-              <!-- <div v-for="(photo, index) in formData.Photos" :key="index" class="col-lg-4"> -->
-              <!--begin::Card-->
-              <!-- <div class="card  overlay">
-                  <div class="card-body p-0">
-                    <div class="overlay-wrapper">
-                      <img :src="photo.Url" alt="" class="w-100 card-rounded">
-                    </div>
-                    <div class="overlay-layer card-rounded bg-dark bg-opacity-25">
-                      <button v-if="!photo.Highlighted" type="button" class="btn btn-primary btn-shadow"
-                        @click="setPhotoHighlighted(photo.Id)">Imposta immagine principale</button>
-                      <button class="btn btn-light-danger btn-shadow ms-2" type="button"
-                        @click="deleteFile(photo.Id)">Elimina</button>
-                    </div>
-                  </div>
-                </div> -->
-              <!--end::Card-->
-              <!-- </div> -->
-
-            </div>
-          </div>
-        </div>
 
       </div>
       <div v-if="user.Id === formData.AgentId || user.Role === 'Admin' || formData.Agent.AgencyId === user.Id"
@@ -969,6 +959,116 @@
       <!--end::Actions-->
     </el-form>
     <!--end::Form-->
+        </div>
+        <!--end::Data Tab-->
+
+        <!--begin::Images Tab-->
+        <div class="tab-pane fade" id="images-pane" role="tabpanel" aria-labelledby="images-tab">
+          <!--begin::Image Management-->
+          <div class="image-management">
+            <!--begin::Upload Section-->
+            <div class="upload-section mb-5">
+              <div class="upload-area" @click="triggerFileUpload" @dragover.prevent @drop.prevent="handleDrop">
+                <div class="upload-icon">
+                  <i class="ki-duotone ki-cloud-upload fs-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                  </i>
+                </div>
+                <div class="upload-text">
+                  <h4>Trascina le immagini qui o clicca per selezionare</h4>
+                  <p class="text-muted">Supporta JPG, PNG, GIF (max 5MB per immagine)</p>
+                </div>
+              </div>
+              <input ref="fileInput" type="file" multiple accept="image/*" @change="onFileChanged" style="display: none;">
+            </div>
+            <!--end::Upload Section-->
+
+            <!--begin::Image Gallery-->
+            <div v-if="formData.Photos && formData.Photos.length > 0" class="image-gallery">
+              <draggable 
+                :list="formData.Photos" 
+                :disabled="false" 
+                item-key="Id" 
+                class="list-group"
+                ghost-class="sortable-ghost" 
+                chosen-class="sortable-chosen"
+                @start="onDragStart" 
+                @end="onDragEnd" 
+                :animation="300"
+              >
+                <template #item="{ element, index }">
+                  <div class="image-card" :class="{ 'highlighted': element.Highlighted }">
+                    <div class="drag-handle">
+                      <i class="ki-duotone ki-menu fs-4 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                      </i>
+                    </div>
+                    <img :src="element.Url" :alt="`Immagine ${index + 1}`" />
+                    <div class="image-overlay">
+                      <div class="btn-group">
+                        <button 
+                          v-if="!element.Highlighted" 
+                          type="button" 
+                          class="btn btn-primary btn-sm"
+                          @click="setPhotoHighlighted(element.Id)"
+                        >
+                          <i class="ki-duotone ki-star fs-6 me-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                          Principale
+                        </button>
+                        <button 
+                          type="button" 
+                          class="btn btn-danger btn-sm"
+                          @click="deleteFile(element.Id)"
+                        >
+                          <i class="ki-duotone ki-trash fs-6 me-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                          </i>
+                          Elimina
+                        </button>
+                      </div>
+                    </div>
+                    <div v-if="element.Highlighted" class="highlighted-badge">
+                      <i class="ki-duotone ki-star fs-6 text-warning">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                    </div>
+                  </div>
+                </template>
+              </draggable>
+            </div>
+            <!--end::Image Gallery-->
+
+            <!--begin::Empty State-->
+            <div v-else class="empty-state text-center py-5">
+              <div class="empty-icon mb-3">
+                <i class="ki-duotone ki-picture fs-1 text-muted">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <h4 class="text-muted">Nessuna immagine caricata</h4>
+              <p class="text-muted">Aggiungi le prime immagini per questo immobile</p>
+            </div>
+            <!--end::Empty State-->
+          </div>
+          <!--end::Image Management-->
+        </div>
+        <!--end::Images Tab-->
+      </div>
+    </div>
+    <!--end::Tabs-->
   </div>
   <!--end::Content-->
 </template>
@@ -1252,53 +1352,7 @@ export default defineComponent({
     const onFileChanged = async (event: Event) => {
       const target = event.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
-        formData.value.Files = target.files;
-        await uploadFiles(formData.value.Files, id)
-          .then(async () => {
-            loading.value = false;
-            const error = store.errors;
-
-            if (!error) {
-              Swal.fire({
-                text: "Operazione completata!",
-                icon: "success",
-                buttonsStyling: false,
-                confirmButtonText: "Continua!",
-                heightAuto: false,
-                customClass: {
-                  confirmButton: "btn fw-semobold btn-light-primary",
-                },
-              }).then(async function () {
-                formData.value = await getRealEstateProperty(id);
-              });
-            } else {
-              Swal.fire({
-                text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
-                icon: "error",
-                buttonsStyling: false,
-                confirmButtonText: "Ok, capito!",
-                heightAuto: false,
-                customClass: {
-                  confirmButton: "btn btn-primary",
-                },
-              });
-              return false;
-            }
-          })
-          .catch(({ response }) => {
-            console.log(response);
-            loading.value = false;
-            Swal.fire({
-              text: "Attenzione, si è verificato un errore.",
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Continua!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
-          });
+        await handleFiles(target.files);
       }
     };
 
@@ -1482,6 +1536,101 @@ export default defineComponent({
       // console.log(formData.value.Photos)
     }
 
+    // Nuove funzioni per la gestione delle immagini
+    const fileInput = ref<HTMLInputElement | null>(null);
+
+    const triggerFileUpload = () => {
+      fileInput.value?.click();
+    };
+
+    const handleDrop = (event: DragEvent) => {
+      event.preventDefault();
+      const files = event.dataTransfer?.files;
+      if (files && files.length > 0) {
+        handleFiles(files);
+      }
+    };
+
+    const handleFiles = async (files: FileList) => {
+      const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+      
+      if (imageFiles.length === 0) {
+        Swal.fire({
+          text: "Seleziona solo file immagine (JPG, PNG, GIF)",
+          icon: "warning",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
+      }
+
+      // Crea un FileList temporaneo
+      const dt = new DataTransfer();
+      imageFiles.forEach(file => dt.items.add(file));
+      
+      await uploadFiles(dt.files, id)
+        .then(async () => {
+          loading.value = false;
+          const error = store.errors;
+
+          if (!error) {
+            Swal.fire({
+              text: "Immagini caricate con successo!",
+              icon: "success",
+              buttonsStyling: false,
+              confirmButtonText: "Continua!",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn fw-semobold btn-light-primary",
+              },
+            }).then(async function () {
+              formData.value = await getRealEstateProperty(id);
+            });
+          } else {
+            Swal.fire({
+              text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+              icon: "error",
+              buttonsStyling: false,
+              confirmButtonText: "Ok, capito!",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+            return false;
+          }
+        })
+        .catch(({ response }) => {
+          console.log(response);
+          loading.value = false;
+          Swal.fire({
+            text: "Attenzione, si è verificato un errore.",
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Continua!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+        });
+    };
+
+    const onDragStart = () => {
+      // Logica quando inizia il drag
+    };
+
+    const onDragEnd = async () => {
+      // Aggiorna l'ordine delle foto dopo il drag & drop
+      if (formData.value.Photos && formData.value.Photos.length > 0) {
+        await updatePhotosOrder(formData.value.Photos);
+      }
+    };
+
     return {
       formData,
       rules,
@@ -1503,7 +1652,44 @@ export default defineComponent({
       cities,
       locations,
       isTrattativaRiservata,
+      fileInput,
+      triggerFileUpload,
+      handleDrop,
+      handleFiles,
+      onDragStart,
+      onDragEnd,
     };
   },
 });
 </script>
+
+<style scoped>
+@import '@/assets/css/property-tabs.css';
+
+.highlighted-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.image-card.highlighted {
+  border: 2px solid #ffc107;
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
+}
+
+.empty-state {
+  padding: 3rem 1rem;
+}
+
+.empty-icon {
+  opacity: 0.5;
+}
+</style>

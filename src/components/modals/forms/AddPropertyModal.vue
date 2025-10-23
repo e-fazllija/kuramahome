@@ -1130,20 +1130,6 @@
 
               </div>
 
-              <div class="fv-row mb-15">
-                <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-gray-800">
-                  <i class="ki-duotone ki-picture fs-5 me-2 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  Immagini
-                </label>
-                <!--end::Label-->
-                <input class="form-control modern-input" type="file" multiple @change="onFileChanged">
-
-              </div>
-              <!--end::Input group-->
               <!--end::Modal body-->
             </div>
             <!--begin::Modal footer-->
@@ -1316,14 +1302,6 @@ export default defineComponent({
       }
     };
 
-    const selectedFile = ref<FileList | null>(null);
-    const onFileChanged = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      if (target.files && target.files.length > 0) {
-        formData.value.Files = target.files;
-      }
-    };
-
     const tipologiePerCategoria = {
           Residenziale: ["Appartamento", "Attico", "Mansarda", "Loft", "Soffitta", "Casale", "Rustico", "Villa Unifamiliare",
           "Villa Bifamiliare", "Villa Plurifamiliare", "Villa a Schiera"],
@@ -1482,24 +1460,32 @@ export default defineComponent({
             formData.value.Price = -1;
           }
           
-          await createRealEstateProperty(formData.value);
+          const result = await createRealEstateProperty(formData.value);
 
           const error = store.errors;
 
-          if (!error) {
+          if (!error && result) {
             Swal.fire({
-              text: "Operazione completata!",
+              text: "Immobile creato con successo! Vuoi aggiungere le immagini?",
               icon: "success",
               buttonsStyling: false,
-              confirmButtonText: "Continua!",
+              showCancelButton: true,
+              confirmButtonText: "Aggiungi immagini",
+              cancelButtonText: "Continua senza immagini",
               heightAuto: false,
               customClass: {
-                confirmButton: "btn fw-semobold btn-light-primary",
+                confirmButton: "btn fw-semobold btn-primary",
+                cancelButton: "btn fw-semobold btn-light-secondary",
               },
-            }).then(function () {
+            }).then(function (swalResult) {
               loading.value = false;
               hideModal(addPropertyModalRef.value);
               emit('formAddSubmitted', formData.value);
+              
+              if (swalResult.isConfirmed) {
+                // Reindirizza alla pagina di modifica per aggiungere immagini
+                emit('redirectToEdit', result.Id);
+              }
             });
           } else {
             loading.value = false;
@@ -1531,16 +1517,14 @@ export default defineComponent({
       countries,
       showTipologia,
       typesavailable,
-      selectedFile,
-      onFileChanged,
-      inserModel,
       provinces,
       cities,
       locations,
       loadProvinces,
       loadCitiesByProvince,
       loadLocationsByCity,
-      isTrattativaRiservata
+      isTrattativaRiservata,
+      inserModel
     };
   },
 });

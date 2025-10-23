@@ -342,10 +342,17 @@ export default defineComponent({
         const results = await getCustomers(agencyId, filterRequest);
         if (results && Array.isArray(results)) {
           for (const key in results) {
+            // Raccoglie tutte le tipologie attive del cliente
+            const types = [];
+            if (results[key].Buyer) types.push("Compratore");
+            if (results[key].Seller) types.push("Venditore");
+            if (results[key].Builder) types.push("Costruttore");
+            if (results[key].GoldCustomer) types.push("Cliente gold");
+            
             const item = {
               Id: results[key].Id,
-              Name: results[key].Name + " " + results[key].LastName,
-              Type: results[key].Buyer ? "Compratore" : results[key].Seller ? "Venditore" : results[key].Builder ? "Costruttore" : results[key].GoldCustomer ? "Cliente gold" : "",
+              Name: results[key].FirstName + " " + results[key].LastName,
+              Type: types.join(", "),
               Email: results[key].Email,
               Phone: results[key].Phone.toString()
             } as CustomerTabelData;

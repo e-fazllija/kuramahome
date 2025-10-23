@@ -78,9 +78,9 @@
                 <!--end::Label-->
 
                 <!--begin::Input-->
-                <el-form-item prop="Name">
+                <el-form-item prop="FirstName">
                   <el-input
-                    v-model="formData.Name"
+                    v-model="formData.FirstName"
                     type="text"
                     placeholder="Inserisci il nome"
                     class="modern-input"
@@ -335,9 +335,9 @@
                   <!--end::Label-->
 
                   <!--begin::Input-->
-                  <el-form-item prop="AdressLine">
+                  <el-form-item prop="Address">
                     <el-input 
-                      v-model="formData.AdressLine"
+                      v-model="formData.Address"
                       placeholder="Via, numero civico"
                       class="modern-input"
                     />
@@ -359,9 +359,9 @@
                   <!--end::Label-->
 
                   <!--begin::Input-->
-                  <el-form-item prop="Town">
+                  <el-form-item prop="City">
                     <el-input 
-                      v-model="formData.Town"
+                      v-model="formData.City"
                       placeholder="Nome del comune"
                       class="modern-input"
                     />
@@ -477,13 +477,13 @@ export default defineComponent({
       Builder: false,
       Other: false,
       GoldCustomer: false,
-      Name: "",
+      FirstName: "",
       LastName:"",
       Email: "",
-      Phone:null,
+      Phone: 0,
       Description: "",
-      AdressLine: "",
-      Town: "",
+      Address: "",
+      City: "",
       State: "",
       Code: "0",
       AcquisitionDone: false,
@@ -499,7 +499,7 @@ export default defineComponent({
           trigger: "change",
         },
       ],
-      Name: [
+      FirstName: [
         {
           required: true,
           message: "Nome obligatorio",

@@ -9,13 +9,13 @@ export class Customer{
   Builder: boolean;
   Other: boolean;
   GoldCustomer: boolean;
-  Name: string;
+  FirstName: string;  // Corretto da Name a FirstName
   LastName: string;
   Email: string;
-  Phone: number;
+  Phone: number;  // Cambiato da number | null a number per corrispondere al backend
   Description: string;
-  AdressLine: string;
-  Town: string;
+  Address: string;  // Corretto da AdressLine a Address
+  City: string;     // Corretto da Town a City
   State: string;
   CreationDate?: Date;
   UpdateDate?: Date;
