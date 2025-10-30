@@ -25,15 +25,21 @@
         <button
           type="button"
           class="btn btn-sm btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#kt_modal_add_customer"
+          @click="handleNewCustomerClick"
+          :disabled="isCheckingLimit"
           style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);"
         >
-          <i class="ki-duotone ki-plus fs-3 me-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <span class="fw-bold">Nuovo Cliente</span>
+          <span v-if="!isCheckingLimit">
+            <i class="ki-duotone ki-plus fs-3 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Nuovo Cliente</span>
+          </span>
+          <span v-else>
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Verifica in corso...
+          </span>
         </button>
       </div>
     </div>
@@ -260,7 +266,17 @@
   </div>
 
   <ExportCustomerModal></ExportCustomerModal>
-  <AddCustomerModal @formAddSubmitted="getItems(agencyId, '')"></AddCustomerModal> 
+  <AddCustomerModal 
+    @formAddSubmitted="getItems(agencyId, '')"
+    @limitExceeded="handleLimitExceeded"
+  ></AddCustomerModal>
+
+  <UpgradeRequiredModal
+    :isOpen="showUpgradeModal"
+    :featureDisplayName="'Clienti'"
+    :limitStatus="limitStatus"
+    @close="showUpgradeModal = false"
+  /> 
   </div>
 </template>
 
@@ -276,6 +292,9 @@ import { MenuComponent } from "@/assets/ts/components";
 import { getCustomers, Customer, deleteCustomer, CustomerTabelData } from "@/core/data/customers";
 import Swal from "sweetalert2";
 import { getSearchItems, SearchModel } from "@/core/data/events";
+import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
+import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
+import { Modal } from "bootstrap";
 import { useAuthStore, type User } from "@/stores/auth";
 
 
@@ -284,7 +303,8 @@ export default defineComponent({
   components: {
     Datatable,
     ExportCustomerModal,
-    AddCustomerModal
+    AddCustomerModal,
+    UpgradeRequiredModal
   },
   setup() {
     let loading = ref<boolean>(true);
@@ -334,6 +354,9 @@ export default defineComponent({
       Agencies: [],
       Agents: [],
     })
+    const isCheckingLimit = ref(false);
+    const showUpgradeModal = ref(false);
+    const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
 
     async function getItems(agencyId: string, filterRequest: string) {
       loading.value = true;
@@ -366,6 +389,32 @@ export default defineComponent({
         tableData.value = [];
       }
       loading.value = false;
+    };
+
+    const handleNewCustomerClick = async () => {
+      try {
+        isCheckingLimit.value = true;
+        const response = await checkFeatureLimit('max_customers');
+        if (!response.canProceed) {
+          limitStatus.value = response;
+          showUpgradeModal.value = true;
+          return;
+        }
+        const modalElement = document.getElementById('kt_modal_add_customer');
+        if (modalElement) {
+          const modal = new Modal(modalElement);
+          modal.show();
+        }
+      } catch (error: any) {
+        console.error('Errore durante la verifica del limite clienti:', error);
+      } finally {
+        isCheckingLimit.value = false;
+      }
+    };
+
+    const handleLimitExceeded = (limitStatusData: SubscriptionLimitStatusResponse) => {
+      limitStatus.value = limitStatusData;
+      showUpgradeModal.value = true;
     };
 
     onMounted(async () => {
@@ -570,6 +619,11 @@ export default defineComponent({
       getCustomerColor,
       getTypeClass,
       copyToClipboard
+      ,isCheckingLimit
+      ,handleNewCustomerClick
+      ,showUpgradeModal
+      ,limitStatus
+      ,handleLimitExceeded
     };
   },
 });

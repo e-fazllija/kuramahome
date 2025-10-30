@@ -62,9 +62,21 @@ const getAgent = (id: String) : Promise<Agent> => {
 };
 
 const createAgent = async (formData: any) => {
-  const values = formData as User;
-  values.Password = "KuramaHome!24";
-  return await store.register(values);
+  return ApiService.post("Agents/Create", formData)
+    .then(({ data }) => {
+      // Il backend restituisce AuthResponseModel, non Agent
+      return data;
+    })
+    .catch(({ response }) => {
+      // Se errore 429 (limite raggiunto), rilanciamo con response data per gestirlo nel componente
+      if (response.status === 429) {
+        const error = new Error('Subscription limit exceeded') as any;
+        error.response = response;
+        throw error;
+      }
+      store.setError(response.data.Message, response.status);
+      return undefined;
+    });
 };
 
 const updateAgent = async (formData: any) => {

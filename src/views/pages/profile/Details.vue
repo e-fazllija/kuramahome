@@ -42,7 +42,7 @@
                     class="d-flex align-items-center text-gray-400 text-hover-primary me-5 mb-2"
                   >
                     <KTIcon icon-name="geolocation" icon-class="fs-4 me-1" />
-                    {{ formData.Address }}, {{ formData.Town }}, {{ formData.Province }}
+                    {{ formData.Address }}, {{ formData.City }}, {{ formData.Province }}
                   </a>
                   <a
                     href="#"

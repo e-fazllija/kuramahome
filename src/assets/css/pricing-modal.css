@@ -282,6 +282,36 @@
   color: var(--bs-text-secondary);
 }
 
+/* Feature Value Styling */
+.pricing-feature-value {
+  color: var(--bs-accent-primary);
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  background: var(--bs-bg-secondary);
+  border-radius: 0.375rem;
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.9em;
+}
+
+/* Feature Text Styling - migliora la leggibilità */
+.pricing-feature .fw-semibold {
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Evidenzia le parole chiave nelle features */
+.pricing-feature .fw-semibold {
+  color: var(--bs-text-primary);
+}
+
+/* Stile per valori numerici nelle features */
+.pricing-feature .fw-semibold:has-text("Fino a") {
+  font-weight: 600;
+}
+
 /* Overlay gradient effect for better visual hierarchy */
 .pricing-modal-container::before {
   content: '';

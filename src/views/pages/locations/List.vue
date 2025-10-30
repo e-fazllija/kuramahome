@@ -584,7 +584,7 @@ export default defineComponent({
     ]);
 
     const canManageLocations = computed(() => {
-      return authStore.user.Role === "Admin" || authStore.user.Role === "Agenzia";
+      return authStore.user.Role === "Admin" || authStore.user.Role === "Agency";
     });
 
     // Computed properties for filtered data

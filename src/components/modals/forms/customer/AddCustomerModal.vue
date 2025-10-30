@@ -466,6 +466,7 @@ import { useAuthStore, type User } from "@/stores/auth";
 export default defineComponent({
   name: "add-customer-modal",
   components: {},
+  emits: ['formAddSubmitted', 'limitExceeded'],
   setup(_, { emit }) {
     const formRef = ref<null | HTMLFormElement>(null);
     const addCustomerModalRef = ref<null | HTMLElement>(null);
@@ -485,10 +486,9 @@ export default defineComponent({
       Address: "",
       City: "",
       State: "",
-      Code: "0",
       AcquisitionDone: false,
       OngoingAssignment: false,
-      AgencyId: store.user.AgencyId
+      ApplicationUserId: undefined
     });
 
     const rules = ref({
@@ -529,40 +529,56 @@ export default defineComponent({
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
           loading.value = true;
+          try {
+            await createCustomer(formData.value);
 
-        await createCustomer(formData.value);
-
-        const error = store.errors;
-
-        console.log(error)
-        if (!error) {
-            Swal.fire({
-              text: "Il modulo Ã¨ stato inviato con successo!",
-              icon: "success",
-              buttonsStyling: false,
-              confirmButtonText: "Continua!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn fw-semobold btn-light-primary",
-              },
-            }).then(function () {
-              hideModal(addCustomerModalRef.value);
-              emit('formAddSubmitted', formData.value);
+            const error = store.errors;
+            if (!error) {
+              Swal.fire({
+                text: "Il modulo è stato inviato con successo!",
+                icon: "success",
+                buttonsStyling: false,
+                confirmButtonText: "Continua!",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn fw-semobold btn-light-primary",
+                },
+              }).then(function () {
+                hideModal(addCustomerModalRef.value);
+                emit('formAddSubmitted', formData.value);
+                loading.value = false;
+              });
+            } else {
               loading.value = false;
-            });
-        } else {
-          loading.value = false;
-          Swal.fire({
-            text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
-            icon: "error",
-            buttonsStyling: false,
-            confirmButtonText: "Ok",
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn btn-primary",
-            },
-          });
-        }
+              Swal.fire({
+                text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Ok",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+            }
+          } catch (err: any) {
+            loading.value = false;
+            if (err?.response?.status === 429) {
+              hideModal(addCustomerModalRef.value);
+              emit('limitExceeded', err.response.data);
+            } else {
+              Swal.fire({
+                text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Ok",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+            }
+          }
       }
     });
   };

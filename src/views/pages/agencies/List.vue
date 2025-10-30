@@ -24,17 +24,24 @@
       </div>
       <div class="card-toolbar">
         <button
+          v-if="isAdmin"
           type="button"
           class="btn btn-sm btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#kt_modal_add_agency"
+          @click="handleNewAgencyClick"
+          :disabled="isCheckingLimit"
           style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);"
         >
+          <span v-if="!isCheckingLimit">
           <i class="ki-duotone ki-plus fs-3 me-2">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <span class="fw-bold">Nuova Agenzia</span>
+          </span>
+          <span v-else>
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Verifica in corso...
+          </span>
         </button>
       </div>
     </div>
@@ -334,14 +341,25 @@
     </div>
 
     <ExportCustomerModal></ExportCustomerModal>
-    <AddAgencyModal @formAddSubmitted="getItems('')"></AddAgencyModal>
+    <AddAgencyModal 
+      @formAddSubmitted="getItems('')"
+      @limitExceeded="handleLimitExceeded"
+    ></AddAgencyModal>
     <UpdateAgencyModal :Id="selectedId" @formUpdateSubmitted="getItems('')"></UpdateAgencyModal>
+    
+    <!-- Modale Upgrade Required -->
+    <UpgradeRequiredModal
+      :isOpen="showUpgradeModal"
+      :featureDisplayName="'Agenzie'"
+      :limitStatus="limitStatus"
+      @close="showUpgradeModal = false"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, computed } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
@@ -350,7 +368,12 @@ import { MenuComponent } from "@/assets/ts/components";
 import { getAgencies, deleteAgency, Agency } from "@/core/data/agencies";
 import AddAgencyModal from "@/components/modals/forms/agencies/AddAgencyModal.vue";
 import UpdateAgencyModal from "@/components/modals/forms/agencies/UpdateAgencyModal.vue";
+import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { useAuthStore } from "@/stores/auth";
+import { hasAdminRole } from "@/core/helpers/auth";
+import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
+import { Modal } from "bootstrap";
 
 export default defineComponent({
   name: "agencies",
@@ -359,8 +382,14 @@ export default defineComponent({
     ExportCustomerModal,
     AddAgencyModal,
     UpdateAgencyModal,
+    UpgradeRequiredModal,
   },
   setup() {
+    const authStore = useAuthStore();
+    
+    // Verifica se l'utente è Admin usando helper
+    const isAdmin = computed(() => hasAdminRole());
+    
     const tableHeader = ref([
     {
         columnName: "UserName",
@@ -405,6 +434,11 @@ export default defineComponent({
     const tableData = ref([]);
     const initAgents = ref([]);
     const isSearching = ref(false);
+    
+    // Subscription limits state
+    const isCheckingLimit = ref(false);
+    const showUpgradeModal = ref(false);
+    const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
     
     async function getItems(filterRequest: string) {
       isSearching.value = true;
@@ -601,6 +635,87 @@ export default defineComponent({
       }
     };
 
+    // Gestione click "Nuova Agenzia" con controllo limiti
+    const handleNewAgencyClick = async () => {
+      try {
+        isCheckingLimit.value = true;
+
+        // Verifica limite PRIMA di aprire la modale
+        const response = await checkFeatureLimit('max_agencies');
+        
+        // Debug: log della risposta
+        console.log('Limit check response:', response);
+        console.log('canProceed:', response.canProceed, typeof response.canProceed);
+
+        if (!response.canProceed) {
+          // Limite raggiunto → mostra modale upgrade
+          console.log('Limite raggiunto, mostro modale upgrade');
+          limitStatus.value = response;
+          showUpgradeModal.value = true;
+          isCheckingLimit.value = false;
+          return; // NON apre il form
+        }
+
+        // OK → apre modale form
+        console.log('Limite OK, apro form creazione agenzia');
+        const modalElement = document.getElementById('kt_modal_add_agency');
+        if (modalElement) {
+          const modal = new Modal(modalElement);
+          modal.show();
+        }
+      } catch (error: any) {
+        console.error('Error checking limit:', error);
+        console.error('Error details:', {
+          message: error?.message,
+          response: error?.response,
+          status: error?.response?.status,
+          data: error?.response?.data,
+          url: error?.config?.url
+        });
+        
+        // Se errore 429 dal backend (doppio controllo)
+        if (error?.response?.status === 429) {
+          limitStatus.value = error.response.data;
+          showUpgradeModal.value = true;
+        } else {
+          // Messaggio errore più dettagliato
+          let errorMessage = "Errore durante la verifica del limite";
+          
+          if (error?.response?.status === 404) {
+            errorMessage = "Endpoint non trovato. Verifica che il backend sia avviato correttamente.";
+          } else if (error?.response?.status === 401) {
+            errorMessage = "Non autorizzato. Effettua nuovamente il login.";
+          } else if (error?.response?.status === 500) {
+            errorMessage = error?.response?.data || "Errore interno del server. Riprova più tardi.";
+          } else if (error?.response?.data?.message) {
+            errorMessage = error.response.data.message;
+          } else if (error?.message) {
+            errorMessage = error.message;
+          }
+          
+          Swal.fire({
+            title: "Errore",
+            text: errorMessage,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+        }
+      } finally {
+        isCheckingLimit.value = false;
+      }
+    };
+
+    // Gestione limite raggiunto dal form (seconda linea di difesa)
+    const handleLimitExceeded = (limitStatusData: SubscriptionLimitStatusResponse) => {
+      limitStatus.value = limitStatusData;
+      showUpgradeModal.value = true;
+    };
+
     return {
       tableData,
       tableHeader,
@@ -622,7 +737,13 @@ export default defineComponent({
       isSearching,
       getInitials,
       getAgencyColor,
-      copyToClipboard
+      isAdmin,
+      copyToClipboard,
+      handleNewAgencyClick,
+      handleLimitExceeded,
+      isCheckingLimit,
+      showUpgradeModal,
+      limitStatus
     };
   },
 });

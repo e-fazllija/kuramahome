@@ -177,7 +177,7 @@
                         </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <select class="form-select modern-select" multiple aria-label="Multiple select example" v-model="formData.Town" required>
+                    <select class="form-select modern-select" multiple aria-label="Multiple select example" v-model="formData.City" required>
                         <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }} </option>
                     </select>
                     <!--end::Input-->
@@ -569,9 +569,10 @@
   import Multiselect from '@vueform/multiselect'
 
   
-  export default defineComponent({
+export default defineComponent({
     name: "add-request-modal",
     components: {Multiselect},
+  emits: ['formAddSubmitted', 'limitExceeded'],
     setup(_, { emit }) {
       const formRef = ref<null | HTMLFormElement>(null);
       const addRequestModalRef = ref<null | HTMLElement>(null);
@@ -584,12 +585,12 @@
       const cities = ref<Array<{Id: string, Name: string}>>([]);
       const locations = ref<Array<{Id: string, Name: string}>>([]);
       const cityLocationsMap = ref<{[key: string]: Array<{Id: string, Name: string}>}>({});
-      const formData = ref<Request>({
+        const formData = ref<Request>({
         CustomerId: null,  
         Contract: "Vendita",
         PropertyType: "",
         Province: "",
-        Town:  "",
+          City:  "",
         PriceFrom: 0,
         PriceTo: 0,
         Archived: false,
@@ -606,7 +607,7 @@
         Notes: "",
         Location:"",
         MortgageAdviceRequired: false,
-        AgencyId: store.user.AgencyId
+        ApplicationUserId: undefined
       });
 
         const inserModel = ref<InsertModel>({
@@ -716,23 +717,23 @@
             if (newProvince) {
                 // Carica le città della provincia selezionata
                 await loadCitiesByProvince(newProvince);
-                formData.value.Town = null;
+                formData.value.City = null;
                 formData.value.Location = null;
             } else {
                 cities.value = [];
                 locations.value = [];
-                formData.value.Town = null;
+                formData.value.City = null;
                 formData.value.Location = null;
             }
         }
         );
 
       watch(
-        () => formData.value.Town,
-        async (newTown) => {
-          if (Array.isArray(newTown) && newTown.length > 0) {
+        () => formData.value.City,
+        async (newCity) => {
+          if (Array.isArray(newCity) && newCity.length > 0) {
             // Per le richieste, prendiamo la prima città selezionata per caricare le località
-            const firstCity = newTown[0];
+            const firstCity = newCity[0];
             await loadLocationsByCity(firstCity);
             formData.value.Location = null;
           } else {
@@ -749,17 +750,18 @@
         formRef.value.validate(async (valid: boolean) => {
           if (valid) {
             loading.value = true;
-            formData.value.Town = formData.value.Town.toString()
+            formData.value.City = (formData.value.City as any).toString()
             if(formData.value.Location != null && formData.value.Location != undefined){
               formData.value.Location = formData.value.Location.toString()
             }
             formData.value.PropertyType = formData.value.PropertyType.toString()
 
-          await createRequest(formData.value);
-  
-          const error = store.errors;
-          
-          if (!error) {
+          try {
+            await createRequest(formData.value);
+
+            const error = store.errors;
+            
+            if (!error) {
               Swal.fire({
                 text: "Il modulo è stato inviato con successo!",
                 icon: "success",
@@ -774,18 +776,36 @@
                 emit('formAddSubmitted', formData.value);
                 loading.value = false;
               });
-          } else {
+            } else {
+              loading.value = false;
+              Swal.fire({
+                text: error,
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Ok",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+            }
+          } catch (err: any) {
             loading.value = false;
-            Swal.fire({
-              text: error,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Ok",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
+            if (err?.response?.status === 429) {
+              hideModal(addRequestModalRef.value);
+              emit('limitExceeded', err.response.data);
+            } else {
+              Swal.fire({
+                text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Ok",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+            }
           }
         }
       });

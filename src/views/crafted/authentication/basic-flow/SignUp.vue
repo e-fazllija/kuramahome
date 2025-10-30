@@ -400,13 +400,16 @@
         <!--begin::Input group - Provincia-->
         <div class="fv-row mb-7">
           <label class="form-label fw-bold text-gray-800 fs-6">Provincia</label>
-          <Field
+          <select 
             v-model="formData.province"
-            class="form-control form-control-lg form-control-solid"
-            type="text"
+            class="form-select form-select-lg form-select-solid"
             name="province"
-            autocomplete="off"
-          />
+          >
+            <option value="">Seleziona provincia</option>
+            <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+              {{ province.Name }}
+            </option>
+          </select>
           <div class="fv-plugins-message-container">
             <div class="fv-help-block">
               <ErrorMessage name="province" />
@@ -741,6 +744,7 @@ import { useAuthStore, type User } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { PasswordMeterComponent } from "@/assets/ts/components";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { useProvinces } from "@/composables/useProvinces";
 
 export default defineComponent({
   name: "sign-up",
@@ -752,6 +756,9 @@ export default defineComponent({
   setup() {
     const store = useAuthStore();
     const router = useRouter();
+    
+    // Usa il composable per le province
+    const { provinces } = useProvinces();
 
     const submitButton = ref<HTMLButtonElement | null>(null);
     const formRef = ref<InstanceType<typeof VForm> | null>(null);
@@ -974,6 +981,7 @@ export default defineComponent({
       handleSubmit,
       submitButton,
       getAssetPath,
+      provinces,
     };
   },
 });

@@ -1,15 +1,37 @@
 <template>
   <div class="manage-subscription-wrapper">
+    <!-- Access Denied for non-Admin users -->
+    <div v-if="!isAdmin" class="text-center py-20">
+      <div class="card shadow-sm mx-auto" style="max-width: 500px;">
+        <div class="card-body p-10">
+          <div class="mb-5">
+            <i class="ki-duotone ki-information-5 fs-6x text-danger">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+            </i>
+          </div>
+          <h3 class="fw-bold text-gray-900 mb-3">Accesso Negato</h3>
+          <p class="text-muted fs-5 mb-6">
+            Non hai i permessi necessari per accedere a questa sezione.
+          </p>
+          <p class="text-muted fs-7">
+            Questa pagina è riservata agli Amministratori.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <!-- Loading State -->
-    <div v-if="isLoading" class="text-center py-20">
+    <div v-else-if="isLoading" class="text-center py-20">
       <div class="spinner-border text-primary mb-5" role="status" style="width: 3rem; height: 3rem;">
         <span class="visually-hidden">Caricamento...</span>
       </div>
       <h3 class="fw-bold text-gray-900 mb-2">Caricamento dati abbonamento...</h3>
     </div>
 
-    <!-- Content -->
-    <div v-else class="container-fluid px-4">
+    <!-- Content - Only for Admin -->
+    <div v-else-if="isAdmin && !isLoading" class="container-fluid px-4">
 
       <!-- Subscription Management Layout -->
       <div>
@@ -283,6 +305,11 @@ export default defineComponent({
     const authStore = useAuthStore();
     const user = computed(() => authStore.user);
     
+    // Controllo ruolo: solo Admin può vedere questa pagina
+    const isAdmin = computed(() => {
+      return authStore.user?.Role === 'Admin';
+    });
+    
     const isLoading = ref(true);
     const subscription = ref<UserSubscription | null>(null);
     const showPricingModal = ref(false);
@@ -482,6 +509,7 @@ export default defineComponent({
 
     return {
       user,
+      isAdmin,
       isLoading,
       subscription,
       showPricingModal,

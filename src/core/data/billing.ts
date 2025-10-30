@@ -11,8 +11,6 @@ export interface SubscriptionPlan {
   Description?: string;
   Price: number;
   BillingPeriod: string;
-  MaxUsers?: number;
-  MaxProperties?: number;
   Active: boolean;
 }
 

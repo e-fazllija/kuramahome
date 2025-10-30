@@ -19,7 +19,7 @@
 
         <!-- Button -->
         <router-link 
-          to="/subscription/manage" 
+          to="/dashboard/subscription/manage" 
           class="btn btn-sm btn-warning fw-bold ms-3"
         >
           Rinnova
@@ -50,7 +50,18 @@ export default defineComponent({
     const showBanner = ref<boolean>(false);
     const isDismissed = ref<boolean>(false);
 
+    // Controllo ruolo: solo Admin può vedere il banner
+    const isAdmin = computed(() => {
+      return authStore.user?.Role === 'Admin';
+    });
+
     const checkSubscriptionExpiry = async () => {
+      // Se non è Admin, non mostrare il banner
+      if (!isAdmin.value) {
+        showBanner.value = false;
+        return;
+      }
+
       try {
         const subscription = await getCurrentSubscription();
         
@@ -105,9 +116,10 @@ export default defineComponent({
     });
 
     return {
+      isAdmin,
       showBanner,
       daysRemaining,
-      dismissBanner,
+      dismissBanner
     };
   },
 });

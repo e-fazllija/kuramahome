@@ -20,7 +20,6 @@ export class Customer{
   CreationDate?: Date;
   UpdateDate?: Date;
   Token?: string;
-  Code: string;
   AcquisitionDone: boolean;
   OngoingAssignment: boolean;
   CustomerNotes?: Notes[];
@@ -44,7 +43,7 @@ export class Notes {
 
 const getCustomers = (agencyId: string, filterRequest: string) : Promise<Array<Customer>> => {
    return ApiService.get(
-    `Customers/Get?currentPage=0&agencyId=${agencyId}&filterRequest=${filterRequest}`,
+    `Customers/Get?filterRequest=${filterRequest}`,
     ""
   )
     .then(({ data }) => {
@@ -77,7 +76,12 @@ const createCustomer = async (formData:Customer) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      if (response?.status === 429) {
+        const error = new Error('Subscription limit exceeded') as any;
+        error.response = response;
+        throw error;
+      }
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };

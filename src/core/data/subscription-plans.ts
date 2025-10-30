@@ -6,6 +6,7 @@ export interface SubscriptionFeature {
   SubscriptionPlanId: number;
   FeatureName: string;
   FeatureValue?: string;
+  Description?: string;
   CreationDate: string;
   UpdateDate: string;
 }
@@ -16,8 +17,6 @@ export interface SubscriptionPlan {
   Description?: string;
   Price: number;
   BillingPeriod: string;
-  MaxUsers?: number;
-  MaxProperties?: number;
   Active: boolean;
   CreationDate: string;
   UpdateDate: string;

@@ -10,7 +10,7 @@ export class Request {
   Contract: string;
   PropertyType: string;
   Province: string;
-  Town: string;
+  City: string;
   Location:string;
   PriceTo: number;
   PriceFrom: number;
@@ -33,7 +33,7 @@ export class Request {
   StringDate?: string;
   MortgageAdviceRequired: boolean;
   RequestNotes?: Notes[];
-  AgencyId?: string;
+  ApplicationUserId?: string;
   label?: string;
 }
 
@@ -45,7 +45,7 @@ export class RequestTabelData {
   CustomerPhone: string;
   Contract: string;
   CreationDate?: Date;
-  Town:string;
+  City:string;
   Locations: string;
   PriceTo: number;
   PriceFrom: number;
@@ -96,7 +96,7 @@ const getRequestsList = (agencyId: string, filterRequest: string): Promise<Array
         CreationDate: item.CreationDate,
         StringDate: item.CreationDate.toString().substring(0, 10).split('-').reverse().join('-'),
         Locations: item.Location,
-        Town: item.Town,
+        City: item.City ?? item.Town,
         PriceTo: item.PriceTo,
         PriceFrom: item.PriceFrom,
         PropertyType: item.PropertyType,
@@ -146,7 +146,12 @@ const createRequest = async (formData: Request) => {
       return result;
     })
     .catch(async ({ response }) => {
-      store.setError(response.data.Message, response.status);
+      if (response?.status === 429) {
+        const error = new Error('Subscription limit exceeded') as any;
+        error.response = response;
+        throw error;
+      }
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };

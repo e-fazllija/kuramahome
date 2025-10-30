@@ -16,7 +16,7 @@
         <!--end::Title-->
         
         <!--begin::Agency Filter-->
-        <div class="mb-3">
+        <div v-if="!isAgent" class="mb-3">
           <div class="d-flex align-items-center gap-2 mb-2">
             <i class="ki-duotone ki-filter fs-4 text-primary">
               <span class="path1"></span>
@@ -63,7 +63,7 @@
         <!--end::Separator-->
         
         <!--begin::Agents Total-->
-        <div class="mb-3">
+        <div v-if="!isAgent" class="mb-3">
           <div class="d-flex align-items-center gap-2">
             <div class="symbol symbol-35px">
               <span class="symbol-label bg-warning">
@@ -83,7 +83,7 @@
         <!--end::Agents Total-->
         
         <!--begin::Agencies Total-->
-        <div class="mb-3">
+        <div v-if="!isAgent" class="mb-3">
           <div class="d-flex align-items-center gap-2">
             <div class="symbol symbol-35px">
               <span class="symbol-label bg-info">
@@ -105,7 +105,7 @@
         <!--end::Agencies Total-->
         
         <!--begin::Separator-->
-        <div class="separator separator-dashed my-3"></div>
+        <div v-if="!isAgent" class="separator separator-dashed my-3"></div>
         <!--end::Separator-->
         
         <!--begin::Sold Properties-->
@@ -189,12 +189,12 @@ interface Agency {
   id: string;
   name: string;
   address: string;
-  town: string;
+  city: string;
   province: string;
   phone?: string;
   color?: string;
   Address?: string;
-  Town?: string;
+  City?: string;
   Province?: string;
   PhoneNumber?: string;
   Color?: string;
@@ -214,6 +214,10 @@ export default defineComponent({
     totalAgents: {
       type: Number,
       default: 0
+    },
+    isAgent: {
+      type: Boolean,
+      default: false
     },
     selectedAgency: {
       type: String,
@@ -269,16 +273,16 @@ export default defineComponent({
       // Use the first agency as main agency
       const mainAgency = props.agenciesList[0];
       const address = mainAgency.Address || mainAgency.address || '';
-      const town = mainAgency.Town || mainAgency.town || '';
+      const city = mainAgency.City || mainAgency.city || '';
       const province = mainAgency.Province || mainAgency.province || '';
 
       // Try to geocode the main agency
-      if (address && town) {
+      if (address && city) {
         // For synchronous use, we'll use fallback coordinates
-        const normalizedTown = normalizeCityName(town).toLowerCase();
+        const normalizedCity = normalizeCityName(city).toLowerCase();
         
         // Check if we have coordinates in our fallback database
-        const fallbackCoords = getCityFallbackCoords(town);
+        const fallbackCoords = getCityFallbackCoords(city);
         if (fallbackCoords[0] !== 42.5 || fallbackCoords[1] !== 13.0) { // Not default coordinates
           return fallbackCoords;
         }
@@ -352,23 +356,23 @@ export default defineComponent({
     };
 
     // Geocode address using Nominatim (OpenStreetMap)
-    const geocodeAddress = async (address: string, town: string, province?: string): Promise<[number, number] | null> => {
+    const geocodeAddress = async (address: string, city: string, province?: string): Promise<[number, number] | null> => {
       try {
         // Normalize names
-        const normalizedTown = normalizeCityName(town);
+        const normalizedCity = normalizeCityName(city);
         const normalizedAddress = normalizeCityName(address);
         const normalizedProvince = province ? normalizeProvince(province) : '';
         
         // Try with full address first for better precision
         let fullAddress;
         if (normalizedAddress && normalizedProvince) {
-          fullAddress = `${normalizedAddress}, ${normalizedTown}, ${normalizedProvince}, Italia`;
+          fullAddress = `${normalizedAddress}, ${normalizedCity}, ${normalizedProvince}, Italia`;
         } else if (normalizedAddress) {
-          fullAddress = `${normalizedAddress}, ${normalizedTown}, Italia`;
+          fullAddress = `${normalizedAddress}, ${normalizedCity}, Italia`;
         } else if (normalizedProvince) {
-          fullAddress = `${normalizedTown}, ${normalizedProvince}, Italia`;
+          fullAddress = `${normalizedCity}, ${normalizedProvince}, Italia`;
         } else {
-          fullAddress = `${normalizedTown}, Italia`;
+          fullAddress = `${normalizedCity}, Italia`;
         }
         const encodedAddress = encodeURIComponent(fullAddress);
         
@@ -399,9 +403,9 @@ export default defineComponent({
     };
 
     // Fallback coordinates for major cities in central Italy
-    const getCityFallbackCoords = (town: string): [number, number] => {
-      // Normalize the town name for lookup
-      const normalizedTown = normalizeCityName(town).toLowerCase();
+    const getCityFallbackCoords = (city: string): [number, number] => {
+      // Normalize the city name for lookup
+      const normalizedCity = normalizeCityName(city).toLowerCase();
       
       const cityCoordinates: Record<string, [number, number]> = {
         'roma': [41.9028, 12.4964],
@@ -435,13 +439,13 @@ export default defineComponent({
       };
 
       // Exact match
-      if (cityCoordinates[normalizedTown]) {
-        return cityCoordinates[normalizedTown];
+      if (cityCoordinates[normalizedCity]) {
+        return cityCoordinates[normalizedCity];
       }
       
       // Partial match
-      for (const [city, coords] of Object.entries(cityCoordinates)) {
-        if (normalizedTown.includes(city) || city.includes(normalizedTown)) {
+      for (const [cityName, coords] of Object.entries(cityCoordinates)) {
+        if (normalizedCity.includes(cityName) || cityName.includes(normalizedCity)) {
           return coords;
         }
       }
@@ -545,19 +549,19 @@ export default defineComponent({
       for (let index = 0; index < props.agenciesList.length; index++) {
         const agency = props.agenciesList[index];
         const address = agency.Address || agency.address || '';
-        const town = agency.Town || agency.town || '';
+        const city = agency.City || agency.city || '';
         const province = agency.Province || agency.province || '';
         const agencyName = agency.UserName || agency.userName || agency.name || 'Agenzia';
         
         let coords: [number, number] | null = null;
 
         // Try to geocode the full address with province
-        if (address && town) {
-          coords = await geocodeAddress(address, town, province);
+        if (address && city) {
+          coords = await geocodeAddress(address, city, province);
           
           if (!coords) {
-            // Try again with just town and province if full address fails
-            coords = await geocodeAddress('', town, province);
+            // Try again with just city and province if full address fails
+            coords = await geocodeAddress('', city, province);
           }
           
           // Add small delay to respect rate limits
@@ -565,8 +569,8 @@ export default defineComponent({
         }
 
         // Fallback to city coordinates if geocoding fails
-        if (!coords && town) {
-          coords = getCityFallbackCoords(town);
+        if (!coords && city) {
+          coords = getCityFallbackCoords(city);
         }
 
         // Ultimate fallback
@@ -618,8 +622,8 @@ export default defineComponent({
         allCoords.push(coords); // Store for bounds calculation
         
         // Create popup content with UserName and address
-        const userName = agency.UserName || agency.userName || agency.name || 'Agenzia';
-        const fullAddress = `${address || ''}${address && town ? ', ' : ''}${town || ''}`.trim();
+        const userName = agency.UserName || agency.userName || agency.name || 'Agency';
+        const fullAddress = `${address || ''}${address && city ? ', ' : ''}${city || ''}`.trim();
         
         const popupContent = `
           <div style="min-width: 220px; text-align: left;">

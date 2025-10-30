@@ -68,7 +68,8 @@
     <!--end::Menu item-->
 
     <!--begin::Menu item-->
-    <div class="menu-item px-5 my-1">
+    <!-- Solo gli Admin possono vedere il bottone "Gestisci Abbonamento" -->
+    <div v-if="user?.Role === 'Admin'" class="menu-item px-5 my-1">
       <router-link :to="{ name: 'manage-subscription' }" class="menu-link px-5">
         <i class="ki-duotone ki-credit-cart fs-5 me-2">
           <span class="path1"></span>

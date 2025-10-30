@@ -412,7 +412,7 @@
                 <!--begin::Input group-->
                 <div class="row g-9 mb-7">
                   <!--begin::Col-->
-                  <div class="col-md-6 fv-row">
+                  <div class="col-md-4 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-map fs-5 me-2 text-primary">
@@ -421,15 +421,44 @@
                         <span class="path3"></span>
                         <span class="path4"></span>
                       </i>
-                      Provincia
+                      <span class="required">Provincia</span>
                     </label>
                     <!--end::Label-->
 
                     <!--begin::Input-->
-                    <el-form-item prop="province">
+                    <select 
+                      v-model="formData.Province"
+                      class="form-select form-select-lg form-select-solid"
+                      name="province"
+                    >
+                      <option value="">Seleziona provincia</option>
+                      <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                        {{ province.Name }}
+                      </option>
+                    </select>
+                    <!--end teatroInput-->
+                  </div>
+                  <!--end::Col-->
+
+                  <!--begin::Col-->
+                  <div class="col-md-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                      <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                      </i>
+                      <span class="required">CAP</span>
+                    </label>
+                    <!--end::Label-->
+
+                    <!--begin::Input-->
+                    <el-form-item prop="zipCode">
                       <el-input 
-                        v-model="formData.Province" 
-                        placeholder="Es. MI, RM, NA"
+                        v-model="formData.ZipCode" 
+                        placeholder="Es. 00100"
                         class="modern-input"
                       />
                     </el-form-item>
@@ -438,7 +467,7 @@
                   <!--end::Col-->
 
                   <!--begin::Col-->
-                  <div class="col-md-6 fv-row">
+                  <div class="col-md-4 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-palette fs-5 me-2 text-primary">
@@ -508,7 +537,7 @@
               <div v-if="formData.UserType === 1">
                 <!--begin::Input group - Codice Fiscale-->
                 <div class="fv-row mb-7">
-                  <label class="form-label fw-bold text-gray-800 fs-6">Codice Fiscale</label>
+                  <label class="form-label fw-bold text-gray-800 fs-6"><span class="required">Codice Fiscale</span></label>
                   <el-form-item prop="fiscalCode">
                     <el-input
                       v-model="formData.FiscalCode"
@@ -529,7 +558,7 @@
               <div v-if="formData.UserType === 2">
                 <!--begin::Input group - Partita IVA-->
                 <div class="fv-row mb-7">
-                  <label class="form-label fw-bold text-gray-800 fs-6">Partita IVA</label>
+                  <label class="form-label fw-bold text-gray-800 fs-6"><span class="required">Partita IVA</span></label>
                   <el-form-item prop="vatNumber">
                     <el-input
                       v-model="formData.VATNumber"
@@ -638,6 +667,7 @@ import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createAgency, Agency } from "@/core/data/agencies";
 import { useAuthStore, type User } from "@/stores/auth";
+import { useProvinces } from "@/composables/useProvinces";
 
 export default defineComponent({
   name: "add-agency-modal",
@@ -647,6 +677,9 @@ export default defineComponent({
     const addAgencyModalRef = ref<null | HTMLElement>(null);
     const loading = ref<boolean>(false);
     const store = useAuthStore();
+    
+    // Usa il composable per le province
+    const { provinces } = useProvinces();
     const formData = ref<any>({
       FirstName: "",
       LastName: "",
@@ -658,6 +691,7 @@ export default defineComponent({
       Address: "",
       City: "",
       Province: "",
+      ZipCode: "",
       Password: "",
       Color: "#00FFFF", // Default: Ciano
       // Dati Fiscali
@@ -731,6 +765,20 @@ export default defineComponent({
           trigger: "change",
         },
       ],
+      Province: [
+        {
+          required: true,
+          message: "Provincia obligatoria",
+          trigger: "change",
+        },
+      ],
+      ZipCode: [
+        {
+          required: true,
+          message: "CAP obligatorio",
+          trigger: "change",
+        },
+      ],
       CompanyName: [
         {
           required: true,
@@ -747,12 +795,36 @@ export default defineComponent({
       ],
       FiscalCode: [
         {
+          required: true,
+          message: "Codice Fiscale obligatorio per Persona Fisica",
+          trigger: "change",
+          validator: (rule: any, value: any, callback: any) => {
+            if (formData.value.UserType === 1 && !value) {
+              callback(new Error("Codice Fiscale obligatorio per Persona Fisica"));
+            } else {
+              callback();
+            }
+          }
+        },
+        {
           pattern: /^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/,
           message: "Codice Fiscale non valido",
           trigger: "blur",
         },
       ],
       VATNumber: [
+        {
+          required: true,
+          message: "Partita IVA obligatoria per Persona Giuridica",
+          trigger: "change",
+          validator: (rule: any, value: any, callback: any) => {
+            if (formData.value.UserType === 2 && !value) {
+              callback(new Error("Partita IVA obligatoria per Persona Giuridica"));
+            } else {
+              callback();
+            }
+          }
+        },
         {
           pattern: /^[0-9]{11}$/,
           message: "Partita IVA deve contenere 11 cifre",
@@ -779,44 +851,107 @@ export default defineComponent({
       if (!formRef.value) {
         return;
       }
-      await formRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-          loading.value = true;
-          
-          formData.value.Role = "Agency"
-          const result = await createAgency(formData.value);
-          
-          if (result) {
-            Swal.fire({
-              text: "Agenzia creata con successo!",
-              icon: "success",
-              buttonsStyling: false,
-              confirmButtonText: "Continua!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn fw-semobold btn-light-primary",
-              },
-            }).then(function () {
-              hideModal(addAgencyModalRef.value);
-              emit('formAddSubmitted', formData.value);
-              loading.value = false;
-            });
-          } else {
-            loading.value = false;
-            const error = store.errors;
-            Swal.fire({
-              text: error || "Errore durante la creazione dell'agenzia",
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Riprova!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn fw-semobold btn-light-danger",
-              },
-            });
-          }
-        } 
-      });
+      
+      // Validazione manuale per raccogliere tutti gli errori
+      const validationErrors: string[] = [];
+      
+      // Campi sempre obbligatori
+      if (!formData.value.FirstName?.trim()) validationErrors.push("Nome");
+      if (!formData.value.LastName?.trim()) validationErrors.push("Cognome");
+      if (!formData.value.Email?.trim()) validationErrors.push("Email");
+      if (!formData.value.PhoneNumber?.trim()) validationErrors.push("Telefono");
+      if (!formData.value.Address?.trim()) validationErrors.push("Indirizzo");
+      if (!formData.value.City?.trim()) validationErrors.push("Città");
+      if (!formData.value.Province?.trim()) validationErrors.push("Provincia");
+      if (!formData.value.ZipCode?.trim()) validationErrors.push("CAP");
+      
+      // Validazioni condizionali
+      if (formData.value.UserType === 2 && !formData.value.CompanyName?.trim()) {
+        validationErrors.push("Ragione Sociale (obbligatoria per Persona Giuridica)");
+      }
+      if (formData.value.UserType === 1 && !formData.value.FiscalCode?.trim()) {
+        validationErrors.push("Codice Fiscale (obbligatorio per Persona Fisica)");
+      }
+      if (formData.value.UserType === 2 && !formData.value.VATNumber?.trim()) {
+        validationErrors.push("Partita IVA (obbligatoria per Persona Giuridica)");
+      }
+      
+      // Se ci sono errori di validazione, mostrali tutti insieme
+      if (validationErrors.length > 0) {
+        const errorMessage = `I seguenti campi sono obbligatori e devono essere compilati:\n\n• ${validationErrors.join('\n• ')}`;
+        
+        Swal.fire({
+          title: "Campi Obbligatori Mancanti",
+          text: errorMessage,
+          icon: "warning",
+          buttonsStyling: false,
+          confirmButtonText: "Correggi i campi",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn fw-semibold btn-light-warning",
+          },
+        });
+        return;
+      }
+      
+      // Se la validazione passa, procedi con il salvataggio
+      loading.value = true;
+      
+      formData.value.Role = "Agency"
+      try {
+      const result = await createAgency(formData.value);
+      
+      if (result) {
+        Swal.fire({
+          text: "Agenzia creata con successo!",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Continua!",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn fw-semobold btn-light-primary",
+          },
+        }).then(function () {
+          hideModal(addAgencyModalRef.value);
+          emit('formAddSubmitted', formData.value);
+          loading.value = false;
+        });
+      } else {
+        loading.value = false;
+        const error = store.errors;
+        Swal.fire({
+          text: error || "Errore durante la creazione dell'agenzia",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Riprova!",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn fw-semobold btn-light-danger",
+          },
+        });
+        }
+      } catch (error: any) {
+        loading.value = false;
+        
+        // Gestione errore 429 (limite raggiunto) - seconda linea di difesa
+        if (error?.response?.status === 429) {
+          // Chiudi questa modale e emetti evento per mostrare UpgradeRequiredModal
+          hideModal(addAgencyModalRef.value);
+          emit('limitExceeded', error.response.data);
+        } else {
+          const errorMessage = error?.response?.data?.message || store.errors || "Errore durante la creazione dell'agenzia";
+          Swal.fire({
+            text: errorMessage,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Riprova!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-danger",
+            },
+          });
+        }
+      }
     };
 
     return {
@@ -830,6 +965,7 @@ export default defineComponent({
       countries,
       colorOptions,
       selectColor,
+      provinces,
     };
   },
 });

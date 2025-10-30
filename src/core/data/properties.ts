@@ -17,7 +17,7 @@ export class RealEstateProperty {
   Archived: boolean;
   Status: string;
   AddressLine: string;
-  Town: string;
+  City: string;
   State: string;
   Location: string;
   PostCode: string;
@@ -73,7 +73,7 @@ export class RequestTabelData {
   StateOfTheProperty?: string;
   AssignmentEnd?: string;
   Status: string;
-  Town: string;
+  City: string;
   Province?: string;
   Photos?: string | null;
   Auction:Boolean;
@@ -137,7 +137,7 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         StateOfTheProperty: item.StateOfTheProperty,
         AssignmentEnd: item.AssignmentEnd,
         Status: item.Status,
-        Town: item.Town,
+        City: item.City,
         Province: item.Province,
         Photos: item.FirstPhotoUrl || null,
         Auction: item.Auction
@@ -255,15 +255,82 @@ const createRealEstateProperty = async (form: any) => {
   values.AgentId = store.user.Id;
   const formData = new FormData();
 
+  // Campi da ignorare (non inviati al backend)
+  const ignoreFields = ['Files', 'Photos', 'Agent', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label'];
+
   for (const key in values) {
-    if (key !== "Files" && values[key as keyof RealEstateProperty] !== undefined) {
-      formData.append(key, values[key as keyof RealEstateProperty]?.toString() || "");
+    if (ignoreFields.includes(key) || values[key as keyof RealEstateProperty] === undefined) {
+      continue;
+    }
+
+    const value = values[key as keyof RealEstateProperty];
+    
+    // Salta valori null o undefined
+    if (value === null || value === undefined) {
+      continue;
+    }
+    
+    // Mappatura campi frontend -> backend
+    if (key === 'StornoProvvigione') {
+      formData.append('CommissionReversal', value?.toString() || "");
+    } else if (key === 'Town') {
+      // Se per caso c'è ancora Town, usa City
+      formData.append('City', value?.toString() || "");
+    } else if (key === 'AssignmentEnd') {
+      // Per le date, assicurati che siano in formato YYYY-MM-DD
+      if (!value) {
+        // Se manca, usa data di default (oggi + 1 anno)
+        const defaultDate = new Date();
+        defaultDate.setFullYear(defaultDate.getFullYear() + 1);
+        formData.append(key, defaultDate.toISOString().split('T')[0]);
+      } else if (value instanceof Date) {
+        formData.append(key, value.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+      } else if (typeof value === 'string' && value.trim() !== '') {
+        // Se è già una stringa (da input type="date"), verifica che sia valida
+        const dateStr = value.toString().trim();
+        // Verifica formato YYYY-MM-DD
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          formData.append(key, dateStr);
+        } else {
+          // Prova a parsare e convertire
+          const parsed = new Date(dateStr);
+          if (!isNaN(parsed.getTime())) {
+            formData.append(key, parsed.toISOString().split('T')[0]);
+          } else {
+            // Fallback: usa data default
+            const defaultDate = new Date();
+            defaultDate.setFullYear(defaultDate.getFullYear() + 1);
+            formData.append(key, defaultDate.toISOString().split('T')[0]);
+          }
+        }
+      } else {
+        // Fallback: usa data default
+        const defaultDate = new Date();
+        defaultDate.setFullYear(defaultDate.getFullYear() + 1);
+        formData.append(key, defaultDate.toISOString().split('T')[0]);
+      }
+    } else {
+      // Per valori numerici e booleani, mantieni il valore originale, altrimenti stringa
+      if (typeof value === 'boolean') {
+        formData.append(key, value ? 'true' : 'false');
+      } else if (typeof value === 'number') {
+        formData.append(key, value.toString());
+      } else {
+        formData.append(key, value.toString());
+      }
     }
   }
 
   return await ApiService.post("RealEstateProperty/Create", formData)
-    .then(({ data }) => data as Partial<RealEstateProperty> & { Id?: number })
+    .then(({ data }) => {
+      return data as Partial<RealEstateProperty> & { Id?: number };
+    })
     .catch(({ response }) => {
+      if (response.status === 429) {
+        const error = new Error('Subscription limit exceeded') as any;
+        error.response = response;
+        throw error;
+      }
       store.setError(response.data.Message, response.status);
       return undefined;
     });

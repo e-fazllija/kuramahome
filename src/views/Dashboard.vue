@@ -8,7 +8,7 @@
 
   <div v-if="!subscriptionExpired">
      <!--begin::Subscription Expiry Banner (Fixed Left)-->
-  <SubscriptionExpiryBanner v-if="!loading" />
+  <SubscriptionExpiryBanner v-if="!loading && !isAgent" />
   <!--end::Subscription Expiry Banner-->
   <!--begin::Agencies Map-->
   <div v-if="!loading" class="row mb-8">
@@ -16,6 +16,7 @@
       <Chart13 
         :agencies-list="agenciesList"
         :total-agents="data?.TotalAgents || 0"
+        :is-agent="isAgent"
         :selected-agency="selectedAgencyId"
         :selected-year="selectedYear"
         :sold-properties="filteredSoldProperties"
@@ -30,7 +31,7 @@
   <!--end::Agencies Map-->
 
   <!--begin::Analytics Overview-->
-  <div v-if="!loading" class="row mb-8">
+  <div v-if="!loading && !isAgent" class="row mb-8">
     <div class="col-xl-12">
       <Chart11 
         :kpi-data="kpiAnalyticsData"
@@ -41,7 +42,7 @@
   <!--end::Analytics Overview-->
   
   <!--begin::Andamento Immobili-->
-  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading && !isAgent" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -68,7 +69,7 @@
   <!--end::Andamento Immobili-->
 
   <!--begin::Distribuzione & Zone-->
-  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading && !isAgent" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -145,7 +146,7 @@
   <!--end::Distribuzione & Zone-->
 
   <!--begin::Performance Teams-->
-  <div v-if="!loading" class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading && !isAgent" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -453,6 +454,7 @@ import { getAssetPath } from "@/core/helpers/assets";
 import { getDetails, getRealEstateProperties, getAgencies, getAgents, getSoldProperties, getCalendarEvents, getRequests, getCustomers, getAllCustomers, processPropertiesForChart, processSoldPropertiesForChart, processTypologyDistribution, processTopZones, processAgentsRanking, processCalendarEvents, processRequestsForChart, processAppointmentsForChart, processAgentsForChart, processCustomersForChart } from "@/core/data/dashboard";
 import type { DashboardDetails } from "@/core/data/dashboard";
 import { useAuthStore } from "@/stores/auth";
+import { isAgent as helperIsAgent, getUserAgencyId } from "@/core/helpers/auth";
 
 export default defineComponent({
   name: "main-dashboard",
@@ -468,6 +470,10 @@ export default defineComponent({
   setup() {
         const store = useAuthStore();
         const subscriptionExpired = computed(() => store.isSubscriptionExpired);
+        
+        // Verifica se l'utente è un agente usando helper
+        const isAgent = computed(() => helperIsAgent());
+        
     const loading = ref<boolean>(true);
     const data = ref<DashboardDetails>();
         const chartData = ref<any>(null);
@@ -649,6 +655,13 @@ export default defineComponent({
           // Carica i dati del dashboard
           data.value = await getDetails(agencyId, selectedYear.value);
           
+          // Per gli Agent, carica solo i dati essenziali della dashboard
+          if (isAgent.value) {
+            // Gli Agent vedono solo i dati base senza grafici complessi
+            loading.value = false;
+            return;
+          }
+          
           // Carica i dati degli immobili per il grafico (solo immobili disponibili: Sold=false AND AssignmentEnd>oggi)
           const propertiesResponse = await getRealEstateProperties(agencyId, selectedYear.value);
           if (propertiesResponse) {
@@ -760,7 +773,9 @@ export default defineComponent({
 
 
     onMounted(async () => {
-      await getItems();
+      // Usa helper per ottenere l'AgencyId corretto in base al ruolo
+      const initialAgencyId = getUserAgencyId();
+      await getItems(initialAgencyId);
     });
 
 
@@ -882,7 +897,7 @@ export default defineComponent({
 
           const agenciesWithCounts = agenciesList.value.map(agency => {
             let count = 0;
-            const agencyName = agency.UserName || agency.name || 'Agenzia';
+            const agencyName = agency.UserName || agency.name || 'Agency';
             const agencyId = agency.Id;
 
             if (selectedAgencyRankingType.value === 'sales') {
@@ -968,7 +983,8 @@ export default defineComponent({
       filteredAuctionProperties,
       allPropertiesData,
       allSoldPropertiesData,
-      subscriptionExpired
+      subscriptionExpired,
+      isAgent
     }
   },
 });

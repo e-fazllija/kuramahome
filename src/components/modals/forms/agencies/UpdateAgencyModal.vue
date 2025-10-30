@@ -69,6 +69,59 @@
               </div>
               <!--end::Input group-->
 
+              <!--begin::Input group - Tipo Utente-->
+              <div class="fv-row mb-8">
+                <label class="form-label fw-bold text-gray-900 fs-5 mb-4">
+                  <i class="ki-duotone ki-user-tick fs-2 text-primary me-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                  </i>
+                  Tipo di Utente *
+                </label>
+                <div class="row g-4">
+                  <div class="col-6">
+                    <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-column align-items-center p-5 h-100 w-100" :class="{ 'active': formData.UserType === 1 }">
+                      <input
+                        v-model="formData.UserType"
+                        class="btn-check"
+                        type="radio"
+                        name="userType"
+                        :value="1"
+                      />
+                      <i class="ki-duotone ki-profile-user fs-3x text-primary mb-3">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                      </i>
+                      <span class="fw-bold fs-5 text-gray-800">Persona Fisica</span>
+                      <span class="text-muted fs-7 mt-1">Per privati</span>
+                    </label>
+                  </div>
+                  <div class="col-6">
+                    <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-column align-items-center p-5 h-100 w-100" :class="{ 'active': formData.UserType === 2 }">
+                      <input
+                        v-model="formData.UserType"
+                        class="btn-check"
+                        type="radio"
+                        name="userType"
+                        :value="2"
+                      />
+                      <i class="ki-duotone ki-office-bag fs-3x text-primary mb-3">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                      </i>
+                      <span class="fw-bold fs-5 text-gray-800">Persona Giuridica</span>
+                      <span class="text-muted fs-7 mt-1">Per aziende</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!--end::Input group-->
+
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
@@ -286,14 +339,21 @@
                         <span class="path3"></span>
                         <span class="path4"></span>
                       </i>
-                      Provincia
+                      <span class="required">Provincia</span>
                     </label>
                     <!--end::Label-->
 
                     <!--begin::Input-->
-                    <el-form-item prop="province">
-                      <el-input v-model="formData.Province" placeholder="Es. MI, RM, NA" class="modern-input" />
-                    </el-form-item>
+                    <select 
+                      v-model="formData.Province"
+                      class="form-select form-select-lg form-select-solid"
+                      name="province"
+                    >
+                      <option value="">Seleziona provincia</option>
+                      <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                        {{ province.Name }}
+                      </option>
+                    </select>
                     <!--end::Input-->
                   </div>
                   <!--end::Col-->
@@ -308,7 +368,7 @@
                         <span class="path3"></span>
                         <span class="path4"></span>
                       </i>
-                      CAP
+                      <span class="required">CAP</span>
                     </label>
                     <!--end::Label-->
 
@@ -387,82 +447,90 @@
               </div>
               <!--end::Separator-->
 
-              <!--begin::Input group - Ragione Sociale-->
-              <div class="fv-row mb-7">
-                <label class="form-label fw-bold text-gray-800 fs-6">Ragione Sociale</label>
-                <el-form-item prop="companyName">
-                  <el-input
-                    v-model="formData.CompanyName"
-                    type="text"
-                    placeholder="Es. Rossi Immobiliare S.r.l."
-                    class="modern-input"
-                  />
-                </el-form-item>
+              <!--begin::Campi PERSONA FISICA-->
+              <div v-if="formData.UserType === 1">
+                <!--begin::Input group - Codice Fiscale-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6"><span class="required">Codice Fiscale</span></label>
+                  <el-form-item prop="fiscalCode">
+                    <el-input
+                      v-model="formData.FiscalCode"
+                      type="text"
+                      placeholder="16 caratteri"
+                      maxlength="16"
+                      class="modern-input"
+                      @input="formData.FiscalCode = formData.FiscalCode.toUpperCase()"
+                      style="text-transform: uppercase;"
+                    />
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
               </div>
-              <!--end::Input group-->
+              <!--end::Campi Persona Fisica-->
 
-              <!--begin::Input group - Codice Fiscale-->
-              <div class="fv-row mb-7">
-                <label class="form-label fw-bold text-gray-800 fs-6">Codice Fiscale</label>
-                <el-form-item prop="fiscalCode">
-                  <el-input
-                    v-model="formData.FiscalCode"
-                    type="text"
-                    placeholder="16 caratteri"
-                    maxlength="16"
-                    class="modern-input"
-                    @input="formData.FiscalCode = formData.FiscalCode.toUpperCase()"
-                    style="text-transform: uppercase;"
-                  />
-                </el-form-item>
-              </div>
-              <!--end::Input group-->
+              <!--begin::Campi PERSONA GIURIDICA-->
+              <div v-if="formData.UserType === 2">
+                <!--begin::Input group - Ragione Sociale-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">Ragione Sociale</label>
+                  <el-form-item prop="companyName">
+                    <el-input
+                      v-model="formData.CompanyName"
+                      type="text"
+                      placeholder="Es. Rossi Immobiliare S.r.l."
+                      class="modern-input"
+                    />
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
 
-              <!--begin::Input group - Partita IVA-->
-              <div class="fv-row mb-7">
-                <label class="form-label fw-bold text-gray-800 fs-6">Partita IVA</label>
-                <el-form-item prop="vatNumber">
-                  <el-input
-                    v-model="formData.VATNumber"
-                    type="text"
-                    placeholder="11 cifre"
-                    maxlength="11"
-                    class="modern-input"
-                  />
-                </el-form-item>
-              </div>
-              <!--end::Input group-->
+                <!--begin::Input group - Partita IVA-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6"><span class="required">Partita IVA</span></label>
+                  <el-form-item prop="vatNumber">
+                    <el-input
+                      v-model="formData.VATNumber"
+                      type="text"
+                      placeholder="11 cifre"
+                      maxlength="11"
+                      class="modern-input"
+                    />
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
 
-              <!--begin::Input group - PEC o Codice SDI-->
-              <div class="fv-row mb-7">
-                <label class="form-label fw-bold text-gray-800 fs-6">PEC o Codice Destinatario SDI</label>
-                <div class="row">
-                  <div class="col-xl-8">
-                    <el-form-item prop="pec">
-                      <el-input
-                        v-model="formData.PEC"
-                        type="email"
-                        placeholder="pec@example.com"
-                        class="modern-input"
-                      />
-                    </el-form-item>
-                  </div>
-                  <div class="col-xl-4">
-                    <el-form-item prop="sdiCode">
-                      <el-input
-                        v-model="formData.SDICode"
-                        type="text"
-                        placeholder="SDI (7 caratteri)"
-                        maxlength="7"
-                        class="modern-input"
-                        @input="formData.SDICode = formData.SDICode.toUpperCase()"
-                        style="text-transform: uppercase;"
-                      />
-                    </el-form-item>
+                <!--begin::Input group - PEC o Codice SDI-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">PEC o Codice Destinatario SDI</label>
+                  <div class="row">
+                    <div class="col-xl-8">
+                      <el-form-item prop="pec">
+                        <el-input
+                          v-model="formData.PEC"
+                          type="email"
+                          placeholder="pec@example.com"
+                          class="modern-input"
+                        />
+                      </el-form-item>
+                    </div>
+                    <div class="col-xl-4">
+                      <el-form-item prop="sdiCode">
+                        <el-input
+                          v-model="formData.SDICode"
+                          type="text"
+                          placeholder="SDI (7 caratteri)"
+                          maxlength="7"
+                          class="modern-input"
+                          @input="formData.SDICode = formData.SDICode.toUpperCase()"
+                          style="text-transform: uppercase;"
+                        />
+                      </el-form-item>
+                    </div>
                   </div>
                 </div>
+                <!--end::Input group-->
               </div>
-              <!--end::Input group-->
+              <!--end::Campi Persona Giuridica-->
 
             </div>
             <!--end::Scroll-->
@@ -546,6 +614,7 @@ import { hideModal } from "@/core/helpers/dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { updateAgency, getAgency, deleteAgency } from "@/core/data/agencies";
 import { useAuthStore, type User } from "@/stores/auth";
+import { useProvinces } from "@/composables/useProvinces";
 
 export default defineComponent({
   name: "update-agency-modal",
@@ -563,6 +632,9 @@ export default defineComponent({
     const loading = ref<boolean>(false);
     const store = useAuthStore();
     const user = store.user;
+    
+    // Usa il composable per le province
+    const { provinces } = useProvinces();
     const formData = ref<any>({
       Id: "",
       UserName: "",
@@ -581,6 +653,7 @@ export default defineComponent({
       EmailConfirmed: false,
       UpdateDate: new Date(),
       // Dati Fiscali
+      UserType: 1, // Default: Persona Fisica
       CompanyName: "",
       FiscalCode: "",
       VATNumber: "",
@@ -659,7 +732,33 @@ export default defineComponent({
           trigger: "change",
         },
       ],
+      Province: [
+        {
+          required: true,
+          message: "Provincia obligatoria",
+          trigger: "change",
+        },
+      ],
+      ZipCode: [
+        {
+          required: true,
+          message: "CAP obligatorio",
+          trigger: "change",
+        },
+      ],
       FiscalCode: [
+        {
+          required: true,
+          message: "Codice Fiscale obligatorio per Persona Fisica",
+          trigger: "change",
+          validator: (rule: any, value: any, callback: any) => {
+            if (formData.value.UserType === 1 && !value) {
+              callback(new Error("Codice Fiscale obligatorio per Persona Fisica"));
+            } else {
+              callback();
+            }
+          }
+        },
         {
           pattern: /^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/,
           message: "Codice Fiscale non valido",
@@ -667,6 +766,18 @@ export default defineComponent({
         },
       ],
       VATNumber: [
+        {
+          required: true,
+          message: "Partita IVA obligatoria per Persona Giuridica",
+          trigger: "change",
+          validator: (rule: any, value: any, callback: any) => {
+            if (formData.value.UserType === 2 && !value) {
+              callback(new Error("Partita IVA obligatoria per Persona Giuridica"));
+            } else {
+              callback();
+            }
+          }
+        },
         {
           pattern: /^[0-9]{11}$/,
           message: "Partita IVA deve contenere 11 cifre",
@@ -693,54 +804,81 @@ export default defineComponent({
       if (!formRef.value) {
         return;
       }
-      formRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-          loading.value = true;
-          await updateAgency(formData.value)
-          
-          const error = store.errors;
+      
+      // Validazione manuale per raccogliere tutti gli errori
+      const validationErrors: string[] = [];
+      
+      // Campi sempre obbligatori
+      if (!formData.value.FirstName?.trim()) validationErrors.push("Nome");
+      if (!formData.value.LastName?.trim()) validationErrors.push("Cognome");
+      if (!formData.value.Email?.trim()) validationErrors.push("Email");
+      if (!formData.value.PhoneNumber?.trim()) validationErrors.push("Telefono");
+      if (!formData.value.Address?.trim()) validationErrors.push("Indirizzo");
+      if (!formData.value.City?.trim()) validationErrors.push("Città");
+      if (!formData.value.Province?.trim()) validationErrors.push("Provincia");
+      if (!formData.value.ZipCode?.trim()) validationErrors.push("CAP");
+      
+      // Validazioni condizionali
+      if (formData.value.UserType === 2 && !formData.value.CompanyName?.trim()) {
+        validationErrors.push("Ragione Sociale (obbligatoria per Persona Giuridica)");
+      }
+      if (formData.value.UserType === 1 && !formData.value.FiscalCode?.trim()) {
+        validationErrors.push("Codice Fiscale (obbligatorio per Persona Fisica)");
+      }
+      if (formData.value.UserType === 2 && !formData.value.VATNumber?.trim()) {
+        validationErrors.push("Partita IVA (obbligatoria per Persona Giuridica)");
+      }
+      
+      // Se ci sono errori di validazione, mostrali tutti insieme
+      if (validationErrors.length > 0) {
+        const errorMessage = `I seguenti campi sono obbligatori e devono essere compilati:\n\n• ${validationErrors.join('\n• ')}`;
+        
+        Swal.fire({
+          title: "Campi Obbligatori Mancanti",
+          text: errorMessage,
+          icon: "warning",
+          buttonsStyling: false,
+          confirmButtonText: "Correggi i campi",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn fw-semibold btn-light-warning",
+          },
+        });
+        return;
+      }
+      
+      // Se la validazione passa, procedi con il salvataggio
+      loading.value = true;
+      updateAgency(formData.value).then(() => {
+        const error = store.errors;
 
-          if (!error) {
-            Swal.fire({
-              text: "Operazione completata!",
-              icon: "success",
-              buttonsStyling: false,
-              confirmButtonText: "Continua!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn fw-semobold btn-light-primary",
-              },
-            }).then(function () {
-              hideModal(updateAgencyModalRef.value);
-              emit('formUpdateSubmitted', formData.value);
-              loading.value = false;
-            });
-          } else {
+        if (!error) {
+          Swal.fire({
+            text: "Operazione completata!",
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Continua!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-primary",
+            },
+          }).then(function () {
+            hideModal(updateAgencyModalRef.value);
+            emit('formUpdateSubmitted', formData.value);
             loading.value = false;
-            Swal.fire({
-              text: error as string,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Riprova!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn fw-semobold btn-light-danger",
-              },
-            });
-          }
+          });
         } else {
           loading.value = false;
           Swal.fire({
-            text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+            text: error as string,
             icon: "error",
             buttonsStyling: false,
-            confirmButtonText: "Ok",
+            confirmButtonText: "Riprova!",
             heightAuto: false,
             customClass: {
-              confirmButton: "btn btn-primary",
+              confirmButton: "btn fw-semobold btn-light-danger",
             },
           });
-          return false;
         }
       });
     };
@@ -794,6 +932,7 @@ export default defineComponent({
       user,
       colorOptions,
       selectColor,
+      provinces,
     };
   },
 });

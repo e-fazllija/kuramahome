@@ -10,7 +10,7 @@ export interface RealEstatePropertyListItem {
   Status: string;
   Auction: boolean;
   Sold: boolean;
-  Town: string;
+  City: string;
   Price: number;
   Category: string;
   Typology: string;
@@ -50,7 +50,7 @@ export interface Agent {
   PhoneNumber?: string;
   MobilePhone?: string;
   Address?: string;
-  Town?: string;
+  City?: string;
   Province?: string;
   AgencyId?: string;
   Color?: string;
@@ -518,8 +518,8 @@ const processTopZones = (properties: RealEstatePropertyListItem[]) => {
     
     // Raggruppa per città/zone
     properties.forEach(property => {
-        const town = property.Town || 'Non specificato';
-        zoneCount[town] = (zoneCount[town] || 0) + 1;
+        const city = property.City || 'Non specificato';
+        zoneCount[city] = (zoneCount[city] || 0) + 1;
     });
     
     // Ordina per quantità (decrescente) e prendi i primi 5

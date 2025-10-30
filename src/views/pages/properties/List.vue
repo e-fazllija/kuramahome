@@ -23,15 +23,21 @@
         <button
           type="button"
           class="btn btn-sm btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#kt_modal_add_property"
+          @click="handleNewPropertyClick"
+          :disabled="isCheckingLimit"
           style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);"
         >
+          <span v-if="!isCheckingLimit">
           <i class="ki-duotone ki-plus fs-3 me-2">
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
           <span class="fw-bold">Nuovo Immobile</span>
+          </span>
+          <span v-else>
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Verifica in corso...
+          </span>
         </button>
       </div>
     </div>
@@ -327,7 +333,19 @@
   <!--end::Properties page wrapper-->
 
   <ExportCustomerModal></ExportCustomerModal>
-  <AddPropertyModal @formAddSubmitted="getItems(agencyId, '')" @redirectToEdit="redirectToEdit"></AddPropertyModal>
+  <AddPropertyModal 
+    @formAddSubmitted="getItems(agencyId, '')" 
+    @redirectToEdit="redirectToEdit"
+    @limitExceeded="handleLimitExceeded"
+  ></AddPropertyModal>
+
+  <!-- Modale Upgrade Required -->
+  <UpgradeRequiredModal
+    :isOpen="showUpgradeModal"
+    :featureDisplayName="'Immobili'"
+    :limitStatus="limitStatus"
+    @close="showUpgradeModal = false"
+  />
 </template>
 
 <script lang="ts">
@@ -344,6 +362,9 @@ import { MenuComponent } from "@/assets/ts/components";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useAuthStore } from "@/stores/auth";
 import { getGroupedLocations, type LocationGroupedModel, getStructuredLocationData } from "@/core/data/locations";
+import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
+import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
+import { Modal } from "bootstrap";
 
 export default defineComponent({
   name: "properties",
@@ -351,6 +372,7 @@ export default defineComponent({
     Datatable,
     ExportCustomerModal,
     AddPropertyModal,
+    UpgradeRequiredModal,
   },
   setup() {
     const authStore = useAuthStore();
@@ -437,7 +459,60 @@ export default defineComponent({
     const selectedLocation = ref<string>("");
     const locations = ref<Array<string>>([]);
 
+    // Subscription limits state
+    const isCheckingLimit = ref(false);
+    const showUpgradeModal = ref(false);
+    const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
 
+    // Gestione click "Nuovo Immobile" con controllo limiti
+    const handleNewPropertyClick = async () => {
+      try {
+        isCheckingLimit.value = true;
+
+        // Verifica limite PRIMA di aprire la modale
+        const response = await checkFeatureLimit('max_properties');
+        
+        // Debug: log della risposta
+        console.log('Limit check response:', response);
+        console.log('canProceed:', response.canProceed, typeof response.canProceed);
+
+        if (!response.canProceed) {
+          // Limite raggiunto → mostra modale upgrade
+          console.log('Limite raggiunto, mostro modale upgrade');
+          limitStatus.value = response;
+          showUpgradeModal.value = true;
+          isCheckingLimit.value = false;
+          return;
+        }
+
+        // Limite OK → apri modale creazione immobile
+        console.log('Limite OK, apro form creazione immobile');
+        const modalElement = document.getElementById('kt_modal_add_property');
+        if (modalElement) {
+          const modal = new Modal(modalElement);
+          modal.show();
+        }
+      } catch (error: any) {
+        console.error('Errore durante la verifica del limite:', error);
+        Swal.fire({
+          text: error?.response?.data?.Message || error?.message || "Errore durante la verifica del limite. Riprova più tardi.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok, capito!",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        isCheckingLimit.value = false;
+      }
+    };
+
+    const handleLimitExceeded = (limitStatusData: SubscriptionLimitStatusResponse) => {
+      limitStatus.value = limitStatusData;
+      showUpgradeModal.value = true;
+    };
 
     async function getItems(agencyId: string, filterRequest: string, contract?: string, priceFrom?: number, priceTo?: number, category?: string, typology?: string, town?: string[]) {
       loading.value = true;
@@ -654,7 +729,12 @@ export default defineComponent({
         onProvinceChange,
         onCityChange,
         clearAllFilters,
-        redirectToEdit
+        redirectToEdit,
+        handleNewPropertyClick,
+        handleLimitExceeded,
+        isCheckingLimit,
+        showUpgradeModal,
+        limitStatus
       };
   },
   data() {

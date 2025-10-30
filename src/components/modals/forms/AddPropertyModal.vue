@@ -488,7 +488,7 @@
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <select class="form-select modern-select" aria-label="Single select example" v-model="formData.Town" required>
+                    <select class="form-select modern-select" aria-label="Single select example" v-model="formData.City" required>
                         <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }} </option>
                     </select>
                     <!--end::Input-->
@@ -1197,6 +1197,7 @@ import { getCities, getLocationsByCity, getGroupedLocations, getProvincesForSele
 export default defineComponent({
   name: "add-property-modal",
   components: {Multiselect},
+  emits: ['formAddSubmitted', 'redirectToEdit', 'limitExceeded'],
   setup(_, { emit }) {
     const formRef = ref<null | HTMLFormElement>(null);
     const addPropertyModalRef = ref<null | HTMLElement>(null);
@@ -1219,7 +1220,7 @@ export default defineComponent({
       Archived: false,
       Status: "Vendita",
       AddressLine: "",
-      Town: "",
+      City: "",
       State: "",
       Location:"",
       PostCode: "",
@@ -1333,23 +1334,23 @@ export default defineComponent({
             if (newProvince) {
                 // Carica le città della provincia selezionata
                 await loadCitiesByProvince(newProvince);
-                formData.value.Town = null;
+                formData.value.City = null;
                 formData.value.Location = null;
             } else {
                 cities.value = [];
                 locations.value = [];
-                formData.value.Town = null;
+                formData.value.City = null;
                 formData.value.Location = null;
             }
         }
         );
 
         watch(
-        () => formData.value.Town,
-        async (newTown) => {
-            if (newTown) {
+        () => formData.value.City,
+        async (newCity) => {
+            if (newCity) {
                 // Carica le località della città selezionata
-                await loadLocationsByCity(newTown);
+                await loadLocationsByCity(newCity);
                 formData.value.Location = null;
             } else {
                 locations.value = [];
@@ -1383,7 +1384,7 @@ export default defineComponent({
           trigger: "change",
         },
       ],
-      Town: [
+      City: [
         {
           required: true,
           message: "Il comune è obbligatorio",
@@ -1460,6 +1461,7 @@ export default defineComponent({
             formData.value.Price = -1;
           }
           
+          try {
           const result = await createRealEstateProperty(formData.value);
 
           const error = store.errors;
@@ -1499,6 +1501,25 @@ export default defineComponent({
                 confirmButton: "btn btn-primary",
               },
             });
+              return false;
+            }
+          } catch (error: any) {
+            loading.value = false;
+            if (error?.response?.status === 429) {
+              hideModal(addPropertyModalRef.value);
+              emit('limitExceeded', error.response.data);
+            } else {
+              Swal.fire({
+                text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, capito!",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+            }
             return false;
           }
         }

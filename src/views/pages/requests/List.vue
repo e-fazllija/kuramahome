@@ -23,15 +23,21 @@
         <button
           type="button"
           class="btn btn-sm btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#kt_modal_add_request"
+          @click="handleNewRequestClick"
+          :disabled="isCheckingLimit"
           style="background: linear-gradient(135deg, #0095e8 0%, #00d4ff 100%); border: none; border-radius: 8px; padding: 0.6rem 1.25rem;"
         >
-          <i class="ki-duotone ki-plus fs-4 me-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          <span class="fw-bold">Nuova Richiesta</span>
+          <span v-if="!isCheckingLimit">
+            <i class="ki-duotone ki-plus fs-4 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Nuova Richiesta</span>
+          </span>
+          <span v-else>
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Verifica in corso...
+          </span>
         </button>
       </div>
     </div>
@@ -367,7 +373,17 @@
   </div>
 
   <ExportCustomerModal></ExportCustomerModal>
-  <AddRequestModal @formAddSubmitted="getItems(agencyId, '')"></AddRequestModal>
+  <AddRequestModal 
+    @formAddSubmitted="getItems(agencyId, '')"
+    @limitExceeded="handleLimitExceeded"
+  ></AddRequestModal>
+
+  <UpgradeRequiredModal
+    :isOpen="showUpgradeModal"
+    :featureDisplayName="'Richieste'"
+    :limitStatus="limitStatus"
+    @close="showUpgradeModal = false"
+  />
 </template>
 
 <script lang="ts">
@@ -377,6 +393,9 @@ import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
 import AddRequestModal from "@/components/modals/forms/requests/AddRequestModal.vue";
+import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
+import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
+import { Modal } from "bootstrap";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import { getRequestsList, Request, deleteRequest, RequestTabelData } from "@/core/data/requests";
@@ -392,6 +411,7 @@ export default defineComponent({
     Datatable,
     ExportCustomerModal,
     AddRequestModal,
+    UpgradeRequiredModal,
     Multiselect
   },
   setup() {
@@ -464,6 +484,9 @@ export default defineComponent({
       Agents: [],
     })
     const groupedLocations = ref<LocationGroupedModel[]>([]);
+    const isCheckingLimit = ref(false);
+    const showUpgradeModal = ref(false);
+    const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
 
     // Nuovi dati strutturati per i filtri a tre livelli
     const structuredLocationData = ref<{
@@ -517,6 +540,32 @@ export default defineComponent({
       tableData.value = results || [];
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
       loading.value = false;
+    };
+
+    const handleNewRequestClick = async () => {
+      try {
+        isCheckingLimit.value = true;
+        const response = await checkFeatureLimit('max_requests');
+        if (!response.canProceed) {
+          limitStatus.value = response;
+          showUpgradeModal.value = true;
+          return;
+        }
+        const modalElement = document.getElementById('kt_modal_add_request');
+        if (modalElement) {
+          const modal = new Modal(modalElement);
+          modal.show();
+        }
+      } catch (error: any) {
+        console.error('Errore durante la verifica del limite richieste:', error);
+      } finally {
+        isCheckingLimit.value = false;
+      }
+    };
+
+    const handleLimitExceeded = (limitStatusData: SubscriptionLimitStatusResponse) => {
+      limitStatus.value = limitStatusData;
+      showUpgradeModal.value = true;
     };
 
     onMounted(async () => {
@@ -850,7 +899,12 @@ export default defineComponent({
         getStatusClass,
         getInitials,
         getCustomerColor,
-        copyToClipboard
+      copyToClipboard,
+      isCheckingLimit,
+      handleNewRequestClick,
+      showUpgradeModal,
+      limitStatus,
+      handleLimitExceeded
       };
   },
     data() {

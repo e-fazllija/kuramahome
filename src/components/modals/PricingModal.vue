@@ -98,27 +98,8 @@
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold pricing-text-primary">{{ feature.FeatureName }}</span>
-                        </div>
-                        
-                        <!-- Info aggiuntive se presenti -->
-                        <div v-if="plan.MaxProperties" class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
                           <span class="fw-semibold pricing-text-primary">
-                            {{ plan.MaxProperties === -1 ? 'Immobili illimitati' : `Fino a ${plan.MaxProperties} immobili` }}
-                          </span>
-                        </div>
-                        
-                        <div v-if="plan.MaxUsers" class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          <span class="fw-semibold pricing-text-primary">
-                            {{ plan.MaxUsers === -1 ? 'Utenti illimitati' : `Fino a ${plan.MaxUsers} utenti` }}
+                            {{ feature.Description }}
                           </span>
                         </div>
                       </div>
@@ -351,6 +332,7 @@ export default defineComponent({
     const getPlanByName = (planName: string): SubscriptionPlan | undefined => {
       return plans.value.find(p => p.Name.toLowerCase() === planName.toLowerCase());
     };
+
 
     const initializeStripe = async () => {
       try {

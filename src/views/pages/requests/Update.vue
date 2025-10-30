@@ -582,7 +582,7 @@
             </template>
             <template v-slot:AddressLine="{ row: item }">
               {{ item.AddressLine }} <br />
-              {{ item.Town }} <br />
+              {{ item.City }} <br />
               {{ item.Province }}
             </template>
             <template v-slot:Price="{ row: item }">
@@ -656,7 +656,7 @@ export default defineComponent({
       Contract: "",
       PropertyType: "",
       Province: "",
-      Town: "",
+      City: "",
       PriceTo:0,
       PriceFrom:0,
       Archived: false,
@@ -766,7 +766,7 @@ export default defineComponent({
       firtLoad.value = true;
       formData.value = await getRequest(id);
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
-      selectedCities.value = formData.value.Town.split(",")
+      selectedCities.value = formData.value.City.split(",")
       selectedLocations.value = formData.value.Location?.split(",")
       inserModel.value = await getToInsert(store.user.AgencyId);
       initItems.value.splice(0, formData.value.RealEstateProperties.length, ...formData.value.RealEstateProperties);
@@ -797,12 +797,12 @@ export default defineComponent({
         if (!firtLoad.value) {
           if (newProvince) {
             await loadCitiesByProvince(newProvince);
-            formData.value.Town = null;
+            formData.value.City = null;
             formData.value.Location = null;
           } else {
             cities.value = [];
             locations.value = [];
-            formData.value.Town = null;
+            formData.value.City = null;
             formData.value.Location = null;
           }
         } else {
@@ -857,7 +857,7 @@ export default defineComponent({
 
     const submit = async () => {
       loading.value = true;
-      formData.value.Town = selectedCities.value.toString()
+      formData.value.City = selectedCities.value.toString()
       formData.value.Location = selectedLocations.value?.toString();
       formData.value.PropertyType = selectedPropertyTypes.value.toString();
 

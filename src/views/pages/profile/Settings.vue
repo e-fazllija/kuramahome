@@ -187,8 +187,16 @@
 
                 <!--begin::Col-->
                 <div class="col-lg-4 fv-row">
-                  <Field type="text" name="Province" class="form-control form-control-lg form-control-solid"
-                    placeholder="Provincia" v-model="profileDetails.Province" />
+                  <select 
+                    name="Province" 
+                    class="form-select form-select-lg form-select-solid"
+                    v-model="profileDetails.Province"
+                  >
+                    <option value="">Seleziona provincia</option>
+                    <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                      {{ province.Name }}
+                    </option>
+                  </select>
                   <div class="fv-plugins-message-container">
                     <div class="fv-help-block">
                       <ErrorMessage name="Province" />
@@ -613,12 +621,13 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
 import { Agent, updateAgent } from "@/core/data/agents"
 import { useAuthStore, type User } from "@/stores/auth";
+import { getProvincesForSelect } from "@/core/data/locations";
 
 export default defineComponent({
   name: "account-settings",
@@ -650,6 +659,7 @@ export default defineComponent({
     const passwordFormDisplay = ref(false);
     const resetPasswordToken = ref<string>();
     const newPassword = ref<string>();
+    const provinces = ref<Array<{Id: string, Name: string}>>([]);
     const profileDetailsValidator = Yup.object().shape({
       Name: Yup.string().required().label("Name"),
       LastName: Yup.string().required().label("LastName"),
@@ -798,6 +808,21 @@ export default defineComponent({
       window.location.href = `mailto:support@kurama.com?subject=${subject}&body=${body}`;
     };
 
+    // Carica le province dal database
+    const loadProvinces = async () => {
+      try {
+        const provincesData = await getProvincesForSelect();
+        provinces.value = provincesData;
+      } catch (error) {
+        console.error("Errore nel caricamento delle province:", error);
+      }
+    };
+
+    // Carica le province al mount
+    onMounted(() => {
+      loadProvinces();
+    });
+
     return {
       submitButton1,
       submitButton2,
@@ -818,7 +843,8 @@ export default defineComponent({
       getAssetPath,
       sendLink,
       newPassword,
-      requestFiscalDataChange
+      requestFiscalDataChange,
+      provinces
     };
   },
 });
