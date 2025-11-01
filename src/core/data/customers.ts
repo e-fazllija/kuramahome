@@ -23,7 +23,7 @@ export class Customer{
   AcquisitionDone: boolean;
   OngoingAssignment: boolean;
   CustomerNotes?: Notes[];
-  AgencyId?: string;
+  ApplicationUserId?: string;
   label?: string;
 }
 

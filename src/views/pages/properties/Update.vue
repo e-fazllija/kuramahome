@@ -121,7 +121,7 @@
             <div class="d-flex flex-column fv-row">
               <!--begin::Input-->
               <select class="form-select modern-select" v-model="formData.AgentId" required>
-                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.Name }} {{ user.LastName }}</option>
+                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.FirstName }} {{ user.LastName }}</option>
               </select>
               <!--end::Input-->
             </div>
@@ -243,7 +243,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <select class="form-select" v-model="formData.Town" required>
+              <select class="form-select" v-model="formData.City" required>
                 <option value="">Seleziona città</option>
                 <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
               </select>
@@ -926,7 +926,7 @@
           </button>
         </div>
         <div>
-          <button v-if="user.Role === 'Admin' || (user.Role === 'Agenzia' && user.Id === formData.Agent.AgencyId )" type="button" @click="deleteItem()"
+          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.Agent.AgencyId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
@@ -1168,7 +1168,7 @@ export default defineComponent({
       Archived: false,
       Status: "",
       AddressLine: "",
-      Town: "",
+      City: "",
       State: "",
       Location: "",
       PostCode: "",
@@ -1307,8 +1307,8 @@ export default defineComponent({
       }
       
       // Se c'è già una città selezionata, carica le località
-      if (formData.value.Town) {
-        await loadLocationsByCity(formData.value.Town);
+      if (formData.value.City) {
+        await loadLocationsByCity(formData.value.City);
       }
       
       loading.value = false;
@@ -1322,19 +1322,19 @@ export default defineComponent({
         console.log("watch state")
         if (newProvince) {
           await loadCitiesByProvince(newProvince);
-          formData.value.Town = "";
+          formData.value.City = "";
           formData.value.Location = "";
         } else {
           cities.value = [];
           locations.value = [];
-          formData.value.Town = "";
+          formData.value.City = "";
           formData.value.Location = "";
         }
       }
     }
     );
     watch(
-    () => formData.value.Town,
+    () => formData.value.City,
     async (newTown) => {
       if (!firtLoad.value) {
         console.log("watch localita")

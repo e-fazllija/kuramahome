@@ -281,7 +281,7 @@ router.beforeEach(async (to, from, next) => {
           next({ name: "sign-in" });
         }
       } else if (to.meta.requiresAdminOrAgency) {
-        if (authStore.user.Role == "Admin" || authStore.user.Role == "Agenzia") {
+        if (authStore.user.Role == "Admin" || authStore.user.Role == "Agency") {
           next();
         } else {
           authStore.logout()

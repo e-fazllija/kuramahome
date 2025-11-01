@@ -193,7 +193,7 @@
             >
               <option value="">Agenzie</option>
               <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
-                {{ item.Name }} {{ item.LastName }}
+                {{ item.FirstName }} {{ item.LastName }}
               </option>
             </select>
           </div>

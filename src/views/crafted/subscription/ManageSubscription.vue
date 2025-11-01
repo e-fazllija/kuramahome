@@ -130,7 +130,7 @@
                     <div class="mb-5">
                       <label class="form-label text-muted fs-8 fw-semibold mb-2">INTESTATARIO</label>
                       <div class="fs-5 fw-bold text-gray-900">
-                        {{ user.Name }} {{ user.LastName }}
+                        {{ user.FirstName }} {{ user.LastName }}
                         <span v-if="user.CompanyName" class="text-muted fs-6 ms-2">({{ user.CompanyName }})</span>
                       </div>
                       <div class="text-muted fs-7 mb-2">{{ user.Email }}</div>

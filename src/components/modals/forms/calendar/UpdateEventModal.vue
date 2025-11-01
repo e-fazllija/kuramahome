@@ -349,7 +349,7 @@
 
             <!--begin::Button Elimina-->
             <button
-              v-if="user.Id == targetData.ApplicationUserId || user.Role == 'Admin' || user.Role == 'Agenzia'"
+              v-if="user.Id == targetData.ApplicationUserId || user.Role == 'Admin' || user.Role == 'Agency'"
               @click="deleteItem(targetData.Id)"
               data-bs-dismiss="modal"
               type="button"
@@ -370,7 +370,7 @@
 
             <!--begin::Button Salva-->
             <button
-              v-if="user.Id == targetData.ApplicationUserId || user.Role == 'Admin' || user.Role == 'Agenzia'"
+              v-if="user.Id == targetData.ApplicationUserId || user.Role == 'Admin' || user.Role == 'Agency'"
               :data-kt-indicator="loading ? 'on' : null"
               class="btn btn-modal-primary"
               type="submit"

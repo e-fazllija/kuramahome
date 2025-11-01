@@ -186,7 +186,7 @@ const getToInsert = (agencyId?: string): Promise<InsertModel> => {
       const agents = data.Agents as Array<User>;
       const customers = data.Customers as Array<Customer>;
       customers.forEach(customer => customer.label = customer.FirstName + ' ' + customer.LastName );
-      agents.forEach(agent => agent.label = agent.Name + ' ' + agent.LastName );
+      agents.forEach(agent => agent.label = agent.FirstName + ' ' + agent.LastName );
       const result = <InsertModel>({
         Users: agents,
         Customers: customers

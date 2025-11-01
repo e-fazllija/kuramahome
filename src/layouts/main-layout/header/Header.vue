@@ -149,10 +149,10 @@ export default defineComponent({
     
     const userFullName = computed(() => {
       const user = authStore.user;
-      if (user && user.Name && user.LastName) {
-        return `${user.Name} ${user.LastName}`;
+      if (user && user.FirstName && user.LastName) {
+        return `${user.FirstName} ${user.LastName}`;
       }
-      return user?.Name || user?.LastName || "Utente";
+      return user?.FirstName || user?.LastName || "Utente";
     });
 
     // Filter menu items based on user role

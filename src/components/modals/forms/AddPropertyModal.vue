@@ -60,7 +60,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <select class="form-select modern-select form-control-palette" v-model="formData.AgentId">
-                  <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.Name }} {{ user.LastName }}</option>
+                  <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.FirstName }} {{ user.LastName }}</option>
                 </select>
                 <!--end::Input-->
               </div>
