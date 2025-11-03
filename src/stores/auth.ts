@@ -7,7 +7,7 @@ export interface User {
   Id: string,
   Username: string;
   Code?: string;
-  Name: string;
+  FirstName: string;
   LastName: string;
   Email: string;
   Role: string;
@@ -73,6 +73,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function setSubscriptionExpired(value: boolean) {
+    console.log("setSubscriptionExpired", value);
     isSubscriptionExpired.value = value;
   }
 

@@ -127,7 +127,7 @@
               </i>
               <select class="form-select form-select-modern agency-select" v-model="agencyId" style="min-width: 220px;">
             <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
-                  🏢 {{ item.Name }} {{ item.LastName }}
+                  🏢 {{ item.FirstName }} {{ item.LastName }}
             </option>
           </select>
         </div>

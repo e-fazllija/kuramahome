@@ -50,7 +50,7 @@
             <div v-if="user.Role == 'Admin'" class="flex-shrink-0">
               <select class="form-select form-select-modern" v-model="agencyId" style="min-width: 160px;">
                 <option v-for="(item, index) in searchItems.Agencies" :key="index" :value="item.Id">
-                  🏢 {{ item.Name }} {{ item.LastName }}
+                  🏢 {{ item.FirstName }} {{ item.LastName }}
                 </option>
               </select>
             </div>
@@ -60,7 +60,7 @@
               <select class="form-select form-select-modern" v-model="agentId" style="min-width: 150px;">
                 <option value="">👥 Tutti agenti</option>
                 <option v-for="(item, index) in searchItems.Agents" :key="index" :value="item.Id">
-                  👤 {{ item.Name }} {{ item.LastName }}
+                  👤 {{ item.FirstName }} {{ item.LastName }}
                 </option>
               </select>
             </div>
@@ -246,7 +246,7 @@ export default defineComponent({
       tableData.value.splice(0);
       initItems.value.splice(0);
       const results = await getEvents(_agencyId, _agentId);
-      const addName = store.user.Role != "Agente" && agentId.value == "" ? true : false;
+      const addName = store.user.Role != "Agent" && agentId.value == "" ? true : false;
       
       for (const key in results) {
         // Apply status filter
@@ -266,7 +266,7 @@ export default defineComponent({
           statusIndicator = " ⏳";
         }
 
-        const baseTitle = addName ? `${results[key].ApplicationUser.Name} ${results[key].ApplicationUser.LastName}: ${results[key].NomeEvento}` : results[key].NomeEvento;
+        const baseTitle = addName ? `${results[key].ApplicationUser.FirstName} ${results[key].ApplicationUser.LastName}: ${results[key].NomeEvento}` : results[key].NomeEvento;
         
         const item = {
           id: results[key].Id.toString(),

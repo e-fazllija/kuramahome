@@ -518,7 +518,6 @@ export default defineComponent({
       Address: "",
       City: "",
       State: "",
-      Code: "0",
       AcquisitionDone: false,
       OngoingAssignment: false
     });
@@ -582,7 +581,7 @@ export default defineComponent({
               CustomerPhone: results[key].Customer.Phone.toString(),
               Contract: results[key].Contract,
               CreationDate: results[key].CreationDate,
-              Town: results[key].Town,
+              City: results[key].City,
               Locations: results[key].Location,
               PriceTo: results[key].PriceTo,
               PriceFrom: results[key].PriceFrom,

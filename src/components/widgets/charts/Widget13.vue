@@ -551,7 +551,7 @@ export default defineComponent({
         const address = agency.Address || agency.address || '';
         const city = agency.City || agency.city || '';
         const province = agency.Province || agency.province || '';
-        const agencyName = agency.UserName || agency.userName || agency.name || 'Agenzia';
+        const agencyName = agency.UserName || agency.userName || agency.name || 'Agency';
         
         let coords: [number, number] | null = null;
 

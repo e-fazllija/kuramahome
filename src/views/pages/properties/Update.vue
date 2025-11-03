@@ -121,7 +121,7 @@
             <div class="d-flex flex-column fv-row">
               <!--begin::Input-->
               <select class="form-select modern-select" v-model="formData.AgentId" required>
-                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.Name }} {{ user.LastName }}</option>
+                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.FirstName }} {{ user.LastName }}</option>
               </select>
               <!--end::Input-->
             </div>
@@ -242,10 +242,19 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
+<<<<<<< HEAD
             <select class="form-select modern-select" v-model="formData.Town" required>
               <option value="">🏙️ Seleziona città</option>
               <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
             </select>
+=======
+            <div class="form-check form-switch form-check-custom form-check-solid">
+              <select class="form-select" v-model="formData.City" required>
+                <option value="">Seleziona città</option>
+                <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
+              </select>
+            </div>
+>>>>>>> a9e67ec23b20e63679af0b271aad2e5e9925cba6
           </div>
           <!--end::Col-->
         </div>
@@ -1148,7 +1157,7 @@ export default defineComponent({
       Archived: false,
       Status: "",
       AddressLine: "",
-      Town: "",
+      City: "",
       State: "",
       Location: "",
       PostCode: "",
@@ -1286,6 +1295,14 @@ export default defineComponent({
         await loadCitiesByProvince(formData.value.State);
       }
       
+<<<<<<< HEAD
+=======
+      // Se c'è già una città selezionata, carica le località
+      if (formData.value.City) {
+        await loadLocationsByCity(formData.value.City);
+      }
+      
+>>>>>>> a9e67ec23b20e63679af0b271aad2e5e9925cba6
       loading.value = false;
       firtLoad.value = false;
     })
@@ -1297,16 +1314,26 @@ export default defineComponent({
         console.log("watch state")
         if (newProvince) {
           await loadCitiesByProvince(newProvince);
+<<<<<<< HEAD
           formData.value.Town = "";
         } else {
           cities.value = [];
           formData.value.Town = "";
+=======
+          formData.value.City = "";
+          formData.value.Location = "";
+        } else {
+          cities.value = [];
+          locations.value = [];
+          formData.value.City = "";
+          formData.value.Location = "";
+>>>>>>> a9e67ec23b20e63679af0b271aad2e5e9925cba6
         }
       }
     }
     );
     watch(
-    () => formData.value.Town,
+    () => formData.value.City,
     async (newTown) => {
       if (!firtLoad.value) {
         console.log("watch localita")

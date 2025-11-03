@@ -23,7 +23,7 @@
                   <a
                     href="#"
                     class="text-gray-800 text-hover-primary fs-2 fw-bold me-1"
-                    >{{ formData.Name }} {{ formData.LastName }}</a
+                    >{{ formData.FirstName }} {{ formData.LastName }}</a
                   >  
                 </div>
                 <!--end::Name-->
