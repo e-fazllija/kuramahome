@@ -1,13 +1,19 @@
-export const provinceCities = {
+interface CityWithCAP {
+  Id: string;
+  Name: string;
+  CAP?: string;
+}
+
+export const provinceCities: Record<string, CityWithCAP[]> = {
   "Arezzo": [
-    { Id: 'Arezzo', Name: 'Arezzo' },
-    { Id: 'Castiglion Fiorentino', Name: 'Castiglion Fiorentino' },
-    { Id: 'Cortona', Name: 'Cortona' },
+    { Id: 'Arezzo', Name: 'Arezzo', CAP: '52100' },
+    { Id: 'Castiglion Fiorentino', Name: 'Castiglion Fiorentino', CAP: '52043' },
+    { Id: 'Cortona', Name: 'Cortona', CAP: '52044' },
   ],
   "Caserta": [
-    { Id: 'Aversa', Name: 'Aversa' },
-    { Id: 'Caserta', Name: 'Caserta' },
-    { Id: 'Vairano Patenora', Name: 'Vairano Patenora' },
+    { Id: 'Aversa', Name: 'Aversa', CAP: '81031' },
+    { Id: 'Caserta', Name: 'Caserta', CAP: '81100' },
+    { Id: 'Vairano Patenora', Name: 'Vairano Patenora', CAP: '81058' },
   ],
   "Chieti": [
     { Id: 'Chieti', Name: 'Chieti' },
@@ -33,7 +39,7 @@ export const provinceCities = {
     { Id: 'Serrone', Name: 'Serrone' },
     { Id: 'Sgurgola', Name: 'Sgurgola' },
   ],
-  "LAquila": [
+  "L'Aquila": [
     { Id: 'Campo di Giove', Name: 'Campo di Giove' },
     { Id: 'Carsoli', Name: 'Carsoli' },
     { Id: 'L\'Aquila', Name: 'L\'Aquila' },
@@ -180,3 +186,17 @@ export const provinceCities = {
     { Id: 'Viterbo', Name: 'Viterbo' },
   ]
 };
+
+/**
+ * Funzione per ottenere il CAP di un comune dato provincia e nome comune
+ * @param provinceName - Nome della provincia
+ * @param cityName - Nome del comune
+ * @returns Il CAP del comune o undefined se non trovato
+ */
+export function getCAPByCity(provinceName: string, cityName: string): string | undefined {
+  const cities = provinceCities[provinceName];
+  if (!cities) return undefined;
+  
+  const city = cities.find(c => c.Name === cityName);
+  return city?.CAP;
+}

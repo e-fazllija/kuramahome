@@ -9,6 +9,7 @@
     "lib": ["es2017"],
     "ignoreDeprecations": "5.0",
     "noImplicitAny": false,
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

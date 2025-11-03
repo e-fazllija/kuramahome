@@ -65,3 +65,61 @@ export const getMyLimitsStatus = async (): Promise<
   }
 };
 
+/**
+ * Interface per la response di compatibilità downgrade
+ */
+export interface FeatureCompatibilityItem {
+  featureName: string;
+  featureDisplayName: string;
+  newPlanLimit: number | null;
+  currentUsage: number;
+  isExceeded: boolean;
+  message: string;
+}
+
+export interface DowngradeCompatibilityResponse {
+  canDowngrade: boolean;
+  targetPlanId: number;
+  targetPlanName: string;
+  features: FeatureCompatibilityItem[];
+  exceededLimitsCount: number;
+  message?: string | null;
+}
+
+/**
+ * Verifica se il downgrade al piano specificato è possibile
+ * @param planId ID del piano di destinazione
+ * @returns Response con compatibilità e dettagli delle features
+ */
+export const checkDowngradeCompatibility = async (
+  planId: number
+): Promise<DowngradeCompatibilityResponse> => {
+  try {
+    const response = await ApiService.get(
+      `SubscriptionLimit/check-downgrade?planId=${planId}`,
+      "json"
+    );
+    
+    // Il backend restituisce PascalCase, convertiamo in camelCase
+    const data = response.data;
+    return {
+      canDowngrade: data.CanDowngrade ?? data.canDowngrade,
+      targetPlanId: data.TargetPlanId ?? data.targetPlanId,
+      targetPlanName: data.TargetPlanName ?? data.targetPlanName,
+      features: (data.Features ?? data.features ?? []).map((f: any) => ({
+        featureName: f.FeatureName ?? f.featureName,
+        featureDisplayName: f.FeatureDisplayName ?? f.featureDisplayName,
+        newPlanLimit: f.NewPlanLimit ?? f.newPlanLimit,
+        currentUsage: f.CurrentUsage ?? f.currentUsage,
+        isExceeded: f.IsExceeded ?? f.isExceeded,
+        message: f.Message ?? f.message,
+      })),
+      exceededLimitsCount: data.ExceededLimitsCount ?? data.exceededLimitsCount,
+      message: data.Message ?? data.message,
+    };
+  } catch (error: any) {
+    console.error("Error checking downgrade compatibility:", error);
+    throw error;
+  }
+};
+

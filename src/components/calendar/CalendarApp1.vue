@@ -56,7 +56,7 @@
             </div>
 
             <!-- Agent Filter -->
-            <div v-if="user.Role == 'Admin' || user.Role == 'Agenzia'" class="flex-shrink-0">
+            <div v-if="user.Role == 'Admin' || user.Role == 'Agency'" class="flex-shrink-0">
               <select class="form-select form-select-modern" v-model="agentId" style="min-width: 150px;">
                 <option value="">👥 Tutti agenti</option>
                 <option v-for="(item, index) in searchItems.Agents" :key="index" :value="item.Id">
@@ -182,7 +182,7 @@ export default defineComponent({
     })
 
     const userId = computed(() => {
-      if (user.Role == "Admin" || user.Role == "Agenzia") {
+      if (user.Role == "Admin" || user.Role == "Agency") {
         return agentId.value != null && agentId.value != "" ? agentId.value : user.Id
       }
       else {
@@ -192,7 +192,7 @@ export default defineComponent({
 
     const color = computed(() => {
       if (agentId.value != null && agentId.value != "") {
-        if (user.Role == "Admin" || user.Role == "Agenzia") {
+        if (user.Role == "Admin" || user.Role == "Agency") {
           const userSelected = searchItems.value.Agents.filter(x => x.Id == agentId.value)[0];
           return userSelected.Color;
         }
@@ -287,7 +287,7 @@ export default defineComponent({
 
     onMounted(async () => {
       loading.value = true;
-      if (store.user.Role == "Agenzia" || store.user.Role == "Admin") {
+      if (store.user.Role == "Agency" || store.user.Role == "Admin") {
         await getItems(store.user.AgencyId, "");
         searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
         agencyId.value = store.user.AgencyId;

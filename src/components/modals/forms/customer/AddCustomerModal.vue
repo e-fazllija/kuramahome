@@ -350,6 +350,33 @@
                 <div class="d-flex flex-column mb-7 fv-row">
                   <!--begin::Label-->
                   <label class="fs-6 fw-bold mb-3 text-gray-800">
+                    <i class="ki-duotone ki-map fs-5 me-2 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Provincia
+                  </label>
+                  <!--end::Label-->
+
+                  <!--begin::Input-->
+                  <select 
+                    v-model="formData.State"
+                    class="form-select modern-select"
+                    name="province"
+                  >
+                    <option value="">🗺️ Seleziona provincia</option>
+                    <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                      {{ province.Name }}
+                    </option>
+                  </select>
+                  <!--end::Input-->
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Input group-->
+                <div class="d-flex flex-column mb-7 fv-row">
+                  <!--begin::Label-->
+                  <label class="fs-6 fw-bold mb-3 text-gray-800">
                     <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -359,42 +386,13 @@
                   <!--end::Label-->
 
                   <!--begin::Input-->
-                  <el-form-item prop="City">
-                    <el-input 
-                      v-model="formData.City"
-                      placeholder="Nome del comune"
-                      class="modern-input"
-                    />
-                  </el-form-item>
+                  <select class="form-select modern-select" v-model="formData.City">
+                    <option value="">🏙️ Seleziona comune</option>
+                    <option v-for="(city, index) in cities" :key="index" :value="city.Name">
+                      {{ city.Name }}
+                    </option>
+                  </select>
                   <!--end::Input-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="row g-9 mb-7">
-                  <!--begin::Col-->
-                  <div class="col-md-6 fv-row">
-                    <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
-                      <i class="ki-duotone ki-map fs-5 me-2 text-primary">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      Provincia
-                    </label>
-                    <!--end::Label-->
-
-                    <!--begin::Input-->
-                    <el-form-item prop="State">
-                      <el-input 
-                        v-model="formData.State"
-                        placeholder="Es. MI, RM, NA"
-                        class="modern-input"
-                      />
-                    </el-form-item>
-                    <!--end::Input-->
-                  </div>
-                  <!--end::Col-->
                 </div>
                 <!--end::Input group-->
               </div>
@@ -456,12 +454,14 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createCustomer, Customer } from "@/core/data/customers";
 import { useAuthStore, type User } from "@/stores/auth";
+import { useProvinces } from "@/composables/useProvinces";
+import { getCAPByCity, provinceCities } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-customer-modal",
@@ -472,6 +472,10 @@ export default defineComponent({
     const addCustomerModalRef = ref<null | HTMLElement>(null);
     const loading = ref<boolean>(false);
     const store = useAuthStore();
+    
+    // Usa il composable per le province
+    const { provinces } = useProvinces();
+    const cities = ref<Array<{Id: string, Name: string}>>([]);
     const formData = ref<Customer>({
       Buyer: false,
       Seller: false,
@@ -490,6 +494,20 @@ export default defineComponent({
       OngoingAssignment: false,
       ApplicationUserId: undefined
     });
+
+    // Watcher per caricare le città quando si seleziona la provincia
+    watch(
+      () => formData.value.State,
+      (newProvince) => {
+        if (newProvince && provinceCities[newProvince]) {
+          cities.value = provinceCities[newProvince];
+          formData.value.City = ""; // Reset città
+        } else {
+          cities.value = [];
+          formData.value.City = "";
+        }
+      }
+    );
 
     const rules = ref({
       Type: [
@@ -592,6 +610,8 @@ export default defineComponent({
       addCustomerModalRef,
       getAssetPath,
       countries,
+      provinces,
+      cities,
     };
   },
 });

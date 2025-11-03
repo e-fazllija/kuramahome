@@ -386,60 +386,59 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-7 fv-row">
                   <!--begin::Label-->
-                  <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                  <label class="fs-6 fw-bold mb-3 text-gray-800">
+                    <i class="ki-duotone ki-map fs-5 me-2 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                    </i>
+                    <span class="required">Provincia</span>
+                  </label>
+                  <!--end::Label-->
+
+                  <!--begin::Input-->
+                  <select 
+                    v-model="formData.Province"
+                    class="form-select modern-select"
+                    name="province"
+                  >
+                    <option value="">🗺️ Seleziona provincia</option>
+                    <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                      {{ province.Name }}
+                    </option>
+                  </select>
+                  <!--end::Input-->
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Input group-->
+                <div class="d-flex flex-column mb-7 fv-row">
+                  <!--begin::Label-->
+                  <label class="fs-6 fw-bold mb-3 text-gray-800">
                     <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
                       <span class="path3"></span>
                       <span class="path4"></span>
                     </i>
-                    Comune
+                    <span class="required">Comune</span>
                   </label>
                   <!--end::Label-->
 
                   <!--begin::Input-->
-                    <el-form-item prop="City">
-                      <el-input 
-                        v-model="formData.City" 
-                        placeholder="Nome del comune"
-                        class="modern-input"
-                      />
-                    </el-form-item>
+                  <select class="form-select modern-select" v-model="formData.City">
+                    <option value="">🏙️ Seleziona comune</option>
+                    <option v-for="(city, index) in cities" :key="index" :value="city.Name">
+                      {{ city.Name }}
+                    </option>
+                  </select>
                   <!--end::Input-->
                 </div>
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
                 <div class="row g-9 mb-7">
-                  <!--begin::Col-->
-                  <div class="col-md-4 fv-row">
-                    <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                      <i class="ki-duotone ki-map fs-5 me-2 text-primary">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                      </i>
-                      <span class="required">Provincia</span>
-                    </label>
-                    <!--end::Label-->
-
-                    <!--begin::Input-->
-                    <select 
-                      v-model="formData.Province"
-                      class="form-select form-select-lg form-select-solid"
-                      name="province"
-                    >
-                      <option value="">Seleziona provincia</option>
-                      <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
-                        {{ province.Name }}
-                      </option>
-                    </select>
-                    <!--end teatroInput-->
-                  </div>
-                  <!--end::Col-->
-
                   <!--begin::Col-->
                   <div class="col-md-4 fv-row">
                     <!--begin::Label-->
@@ -661,13 +660,14 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createAgency, Agency } from "@/core/data/agencies";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
+import { getCAPByCity, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-agency-modal",
@@ -680,6 +680,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
+    const cities = ref<Array<{Id: string, Name: string}>>([]);
     const formData = ref<any>({
       FirstName: "",
       LastName: "",
@@ -721,6 +722,43 @@ export default defineComponent({
     const selectColor = (color: string) => {
       formData.value.Color = color;
     };
+
+    // Watcher per caricare le città quando si seleziona la provincia
+    watch(
+      () => formData.value.Province,
+      async (newProvince) => {
+        // Assicurati che i dati siano caricati
+        await getProvinceCities();
+        
+        if (newProvince) {
+          const loadedCities = getCitiesByProvince(newProvince);
+          if (loadedCities && loadedCities.length > 0) {
+            cities.value = loadedCities;
+          } else {
+            cities.value = provinceCities[newProvince] || [];
+          }
+          formData.value.City = ""; // Reset città
+          formData.value.ZipCode = ""; // Reset CAP
+        } else {
+          cities.value = [];
+          formData.value.City = "";
+          formData.value.ZipCode = "";
+        }
+      }
+    );
+
+    // Watcher per auto-compilare il CAP quando si seleziona il comune
+    watch(
+      () => formData.value.City,
+      (newCity) => {
+        if (newCity && formData.value.Province) {
+          const cap = getCAPByCity(formData.value.Province, newCity);
+          if (cap) {
+            formData.value.ZipCode = cap;
+          }
+        }
+      }
+    );
 
     const rules = ref({
       FirstName: [
@@ -966,6 +1004,7 @@ export default defineComponent({
       colorOptions,
       selectColor,
       provinces,
+      cities,
     };
   },
 });

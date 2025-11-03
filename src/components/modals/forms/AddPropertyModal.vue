@@ -489,7 +489,8 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <select class="form-select modern-select" aria-label="Single select example" v-model="formData.City" required>
-                        <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }} </option>
+                        <option value="">🏙️ Seleziona comune</option>
+                        <option v-for="(city, index) in cities" :key="index" :value="city.Id">{{ city.Name }}</option>
                     </select>
                     <!--end::Input-->
                 </div>
@@ -506,13 +507,11 @@
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-                      <span class="required">Località</span>
+                      Località
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <select class="form-select modern-select" aria-label="Single select example" v-model="formData.Location">
-                        <option v-for="(location, index) in locations" :key="index" :value="location.Id">📍 {{ location.Name }} </option>
-                    </select>
+                    <el-input v-model="formData.Location" type="text" class="modern-input" placeholder="Inserisci la località" />
                     <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -1192,7 +1191,8 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import { createRealEstateProperty, RealEstateProperty, getToInsert, InsertModel } from "@/core/data/properties";
 import { useAuthStore } from "@/stores/auth";
 import Multiselect from '@vueform/multiselect'
-import { getCities, getLocationsByCity, getGroupedLocations, getProvincesForSelect, getCitiesByProvinceName, getLocationsByCityName } from "@/core/data/locations";
+import { getProvincesForSelect, getCitiesByProvinceName } from "@/core/data/locations";
+import { getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-property-modal",
@@ -1204,8 +1204,6 @@ export default defineComponent({
     const store = useAuthStore();
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
     const cities = ref<Array<{Id: string, Name: string}>>([]);
-    const locations = ref<Array<{Id: string, Name: string}>>([]);
-    const cityLocationsMap = ref<{[key: string]: Array<{Id: string, Name: string}>}>({});
     const loading = ref<boolean>(false);
     const isTrattativaRiservata = ref(false);
     const formData = ref<RealEstateProperty>({
@@ -1288,20 +1286,6 @@ export default defineComponent({
       }
     };
 
-    // Carica le località di una città specifica
-    const loadLocationsByCity = async (cityName: string) => {
-      try {
-        if (cityName) {
-          const locationsData = await getLocationsByCityName(cityName);
-          locations.value = locationsData;
-        } else {
-          locations.value = [];
-        }
-      } catch (error) {
-        console.error("Errore nel caricamento delle località:", error);
-        locations.value = [];
-      }
-    };
 
     const tipologiePerCategoria = {
           Residenziale: ["Appartamento", "Attico", "Mansarda", "Loft", "Soffitta", "Casale", "Rustico", "Villa Unifamiliare",
@@ -1335,12 +1319,9 @@ export default defineComponent({
                 // Carica le città della provincia selezionata
                 await loadCitiesByProvince(newProvince);
                 formData.value.City = null;
-                formData.value.Location = null;
             } else {
                 cities.value = [];
-                locations.value = [];
                 formData.value.City = null;
-                formData.value.Location = null;
             }
         }
         );
@@ -1348,13 +1329,12 @@ export default defineComponent({
         watch(
         () => formData.value.City,
         async (newCity) => {
-            if (newCity) {
-                // Carica le località della città selezionata
-                await loadLocationsByCity(newCity);
-                formData.value.Location = null;
-            } else {
-                locations.value = [];
-                formData.value.Location = null;
+            // Auto-compila il CAP se disponibile
+            if (formData.value.State && newCity) {
+              const cap = getCAPByCity(formData.value.State, newCity);
+              if (cap) {
+                formData.value.PostCode = cap;
+              }
             }
         }
         );
@@ -1540,10 +1520,8 @@ export default defineComponent({
       typesavailable,
       provinces,
       cities,
-      locations,
       loadProvinces,
       loadCitiesByProvince,
-      loadLocationsByCity,
       isTrattativaRiservata,
       inserModel
     };

@@ -150,7 +150,7 @@
               <!--begin::Row-->
               <div class="row">
                 <!--begin::Col-->
-                <div class="col-lg-4 fv-row">
+                <div class="col-lg-3 fv-row">
                   <Field type="text" name="Address" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
                     placeholder="Indirizzo" v-model="profileDetails.Address" />
                   <div class="fv-plugins-message-container">
@@ -162,9 +162,37 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-lg-4 fv-row">
-                  <Field type="text" name="City" class="form-control form-control-lg form-control-solid"
-                    placeholder="Città" v-model="profileDetails.City" />
+                <div class="col-lg-3 fv-row">
+                  <select 
+                    name="Province" 
+                    class="form-select modern-select"
+                    v-model="profileDetails.Province"
+                  >
+                    <option value="">🗺️ Seleziona provincia</option>
+                    <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                      {{ province.Name }}
+                    </option>
+                  </select>
+                  <div class="fv-plugins-message-container">
+                    <div class="fv-help-block">
+                      <ErrorMessage name="Province" />
+                    </div>
+                  </div>
+                </div>
+                <!--end::Col-->
+
+                <!--begin::Col-->
+                <div class="col-lg-3 fv-row">
+                  <select 
+                    name="City" 
+                    class="form-select modern-select"
+                    v-model="profileDetails.City"
+                  >
+                    <option value="">🏙️ Seleziona comune</option>
+                    <option v-for="(city, index) in cities" :key="index" :value="city.Name">
+                      {{ city.Name }}
+                    </option>
+                  </select>
                   <div class="fv-plugins-message-container">
                     <div class="fv-help-block">
                       <ErrorMessage name="City" />
@@ -174,32 +202,12 @@
                 <!--end::Col-->
 
                 <!--begin::Col-->
-                <div class="col-lg-4 fv-row">
+                <div class="col-lg-3 fv-row">
                   <Field type="text" name="ZipCode" class="form-control form-control-lg form-control-solid"
                     placeholder="CAP" v-model="profileDetails.ZipCode" maxlength="10" />
                   <div class="fv-plugins-message-container">
                     <div class="fv-help-block">
                       <ErrorMessage name="ZipCode" />
-                    </div>
-                  </div>
-                </div>
-                <!--end::Col-->
-
-                <!--begin::Col-->
-                <div class="col-lg-4 fv-row">
-                  <select 
-                    name="Province" 
-                    class="form-select form-select-lg form-select-solid"
-                    v-model="profileDetails.Province"
-                  >
-                    <option value="">Seleziona provincia</option>
-                    <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
-                      {{ province.Name }}
-                    </option>
-                  </select>
-                  <div class="fv-plugins-message-container">
-                    <div class="fv-help-block">
-                      <ErrorMessage name="Province" />
                     </div>
                   </div>
                 </div>
@@ -621,13 +629,14 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
 import { Agent, updateAgent } from "@/core/data/agents"
 import { useAuthStore, type User } from "@/stores/auth";
 import { getProvincesForSelect } from "@/core/data/locations";
+import { provinceCities, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "account-settings",
@@ -660,6 +669,7 @@ export default defineComponent({
     const resetPasswordToken = ref<string>();
     const newPassword = ref<string>();
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string}>>([]);
     const profileDetailsValidator = Yup.object().shape({
       Name: Yup.string().required().label("Name"),
       LastName: Yup.string().required().label("LastName"),
@@ -818,9 +828,40 @@ export default defineComponent({
       }
     };
 
+    // Watcher per caricare le città quando si seleziona la provincia
+    watch(
+      () => profileDetails.Province,
+      (newProvince) => {
+        if (newProvince && provinceCities[newProvince]) {
+          cities.value = provinceCities[newProvince];
+          profileDetails.City = ""; // Reset città
+        } else {
+          cities.value = [];
+          profileDetails.City = "";
+        }
+      }
+    );
+
+    // Watcher per auto-compilare il CAP quando si seleziona il comune
+    watch(
+      () => profileDetails.City,
+      (newCity) => {
+        if (newCity && profileDetails.Province) {
+          const cap = getCAPByCity(profileDetails.Province, newCity);
+          if (cap) {
+            profileDetails.ZipCode = cap;
+          }
+        }
+      }
+    );
+
     // Carica le province al mount
     onMounted(() => {
       loadProvinces();
+      // Se c'è già una provincia selezionata, carica le città
+      if (profileDetails.Province && provinceCities[profileDetails.Province]) {
+        cities.value = provinceCities[profileDetails.Province];
+      }
     });
 
     return {
@@ -844,7 +885,8 @@ export default defineComponent({
       sendLink,
       newPassword,
       requestFiscalDataChange,
-      provinces
+      provinces,
+      cities
     };
   },
 });

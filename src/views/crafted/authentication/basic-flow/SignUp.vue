@@ -361,17 +361,41 @@
         </div>
         <!--end::Input group-->
 
+        <!--begin::Input group - Provincia-->
+        <div class="fv-row mb-7">
+          <label class="form-label fw-bold text-gray-800 fs-6">Provincia</label>
+          <select 
+            v-model="formData.province"
+            class="form-select modern-select"
+            name="province"
+          >
+            <option value="">🗺️ Seleziona provincia</option>
+            <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+              {{ province.Name }}
+            </option>
+          </select>
+          <div class="fv-plugins-message-container">
+            <div class="fv-help-block">
+              <ErrorMessage name="province" />
+            </div>
+          </div>
+        </div>
+        <!--end::Input group-->
+
         <!--begin::Input group - Città e CAP-->
         <div class="row fv-row mb-7">
           <div class="col-xl-6">
             <label class="form-label fw-bold text-gray-800 fs-6">Città *</label>
-            <Field
+            <select 
               v-model="formData.city"
-              class="form-control form-control-lg form-control-solid"
-              type="text"
+              class="form-select modern-select"
               name="city"
-              autocomplete="off"
-            />
+            >
+              <option value="">🏙️ Seleziona comune</option>
+              <option v-for="(city, index) in cities" :key="index" :value="city.Name">
+                {{ city.Name }}
+              </option>
+            </select>
             <div class="fv-plugins-message-container">
               <div class="fv-help-block">
                 <ErrorMessage name="city" />
@@ -392,27 +416,6 @@
               <div class="fv-help-block">
                 <ErrorMessage name="zipCode" />
               </div>
-            </div>
-          </div>
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group - Provincia-->
-        <div class="fv-row mb-7">
-          <label class="form-label fw-bold text-gray-800 fs-6">Provincia</label>
-          <select 
-            v-model="formData.province"
-            class="form-select form-select-lg form-select-solid"
-            name="province"
-          >
-            <option value="">Seleziona provincia</option>
-            <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
-              {{ province.Name }}
-            </option>
-          </select>
-          <div class="fv-plugins-message-container">
-            <div class="fv-help-block">
-              <ErrorMessage name="province" />
             </div>
           </div>
         </div>
@@ -737,7 +740,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, nextTick, onMounted, ref, computed, reactive } from "vue";
+import { defineComponent, nextTick, onMounted, ref, computed, reactive, watch } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import * as Yup from "yup";
 import { useAuthStore, type User } from "@/stores/auth";
@@ -745,6 +748,7 @@ import { useRouter } from "vue-router";
 import { PasswordMeterComponent } from "@/assets/ts/components";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useProvinces } from "@/composables/useProvinces";
+import { provinceCities, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "sign-up",
@@ -763,6 +767,7 @@ export default defineComponent({
     const submitButton = ref<HTMLButtonElement | null>(null);
     const formRef = ref<InstanceType<typeof VForm> | null>(null);
     const currentStep = ref(1);
+    const cities = ref<Array<{Id: string, Name: string}>>([]);
 
     // Form data
     const formData = reactive({
@@ -848,6 +853,35 @@ export default defineComponent({
         PasswordMeterComponent.bootstrap();
       });
     });
+
+    // Watcher per caricare le città quando si seleziona la provincia
+    watch(
+      () => formData.province,
+      (newProvince) => {
+        if (newProvince && provinceCities[newProvince]) {
+          cities.value = provinceCities[newProvince];
+          formData.city = ""; // Reset città
+          formData.zipCode = ""; // Reset CAP
+        } else {
+          cities.value = [];
+          formData.city = "";
+          formData.zipCode = "";
+        }
+      }
+    );
+
+    // Watcher per auto-compilare il CAP quando si seleziona il comune
+    watch(
+      () => formData.city,
+      (newCity) => {
+        if (newCity && formData.province) {
+          const cap = getCAPByCity(formData.province, newCity);
+          if (cap) {
+            formData.zipCode = cap;
+          }
+        }
+      }
+    );
 
     // Navigate to next step
     const nextStep = async () => {
@@ -982,6 +1016,7 @@ export default defineComponent({
       submitButton,
       getAssetPath,
       provinces,
+      cities,
     };
   },
 });

@@ -246,25 +246,6 @@
         <div class="row mb-6">
           <!--begin::Label-->
           <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Comune
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.City" type="text" placeholder="Nome del comune" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-map fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -274,7 +255,40 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.State" type="text" placeholder="Es. MI, RM, NA" />
+            <select 
+              v-model="formData.State"
+              class="form-select modern-select"
+              name="province"
+            >
+              <option value="">🗺️ Seleziona provincia</option>
+              <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                {{ province.Name }}
+              </option>
+            </select>
+          </div>
+          <!--end::Input-->
+        </div>
+        <!--end::Input group-->
+
+        <!--begin::Input group-->
+        <div class="row mb-6">
+          <!--begin::Label-->
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+            <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Comune
+          </label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <div class="col-lg-8 fv-row">
+            <select class="form-select modern-select" v-model="formData.City">
+              <option value="">🏙️ Seleziona comune</option>
+              <option v-for="(city, index) in cities" :key="index" :value="city.Name">
+                {{ city.Name }}
+              </option>
+            </select>
           </div>
           <!--end::Input-->
         </div>
@@ -460,7 +474,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { updateCustomer, Customer, getCustomer, deleteCustomer } from "@/core/data/customers";
 import { Request, getCustomerRequests, RequestTabelData } from "@/core/data/requests";
@@ -470,6 +484,8 @@ import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import arraySort from "array-sort";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import { MenuComponent } from "@/assets/ts/components";
+import { useProvinces } from "@/composables/useProvinces";
+import { provinceCities } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "update-customer",
@@ -483,6 +499,10 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const selectedIds = ref<Array<Number>>([]);
     const initItems = ref([]);
+    
+    // Usa il composable per le province
+    const { provinces } = useProvinces();
+    const cities = ref<Array<{Id: string, Name: string}>>([]);
     const formData = ref<Customer>({
       Id: 0,
       Buyer: false,
@@ -546,6 +566,12 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       formData.value = await getCustomer(id)
+      
+      // Carica le città della provincia esistente
+      if (formData.value.State && provinceCities[formData.value.State]) {
+        cities.value = provinceCities[formData.value.State];
+      }
+      
       const results = await getCustomerRequests(id);
           for(const key in results){
             const item = {
@@ -569,6 +595,18 @@ export default defineComponent({
 
       loading.value = false;
     })
+
+    // Watcher per caricare le città quando si seleziona la provincia
+    watch(
+      () => formData.value.State,
+      (newProvince) => {
+        if (newProvince && provinceCities[newProvince]) {
+          cities.value = provinceCities[newProvince];
+        } else {
+          cities.value = [];
+        }
+      }
+    );
 
     async function deleteItem() {
       loading.value = true;
@@ -677,7 +715,9 @@ export default defineComponent({
       onItemSelect,
       searchItems,
       search,
-      requests
+      requests,
+      provinces,
+      cities
     };
   },
 });

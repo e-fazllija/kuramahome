@@ -227,8 +227,8 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.State" required>
-              <option value="">Seleziona provincia</option>
-              <option v-for="(province, index) in provinces" :key="index" :value="province.Name">{{ province.Name }}</option>
+              <option value="">🗺️ Seleziona provincia</option>
+              <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
             </select>
           </div>
           <!--end::Col-->
@@ -242,12 +242,10 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <select class="form-select" v-model="formData.Town" required>
-                <option value="">Seleziona città</option>
-                <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
-              </select>
-            </div>
+            <select class="form-select modern-select" v-model="formData.Town" required>
+              <option value="">🏙️ Seleziona città</option>
+              <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
+            </select>
           </div>
           <!--end::Col-->
         </div>
@@ -256,16 +254,11 @@
          <!--begin::Input group-->
          <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6 required">Località</label>
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Località</label>
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <select class="form-select modern-select" v-model="formData.Location">
-                <option value="">Seleziona località</option>
-                <option v-for="(location, index) in locations" :key="index" :value="location.Name">{{ location.Name }}</option>
-              </select>
-            </div>
+            <input class="form-control modern-input" v-model="formData.Location" type="text" placeholder="Inserisci la località" />
           </div>
           <!--end::Col-->
         </div>
@@ -926,7 +919,7 @@
           </button>
         </div>
         <div>
-          <button v-if="user.Role === 'Admin' || (user.Role === 'Agenzia' && user.Id === formData.Agent.AgencyId )" type="button" @click="deleteItem()"
+          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.Agent.AgencyId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
@@ -1077,9 +1070,10 @@
 import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
 import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
 import { getAssetPath } from "@/core/helpers/assets";
-import { getProvincesForSelect, getCitiesByProvinceName, getLocationsByCityName } from "@/core/data/locations";
+import { getProvincesForSelect, getCitiesByProvinceName } from "@/core/data/locations";
 import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
   updateRealEstateProperty,
   RealEstateProperty,
@@ -1111,7 +1105,6 @@ export default defineComponent({
     const typesavailable = ref<string[]>([]);
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
     const cities = ref<Array<{Id: string, Name: string}>>([]);
-    const locations = ref<Array<{Id: string, Name: string}>>([]);
     const showTipologia = ref(false);
     const loading = ref<boolean>(true);
     const firtLoad = ref(false);
@@ -1141,19 +1134,6 @@ export default defineComponent({
       }
     };
 
-    const loadLocationsByCity = async (cityName: string) => {
-      try {
-        if (cityName) {
-          const locationsData = await getLocationsByCityName(cityName);
-          locations.value = locationsData;
-        } else {
-          locations.value = [];
-        }
-      } catch (error) {
-        console.error("Errore nel caricamento delle località:", error);
-        locations.value = [];
-      }
-    };
 
 
     const formData = ref<RealEstateProperty>({
@@ -1306,11 +1286,6 @@ export default defineComponent({
         await loadCitiesByProvince(formData.value.State);
       }
       
-      // Se c'è già una città selezionata, carica le località
-      if (formData.value.Town) {
-        await loadLocationsByCity(formData.value.Town);
-      }
-      
       loading.value = false;
       firtLoad.value = false;
     })
@@ -1323,12 +1298,9 @@ export default defineComponent({
         if (newProvince) {
           await loadCitiesByProvince(newProvince);
           formData.value.Town = "";
-          formData.value.Location = "";
         } else {
           cities.value = [];
-          locations.value = [];
           formData.value.Town = "";
-          formData.value.Location = "";
         }
       }
     }
@@ -1338,12 +1310,12 @@ export default defineComponent({
     async (newTown) => {
       if (!firtLoad.value) {
         console.log("watch localita")
-        if (newTown) {
-          await loadLocationsByCity(newTown);
-          formData.value.Location = "";
-        } else {
-          locations.value = [];
-          formData.value.Location = "";
+        // Auto-compila il CAP se disponibile
+        if (formData.value.State && newTown) {
+          const cap = getCAPByCity(formData.value.State, newTown);
+          if (cap) {
+            formData.value.PostCode = cap;
+          }
         }
       }
     }
@@ -1650,7 +1622,6 @@ export default defineComponent({
       checkMove,
       provinces,
       cities,
-      locations,
       isTrattativaRiservata,
       fileInput,
       triggerFileUpload,

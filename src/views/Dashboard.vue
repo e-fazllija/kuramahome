@@ -69,7 +69,7 @@
   <!--end::Andamento Immobili-->
 
   <!--begin::Distribuzione & Zone-->
-  <div v-if="!loading && !isAgent" class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading && !isAgent && isAdmin" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -78,12 +78,41 @@
             <span class="text-muted fw-semobold fs-7">Analisi dettagliata del portafoglio</span>
           </h3>
         </div>
-        <div class="card-body">
-          <div class="row g-4">
+        <div class="card-body position-relative">
+          <!--begin::Premium Lock Overlay-->
+          <div v-if="!isLoadingSubscription && !isPremium" class="premium-lock-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-index-10">
+            <PremiumLock />
+          </div>
+          <!--end::Premium Lock Overlay-->
+          
+          <!--begin::Content Structure (always visible)-->
+          <div class="row g-4" :class="{ 'premium-content-blurred': !isLoadingSubscription && !isPremium }">
             <!--begin::Tipologie-->
             <div class="col-12 col-xl-6">
-              <Chart4 widget-classes="card-xl-stretch" title="Distribuzione Tipologie Immobili"
-              :datas="typologyData"/>
+              <Chart4 
+                v-if="isLoadingSubscription || isPremium"
+                widget-classes="card-xl-stretch" 
+                title="Distribuzione Tipologie Immobili"
+                :datas="typologyData"/>
+              <!--begin::Preview Structure-->
+              <div v-else class="card card-xl-stretch">
+                <div class="card-header border-0 pt-5 pb-2">
+                  <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold fs-3 mb-1">Distribuzione Tipologie Immobili</span>
+                  </h3>
+                </div>
+                <div class="card-body">
+                  <div class="text-center py-10">
+                    <i class="ki-duotone ki-chart-simple fs-3x text-muted mb-3 opacity-50">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                    </i>
+                  </div>
+                </div>
+              </div>
+              <!--end::Preview Structure-->
             </div>
             <!--end::Tipologie-->
             <!--begin::Zone-->
@@ -104,7 +133,7 @@
                       <h5 class="fw-bold fs-6 text-gray-800 mb-0">Zone con più Immobili</h5>
                     </div>
                     <!--begin::Zones List-->
-                    <div v-if="topZonesData && topZonesData.length > 0" class="d-flex flex-column">
+                    <div v-if="(isLoadingSubscription || isPremium) && topZonesData && topZonesData.length > 0" class="d-flex flex-column">
                       <div v-for="(zone, index) in topZonesData.slice(0, 5)" :key="index" 
                            class="d-flex align-items-center mb-2 p-2 rounded-3 bg-light-primary border border-primary border-opacity-25">
                         <div class="symbol symbol-35px me-3">
@@ -121,16 +150,23 @@
                     </div>
                     <!--end::Zones List-->
                     
-                    <!--begin::No Data Message-->
-                    <div v-else class="text-center py-8">
-                      <i class="ki-duotone ki-geolocation fs-3x text-muted mb-3">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      <h5 class="fw-bold fs-6 text-gray-700 mb-2">Nessuna zona disponibile</h5>
-                      <p class="text-muted fs-8 mb-0">Non ci sono dati per l'anno selezionato</p>
+                    <!--begin::Preview Structure-->
+                    <div v-else class="d-flex flex-column opacity-50">
+                      <div v-for="n in 5" :key="n" 
+                           class="d-flex align-items-center mb-2 p-2 rounded-3 bg-light-secondary border border-secondary border-opacity-25">
+                        <div class="symbol symbol-35px me-3">
+                          <span class="symbol-label bg-secondary text-white fw-bold fs-7">{{ n }}</span>
+                        </div>
+                        <div class="d-flex flex-column flex-grow-1">
+                          <span class="fw-bold fs-7 text-gray-500">---</span>
+                          <span class="text-muted fs-8">-- immobili</span>
+                        </div>
+                        <div class="text-end">
+                          <span class="fw-bold fs-6 text-secondary">--%</span>
+                        </div>
+                      </div>
                     </div>
-                    <!--end::No Data Message-->
+                    <!--end::Preview Structure-->
                   </div>
                   <!--end::Zone Immobili-->
 
@@ -139,6 +175,7 @@
             </div>
             <!--end::Zone-->
           </div>
+          <!--end::Content Structure-->
         </div>
       </div>
     </div>
@@ -146,7 +183,7 @@
   <!--end::Distribuzione & Zone-->
 
   <!--begin::Performance Teams-->
-  <div v-if="!loading && !isAgent" class="row gy-5 g-xl-10 mb-8">
+  <div v-if="!loading && !isAgent && isAdmin" class="row gy-5 g-xl-10 mb-8">
     <div class="col-xl-12">
       <div class="card card-xl-stretch mb-xl-10">
         <div class="card-header border-0 pt-5 pb-2">
@@ -155,8 +192,15 @@
             <span class="text-muted fw-semobold fs-7">Classifiche delle agenzie e degli agenti</span>
           </h3>
     </div>
-        <div class="card-body">
-          <div class="row g-4">
+        <div class="card-body position-relative">
+          <!--begin::Premium Lock Overlay-->
+          <div v-if="!isLoadingSubscription && !isPremium" class="premium-lock-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-index-10">
+            <PremiumLock />
+          </div>
+          <!--end::Premium Lock Overlay-->
+          
+          <!--begin::Content Structure (always visible)-->
+          <div class="row g-4" :class="{ 'premium-content-blurred': !isLoadingSubscription && !isPremium }">
             <!--begin::Distribuzione Immobili-->
     <div class="col-12 col-lg-6 col-xl-4">
               <div class="card h-100">
@@ -167,7 +211,9 @@
                 <div class="card-body pt-2">
                   <!--begin::Numero Totale-->
                   <div class="text-center mb-4">
-                    <div class="fw-bold fs-2 text-primary mb-1">{{ availablePropertiesCount }}</div>
+                    <div class="fw-bold fs-2 text-primary mb-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
+                      {{ (isLoadingSubscription || isPremium) ? availablePropertiesCount : '---' }}
+                    </div>
                     <div class="text-muted fs-7">Immobili disponibili</div>
   </div>
                   <!--end::Numero Totale-->
@@ -178,14 +224,19 @@
                     <div class="mb-3">
                       <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fw-bold fs-7 text-gray-800">Vendite</span>
-                        <span class="fw-bold fs-7 text-primary">{{ availablePropertiesCount > 0 ? Math.round((salePropertiesCount / availablePropertiesCount) * 100) : 0 }}%</span>
+                        <span class="fw-bold fs-7 text-primary" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
+                          {{ (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? Math.round((salePropertiesCount / availablePropertiesCount) * 100) : '--' }}%
+                        </span>
     </div>
                       <div class="progress" style="height: 6px;">
                         <div class="progress-bar bg-primary" 
-                             :style="{ width: availablePropertiesCount > 0 ? (salePropertiesCount / availablePropertiesCount) * 100 + '%' : '0%' }"
+                             :style="{ width: (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? (salePropertiesCount / availablePropertiesCount) * 100 + '%' : '0%' }"
+                             :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }"
                              role="progressbar"></div>
     </div>
-                      <div class="text-muted fs-8 mt-1">{{ salePropertiesCount }} immobili</div>
+                      <div class="text-muted fs-8 mt-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
+                        {{ (isLoadingSubscription || isPremium) ? salePropertiesCount : '--' }} immobili
+                      </div>
   </div>
                     <!--end::Vendite-->
 
@@ -193,14 +244,19 @@
                     <div class="mb-3">
                       <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fw-bold fs-7 text-gray-800">Affitti</span>
-                        <span class="fw-bold fs-7 text-success">{{ availablePropertiesCount > 0 ? Math.round((rentPropertiesCount / availablePropertiesCount) * 100) : 0 }}%</span>
+                        <span class="fw-bold fs-7 text-success" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
+                          {{ (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? Math.round((rentPropertiesCount / availablePropertiesCount) * 100) : '--' }}%
+                        </span>
     </div>
                       <div class="progress" style="height: 6px;">
                         <div class="progress-bar bg-success" 
-                             :style="{ width: availablePropertiesCount > 0 ? (rentPropertiesCount / availablePropertiesCount) * 100 + '%' : '0%' }"
+                             :style="{ width: (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? (rentPropertiesCount / availablePropertiesCount) * 100 + '%' : '0%' }"
+                             :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }"
                              role="progressbar"></div>
     </div>
-                      <div class="text-muted fs-8 mt-1">{{ rentPropertiesCount }} immobili</div>
+                      <div class="text-muted fs-8 mt-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
+                        {{ (isLoadingSubscription || isPremium) ? rentPropertiesCount : '--' }} immobili
+                      </div>
 </div>
                     <!--end::Affitti-->
 
@@ -208,14 +264,19 @@
                     <div class="mb-2">
                       <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fw-bold fs-7 text-gray-800">Aste</span>
-                        <span class="fw-bold fs-7 text-warning">{{ auctionData?.percentage || 0 }}%</span>
+                        <span class="fw-bold fs-7 text-warning" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
+                          {{ (isLoadingSubscription || isPremium) ? (auctionData?.percentage || 0) : '--' }}%
+                        </span>
                       </div>
                       <div class="progress" style="height: 6px;">
                         <div class="progress-bar bg-warning" 
-                             :style="{ width: (auctionData?.percentage || 0) + '%' }"
+                             :style="{ width: (isLoadingSubscription || isPremium) ? (auctionData?.percentage || 0) + '%' : '0%' }"
+                             :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }"
                              role="progressbar"></div>
                       </div>
-                      <div class="text-muted fs-8 mt-1">{{ auctionData?.total || 0 }} immobili</div>
+                      <div class="text-muted fs-8 mt-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
+                        {{ (isLoadingSubscription || isPremium) ? (auctionData?.total || 0) : '--' }} immobili
+                      </div>
                     </div>
                     <!--end::Aste-->
                   </div>
@@ -267,7 +328,7 @@
                   <!--end::Filtro Tipo Classifica-->
 
                   <!--begin::Classifica Agenzie-->
-                  <div v-if="filteredAgenciesRankingData && filteredAgenciesRankingData.length > 0" class="d-flex flex-column">
+                  <div v-if="(isLoadingSubscription || isPremium) && filteredAgenciesRankingData && filteredAgenciesRankingData.length > 0" class="d-flex flex-column">
                     <div v-for="(agency, index) in filteredAgenciesRankingData.slice(0, 5)" :key="agency.id" 
                          :class="[
                            'd-flex align-items-center mb-2 p-2 rounded-3',
@@ -290,9 +351,31 @@
                       </div>
                     </div>
                   </div>
-                  <div v-else class="text-center text-muted fs-8">
-                    Nessuna agenzia disponibile
+                  <!--begin::Preview Structure-->
+                  <div v-else class="d-flex flex-column opacity-50">
+                    <div v-for="n in 5" :key="n" 
+                         :class="[
+                           'd-flex align-items-center mb-2 p-2 rounded-3',
+                           n <= 3 ? 'bg-light-secondary border border-secondary border-opacity-25' : 'bg-light-secondary border border-secondary border-opacity-25'
+                         ]">
+                      <div class="symbol symbol-30px me-2">
+                        <span :class="[
+                          'symbol-label text-white fw-bold fs-8',
+                          n === 1 ? 'bg-warning' : n === 2 ? 'bg-secondary' : n === 3 ? 'bg-info' : 'bg-secondary'
+                        ]">
+                          {{ n === 1 ? '🥇' : n === 2 ? '🥈' : n === 3 ? '🥉' : n }}
+                        </span>
+                      </div>
+                      <div class="d-flex flex-column flex-grow-1">
+                        <span class="fw-bold fs-8 text-gray-500">---</span>
+                        <span class="text-muted fs-9">-- {{ getAgencyRankingUnitLabel() }}</span>
+                      </div>
+                      <div class="text-end">
+                        <span class="fw-bold fs-7 text-secondary">#{{ n }}</span>
+                      </div>
+                    </div>
                   </div>
+                  <!--end::Preview Structure-->
                   <!--end::Classifica Agenzie-->
                 </div>
               </div>
@@ -341,7 +424,7 @@
                   <!--end::Filtro Tipo Classifica-->
 
                   <!--begin::Classifica Agenti-->
-                  <div v-if="filteredAgentsRankingData && filteredAgentsRankingData.length > 0" class="d-flex flex-column">
+                  <div v-if="(isLoadingSubscription || isPremium) && filteredAgentsRankingData && filteredAgentsRankingData.length > 0" class="d-flex flex-column">
                     <div v-for="(agent, index) in filteredAgentsRankingData.slice(0, 5)" :key="agent.id" 
                          :class="[
                            'd-flex align-items-center mb-2 p-2 rounded-3',
@@ -364,15 +447,38 @@
                       </div>
                     </div>
                   </div>
-                  <div v-else class="text-center text-muted fs-8">
-                    Nessun agente disponibile
+                  <!--begin::Preview Structure-->
+                  <div v-else class="d-flex flex-column opacity-50">
+                    <div v-for="n in 5" :key="n" 
+                         :class="[
+                           'd-flex align-items-center mb-2 p-2 rounded-3',
+                           n <= 3 ? 'bg-light-secondary border border-secondary border-opacity-25' : 'bg-light-secondary border border-secondary border-opacity-25'
+                         ]">
+                      <div class="symbol symbol-30px me-2">
+                        <span :class="[
+                          'symbol-label text-white fw-bold fs-8',
+                          n === 1 ? 'bg-warning' : n === 2 ? 'bg-secondary' : n === 3 ? 'bg-info' : 'bg-secondary'
+                        ]">
+                          {{ n === 1 ? '🥇' : n === 2 ? '🥈' : n === 3 ? '🥉' : n }}
+                        </span>
+                      </div>
+                      <div class="d-flex flex-column flex-grow-1">
+                        <span class="fw-bold fs-8 text-gray-500">---</span>
+                        <span class="text-muted fs-9">-- {{ getRankingUnitLabel() }}</span>
+                      </div>
+                      <div class="text-end">
+                        <span class="fw-bold fs-7 text-secondary">#{{ n }}</span>
+                      </div>
+                    </div>
                   </div>
+                  <!--end::Preview Structure-->
                   <!--end::Classifica Agenti-->
                 </div>
               </div>
             </div>
             <!--end::Top Agenti-->
           </div>
+          <!--end::Content Premium-->
         </div>
       </div>
     </div>
@@ -455,6 +561,8 @@ import { getDetails, getRealEstateProperties, getAgencies, getAgents, getSoldPro
 import type { DashboardDetails } from "@/core/data/dashboard";
 import { useAuthStore } from "@/stores/auth";
 import { isAgent as helperIsAgent, getUserAgencyId } from "@/core/helpers/auth";
+import { getCurrentSubscription } from "@/core/data/subscription";
+import PremiumLock from "@/components/PremiumLock.vue";
 
 export default defineComponent({
   name: "main-dashboard",
@@ -465,7 +573,8 @@ export default defineComponent({
     Chart10,
     Chart11,
     Chart13,
-    SubscriptionExpiryBanner
+    SubscriptionExpiryBanner,
+    PremiumLock
   },
   setup() {
         const store = useAuthStore();
@@ -473,6 +582,33 @@ export default defineComponent({
         
         // Verifica se l'utente è un agente usando helper
         const isAgent = computed(() => helperIsAgent());
+        
+        // Verifica se l'utente è Admin
+        const isAdmin = computed(() => store.user?.Role === 'Admin');
+        
+        // Verifica se l'utente ha piano premium
+        const subscription = ref<any>(null);
+        const isLoadingSubscription = ref<boolean>(true);
+        const isPremium = computed(() => {
+          if (!subscription.value) return false;
+          const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
+          const status = subscription.value.Status?.toLowerCase() || '';
+          return planName === 'premium' && status === 'active';
+        });
+        
+        // Carica la subscription per verificare il piano premium
+        const loadSubscription = async () => {
+          try {
+            isLoadingSubscription.value = true;
+            const sub = await getCurrentSubscription();
+            subscription.value = sub;
+          } catch (error) {
+            console.error('Errore nel caricamento subscription:', error);
+            subscription.value = null;
+          } finally {
+            isLoadingSubscription.value = false;
+          }
+        };
         
     const loading = ref<boolean>(true);
     const data = ref<DashboardDetails>();
@@ -662,8 +798,21 @@ export default defineComponent({
             return;
           }
           
-          // Carica i dati degli immobili per il grafico (solo immobili disponibili: Sold=false AND AssignmentEnd>oggi)
-          const propertiesResponse = await getRealEstateProperties(agencyId, selectedYear.value);
+          // Carica i dati degli immobili per il grafico solo se premium
+          // (solo immobili disponibili: Sold=false AND AssignmentEnd>oggi)
+          let propertiesResponse = null;
+          if (isPremium.value) {
+            try {
+              propertiesResponse = await getRealEstateProperties(agencyId, selectedYear.value);
+            } catch (error: any) {
+              if (error?.response?.status === 403) {
+                // Utente non premium, ignora l'errore e continua
+                console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
+              } else {
+                throw error;
+              }
+            }
+          }
           if (propertiesResponse) {
             chartData.value = processPropertiesForChart(propertiesResponse.Data, selectedYear.value);
             
@@ -693,8 +842,20 @@ export default defineComponent({
             topZonesData.value = processTopZones(propertiesResponse.Data);
           }
           
-          // Carica i dati degli immobili venduti per il secondo grafico
-          const soldPropertiesResponse = await getSoldProperties(agencyId, selectedYear.value);
+          // Carica i dati degli immobili venduti per il secondo grafico solo se premium
+          let soldPropertiesResponse = null;
+          if (isPremium.value) {
+            try {
+              soldPropertiesResponse = await getSoldProperties(agencyId, selectedYear.value);
+            } catch (error: any) {
+              if (error?.response?.status === 403) {
+                // Utente non premium, ignora l'errore e continua
+                console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
+              } else {
+                throw error;
+              }
+            }
+          }
           if (soldPropertiesResponse) {
             soldChartData.value = processSoldPropertiesForChart(soldPropertiesResponse.Data, selectedYear.value);
             soldPropertiesCount.value = soldPropertiesResponse.Total || 0;
@@ -723,9 +884,21 @@ export default defineComponent({
             agenciesList.value = agenciesResponse.Data;
           }
           
-          // Carica i dati degli agenti
+          // Carica i dati degli agenti solo se premium
           // Per il widget agenti, carichiamo sempre tutti gli agenti per il conteggio corretto
-          const agentsResponse = await getAgents(undefined, selectedYear.value);
+          let agentsResponse = null;
+          if (isPremium.value) {
+            try {
+              agentsResponse = await getAgents(undefined, selectedYear.value);
+            } catch (error: any) {
+              if (error?.response?.status === 403) {
+                // Utente non premium, ignora l'errore e continua
+                console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
+              } else {
+                throw error;
+              }
+            }
+          }
           if (agentsResponse) {
             agentsRankingData.value = processAgentsRanking(agentsResponse.Data);
             agentsRawData.value = agentsResponse.Data; // Dati non processati per Widget12
@@ -773,6 +946,9 @@ export default defineComponent({
 
 
     onMounted(async () => {
+      // Carica la subscription per verificare premium
+      await loadSubscription();
+      
       // Usa helper per ottenere l'AgencyId corretto in base al ruolo
       const initialAgencyId = getUserAgencyId();
       await getItems(initialAgencyId);
@@ -984,7 +1160,10 @@ export default defineComponent({
       allPropertiesData,
       allSoldPropertiesData,
       subscriptionExpired,
-      isAgent
+      isAgent,
+      isAdmin,
+      isPremium,
+      isLoadingSubscription
     }
   },
 });
@@ -1046,6 +1225,26 @@ export default defineComponent({
 .separator.separator-dashed {
   border-top-width: 2px;
   opacity: 0.5;
+}
+
+/* Premium Lock Overlay */
+.premium-lock-overlay {
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(0.3px);
+  z-index: 10;
+  border-radius: 16px;
+}
+
+[data-bs-theme="dark"] .premium-lock-overlay {
+  background-color: rgba(26, 26, 26, 0.08);
+}
+
+/* Premium Content Blurred */
+.premium-content-blurred {
+  filter: blur(1px);
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Light Mode */

@@ -216,6 +216,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe, StripeElements } from '@stripe/stripe-js';
 import { createPaymentIntent } from '@/core/data/billing';
 import { getActivePlans, type SubscriptionPlan } from '@/core/data/subscription-plans';
+import { checkDowngradeCompatibility, type DowngradeCompatibilityResponse } from '@/core/data/subscription-limits';
 import { useAuthStore } from '@/stores/auth';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
@@ -295,12 +296,116 @@ export default defineComponent({
     });
 
     const selectPlan = async (plan: string) => {
-      selectedPlan.value = plan;
+      // Trova il piano selezionato dall'array
+      const selectedPlanObj = plans.value.find(p => p.Name.toLowerCase() === plan.toLowerCase());
+      if (!selectedPlanObj) {
+        Swal.fire({
+          text: "Piano selezionato non trovato",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+        });
+        return;
+      }
+
+      // Verifica compatibilità downgrade PRIMA di procedere
+      try {
+        Swal.fire({
+          title: "Verifica compatibilità...",
+          text: "Stiamo verificando se il cambio piano è possibile",
+          icon: "info",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          heightAuto: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        const compatibility = await checkDowngradeCompatibility(selectedPlanObj.Id);
+
+        Swal.close();
+
+        // Se il downgrade non è possibile, mostra la modale di warning
+        if (!compatibility.canDowngrade) {
+          showDowngradeWarningModal(compatibility, selectedPlanObj);
+          return;
+        }
+
+        // Se il downgrade è possibile, procedi normalmente
+        selectedPlan.value = plan;
+        
+        // Initialize Stripe after plan selection
+        setTimeout(async () => {
+          await initializeStripe();
+        }, 100);
+      } catch (error: any) {
+        Swal.close();
+        console.error('Errore nella verifica compatibilità:', error);
+        // In caso di errore, procedi comunque (non bloccare l'utente)
+        selectedPlan.value = plan;
+        setTimeout(async () => {
+          await initializeStripe();
+        }, 100);
+      }
+    };
+
+    const showDowngradeWarningModal = (compatibility: DowngradeCompatibilityResponse, plan: SubscriptionPlan) => {
+      // Costruisci l'HTML della modale con il confronto features
+      let featuresHtml = '<div style="text-align: left; margin-top: 1rem;">';
       
-      // Initialize Stripe after plan selection
-      setTimeout(async () => {
-        await initializeStripe();
-      }, 100);
+      compatibility.features.forEach((feature) => {
+        const limitText = feature.newPlanLimit === null ? 'Illimitato' : feature.newPlanLimit.toString();
+        const statusIcon = feature.isExceeded 
+          ? '<i class="ki-duotone ki-cross-circle fs-2 text-danger me-2"><span class="path1"></span><span class="path2"></span></i>'
+          : '<i class="ki-duotone ki-check-circle fs-2 text-success me-2"><span class="path1"></span><span class="path2"></span></i>';
+        const statusClass = feature.isExceeded ? 'text-danger' : 'text-success';
+        
+        featuresHtml += `
+          <div class="d-flex align-items-center mb-4 p-3 ${feature.isExceeded ? 'bg-light-danger rounded' : ''}" style="border-left: 4px solid ${feature.isExceeded ? '#f1416c' : '#50cd89'};">
+            ${statusIcon}
+            <div class="flex-grow-1">
+              <div class="fw-bold mb-1 pricing-text-primary">${feature.featureDisplayName}</div>
+              <div class="fs-7 ${statusClass}">
+                <strong>Limite nuovo piano:</strong> ${limitText} | 
+                <strong>Utilizzo attuale:</strong> ${feature.currentUsage}
+                ${feature.isExceeded ? ` <span class="text-danger fw-bold">(Superato di ${feature.currentUsage - (feature.newPlanLimit || 0)})</span>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      featuresHtml += '</div>';
+
+      Swal.fire({
+        title: '<div class="text-danger"><i class="ki-duotone ki-information-5 fs-2x me-2"><span class="path1"></span><span class="path2"></span></i> Downgrade Non Possibile</div>',
+        html: `
+          <div class="text-start">
+            <p class="mb-4 pricing-text-primary">
+              Non puoi passare al piano <strong>${plan.Name}</strong> perché hai ${compatibility.exceededLimitsCount} limite/i superato/i.
+            </p>
+            <p class="mb-4 pricing-text-secondary">
+              <strong>Elimina alcune risorse prima di procedere:</strong>
+            </p>
+            ${featuresHtml}
+            <p class="mt-4 pricing-text-secondary fs-7">
+              ${compatibility.message || 'Riduci il numero di risorse utilizzate per poter fare il downgrade.'}
+            </p>
+          </div>
+        `,
+        icon: 'warning',
+        confirmButtonText: 'Ho capito',
+        buttonsStyling: false,
+        heightAuto: false,
+        customClass: {
+          confirmButton: 'btn btn-primary fw-bold',
+          popup: 'text-start'
+        },
+        width: '600px'
+      });
     };
 
     const cancelPayment = () => {
