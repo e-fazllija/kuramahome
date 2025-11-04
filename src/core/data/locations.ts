@@ -9,14 +9,6 @@ export interface Province {
   Name: string;
 }
 
-export interface ProvinceCreateModel {
-  Name: string;
-}
-
-export interface ProvinceUpdateModel {
-  Id: number;
-  Name: string;
-}
 
 // City interfaces
 export interface City {
@@ -26,16 +18,6 @@ export interface City {
   ProvinceName: string;
 }
 
-export interface CityCreateModel {
-  Name: string;
-  ProvinceId: number;
-}
-
-export interface CityUpdateModel {
-  Id: number;
-  Name: string;
-  ProvinceId: number;
-}
 
 // Location interfaces
 export interface Location {
@@ -49,16 +31,6 @@ export interface Location {
   UpdateDate: string;
 }
 
-export interface LocationCreateModel {
-  Name: string;
-  CityId: number;
-}
-
-export interface LocationUpdateModel {
-  Id: number;
-  Name: string;
-  CityId: number;
-}
 
 export interface LocationGroupedModel {
   City: string;
@@ -248,34 +220,6 @@ export const getProvinceById = async (id: number): Promise<Province> => {
   }
 };
 
-export const createProvince = async (province: ProvinceCreateModel): Promise<Province> => {
-  try {
-    const response = await ApiService.post('Province/Create', province);
-    return response.data;
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nella creazione della provincia', error.response?.status);
-    throw error;
-  }
-};
-
-export const updateProvince = async (province: ProvinceUpdateModel): Promise<Province> => {
-  try {
-    const response = await ApiService.post('Province/Update', province);
-    return response.data;
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nell\'aggiornamento della provincia', error.response?.status);
-    throw error;
-  }
-};
-
-export const deleteProvince = async (id: number): Promise<void> => {
-  try {
-    await ApiService.delete(`Province/Delete?id=${id}`);
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nell\'eliminazione della provincia', error.response?.status);
-    throw error;
-  }
-};
 
 // City API Functions
 export const getCities = async (filterRequest?: string, provinceId?: number): Promise<City[]> => {
@@ -322,51 +266,8 @@ export const getCityById = async (id: number): Promise<City> => {
   }
 };
 
-export const createCity = async (city: CityCreateModel): Promise<City> => {
-  try {
-    const response = await ApiService.post('City/Create', city);
-    return response.data;
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nella creazione della città', error.response?.status);
-    throw error;
-  }
-};
-
-export const updateCity = async (city: CityUpdateModel): Promise<City> => {
-  try {
-    const response = await ApiService.post('City/Update', city);
-    return response.data;
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nell\'aggiornamento della città', error.response?.status);
-    throw error;
-  }
-};
-
-export const deleteCity = async (id: number): Promise<void> => {
-  try {
-    await ApiService.delete(`City/Delete?id=${id}`);
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nell\'eliminazione della città', error.response?.status);
-    throw error;
-  }
-};
 
 // Location API Functions
-export const getLocations = async (currentPage: number = 1, filterRequest?: string, city?: string): Promise<ListViewModel<Location>> => {
-  try {
-    const params = new URLSearchParams();
-    params.append('currentPage', currentPage.toString());
-    if (filterRequest) params.append('filterRequest', filterRequest);
-    if (city) params.append('city', city);
-
-    const response = await ApiService.get(`Location/Get?${params.toString()}`, {});
-    return response.data;
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nel caricamento delle località', error.response?.status || 500);
-    throw error;
-  }
-};
-
 export const getAllLocations = async (): Promise<Location[]> => {
   try {
     const response = await ApiService.get('Location/GetAll', 'json');
@@ -414,36 +315,6 @@ export const getLocationById = async (id: number): Promise<Location> => {
   }
 };
 
-export const createLocation = async (location: LocationCreateModel): Promise<Location | undefined> => {
-  return ApiService.post('Location/Create', location)
-    .then(({ data }) => {
-      return data as Location;
-    })
-    .catch(({ response }) => {
-      store.setError(response.data?.message || 'Errore nella creazione della località', response.status);
-      return undefined;
-    });
-};
-
-export const updateLocation = async (location: LocationUpdateModel): Promise<Location | undefined> => {
-  return ApiService.post('Location/Update', location)
-    .then(({ data }) => {
-      return data as Location;
-    })
-    .catch(({ response }) => {
-      store.setError(response.data?.message || 'Errore nell\'aggiornamento della località', response.status);
-      return undefined;
-    });
-};
-
-export const deleteLocation = async (id: number): Promise<void> => {
-  try {
-    await ApiService.delete(`Location/Delete?id=${id}`);
-  } catch (error: any) {
-    store.setError(error.response?.data?.message || 'Errore nell\'eliminazione della località', error.response?.status);
-    throw error;
-  }
-};
 
 // Funzione per ottenere le città disponibili (compatibilità)
 export const getCitiesForFilter = async (): Promise<Array<{Id: string, Name: string}>> => {

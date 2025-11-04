@@ -677,7 +677,7 @@ export default defineComponent({
       MobilePhone: Yup.string().label("MobilePhone"),
       Referent: Yup.string().label("Referent"),
       Address: Yup.string().required().label("Address"),
-      City: Yup.string().required().label("City"),
+      City: Yup.string().label("City"),
       ZipCode: Yup.string().label("ZipCode"),
       Province: Yup.string().label("Province"),
       Color: Yup.string().label("Color"),

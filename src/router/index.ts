@@ -112,16 +112,6 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "locations",
-        name: "locations",
-        component: () => import("@/views/pages/locations/List.vue"),
-        meta: {
-          pageTitle: "Località",
-          breadcrumbs: ["Località"],
-          requiresAdminOrAgency: true
-        },
-      },
-      {
         path: "request/:id",
         name: "request",
         component: () => import("@/views/pages/requests/Update.vue"),

@@ -62,13 +62,6 @@ const MainMenuConfig: Array<MenuItem> = [
         roleEnabled: ["Admin", "Agency", "Agent"],
       },
       {
-        heading: "Località",
-        route: "/dashboard/locations",
-        keenthemesIcon: "element-11",
-        bootstrapIcon: "bi-app-indicator",
-        roleEnabled: ["Admin", "Agency"],
-      },
-      {
         heading: "Calendario",
         route: "/dashboard/calendar",
         keenthemesIcon: "element-11",
