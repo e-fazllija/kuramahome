@@ -31,7 +31,7 @@ export class Agency {
 
 const getAgencies = (filterRequest: string) : Promise<Array<Agency>> => {
    return ApiService.get(
-    `Agencies/Get?currentPage=0&filterRequest=${filterRequest}`,
+    `Agencies/Get?filterRequest=${filterRequest}`,
     ""
   )
     .then(({ data }) => {

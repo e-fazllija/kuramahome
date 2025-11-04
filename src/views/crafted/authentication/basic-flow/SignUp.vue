@@ -364,8 +364,9 @@
         <!--begin::Input group - Provincia-->
         <div class="fv-row mb-7">
           <label class="form-label fw-bold text-gray-800 fs-6">Provincia</label>
-          <select 
+          <Field
             v-model="formData.province"
+            as="select"
             class="form-select modern-select"
             name="province"
           >
@@ -373,7 +374,7 @@
             <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
               {{ province.Name }}
             </option>
-          </select>
+          </Field>
           <div class="fv-plugins-message-container">
             <div class="fv-help-block">
               <ErrorMessage name="province" />
@@ -386,8 +387,9 @@
         <div class="row fv-row mb-7">
           <div class="col-xl-6">
             <label class="form-label fw-bold text-gray-800 fs-6">Città *</label>
-            <select 
+            <Field
               v-model="formData.city"
+              as="select"
               class="form-select modern-select"
               name="city"
             >
@@ -395,7 +397,7 @@
               <option v-for="(city, index) in cities" :key="index" :value="city.Name">
                 {{ city.Name }}
               </option>
-            </select>
+            </Field>
             <div class="fv-plugins-message-container">
               <div class="fv-help-block">
                 <ErrorMessage name="city" />
@@ -926,7 +928,7 @@ export default defineComponent({
         Email: formData.email,
         PhoneNumber: formData.phone,
         Password: formData.password,
-        Role: "Agency",                     // Campo obbligatorio - default Agency
+        Role: "Admin",                     // Campo obbligatorio - default Agency
         UserName: formData.email,           // Usa email come username
         // Campi obbligatori
         Address: formData.address,

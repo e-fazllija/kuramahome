@@ -30,10 +30,15 @@ export interface RealEstatePropertyListResponse {
 
 export interface Agency {
   Id: string;
-  Name: string;
+  Name?: string;
+  FirstName?: string;
+  LastName?: string;
   UserName: string;
+  Email?: string;
   name: string; // Alias per compatibilità con il template
   id: string; // Alias per compatibilità con il template
+  EmailConfirmed?: boolean;
+  CreationDate?: string;
   // Aggiungi altri campi se necessario
 }
 
@@ -44,8 +49,9 @@ export interface AgencyListResponse {
 
 export interface Agent {
   Id: string;
-  Name: string;
-  LastName: string;
+  FirstName?: string;
+  LastName?: string;
+  Name?: string;
   Email?: string;
   PhoneNumber?: string;
   MobilePhone?: string;
@@ -62,8 +68,9 @@ export interface Agent {
 
 export interface Customer {
   Id: number;
-  Name: string;
-  LastName: string;
+  FirstName?: string;
+  LastName?: string;
+  Name?: string;
   CreationDate: string;
   Seller: boolean;
   Buyer: boolean;
@@ -84,16 +91,21 @@ export interface AgentListResponse {
 export interface CalendarEvent {
   Id: number;
   ApplicationUserId: string;
-  NomeEvento: string;
+  EventName?: string;
+  NomeEvento?: string;
   Type: string;
   CustomerId?: number;
   RealEstatePropertyId?: number;
   RequestId?: number;
+  EventDescription?: string;
   DescrizioneEvento?: string;
+  EventLocation?: string;
   LuogoEvento?: string;
   Color?: string;
-  DataInizioEvento: string;
-  DataFineEvento: string;
+  EventStartDate?: string;
+  DataInizioEvento?: string;
+  EventEndDate?: string;
+  DataFineEvento?: string;
   Confirmed: boolean;
   Cancelled: boolean;
   Postponed: boolean;
@@ -122,7 +134,9 @@ export interface RealEstatePropertyHomeDetails {
     TotalRent?: number;
     TotalLastMonth?: number;
     TotalCreatedPerMonth?: Object;
+    DistinctByCitySale?: Object;
     DistinctByTownSale?: Object;
+    DistinctByCityRent?: Object;
     DistinctByTownRent?: Object;
     DistinctByTypeSale?: Object;
     DistinctByTypeRent?: Object;
@@ -139,7 +153,9 @@ export interface RequestHomeDetails {
     TotalSale?: number;
     TotalRent?: number;
     TotalCreatedPerMonth?: Object;
+    DistinctByCitySale?: Object;
     DistinctByTownSale?: Object;
+    DistinctByCityRent?: Object;
     DistinctByTownRent?: Object;
     DistinctByTypeSale?: Object;
     DistinctByTypeRent?: Object;
@@ -147,129 +163,46 @@ export interface RequestHomeDetails {
     MinAnnual?: number;
 }
 
-const getDetails = (agencyId?: string, year?: number): Promise<DashboardDetails> => {
-    // Passa sempre agencyId, anche se vuoto, per evitare errori di validazione
-    const agencyParam = agencyId || '';
-    const yearParam = year ? `&year=${year}` : '';
-    return ApiService.get(`Generic/GetAdminHomeDetails?agencyId=${agencyParam}${yearParam}`, "")
-        .then(({ data }) => {
-            const result = data as Partial<DashboardDetails>
-            return result;
-        })
-        .catch(({ response }) => {
-            store.setError(response.data.Message, response.status);
-            return undefined;
-        });
-};
+// Nuova interfaccia per la risposta aggregata
+export interface DashboardAggregatedData {
+    RealEstatePropertyHomeDetails: RealEstatePropertyHomeDetails;
+    RequestHomeDetails: RequestHomeDetails;
+    TotalCustomers: number;
+    TotalBuyers: number;
+    TotalSellers: number;
+    TotalAgents: number;
+    TotalAppointments: number;
+    TotalConfirmedAppointments: number;
+    AvailableProperties: RealEstatePropertyListItem[];
+    SoldProperties: RealEstatePropertyListItem[];
+    Agents: Agent[];
+    Agencies: Agency[];
+    Customers: Customer[];
+    CalendarEvents: CalendarEvent[];
+    Requests: RequestListItem[];
+}
 
-// Helper: verifica se un immobile è disponibile (in carico)
-const isPropertyAvailable = (property: RealEstatePropertyListItem): boolean => {
-    const now = new Date();
-    const assignmentEnd = property.AssignmentEnd ? new Date(property.AssignmentEnd) : null;
+// ===== API PRINCIPALE DASHBOARD =====
+// Restituisce tutti i dati necessari per la dashboard in una sola chiamata
+const getDashboardAggregatedData = (agencyId?: string, year?: number): Promise<DashboardAggregatedData> => {
+    const agencyParam = agencyId ? `agencyId=${agencyId}` : '';
+    const yearParam = year ? `year=${year}` : '';
     
-    // Immobile disponibile se: Sold === false AND AssignmentEnd > oggi
-    return property.Sold === false && assignmentEnd !== null && assignmentEnd > now;
-};
-
-const getRealEstateProperties = (agencyId?: string, year?: number): Promise<RealEstatePropertyListResponse> => {
-    // Passa sempre agencyId, anche se vuoto, per evitare errori di validazione
-    const agencyParam = agencyId || 'all';
-    const yearParam = year ? `&year=${year}` : '';
-    const url = `RealEstateProperty/GetList?currentPage=0&agencyId=${agencyParam}&filterRequest=&contract=&priceFrom=0&priceTo=0&category=&typologie=&town=${yearParam}`;
+    // Costruisci i parametri della query
+    const params = [agencyParam, yearParam].filter(p => p).join('&');
+    const queryString = params ? `?${params}` : '';
     
-    // Non filtriamo per sold nell'API, lo faremo lato client considerando anche AssignmentEnd
-    return ApiService.get(url, "")
+    return ApiService.get(`Generic/GetDashboardAggregatedData${queryString}`, "")
         .then(({ data }) => {
-            const response = data as RealEstatePropertyListResponse;
-            
-            // Filtra lato client per anno (se specificato) e disponibilità
-            let filteredData = response.Data;
-            
-            // Filtro 1: Anno (basato su CreationDate)
-            if (year) {
-                filteredData = filteredData.filter(property => {
-                    const creationDate = new Date(property.CreationDate);
-                    return creationDate.getFullYear() === year;
-                });
-            }
-            
-            // Filtro 2: Disponibilità (Sold=false AND AssignmentEnd > oggi)
-            filteredData = filteredData.filter(isPropertyAvailable);
-            
-            response.Data = filteredData;
-            response.Total = response.Data.length;
-            return response;
+            return data as DashboardAggregatedData;
         })
         .catch(({ response }) => {
-            store.setError(response.data.Message, response.status);
-            return undefined;
+            store.setError(response?.data?.Message || 'Errore nel caricamento della dashboard', response?.status);
+            throw new Error('Errore nel caricamento della dashboard');
         });
 };
 
-const getAgencies = (): Promise<AgencyListResponse> => {
-    return ApiService.get(`Agencies/Get?currentPage=0&filterRequest=`, "")
-        .then(({ data }) => {
-            const response = data as AgencyListResponse;
-            // Mappa i dati per compatibilità con il template
-            response.Data = response.Data.map(agency => ({
-                ...agency,
-                name: agency.UserName, // Usa UserName come nome visualizzato
-                id: agency.Id
-            }));
-            return response;
-        })
-        .catch(({ response }) => {
-            store.setError(response.data.Message, response.status);
-            return undefined;
-        });
-};
-
-const getAgents = (agencyId?: string, year?: number): Promise<AgentListResponse> => {
-    // Passa sempre agencyId, anche se vuoto, per evitare errori di validazione
-    const agencyParam = agencyId || 'all';
-    const yearParam = year ? `&year=${year}` : '';
-    return ApiService.get(`Agents/Get?currentPage=0&agencyId=${agencyParam}${yearParam}`, "")
-        .then(({ data }) => {
-            return data as AgentListResponse;
-        })
-        .catch(({ response }) => {
-            store.setError(response.data.Message, response.status);
-            return undefined;
-        });
-};
-
-const getSoldProperties = (agencyId?: string, year?: number): Promise<RealEstatePropertyListResponse> => {
-    // Passa sempre agencyId, anche se vuoto, per evitare errori di validazione
-    const agencyParam = agencyId || 'all';
-    const yearParam = year ? `&year=${year}` : '';
-    const url = `RealEstateProperty/GetList?currentPage=0&agencyId=${agencyParam}&filterRequest=&contract=&priceFrom=0&priceTo=0&category=&typologie=&town=&sold=true${yearParam}`;
-    
-    return ApiService.get(url, "")
-        .then(({ data }) => {
-            return data as RealEstatePropertyListResponse;
-        })
-        .catch(({ response }) => {
-            store.setError(response.data.Message, response.status);
-            return undefined;
-        });
-};
-
-const getCalendarEvents = (agencyId?: string, year?: number): Promise<CalendarListResponse> => {
-    // Se agencyId è vuoto, non passare il parametro o usa un valore di default
-    const queryParams = agencyId ? `?agencyId=${agencyId}` : '';
-    const yearParam = year ? `${agencyId ? '&' : '?'}year=${year}` : '';
-    return ApiService.get(`Calendar/Get${queryParams}${yearParam}`, "")
-        .then(({ data }) => {
-            return data as CalendarListResponse;
-        })
-        .catch(({ response }) => {
-            if (response && response.data) {
-                store.setError(response.data.Message || 'Errore nel caricamento degli appuntamenti', response.status);
-            }
-            return undefined;
-        });
-};
-
+// ===== INTERFACCE RICHIESTE =====
 export interface RequestListItem {
   Id: number;
   CreationDate: string;
@@ -284,73 +217,14 @@ export interface RequestListResponse {
   Total: number;
 }
 
-const getRequests = (agencyId?: string, year?: number): Promise<RequestListResponse> => {
-    // Se agencyId è vuoto, non passare il parametro
-    const agencyParam = agencyId ? `&agencyId=${agencyId}` : '';
-    const yearParam = year ? `&year=${year}` : '';
-    return ApiService.get(`Requests/Get?currentPage=0${agencyParam}&filterRequest=${yearParam}`, "")
-        .then(({ data }) => {
-            return data as RequestListResponse;
-        })
-        .catch(({ response }) => {
-            if (response && response.data) {
-                store.setError(response.data.Message || 'Errore nel caricamento delle richieste', response.status);
-            }
-            return undefined;
-        });
-};
-
-const getCustomers = (agencyId?: string, year?: number): Promise<CustomerListResponse> => {
-    // L'API richiede sempre agencyId, usiamo 'all' quando non specificato
-    const agencyParam = agencyId || 'all';
-    const yearParam = year ? `&year=${year}` : '';
-    const url = `Customers/Get?currentPage=0&agencyId=${agencyParam}&filterRequest=${yearParam}`;
+// ===== HELPER FUNCTIONS =====
+// Helper: verifica se un immobile è disponibile (in carico)
+const isPropertyAvailable = (property: RealEstatePropertyListItem): boolean => {
+    const now = new Date();
+    const assignmentEnd = property.AssignmentEnd ? new Date(property.AssignmentEnd) : null;
     
-    return ApiService.get(url, "")
-        .then(({ data }) => {
-            return data as CustomerListResponse;
-        })
-        .catch(({ response }) => {
-            if (response && response.data) {
-                store.setError(response.data.Message || 'Errore nel caricamento dei clienti', response.status);
-            }
-            return undefined;
-        });
-};
-
-// Funzione per ottenere tutti i clienti di tutte le agenzie
-const getAllCustomers = async (): Promise<CustomerListResponse> => {
-    try {
-        // Prima ottieni la lista delle agenzie
-        const agenciesResponse = await getAgencies();
-        if (!agenciesResponse || !agenciesResponse.Data) {
-            return { Data: [], Total: 0 };
-        }
-        
-        // Chiama l'API per ogni agenzia
-        const allCustomers: Customer[] = [];
-        let totalCustomers = 0;
-        
-        for (const agency of agenciesResponse.Data) {
-            try {
-                const customersResponse = await getCustomers(agency.id);
-                if (customersResponse && customersResponse.Data) {
-                    allCustomers.push(...customersResponse.Data);
-                    totalCustomers += customersResponse.Total || 0;
-                }
-            } catch (error) {
-                // Ignora errori per singole agenzie
-            }
-        }
-        
-        return {
-            Data: allCustomers,
-            Total: totalCustomers
-        };
-        
-    } catch (error) {
-        return { Data: [], Total: 0 };
-    }
+    // Immobile disponibile se: Sold === false AND AssignmentEnd > oggi
+    return property.Sold === false && assignmentEnd !== null && assignmentEnd > now;
 };
 
 const processPropertiesForChart = (properties: RealEstatePropertyListItem[], year?: number) => {
@@ -867,4 +741,23 @@ const processTopZones = (properties: RealEstatePropertyListItem[]) => {
         return chartData;
     };
 
-    export { getDetails, getRealEstateProperties, getAgencies, getAgents, getSoldProperties, getCalendarEvents, getRequests, getCustomers, getAllCustomers, processPropertiesForChart, processSoldPropertiesForChart, processTypologyDistribution, processTopZones, processAgentsRanking, processCalendarEvents, processRequestsForChart, processAppointmentsForChart, processAgentsForChart, processAgenciesForChart, processCustomersForChart, isPropertyAvailable }
+export { 
+    // API principale
+    getDashboardAggregatedData,
+    
+    // Funzioni di processing per grafici e statistiche
+    processPropertiesForChart, 
+    processSoldPropertiesForChart, 
+    processTypologyDistribution, 
+    processTopZones, 
+    processAgentsRanking, 
+    processCalendarEvents, 
+    processRequestsForChart, 
+    processAppointmentsForChart, 
+    processAgentsForChart, 
+    processAgenciesForChart, 
+    processCustomersForChart, 
+    
+    // Helper functions
+    isPropertyAvailable 
+}
