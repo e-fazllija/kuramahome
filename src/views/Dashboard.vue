@@ -557,8 +557,20 @@ import Chart13 from "@/components/widgets/charts/Widget13.vue";
 import SubscriptionExpiryBanner from "@/views/crafted/subscription/SubscriptionExpiryBanner.vue";
 
 import { getAssetPath } from "@/core/helpers/assets";
-import { getDetails, getRealEstateProperties, getAgencies, getAgents, getSoldProperties, getCalendarEvents, getRequests, getCustomers, getAllCustomers, processPropertiesForChart, processSoldPropertiesForChart, processTypologyDistribution, processTopZones, processAgentsRanking, processCalendarEvents, processRequestsForChart, processAppointmentsForChart, processAgentsForChart, processCustomersForChart } from "@/core/data/dashboard";
-import type { DashboardDetails } from "@/core/data/dashboard";
+import { 
+  getDashboardAggregatedData,
+  processPropertiesForChart, 
+  processSoldPropertiesForChart, 
+  processTypologyDistribution, 
+  processTopZones, 
+  processAgentsRanking, 
+  processCalendarEvents, 
+  processRequestsForChart, 
+  processAppointmentsForChart, 
+  processAgentsForChart, 
+  processCustomersForChart 
+} from "@/core/data/dashboard";
+import type { DashboardDetails, DashboardAggregatedData } from "@/core/data/dashboard";
 import { useAuthStore } from "@/stores/auth";
 import { isAgent as helperIsAgent, getUserAgencyId } from "@/core/helpers/auth";
 import { getCurrentSubscription } from "@/core/data/subscription";
@@ -787,161 +799,154 @@ export default defineComponent({
 
         async function getItems(agencyId?: string) {
       loading.value = true;
-          
-          // Carica i dati del dashboard
-          data.value = await getDetails(agencyId, selectedYear.value);
-          
-          // Per gli Agent, carica solo i dati essenziali della dashboard
-          if (isAgent.value) {
-            // Gli Agent vedono solo i dati base senza grafici complessi
-            loading.value = false;
-            return;
-          }
-          
-          // Carica i dati degli immobili per il grafico solo se premium
-          // (solo immobili disponibili: Sold=false AND AssignmentEnd>oggi)
-          let propertiesResponse = null;
-          if (isPremium.value) {
-            try {
-              propertiesResponse = await getRealEstateProperties(agencyId, selectedYear.value);
-            } catch (error: any) {
-              if (error?.response?.status === 403) {
-                // Utente non premium, ignora l'errore e continua
-                console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
-              } else {
-                throw error;
-              }
-            }
-          }
-          if (propertiesResponse) {
-            chartData.value = processPropertiesForChart(propertiesResponse.Data, selectedYear.value);
+      
+      try {
+        // 🚀 NUOVA API AGGREGATA - Una singola chiamata invece di 8+!
+        const dashboardData = await getDashboardAggregatedData(agencyId, selectedYear.value);
+        
+        // Assegna i dati aggregati
+        data.value = {
+          RealEstatePropertyHomeDetails: dashboardData.RealEstatePropertyHomeDetails,
+          RequestHomeDetails: dashboardData.RequestHomeDetails,
+          TotalCustomers: dashboardData.TotalCustomers,
+          TotalBuyers: dashboardData.TotalBuyers,
+          TotalSellers: dashboardData.TotalSellers,
+          TotalAgents: dashboardData.TotalAgents,
+          TotalAppointments: dashboardData.TotalAppointments,
+          TotalConfirmedAppointments: dashboardData.TotalConfirmedAppointments
+        };
+        
+        // Per gli Agent, carica solo i dati essenziali della dashboard
+        if (isAgent.value) {
+          loading.value = false;
+          return;
+        }
+        
+        // Processa i dati degli immobili disponibili solo se premium
+        if (isPremium.value && dashboardData.AvailableProperties) {
+          try {
+            // Processa per i grafici
+            chartData.value = processPropertiesForChart(dashboardData.AvailableProperties, selectedYear.value);
             
             // Salva i dati per il ranking
-            allPropertiesData.value = propertiesResponse.Data;
+            allPropertiesData.value = dashboardData.AvailableProperties;
             
-            // Salva il totale degli immobili disponibili (già filtrati per Sold=false AND AssignmentEnd>oggi)
-            availablePropertiesCount.value = propertiesResponse.Total || 0;
+            // Salva il totale degli immobili disponibili
+            availablePropertiesCount.value = dashboardData.AvailableProperties.length;
             
             // Calcola i totali per Status
-            const saleProperties = propertiesResponse.Data.filter(p => p.Status === 'Vendita' && !p.Auction);
-            const rentProperties = propertiesResponse.Data.filter(p => p.Status === 'Affitto' && !p.Auction);
-            const auctionProperties = propertiesResponse.Data.filter(p => p.Auction === true);
+            const saleProperties = dashboardData.AvailableProperties.filter(p => p.Status === 'Vendita' && !p.Auction);
+            const rentProperties = dashboardData.AvailableProperties.filter(p => p.Status === 'Affitto' && !p.Auction);
+            const auctionProperties = dashboardData.AvailableProperties.filter(p => p.Auction === true);
             
             salePropertiesCount.value = saleProperties.length;
             rentPropertiesCount.value = rentProperties.length;
             
             auctionData.value = {
               total: auctionProperties.length,
-              percentage: propertiesResponse.Data.length > 0 ? Math.round((auctionProperties.length / propertiesResponse.Data.length) * 100) : 0
+              percentage: dashboardData.AvailableProperties.length > 0 
+                ? Math.round((auctionProperties.length / dashboardData.AvailableProperties.length) * 100) 
+                : 0
             };
             
-            // Carica i dati delle tipologie
-            typologyData.value = processTypologyDistribution(propertiesResponse.Data);
+            // Processa dati delle tipologie
+            typologyData.value = processTypologyDistribution(dashboardData.AvailableProperties);
             
-            // Carica i dati delle zone
-            topZonesData.value = processTopZones(propertiesResponse.Data);
-          }
-          
-          // Carica i dati degli immobili venduti per il secondo grafico solo se premium
-          let soldPropertiesResponse = null;
-          if (isPremium.value) {
-            try {
-              soldPropertiesResponse = await getSoldProperties(agencyId, selectedYear.value);
-            } catch (error: any) {
-              if (error?.response?.status === 403) {
-                // Utente non premium, ignora l'errore e continua
-                console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
-              } else {
-                throw error;
-              }
+            // Processa dati delle zone
+            topZonesData.value = processTopZones(dashboardData.AvailableProperties);
+          } catch (error: any) {
+            if (error?.response?.status === 403) {
+              console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
+            } else {
+              console.error('Errore nel processing delle proprietà disponibili:', error);
             }
           }
-          if (soldPropertiesResponse) {
-            soldChartData.value = processSoldPropertiesForChart(soldPropertiesResponse.Data, selectedYear.value);
-            soldPropertiesCount.value = soldPropertiesResponse.Total || 0;
+        }
+        
+        // Processa i dati degli immobili venduti solo se premium
+        if (isPremium.value && dashboardData.SoldProperties) {
+          try {
+            soldChartData.value = processSoldPropertiesForChart(dashboardData.SoldProperties, selectedYear.value);
+            soldPropertiesCount.value = dashboardData.SoldProperties.length;
             
             // Salva i dati per il ranking
-            allSoldPropertiesData.value = soldPropertiesResponse.Data;
+            allSoldPropertiesData.value = dashboardData.SoldProperties;
             
             // Calcola i totali filtrati per Widget13 (anno + agenzia)
             const currentYear = selectedYear.value;
-            const filteredByYear = soldPropertiesResponse.Data.filter(property => {
+            const filteredByYear = dashboardData.SoldProperties.filter(property => {
               const updateDate = property.UpdateDate && property.UpdateDate !== '0001-01-01T00:00:00' 
                 ? new Date(property.UpdateDate) 
                 : new Date(property.CreationDate);
               return updateDate.getFullYear() === currentYear;
             });
             
-            // Conta per tipologia: Venduti (Status === 'Vendita'), Affittati (Status === 'Affitto'), Aste (Auction === true)
+            // Conta per tipologia
             filteredSoldProperties.value = filteredByYear.filter(p => p.Status === 'Vendita' && !p.Auction).length;
             filteredRentedProperties.value = filteredByYear.filter(p => p.Status === 'Affitto' && !p.Auction).length;
             filteredAuctionProperties.value = filteredByYear.filter(p => p.Auction === true).length;
-          }
-          
-          // Carica i dati delle agenzie
-          const agenciesResponse = await getAgencies();
-          if (agenciesResponse) {
-            agenciesList.value = agenciesResponse.Data;
-          }
-          
-          // Carica i dati degli agenti solo se premium
-          // Per il widget agenti, carichiamo sempre tutti gli agenti per il conteggio corretto
-          let agentsResponse = null;
-          if (isPremium.value) {
-            try {
-              agentsResponse = await getAgents(undefined, selectedYear.value);
-            } catch (error: any) {
-              if (error?.response?.status === 403) {
-                // Utente non premium, ignora l'errore e continua
-                console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
-              } else {
-                throw error;
-              }
+          } catch (error: any) {
+            if (error?.response?.status === 403) {
+              console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
+            } else {
+              console.error('Errore nel processing delle proprietà vendute:', error);
             }
           }
-          if (agentsResponse) {
-            agentsRankingData.value = processAgentsRanking(agentsResponse.Data);
-            agentsRawData.value = agentsResponse.Data; // Dati non processati per Widget12
+        }
+        
+        // Processa i dati delle agenzie
+        if (dashboardData.Agencies) {
+          agenciesList.value = dashboardData.Agencies.map(agency => ({
+            ...agency,
+            name: agency.UserName || `${agency.FirstName || ''} ${agency.LastName || ''}`.trim(),
+            id: agency.Id
+          }));
+        }
+        
+        // Processa i dati degli agenti solo se premium
+        if (isPremium.value && dashboardData.Agents) {
+          try {
+            agentsRankingData.value = processAgentsRanking(dashboardData.Agents);
+            agentsRawData.value = dashboardData.Agents;
             
-            // Carica i dati mensili degli agenti per il grafico
-            const agentsChartData = processAgentsForChart(agentsResponse.Data, selectedYear.value);
+            // Processa i dati mensili degli agenti per il grafico
+            const agentsChartData = processAgentsForChart(dashboardData.Agents, selectedYear.value);
             agentsMonthlyData.value = agentsChartData.monthlyData;
+          } catch (error: any) {
+            if (error?.response?.status === 403) {
+              console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
+            } else {
+              console.error('Errore nel processing degli agenti:', error);
+            }
           }
+        }
+        
+        // Processa i dati degli appuntamenti
+        if (dashboardData.CalendarEvents) {
+          const appointmentsData = processCalendarEvents(dashboardData.CalendarEvents);
+          totalAppointments.value = appointmentsData.total;
+          confirmedAppointments.value = appointmentsData.confirmed;
           
-          // Carica i dati degli appuntamenti
-          const calendarResponse = await getCalendarEvents(agencyId, selectedYear.value);
-          if (calendarResponse) {
-            const appointmentsData = processCalendarEvents(calendarResponse.Data);
-            totalAppointments.value = appointmentsData.total;
-            confirmedAppointments.value = appointmentsData.confirmed;
-            
-            // Processa anche per il grafico mensile
-            appointmentsChartData.value = processAppointmentsForChart(calendarResponse.Data, selectedYear.value);
-          }
-          
-          // Carica i dati delle richieste per il grafico
-          const requestsResponse = await getRequests(agencyId, selectedYear.value);
-          if (requestsResponse) {
-            requestsChartData.value = processRequestsForChart(requestsResponse.Data, selectedYear.value);
-          }
-          
-          // Carica i dati dei clienti
-          let customersResponse;
-          if (agencyId === undefined) {
-            // Per "tutte le agenzie", usa getAllCustomers
-            customersResponse = await getAllCustomers();
-          } else {
-            // Per agenzia specifica, usa getCustomers
-            customersResponse = await getCustomers(agencyId, selectedYear.value);
-          }
-          
-          if (customersResponse) {
-            const customersChartData = processCustomersForChart(customersResponse.Data, selectedYear.value);
-            customersMonthlyData.value = customersChartData;
-          }
-          
-      
-      loading.value = false;
+          // Processa per il grafico mensile
+          appointmentsChartData.value = processAppointmentsForChart(dashboardData.CalendarEvents, selectedYear.value);
+        }
+        
+        // Processa i dati delle richieste
+        if (dashboardData.Requests) {
+          requestsChartData.value = processRequestsForChart(dashboardData.Requests, selectedYear.value);
+        }
+        
+        // Processa i dati dei clienti
+        if (dashboardData.Customers) {
+          const customersChartData = processCustomersForChart(dashboardData.Customers, selectedYear.value);
+          customersMonthlyData.value = customersChartData;
+        }
+      } catch (error) {
+        console.error('❌ Errore nel caricamento della dashboard:', error);
+        // Mostra un errore all'utente se necessario
+      } finally {
+        loading.value = false;
+      }
     }
 
 
