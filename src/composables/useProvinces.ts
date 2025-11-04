@@ -1,5 +1,5 @@
 import { ref, onMounted } from 'vue';
-import { getProvincesForSelect } from '@/core/data/locations';
+import { getAllProvinceNames, getProvinceCities } from '@/core/data/italian-geographic-data-loader';
 
 export interface ProvinceOption {
   Id: string;
@@ -15,10 +15,18 @@ export function useProvinces() {
     isLoading.value = true;
     error.value = null;
     try {
-      provinces.value = await getProvincesForSelect();
+      // Carica i dati dal JSON se non sono già caricati
+      await getProvinceCities();
+      // Ottieni i nomi delle province dal JSON
+      const provinceNames = getAllProvinceNames();
+      // Converti in formato per il select
+      provinces.value = provinceNames.map(name => ({
+        Id: name,
+        Name: name
+      }));
     } catch (err: any) {
-      console.error("Erroтивный nel caricamento delle province:", err);
-      error.value = err.response?.data?.message || 'Errore nel caricamento delle province';
+      console.error("Errore nel caricamento delle province:", err);
+      error.value = err?.message || 'Errore nel caricamento delle province';
       provinces.value = [];
     } finally {
       isLoading.value = false;

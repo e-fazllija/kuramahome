@@ -485,7 +485,7 @@ import arraySort from "array-sort";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import { MenuComponent } from "@/assets/ts/components";
 import { useProvinces } from "@/composables/useProvinces";
-import { provinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "update-customer",
@@ -566,9 +566,16 @@ export default defineComponent({
       loading.value = true;
       formData.value = await getCustomer(id)
       
+      // Carica i dati dal JSON se non sono già caricati
+      await getProvinceCities();
+      
       // Carica le città della provincia esistente
-      if (formData.value.State && provinceCities[formData.value.State]) {
-        cities.value = provinceCities[formData.value.State];
+      if (formData.value.State) {
+        const provinceCities = getCitiesByProvince(formData.value.State);
+        cities.value = provinceCities.map(city => ({
+          Id: city.Name,
+          Name: city.Name
+        }));
       }
       
       const results = await getCustomerRequests(id);
@@ -598,9 +605,16 @@ export default defineComponent({
     // Watcher per caricare le città quando si seleziona la provincia
     watch(
       () => formData.value.State,
-      (newProvince) => {
-        if (newProvince && provinceCities[newProvince]) {
-          cities.value = provinceCities[newProvince];
+      async (newProvince) => {
+        if (newProvince) {
+          // Assicurati che i dati siano caricati
+          await getProvinceCities();
+          // Carica le città della provincia selezionata
+          const provinceCities = getCitiesByProvince(newProvince);
+          cities.value = provinceCities.map(city => ({
+            Id: city.Name,
+            Name: city.Name
+          }));
         } else {
           cities.value = [];
         }
@@ -628,6 +642,8 @@ export default defineComponent({
 
     const submit = async () => {
       loading.value = true;
+      // Assegna AdminId dall'utente autenticato
+      formData.value.AdminId = store.user.AdminId;
       await updateCustomer(formData.value)
         .then(() => {
           loading.value = false;

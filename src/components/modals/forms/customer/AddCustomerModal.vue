@@ -461,7 +461,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createCustomer, Customer } from "@/core/data/customers";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, provinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCAPByCity, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-customer-modal",
@@ -498,9 +498,16 @@ export default defineComponent({
     // Watcher per caricare le città quando si seleziona la provincia
     watch(
       () => formData.value.State,
-      (newProvince) => {
-        if (newProvince && provinceCities[newProvince]) {
-          cities.value = provinceCities[newProvince];
+      async (newProvince) => {
+        if (newProvince) {
+          // Assicurati che i dati siano caricati
+          await getProvinceCities();
+          // Carica le città della provincia selezionata
+          const provinceCities = getCitiesByProvince(newProvince);
+          cities.value = provinceCities.map(city => ({
+            Id: city.Name,
+            Name: city.Name
+          }));
           formData.value.City = ""; // Reset città
         } else {
           cities.value = [];
@@ -548,6 +555,8 @@ export default defineComponent({
         if (valid) {
           loading.value = true;
           try {
+            // Assegna AdminId dall'utente autenticato
+            formData.value.AdminId = store.user.AdminId;
             await createCustomer(formData.value);
 
             const error = store.errors;

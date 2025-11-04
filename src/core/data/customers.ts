@@ -24,6 +24,7 @@ export class Customer{
   OngoingAssignment: boolean;
   CustomerNotes?: Notes[];
   UserId?: string;
+  AdminId?: string;  // Aggiunto per risolvere l'errore di validazione AdminId
   label?: string;
 }
 
@@ -41,7 +42,7 @@ export class Notes {
   Text: string;
 }
 
-const getCustomers = (agencyId: string, filterRequest: string) : Promise<Array<Customer>> => {
+const getCustomers = (adminId: string, filterRequest: string) : Promise<Array<Customer>> => {
    return ApiService.get(
     `Customers/Get?filterRequest=${filterRequest}`,
     ""
