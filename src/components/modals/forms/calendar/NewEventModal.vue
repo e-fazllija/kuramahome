@@ -60,11 +60,11 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <el-form-item prop="NomeEvento">
+                <el-form-item prop="EventName">
                   <el-input 
-                    v-model="targetData.NomeEvento" 
+                    v-model="targetData.EventName" 
                     type="text" 
-                    name="NomeEvento"
+                    name="EventName"
                     placeholder="Inserisci il nome dell'evento"
                     class="modern-input"
                   />
@@ -115,12 +115,12 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <el-form-item prop="DescrizioneEvento">
+                <el-form-item prop="EventDescription">
                   <el-input 
-                    v-model="targetData.DescrizioneEvento" 
+                    v-model="targetData.EventDescription" 
                     type="text" 
                     placeholder="Descrizione dell'evento" 
-                    name="DescrizioneEvento"
+                    name="EventDescription"
                     class="modern-input"
                   />
                 </el-form-item>
@@ -140,12 +140,12 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <el-form-item prop="LuogoEvento">
+                <el-form-item prop="EventLocation">
                   <el-input 
-                    v-model="targetData.LuogoEvento" 
+                    v-model="targetData.EventLocation" 
                     type="text" 
                     placeholder="Dove si terrà l'evento" 
-                    name="LuogoEvento"
+                    name="EventLocation"
                     class="modern-input"
                   />
                 </el-form-item>
@@ -251,7 +251,7 @@
                     <!--begin::Input-->
                     <input 
                       class="form-control modern-datetime" 
-                      v-model="targetData.DataInizioEvento" 
+                      v-model="targetData.EventStartDate" 
                       type="datetime-local" 
                     />
                     <!--end::Input-->
@@ -272,7 +272,7 @@
                     <!--begin::Input-->
                     <input 
                       class="form-control modern-datetime" 
-                      v-model="targetData.DataFineEvento" 
+                      v-model="targetData.EventEndDate" 
                       type="datetime-local" 
                     />
                     <!--end::Input-->
@@ -384,14 +384,14 @@ export default defineComponent({
     ];
     const targetData = ref<Event>({
       UserId: "",
-      NomeEvento: "",
-      DescrizioneEvento: "",
-      LuogoEvento: "",
+      EventName: "",
+      EventDescription: "",
+      EventLocation: "",
       CustomerId: null,
       RequestId: null,
       RealEstatePropertyId: null,
-      DataInizioEvento: todayDate.format("YYYY-MM-DD"),
-      DataFineEvento: todayDate.format("YYYY-MM-DD"),
+      EventStartDate: todayDate.format("YYYY-MM-DD"),
+      EventEndDate: todayDate.format("YYYY-MM-DD"),
       Type: "Appuntamento",
       Color: store.user.Color,
       Confirmed: false,
@@ -411,13 +411,13 @@ export default defineComponent({
 
     watch(() => props.SelectedDateStart, async (first, second) => {
       if (first) {
-        targetData.value.DataInizioEvento = formattedDate(new Date(first));
+        targetData.value.EventStartDate = formattedDate(new Date(first));
       }
     })
 
     watch(() => props.SelectedDateEnd, async (first, second) => {
       if (first) {
-        targetData.value.DataFineEvento = formattedDate(new Date(first));
+        targetData.value.EventEndDate = formattedDate(new Date(first));
       }
     })
 
@@ -428,21 +428,21 @@ export default defineComponent({
     })
 
     const rules = ref({
-      NomeEvento: [
+      EventName: [
         {
           required: true,
           message: "Inserisci il nome dell'evento",
           trigger: "blur",
         },
       ],
-      DataInizioEvento: [
+      EventStartDate: [
         {
           required: true,
           message: "Inserisci la data",
           trigger: "blur",
         },
       ],
-      DataFineEvento: [
+      EventEndDate: [
         {
           required: true,
           message: "Inserisci la data",
@@ -478,8 +478,8 @@ export default defineComponent({
           loading.value = true;
           targetData.value.UserId = props.UserId
 
-          console.log(targetData.value.DataInizioEvento)
-          console.log(targetData.value.DataFineEvento)
+          console.log(targetData.value.EventStartDate)
+          console.log(targetData.value.EventEndDate)
           
           await createEvent(targetData.value);
 
@@ -487,15 +487,15 @@ export default defineComponent({
 
           if (!error) {
             targetData.value.UserId= "";
-            targetData.value.NomeEvento= "";
-            targetData.value.DescrizioneEvento= "";
+            targetData.value.EventName= "";
+            targetData.value.EventDescription= "";
             targetData.value.Color="";
-            targetData.value.LuogoEvento= "";
+            targetData.value.EventLocation= "";
             targetData.value.CustomerId= null;
             targetData.value.RequestId= null;
             targetData.value.RealEstatePropertyId= null;
-            targetData.value.DataInizioEvento= todayDate.format("YYYY-MM-DD");
-            targetData.value.DataFineEvento= todayDate.format("YYYY-MM-DD");
+            targetData.value.EventStartDate= todayDate.format("YYYY-MM-DD");
+            targetData.value.EventEndDate= todayDate.format("YYYY-MM-DD");
             targetData.value.Type = "Appuntamento";
             Swal.fire({
               text: "Operazione completata!",

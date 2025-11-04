@@ -92,20 +92,15 @@ export interface CalendarEvent {
   Id: number;
   UserId: string;
   EventName?: string;
-  NomeEvento?: string;
   Type: string;
   CustomerId?: number;
   RealEstatePropertyId?: number;
   RequestId?: number;
   EventDescription?: string;
-  DescrizioneEvento?: string;
   EventLocation?: string;
-  LuogoEvento?: string;
   Color?: string;
   EventStartDate?: string;
-  DataInizioEvento?: string;
   EventEndDate?: string;
-  DataFineEvento?: string;
   Confirmed: boolean;
   Cancelled: boolean;
   Postponed: boolean;
@@ -547,8 +542,8 @@ const processTopZones = (properties: RealEstatePropertyListItem[]) => {
 
         // Processa ogni appuntamento
         appointments.forEach(appointment => {
-            // Usa DataInizioEvento per determinare il mese
-            const startDate = new Date(appointment.DataInizioEvento);
+            // Usa EventStartDate per determinare il mese
+            const startDate = new Date(appointment.EventStartDate);
             const appointmentMonth = startDate.toLocaleDateString('it-IT', { month: 'short', year: '2-digit' });
             
             // Verifica se è nell'anno selezionato

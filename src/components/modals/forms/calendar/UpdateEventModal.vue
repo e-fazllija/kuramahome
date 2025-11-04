@@ -60,11 +60,11 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <el-form-item prop="NomeEvento">
+                <el-form-item prop="EventName">
                   <el-input 
-                    v-model="targetData.NomeEvento" 
+                    v-model="targetData.EventName" 
                     type="text" 
-                    name="NomeEvento"
+                    name="EventName"
                     placeholder="Inserisci il nome dell'evento"
                     class="modern-input"
                   />
@@ -116,12 +116,12 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <el-form-item prop="DescrizioneEvento">
+                <el-form-item prop="EventDescription">
                   <el-input 
-                    v-model="targetData.DescrizioneEvento" 
+                    v-model="targetData.EventDescription" 
                     type="text" 
                     placeholder="Descrizione dell'evento" 
-                    name="DescrizioneEvento"
+                    name="EventDescription"
                     class="modern-input"
                   />
                 </el-form-item>
@@ -141,12 +141,12 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <el-form-item prop="LuogoEvento">
+                <el-form-item prop="EventLocation">
                   <el-input 
-                    v-model="targetData.LuogoEvento" 
+                    v-model="targetData.EventLocation" 
                     type="text" 
                     placeholder="Dove si terrà l'evento" 
-                    name="LuogoEvento"
+                    name="EventLocation"
                     class="modern-input"
                   />
                 </el-form-item>
@@ -294,7 +294,7 @@
                     <!--begin::Input-->
                     <input 
                       class="form-control modern-datetime" 
-                      v-model="targetData.DataInizioEvento" 
+                      v-model="targetData.EventStartDate" 
                       type="datetime-local" 
                     />
                     <!--end::Input-->
@@ -315,7 +315,7 @@
                     <!--begin::Input-->
                     <input 
                       class="form-control modern-datetime" 
-                      v-model="targetData.DataFineEvento" 
+                      v-model="targetData.EventEndDate" 
                       type="datetime-local" 
                     />
                     <!--end::Input-->
@@ -445,14 +445,14 @@ export default defineComponent({
     const targetData = ref<Event>({
       Id: 0,
       UserId: "",
-      NomeEvento: "",
-      DescrizioneEvento: "",
-      LuogoEvento: "",
+      EventName: "",
+      EventDescription: "",
+      EventLocation: "",
       CustomerId: null,
       RequestId: null,
       RealEstatePropertyId: null,
-      DataInizioEvento: null,
-      DataFineEvento: null,
+      EventStartDate: null,
+      EventEndDate: null,
       Type: "Appuntamento",
       Color:"##5e97fd",
       Confirmed: false,
@@ -461,21 +461,21 @@ export default defineComponent({
     });
 
     const rules = ref({
-      NomeEvento: [
+      EventName: [
         {
           required: true,
           message: "Inserisci il nome dell'evento",
           trigger: "blur",
         },
       ],
-      DataInizioEvento: [
+      EventStartDate: [
         {
           required: true,
           message: "Inserisci la data",
           trigger: "blur",
         },
       ],
-      DataFineEvento: [
+      EventEndDate: [
         {
           required: true,
           message: "Inserisci la data",
@@ -515,8 +515,8 @@ export default defineComponent({
         if (valid) {
           loading.value = true;
           
-          targetData.value.DataInizioEvento = targetData.value.DataInizioEvento;
-          targetData.value.DataFineEvento = targetData.value.DataFineEvento;
+          targetData.value.EventStartDate = targetData.value.EventStartDate;
+          targetData.value.EventEndDate = targetData.value.EventEndDate;
 
           await updateEvent(targetData.value);
 

@@ -49,6 +49,7 @@
             <!-- Agency Filter (Admin only) -->
             <div v-if="user.Role == 'Admin'" class="flex-shrink-0">
               <select class="form-select form-select-modern" v-model="agencyId" style="min-width: 160px;">
+                <option value="">🏢 Tutte le agenzie</option>
                 <option v-for="(item, index) in searchItems.Agencies" :key="index" :value="item.Id">
                   🏢 {{ item.FirstName }} {{ item.LastName }}
                 </option>
@@ -58,7 +59,7 @@
             <!-- Agent Filter -->
             <div v-if="user.Role == 'Admin' || user.Role == 'Agency'" class="flex-shrink-0">
               <select class="form-select form-select-modern" v-model="agentId" style="min-width: 150px;">
-                <option value="">👥 Tutti agenti</option>
+                <option value="">👥 Tutti gli agenti</option>
                 <option v-for="(item, index) in searchItems.Agents" :key="index" :value="item.Id">
                   👤 {{ item.FirstName }} {{ item.LastName }}
                 </option>
@@ -124,9 +125,9 @@
   <!--end::Calendar wrapper-->
 
   <NewEventModal :UserId="userId" :Color="color" :SelectedDateStart="selectedDateStart"
-    :SelectedDateEnd="selectedDateEnd" @formAddSubmitted="getItems(agencyId, agentId)">
+    :SelectedDateEnd="selectedDateEnd" @formAddSubmitted="loadAllEvents()">
   </NewEventModal>
-  <UpdateEventModal :Id="selectedId" @formUpdateSubmitted="getItems(agencyId, agentId)">
+  <UpdateEventModal :Id="selectedId" @formUpdateSubmitted="loadAllEvents()">
   </UpdateEventModal>
 </template>
 
@@ -241,74 +242,102 @@ export default defineComponent({
     };
 
     const tableData = ref<Array<EventInput>>([]);
+    const allEvents = ref<Array<Event>>([]);
 
-    async function getItems(_agencyId: string, _agentId: string) {
+    async function loadAllEvents() {
+      const results = await getEvents();
+      allEvents.value = results || [];
+      applyFilters();
+    }
+
+    function applyFilters() {
       tableData.value.splice(0);
       initItems.value.splice(0);
-      const results = await getEvents(_agencyId, _agentId);
+      
       const addName = store.user.Role != "Agent" && agentId.value == "" ? true : false;
       
-      for (const key in results) {
-        // Apply status filter
-        if (statusFilter.value && !matchesStatusFilter(results[key], statusFilter.value)) {
+      for (const key in allEvents.value) {
+        const event = allEvents.value[key];
+        
+        // Filtro per Agency (solo per Admin)
+        // Se l'admin seleziona un'Agency, mostra eventi dell'Agency stessa + eventi degli Agent di quell'Agency
+        if (store.user.Role == "Admin" && agencyId.value) {
+          const isAgencyEvent = event.UserId === agencyId.value; // Evento dell'Agency stessa
+          const isAgentOfAgency = event.User.AdminId === agencyId.value; // Evento di un Agent di quell'Agency
+          
+          if (!isAgencyEvent && !isAgentOfAgency) {
+            continue;
+          }
+        }
+        
+        // Filtro per Agent (per Admin e Agency)
+        if (agentId.value && event.UserId !== agentId.value) {
+          continue;
+        }
+        
+        // Filtro per stato
+        if (statusFilter.value && !matchesStatusFilter(event, statusFilter.value)) {
           continue;
         }
 
         // Add status indicator to title
         let statusIndicator = "";
-        if (results[key].Confirmed) {
+        if (event.Confirmed) {
           statusIndicator = " ✓";
-        } else if (results[key].Cancelled) {
+        } else if (event.Cancelled) {
           statusIndicator = " ✗";
-        } else if (results[key].Postponed) {
+        } else if (event.Postponed) {
           statusIndicator = " ⏸";
         } else {
           statusIndicator = " ⏳";
         }
 
-        const baseTitle = addName ? `${results[key].User.FirstName} ${results[key].User.LastName}: ${results[key].NomeEvento}` : results[key].NomeEvento;
+        const baseTitle = addName ? `${event.User.FirstName} ${event.User.LastName}: ${event.EventName}` : event.EventName;
         
         const item = {
-          id: results[key].Id.toString(),
+          id: event.Id.toString(),
           title: baseTitle + statusIndicator,
-          start: results[key].DataInizioEvento,
-          end: results[key].DataFineEvento,
-          description: results[key].DescrizioneEvento,
+          start: event.EventStartDate,
+          end: event.EventEndDate,
+          description: event.EventDescription,
           className: "fc-event-meeting",
-          color: results[key].Color != null && results[key].Color != "" ? results[key].Color : results[key].User.Color
+          color: event.Color != null && event.Color != "" ? event.Color : event.User.Color
         } as EventInput;
 
         tableData.value.push(item)
       }
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
-    };
+    }
 
     
 
     onMounted(async () => {
       loading.value = true;
+      await loadAllEvents();
+      
       if (store.user.Role == "Agency" || store.user.Role == "Admin") {
-        await getItems(store.user.AdminId, "");
         searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
-        agencyId.value = store.user.AdminId;
-      } else {
-        await getItems(store.user.AdminId, store.user.Id);
+        if (store.user.Role == "Admin") {
+          agencyId.value = ""; // Mostra tutti gli eventi per default
+        }
       }
       
       loading.value = false;
     });
 
     watch(() => agencyId.value, async (first, second) => {
-      await getItems(agencyId.value, "");
-      searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
+      if (store.user.Role == "Admin") {
+        searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
+      }
+      applyFilters();
     })
 
     watch(() => agentId.value, async (first, second) => {
-      await getItems(agencyId.value, agentId.value);
+      applyFilters();
     })
 
     watch(() => statusFilter.value, async (first, second) => {
-      await getItems(agencyId.value, agentId.value);
+      applyFilters();
     })
 
 
@@ -415,7 +444,7 @@ export default defineComponent({
       updateEvent,
       getAssetPath,
       loading,
-      getItems,
+      loadAllEvents,
       selectedId,
       agentId,
       agencyId,

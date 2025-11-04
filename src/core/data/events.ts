@@ -116,15 +116,15 @@ export class Event {
   Id?: number;
   UserId: string;
   User?: User;
-  NomeEvento: string;
+  EventName: string;
   Type: string;
   CustomerId: number;
   RealEstatePropertyId: number;
   RequestId: number;
-  DescrizioneEvento: string;
-  LuogoEvento: string;
-  DataInizioEvento?: string;
-  DataFineEvento?: string;
+  EventDescription: string;
+  EventLocation: string;
+  EventStartDate?: string;
+  EventEndDate?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
   Color?: string;
@@ -144,9 +144,9 @@ export class SearchModel {
   Agents: User[];
 }
 
-const getEvents = (agencyId: string, agentId: string): Promise<Array<Event>> => {
+const getEvents = (): Promise<Array<Event>> => {
   return ApiService.get(
-    `Calendar/Get?agencyId=${agencyId}&agentId=${agentId}`,
+    `Calendar/Get`,
     ""
   )
     .then(({ data }) => {
@@ -175,7 +175,7 @@ const getEvent = (id: number): Promise<Event> => {
 };
 
 const getToInsert = (): Promise<InsertModel> => {
-  return ApiService.get(`Calendar/GetToInsert?agencyId=${store.user.AdminId}`, "")
+  return ApiService.get(`Calendar/GetToInsert`, "")
     .then(({ data }) => {
       const requests = data.Requests as Array<Request>;
       const customers = data.Customers as Array<Customer>;
