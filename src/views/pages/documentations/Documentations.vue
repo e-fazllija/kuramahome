@@ -478,7 +478,7 @@ export default defineComponent({
     const ensureAgencyPath = (path: string | null): string | undefined => {
       if (!path) return undefined;
       
-      const agencyId = store.user?.AgencyId;
+      const agencyId = store.user?.AdminId;
       if (!agencyId) return path;
       
       // Se il path già inizia con agencyId, restituiscilo così com'è
@@ -505,7 +505,7 @@ export default defineComponent({
         return;
       }
 
-      const agencyId = store.user?.AgencyId;
+      const agencyId = store.user?.AdminId;
       const parts = path.split('/').filter(p => p);
       
       // Rimuove l'agencyId dal breadcrumb se presente (primo elemento)
@@ -524,7 +524,7 @@ export default defineComponent({
 
     // Ottiene il path completo di un documento/cartella con agencyId incluso
     const getCurrentPath = (doc: Documentation): string => {
-      const agencyId = store.user?.AgencyId;
+      const agencyId = store.user?.AdminId;
       
       // Se c'è un ParentPath, usalo e aggiungi DisplayName
       if (doc.ParentPath) {

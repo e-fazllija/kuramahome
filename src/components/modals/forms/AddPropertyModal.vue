@@ -1416,7 +1416,7 @@ export default defineComponent({
     });
 
     onMounted(async () => {
-      inserModel.value = await getToInsert(store.user.AgencyId);
+      inserModel.value = await getToInsert(store.user.AdminId);
       if (inserModel.value.Customers.length > 0) {
         formData.value.CustomerId = inserModel.value.Customers[0].Id;
       }

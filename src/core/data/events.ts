@@ -114,8 +114,8 @@ const events: Array<EventInput> = [
 
 export class Event {
   Id?: number;
-  ApplicationUserId: string;
-  ApplicationUser?: User;
+  UserId: string;
+  User?: User;
   NomeEvento: string;
   Type: string;
   CustomerId: number;
@@ -175,7 +175,7 @@ const getEvent = (id: number): Promise<Event> => {
 };
 
 const getToInsert = (): Promise<InsertModel> => {
-  return ApiService.get(`Calendar/GetToInsert?agencyId=${store.user.AgencyId}`, "")
+  return ApiService.get(`Calendar/GetToInsert?agencyId=${store.user.AdminId}`, "")
     .then(({ data }) => {
       const requests = data.Requests as Array<Request>;
       const customers = data.Customers as Array<Customer>;

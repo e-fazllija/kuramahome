@@ -532,7 +532,7 @@ export default defineComponent({
       // if (authStore.user.Role == "Admin") {
         defaultSearchItems.value = await getSearchItems(authStore.user.Id);
       // }
-      agencyId.value = authStore.user.AgencyId;
+      agencyId.value = authStore.user.AdminId;
 
       // Carica le località dal database
       try {
@@ -684,7 +684,7 @@ export default defineComponent({
       // if (authStore.user.Role == "Admin") {
         defaultSearchItems.value = await getSearchItems(authStore.user.Id);
       // }
-      agencyId.value = authStore.user.AgencyId;
+      agencyId.value = authStore.user.AdminId;
 
       // Carica i dati strutturati per i filtri
       await loadStructuredData();

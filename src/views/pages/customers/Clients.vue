@@ -422,7 +422,7 @@ export default defineComponent({
       if (store.user.Role == "Admin") {
         defaultSearchItems.value = await getSearchItems(store.user.Id);
       }
-      agencyId.value = store.user.AgencyId;
+      agencyId.value = store.user.AdminId;
 
       await getItems(agencyId.value, "");
       isSearching.value = false;
@@ -516,7 +516,7 @@ export default defineComponent({
     const clearAllFilters = () => {
       search.value = "";
       contract.value = "";
-      agencyId.value = store.user.AgencyId;
+      agencyId.value = store.user.AdminId;
       searchItems();
     };
 

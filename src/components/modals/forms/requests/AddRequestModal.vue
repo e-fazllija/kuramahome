@@ -607,7 +607,7 @@ export default defineComponent({
         Notes: "",
         Location:"",
         MortgageAdviceRequired: false,
-        ApplicationUserId: undefined
+        UserId: undefined
       });
 
         const inserModel = ref<InsertModel>({
@@ -666,7 +666,7 @@ export default defineComponent({
 
         onMounted(async () => {
         loading.value = true;
-        inserModel.value = await getToInsert(store.user.AgencyId);
+        inserModel.value = await getToInsert(store.user.AdminId);
         if(inserModel.value.Customers.length > 0){
           formData.value.CustomerId = inserModel.value.Customers[0].Id;
         } 

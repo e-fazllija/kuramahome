@@ -23,7 +23,7 @@ export class Customer{
   AcquisitionDone: boolean;
   OngoingAssignment: boolean;
   CustomerNotes?: Notes[];
-  ApplicationUserId?: string;
+  UserId?: string;
   label?: string;
 }
 
@@ -37,7 +37,7 @@ export class CustomerTabelData {
 
 export class Notes {
   Id?: number;
-  ApplicationUserId: string;
+  UserId: string;
   Text: string;
 }
 
@@ -105,8 +105,9 @@ const deleteCustomer = async (id: number) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      store.setError(response?.data?.Message, response?.status);
+      // Re-throw l'errore per permettere al componente di gestirlo
+      throw response;
     });
 };
 

@@ -90,7 +90,7 @@ export interface AgentListResponse {
 
 export interface CalendarEvent {
   Id: number;
-  ApplicationUserId: string;
+  UserId: string;
   EventName?: string;
   NomeEvento?: string;
   Type: string;

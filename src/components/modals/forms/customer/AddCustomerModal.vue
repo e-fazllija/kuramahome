@@ -492,7 +492,7 @@ export default defineComponent({
       State: "",
       AcquisitionDone: false,
       OngoingAssignment: false,
-      ApplicationUserId: undefined
+      UserId: undefined
     });
 
     // Watcher per caricare le città quando si seleziona la provincia

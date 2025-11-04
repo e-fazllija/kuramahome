@@ -95,7 +95,7 @@ export class RealEstatePropertyPhotos {
 
 export class Notes {
   Id?: number;
-  ApplicationUserId: string;
+  UserId: string;
   Text: string;
 }
 
@@ -369,8 +369,9 @@ const deleteRealEstateProperty = async (id: Number) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      store.setError(response?.data?.Message, response?.status);
+      // Re-throw l'errore per permettere al componente di gestirlo
+      throw response;
     });
 };
 

@@ -242,19 +242,12 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-<<<<<<< HEAD
-            <select class="form-select modern-select" v-model="formData.Town" required>
-              <option value="">🏙️ Seleziona città</option>
-              <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
-            </select>
-=======
             <div class="form-check form-switch form-check-custom form-check-solid">
               <select class="form-select" v-model="formData.City" required>
                 <option value="">Seleziona città</option>
                 <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
               </select>
             </div>
->>>>>>> a9e67ec23b20e63679af0b271aad2e5e9925cba6
           </div>
           <!--end::Col-->
         </div>
@@ -911,7 +904,7 @@
         <!--end::Input group-->
 
       </div>
-      <div v-if="user.Id === formData.AgentId || user.Role === 'Admin' || formData.Agent.AgencyId === user.Id"
+      <div v-if="user.Id === formData.AgentId || user.Role === 'Admin' || formData.Agent.AdminId === user.Id"
         class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
         <div>
           <AddNewForm />
@@ -928,7 +921,7 @@
           </button>
         </div>
         <div>
-          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.Agent.AgencyId )" type="button" @click="deleteItem()"
+          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.Agent.AdminId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
@@ -1279,7 +1272,7 @@ export default defineComponent({
       firtLoad.value = true;
       formData.value = await getRealEstateProperty(id)
       formData.value.AssignmentEnd = formData.value.AssignmentEnd.split('T')[0]
-      inserModel.value = await getToInsert(store.user.AgencyId);
+      inserModel.value = await getToInsert(store.user.AdminId);
       if (inserModel.value.Users.length > 0) {
         formData.value.AgentId = formData.value.AgentId;
       }
@@ -1293,16 +1286,8 @@ export default defineComponent({
       // Se c'è già una provincia selezionata, carica le città
       if (formData.value.State) {
         await loadCitiesByProvince(formData.value.State);
-      }
+      }      
       
-<<<<<<< HEAD
-=======
-      // Se c'è già una città selezionata, carica le località
-      if (formData.value.City) {
-        await loadLocationsByCity(formData.value.City);
-      }
-      
->>>>>>> a9e67ec23b20e63679af0b271aad2e5e9925cba6
       loading.value = false;
       firtLoad.value = false;
     })
@@ -1314,20 +1299,12 @@ export default defineComponent({
         console.log("watch state")
         if (newProvince) {
           await loadCitiesByProvince(newProvince);
-<<<<<<< HEAD
-          formData.value.Town = "";
-        } else {
-          cities.value = [];
-          formData.value.Town = "";
-=======
           formData.value.City = "";
           formData.value.Location = "";
         } else {
           cities.value = [];
-          locations.value = [];
           formData.value.City = "";
           formData.value.Location = "";
->>>>>>> a9e67ec23b20e63679af0b271aad2e5e9925cba6
         }
       }
     }

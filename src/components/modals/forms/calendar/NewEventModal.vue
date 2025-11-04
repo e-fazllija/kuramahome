@@ -383,7 +383,7 @@ export default defineComponent({
       { name: '', hex: '#00FF00' }       
     ];
     const targetData = ref<Event>({
-      ApplicationUserId: "",
+      UserId: "",
       NomeEvento: "",
       DescrizioneEvento: "",
       LuogoEvento: "",
@@ -476,7 +476,7 @@ export default defineComponent({
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
           loading.value = true;
-          targetData.value.ApplicationUserId = props.UserId
+          targetData.value.UserId = props.UserId
 
           console.log(targetData.value.DataInizioEvento)
           console.log(targetData.value.DataFineEvento)
@@ -486,7 +486,7 @@ export default defineComponent({
           const error = store.errors;
 
           if (!error) {
-            targetData.value.ApplicationUserId= "";
+            targetData.value.UserId= "";
             targetData.value.NomeEvento= "";
             targetData.value.DescrizioneEvento= "";
             targetData.value.Color="";
@@ -509,7 +509,7 @@ export default defineComponent({
             }).then(function () {
               loading.value = false;
               hideModal(newTargetModalRef.value);
-              emit('formAddSubmitted', targetData.value.ApplicationUserId);
+              emit('formAddSubmitted', targetData.value.UserId);
             });
           } else {
             loading.value = false;

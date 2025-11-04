@@ -266,7 +266,7 @@ export default defineComponent({
           statusIndicator = " ⏳";
         }
 
-        const baseTitle = addName ? `${results[key].ApplicationUser.FirstName} ${results[key].ApplicationUser.LastName}: ${results[key].NomeEvento}` : results[key].NomeEvento;
+        const baseTitle = addName ? `${results[key].User.FirstName} ${results[key].User.LastName}: ${results[key].NomeEvento}` : results[key].NomeEvento;
         
         const item = {
           id: results[key].Id.toString(),
@@ -275,7 +275,7 @@ export default defineComponent({
           end: results[key].DataFineEvento,
           description: results[key].DescrizioneEvento,
           className: "fc-event-meeting",
-          color: results[key].Color != null && results[key].Color != "" ? results[key].Color : results[key].ApplicationUser.Color
+          color: results[key].Color != null && results[key].Color != "" ? results[key].Color : results[key].User.Color
         } as EventInput;
 
         tableData.value.push(item)
@@ -288,11 +288,11 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       if (store.user.Role == "Agency" || store.user.Role == "Admin") {
-        await getItems(store.user.AgencyId, "");
+        await getItems(store.user.AdminId, "");
         searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
-        agencyId.value = store.user.AgencyId;
+        agencyId.value = store.user.AdminId;
       } else {
-        await getItems(store.user.AgencyId, store.user.Id);
+        await getItems(store.user.AdminId, store.user.Id);
       }
       
       loading.value = false;

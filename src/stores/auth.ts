@@ -23,7 +23,7 @@ export interface User {
   Province?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
-  AgencyId?: string;
+  AdminId?: string;
   label?: string;
   Color?: "#ffffff";
   // Dati Fiscali
@@ -56,6 +56,10 @@ export const useAuthStore = defineStore("auth", () => {
   function setError(error: any, status?: number) {
     if(status == 400){
       errors.value = "Si è verificato un errore. Assicurati di aver inserito i campi obbligatori!";
+    } else if (status == 403) {
+      errors.value = error || "Non hai i permessi per eseguire questa operazione. Puoi modificare o eliminare solo elementi di tua proprietà o della tua cerchia.";
+    } else if (status == 404) {
+      errors.value = error || "Elemento non trovato";
     } else if (status == 500) {
       errors.value = error;
     } else {

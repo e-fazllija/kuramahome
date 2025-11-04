@@ -70,7 +70,7 @@ export const getUserAgencyId = (): string | undefined => {
   
   // Se è Agency, restituisce il suo AgencyId
   if (role === "Agency") {
-    return authStore.user.AgencyId || undefined;
+    return authStore.user.AdminId || undefined;
   }
   
   // Se è Admin, restituisce undefined per vedere tutto
@@ -80,7 +80,7 @@ export const getUserAgencyId = (): string | undefined => {
   
   // Se è Agent, restituisce il suo AgencyId
   if (isAgent()) {
-    return authStore.user.AgencyId || undefined;
+    return authStore.user.AdminId || undefined;
   }
   
   return undefined;

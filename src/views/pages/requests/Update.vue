@@ -768,7 +768,7 @@ export default defineComponent({
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
       selectedCities.value = formData.value.City.split(",")
       selectedLocations.value = formData.value.Location?.split(",")
-      inserModel.value = await getToInsert(store.user.AgencyId);
+      inserModel.value = await getToInsert(store.user.AdminId);
       initItems.value.splice(0, formData.value.RealEstateProperties.length, ...formData.value.RealEstateProperties);
       // if (inserModel.value.Customers.length > 0) {
       //   formData.value.CustomerId = inserModel.value.Customers[0].Id;
