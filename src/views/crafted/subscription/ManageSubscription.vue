@@ -166,14 +166,13 @@
                       <div class="col-md-6">
                         <label class="form-label text-muted fs-8 fw-semibold mb-3">FUNZIONALITÀ INCLUSE</label>
                         <div v-if="subscription && planFeatures.length > 0" class="features-list-compact">
-                          <div v-for="(feature, index) in planFeatures.slice(0, 3)" :key="index" class="feature-item-compact mb-2">
+                          <div v-for="(feature, index) in planFeatures" :key="index" class="feature-item-compact mb-2">
                             <i class="ki-duotone ki-check-circle fs-3 text-success me-2">
                               <span class="path1"></span>
                               <span class="path2"></span>
                             </i>
                             <span class="fs-8 text-gray-700">{{ feature }}</span>
                           </div>
-                          <div v-if="planFeatures.length > 3" class="text-muted fs-8 ms-7">+{{ planFeatures.length - 3 }} altre</div>
                         </div>
                         <div v-else class="text-muted fs-8">
                           <i class="ki-duotone ki-information fs-3 text-muted me-2">
@@ -235,15 +234,25 @@
                     <!-- Contatti -->
                     <div class="mb-4">
                       <h6 class="fw-bold text-gray-900 mb-3 fs-7">CONTATTI</h6>
-                      <div class="info-item mb-3">
+                      <div class="info-item mb-3 d-flex align-items-center">
                         <i class="ki-duotone ki-sms fs-3 text-primary me-2">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        <div>
+                        <div class="flex-grow-1">
                           <div class="text-gray-700 fs-8 fw-semibold">Email</div>
                           <div class="text-muted fs-9">support@kurama.com</div>
                         </div>
+                        <button 
+                          @click="contactSupport"
+                          class="btn btn-sm btn-light-primary flex-shrink-0"
+                        >
+                          <i class="ki-duotone ki-sms fs-5 me-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                          Contatta Supporto
+                        </button>
                       </div>
                       <div class="info-item mb-3">
                         <i class="ki-duotone ki-phone fs-3 text-primary me-2">
@@ -351,9 +360,11 @@ export default defineComponent({
       if (!subscription.value?.SubscriptionPlan?.Features) return [];
       
       // Features è già un array di oggetti SubscriptionFeature dal backend
-      // Estraiamo solo i nomi delle feature
+      // Estraiamo solo le descrizioni delle feature
       if (Array.isArray(subscription.value.SubscriptionPlan.Features)) {
-        return subscription.value.SubscriptionPlan.Features.map((f: any) => f.FeatureName || f.featureName);
+        return subscription.value.SubscriptionPlan.Features
+          .map((f: any) => f.Description || f.description || f.FeatureName || f.featureName)
+          .filter((desc: string) => desc && desc.trim() !== ''); // Rimuove valori vuoti o null
       }
       
       return [];
@@ -503,6 +514,34 @@ export default defineComponent({
       }, 2000); // Attendi 2 secondi per il webhook
     };
 
+    const contactSupport = () => {
+      const planName = subscription.value?.SubscriptionPlan?.Name || 'Nessun piano attivo';
+      const planPrice = subscription.value?.SubscriptionPlan?.Price || 0;
+      const status = subscription.value?.Status || 'N/A';
+      const endDate = subscription.value?.EndDate ? formatDate(subscription.value.EndDate) : 'N/A';
+      
+      const subject = encodeURIComponent('Richiesta Supporto - Gestione Abbonamento');
+      const body = encodeURIComponent(
+        `Gentile Team di Supporto,\n\n` +
+        `Ho bisogno di assistenza riguardo al mio abbonamento.\n\n` +
+        `Dati Utente:\n` +
+        `Nome: ${user.value.FirstName} ${user.value.LastName}\n` +
+        `Email: ${user.value.Email}\n` +
+        `${user.value.CompanyName ? `Azienda: ${user.value.CompanyName}\n` : ''}\n` +
+        `Dettagli Abbonamento:\n` +
+        `Piano: ${planName}\n` +
+        `Prezzo: €${planPrice}/mese\n` +
+        `Stato: ${status}\n` +
+        `Data Scadenza: ${endDate}\n` +
+        `Giorni Rimanenti: ${daysRemaining.value}\n\n` +
+        `Richiesta:\n` +
+        `[Descrivere qui la richiesta di supporto]\n\n` +
+        `Cordiali saluti`
+      );
+
+      window.location.href = `mailto:support@kurama.com?subject=${subject}&body=${body}`;
+    };
+
     onMounted(() => {
       loadSubscription();
     });
@@ -526,6 +565,7 @@ export default defineComponent({
       closePricingModal,
       renewSubscription,
       handleUpgradeSuccess,
+      contactSupport,
     };
   },
 });

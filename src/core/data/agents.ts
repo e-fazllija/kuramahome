@@ -19,7 +19,7 @@ export class Agent {
   Token?: string;
   Role? = "Agent";
   Password?: string;
-  AdminId: string;
+  AdminId?: string;
   Color: string;
   // Dati Fiscali
   UserType?: number;

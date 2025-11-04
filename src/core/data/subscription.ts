@@ -22,6 +22,7 @@ export interface UserSubscription {
       Id: number;
       FeatureName: string;
       FeatureValue?: string;
+      Description?: string;
     }>;
   };
   Status: string;
