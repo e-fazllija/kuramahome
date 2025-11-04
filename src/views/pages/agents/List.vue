@@ -109,8 +109,14 @@
                 <span class="path4"></span>
                 <span class="path5"></span>
               </i>
-              <select class="form-select form-select-modern agency-select" v-model="agencyId" style="min-width: 220px;">
-                <option value="">🏢 Tutte le agenzie</option>
+              <select 
+                class="form-select form-select-modern agency-select" 
+                v-model="agencyFilter" 
+                @change="searchItems()"
+                style="min-width: 220px;"
+              >
+                <option value="">👥 Tutti gli agenti</option>
+                <option :value="user.Id">👤 I miei agenti</option>
                 <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
                   🏢 {{ item.FirstName }} {{ item.LastName }}
                 </option>
@@ -254,10 +260,10 @@
 
     <ExportCustomerModal></ExportCustomerModal>
     <AddAgentModal 
-      @formAddSubmitted="getItems(agencyId, '')"
+      @formAddSubmitted="getItems(agencyFilter, '')"
       @limitExceeded="handleLimitExceeded"
     ></AddAgentModal>
-    <UpdateAgentModal :Id="selectedId" @formUpdateSubmitted="getItems(agencyId, '')"></UpdateAgentModal>
+    <UpdateAgentModal :Id="selectedId" @formUpdateSubmitted="getItems(agencyFilter, '')"></UpdateAgentModal>
     
     <!-- Modale Upgrade Required -->
     <UpgradeRequiredModal
@@ -347,7 +353,7 @@ export default defineComponent({
     // Verifica se l'utente può creare agenti usando helper
     const canCreateAgent = computed(() => canUserCreateAgent());
     
-    let agencyId = ref("");
+    let agencyFilter = ref("");
     const isSearching = ref(false);
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
@@ -359,9 +365,9 @@ export default defineComponent({
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
 
-    async function getItems(agencyId: string, filterRequest: string) {
+    async function getItems(agencyFilter: string, filterRequest: string) {
       try {
-        const result = await getAgents(agencyId, filterRequest);
+        const result = await getAgents(agencyFilter, filterRequest);
         tableData.value = result || [];
       } catch (error) {
         console.error('Error fetching agents:', error);
@@ -374,9 +380,9 @@ export default defineComponent({
       if (store.user.Role == "Admin") {
         defaultSearchItems.value = await getSearchItems(store.user.Id, "");
       }
-      // Imposta filtro su "Tutte le agenzie" all'apertura
-      agencyId.value = "";
-      await getItems(agencyId.value, "");
+      // Imposta filtro su "Tutti gli agenti" all'apertura
+      agencyFilter.value = "";
+      await getItems(agencyFilter.value, "");
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
       isSearching.value = false;
       
@@ -389,7 +395,7 @@ export default defineComponent({
         await deleteAgent(item)
       });
       selectedIds.value.length = 0;
-      await getItems(agencyId.value, "");
+      await getItems(agencyFilter.value, "");
     };
 
     const search = ref<string>("");
@@ -399,17 +405,7 @@ export default defineComponent({
       
       // Breve delay per mostrare l'animazione di loading
       setTimeout(async () => {
-        await getItems(agencyId.value, "");
-
-        if (search.value !== "") {
-          let results: Array<Agent> = [];
-          for (let j = 0; j < tableData.value.length; j++) {
-            if (searchingFunc(tableData.value[j], search.value)) {
-              results.push(tableData.value[j]);
-            }
-          }
-          tableData.value.splice(0, tableData.value.length, ...results);
-        }
+        await getItems(agencyFilter.value, search.value);
 
         MenuComponent.reinitialization();
         isSearching.value = false;
@@ -458,7 +454,7 @@ export default defineComponent({
         },
       }).then(async () => {
         await deleteAgent(id)
-        await getItems(agencyId.value, "");
+        await getItems(agencyFilter.value, "");
         MenuComponent.reinitialization();
       });
     }
@@ -480,7 +476,7 @@ export default defineComponent({
 
     const clearAllFilters = () => {
       search.value = "";
-      agencyId.value = "";
+      agencyFilter.value = "";
       searchItems();
     };
 
@@ -638,7 +634,7 @@ export default defineComponent({
       selectId,
       getItems,
       user,
-      agencyId,
+      agencyFilter,
       defaultSearchItems,
       clearAllFilters,
       currentPlaceholder,

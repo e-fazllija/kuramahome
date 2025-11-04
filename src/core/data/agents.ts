@@ -34,9 +34,9 @@ export class InsertModel {
   Users: User[];
 }
 
-const getAgents = (agencyId: string, filterRequest: string) : Promise<Array<Agent>> => {
+const getAgents = (agencyFilter: string, filterRequest: string) : Promise<Array<Agent>> => {
    return ApiService.get(
-    `Agents/Get?currentPage=0&agencyId=${agencyId}&filterRequest=${filterRequest}`,
+    `Agents/Get?filterRequest=${filterRequest}&agencyFilter=${agencyFilter}`,
     ""
   )
     .then(({ data }) => {
