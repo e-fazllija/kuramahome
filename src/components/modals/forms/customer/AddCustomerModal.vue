@@ -25,7 +25,7 @@
               </span>
             </div>
             <div>
-              <h2 class="fw-bold m-0 text-gray-900 fs-3">ðŸ‘¥ Aggiungi Cliente</h2>
+              <h2 class="fw-bold m-0 text-gray-900 fs-3">👥 Aggiungi Cliente</h2>
               <span class="text-muted fs-7 fw-semibold">Inserisci i dati del nuovo cliente</span>
             </div>
           </div>

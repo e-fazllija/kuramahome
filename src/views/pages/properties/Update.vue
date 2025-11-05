@@ -1072,10 +1072,9 @@
 import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
 import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
 import { getAssetPath } from "@/core/helpers/assets";
-import { getProvincesForSelect, getCitiesByProvinceName } from "@/core/data/locations";
 import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { getCAPByCity } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
   updateRealEstateProperty,
   RealEstateProperty,
@@ -1112,21 +1111,28 @@ export default defineComponent({
     const firtLoad = ref(false);
     const isTrattativaRiservata = ref(false);
 
-    // Funzioni per caricare i dati dal database
+    // Funzioni per caricare i dati dal JSON
     const loadProvinces = async () => {
       try {
-        const provincesData = await getProvincesForSelect();
-        provinces.value = provincesData;
+        const provinceNames = getAllProvinceNames();
+        provinces.value = provinceNames.map(name => ({
+          Id: name,
+          Name: name
+        }));
       } catch (error) {
         console.error("Errore nel caricamento delle province:", error);
+        provinces.value = [];
       }
     };
 
     const loadCitiesByProvince = async (provinceName: string) => {
       try {
         if (provinceName) {
-          const citiesData = await getCitiesByProvinceName(provinceName);
-          cities.value = citiesData;
+          const citiesData = getCitiesByProvince(provinceName);
+          cities.value = citiesData.map(city => ({
+            Id: city.Name,
+            Name: city.Name
+          }));
         } else {
           cities.value = [];
         }
@@ -1272,7 +1278,7 @@ export default defineComponent({
       firtLoad.value = true;
       formData.value = await getRealEstateProperty(id)
       formData.value.AssignmentEnd = formData.value.AssignmentEnd.split('T')[0]
-      inserModel.value = await getToInsert(store.user.AdminId);
+      inserModel.value = await getToInsert(store.user.Id);
       if (inserModel.value.Users.length > 0) {
         formData.value.AgentId = formData.value.AgentId;
       }

@@ -64,9 +64,9 @@ export class Notes {
   Text: string;
 }
 
-const getRequests = (agencyId: string, filterRequest: string): Promise<Array<Request>> => {
+const getRequests = (userId: string, filterRequest: string): Promise<Array<Request>> => {
   return ApiService.get(
-    `Requests/Get?currentPage=0&agencyId=${agencyId}&filterRequest=${filterRequest}`,
+    `Requests/Get?currentPage=0&userId=${userId}&filterRequest=${filterRequest}`,
     ""
   )
     .then(({ data }) => {
@@ -79,9 +79,9 @@ const getRequests = (agencyId: string, filterRequest: string): Promise<Array<Req
     });
 };
 
-const getRequestsList = (agencyId: string, filterRequest: string): Promise<Array<RequestTabelData>> => {
+const getRequestsList = (userId: string, filterRequest: string): Promise<Array<RequestTabelData>> => {
   return ApiService.get(
-    `Requests/GetList?currentPage=0&agencyId=${agencyId}&filterRequest=${filterRequest}`,
+    `Requests/GetList?currentPage=0&userId=${userId}&filterRequest=${filterRequest}`,
     ""
   )
     .then(({ data }) => {
@@ -181,8 +181,8 @@ const deleteRequest = async (id: number) => {
     });
 };
 
-const getToInsert = (agencyId?: string): Promise<InsertModel> => {
-  return ApiService.get(`RealEstateProperty/GetToInsert?agencyId=${agencyId}`, "")
+const getToInsert = (userId?: string): Promise<InsertModel> => {
+  return ApiService.get(`RealEstateProperty/GetToInsert?userId=${userId}`, "")
     .then(({ data }) => {
       const agents = data.Agents as Array<User>;
       const customers = data.Customers as Array<Customer>;

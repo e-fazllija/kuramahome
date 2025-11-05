@@ -1191,8 +1191,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import { createRealEstateProperty, RealEstateProperty, getToInsert, InsertModel } from "@/core/data/properties";
 import { useAuthStore } from "@/stores/auth";
 import Multiselect from '@vueform/multiselect'
-import { getProvincesForSelect, getCitiesByProvinceName } from "@/core/data/locations";
-import { getCAPByCity } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-property-modal",
@@ -1261,22 +1260,29 @@ export default defineComponent({
     });
     const showTipologia = ref(true);
 
-    // Carica le province dal database
+    // Carica le province dal JSON
     const loadProvinces = async () => {
       try {
-        const provincesData = await getProvincesForSelect();
-        provinces.value = provincesData;
+        const provinceNames = getAllProvinceNames();
+        provinces.value = provinceNames.map(name => ({
+          Id: name,
+          Name: name
+        }));
       } catch (error) {
         console.error("Errore nel caricamento delle province:", error);
+        provinces.value = [];
       }
     };
 
-    // Carica le città di una provincia specifica
+    // Carica le città di una provincia specifica dal JSON
     const loadCitiesByProvince = async (provinceName: string) => {
       try {
         if (provinceName) {
-          const citiesData = await getCitiesByProvinceName(provinceName);
-          cities.value = citiesData;
+          const citiesData = getCitiesByProvince(provinceName);
+          cities.value = citiesData.map(city => ({
+            Id: city.Name,
+            Name: city.Name
+          }));
         } else {
           cities.value = [];
         }
@@ -1416,7 +1422,7 @@ export default defineComponent({
     });
 
     onMounted(async () => {
-      inserModel.value = await getToInsert(store.user.AdminId);
+      inserModel.value = await getToInsert(store.user.Id);
       if (inserModel.value.Customers.length > 0) {
         formData.value.CustomerId = inserModel.value.Customers[0].Id;
       }

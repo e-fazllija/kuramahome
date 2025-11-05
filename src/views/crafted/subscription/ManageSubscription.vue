@@ -126,42 +126,43 @@
                     </div>
                   </div>
                   <div class="card-body p-6">
-                    <!-- Agency/User Name -->
-                    <div class="mb-5">
-                      <label class="form-label text-muted fs-8 fw-semibold mb-2">INTESTATARIO</label>
-                      <div class="fs-5 fw-bold text-gray-900">
-                        {{ user.FirstName }} {{ user.LastName }}
-                        <span v-if="user.CompanyName" class="text-muted fs-6 ms-2">({{ user.CompanyName }})</span>
-                      </div>
-                      <div class="text-muted fs-7 mb-2">{{ user.Email }}</div>
-                      
-                      <!-- Data Registrazione -->
-                      <div class="d-flex align-items-center mt-3">
-                        <i class="ki-duotone ki-user-tick fs-3 text-info me-2">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                          <span class="path3"></span>
-                        </i>
-                        <div>
-                          <div class="text-muted fs-8 fw-semibold">Membro dal</div>
-                          <div class="fs-7 fw-bold text-gray-900">{{ subscription ? formatDate(subscription.StartDate) : '-' }}</div>
-                        </div>
-                      </div>
-                    </div>
-
                     <!-- Plan Details -->
                     <div class="row mb-5">
                       <div class="col-md-6 mb-4 mb-md-0">
-                        <label class="form-label text-muted fs-8 fw-semibold mb-2">PIANO ATTUALE</label>
-                        <div v-if="subscription" class="d-flex align-items-baseline">
-                          <span class="fs-2 fw-bolder text-primary me-2">{{ subscription.SubscriptionPlan.Name }}</span>
-                          <span class="fs-5 fw-bold text-gray-900">€{{ subscription.SubscriptionPlan.Price }}</span>
-                          <span class="text-muted fs-7 ms-1">/mese</span>
+                        <!-- Tipo Piano - Grande -->
+                        <div class="mb-4">
+                          <label class="form-label text-muted fs-8 fw-semibold mb-3 d-block">PIANO ATTUALE</label>
+                          <div v-if="subscription">
+                            <div class="plan-name-large mb-3">
+                              <span class="fs-1 fw-bolder text-primary">{{ subscription.SubscriptionPlan.Name }}</span>
+                            </div>
+                            <div class="d-flex align-items-baseline mb-3">
+                              <span class="fs-4 fw-bold text-gray-900">€{{ subscription.SubscriptionPlan.Price }}</span>
+                              <span class="text-muted fs-6 ms-2">/mese</span>
+                            </div>
+                            <div class="text-muted fs-7">{{ subscription.SubscriptionPlan.Description }}</div>
+                          </div>
+                          <div v-else>
+                            <div class="plan-name-large mb-3">
+                              <span class="fs-1 fw-bolder text-muted">Nessun piano attivo</span>
+                            </div>
+                            <div class="text-muted fs-7">Scegli un piano per iniziare</div>
+                          </div>
                         </div>
-                        <div v-else class="d-flex align-items-center">
-                          <span class="fs-2 fw-bolder text-muted me-2">Nessun piano attivo</span>
+
+                        <!-- Data Prima Sottoscrizione - Grande -->
+                        <div class="mb-4">
+                          <label class="form-label text-muted fs-8 fw-semibold mb-3 d-block">DATA PRIMA SOTTOSCRIZIONE</label>
+                          <div class="d-flex align-items-center">
+                            <i class="ki-duotone ki-calendar fs-2x text-primary me-3">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                            </i>
+                            <div>
+                              <div class="fs-3 fw-bold text-gray-900">{{ subscription ? formatDate(subscription.StartDate) : '-' }}</div>
+                            </div>
+                          </div>
                         </div>
-                        <div class="text-muted fs-8 mt-1">{{ subscription ? subscription.SubscriptionPlan.Description : 'Scegli un piano per iniziare' }}</div>
                       </div>
                       <div class="col-md-6">
                         <label class="form-label text-muted fs-8 fw-semibold mb-3">FUNZIONALITÀ INCLUSE</label>
@@ -640,6 +641,15 @@ export default defineComponent({
 .feature-item-compact {
   display: flex;
   align-items: center;
+}
+
+.plan-name-large {
+  line-height: 1.2;
+}
+
+.plan-name-large span {
+  display: block;
+  letter-spacing: -0.02em;
 }
 
 .info-card {

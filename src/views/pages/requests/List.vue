@@ -169,26 +169,23 @@
             </select>
           </div>
         
-          <!-- Filtro Località -->
+          <!-- Filtro Località (input di testo perché sono stringhe libere nel database) -->
           <div class="flex-shrink-0">
-            <select 
-              class="form-select form-select-modern" 
+            <input 
+              type="text" 
               v-model="selectedLocation" 
+              class="form-control form-select-modern" 
+              placeholder="Località" 
               :disabled="!selectedCity"
               style="min-width: 120px;"
-            >
-              <option value="">Località</option>
-              <option v-for="location in filteredLocations" :key="location.value" :value="location.value">
-                {{ location.label }}
-              </option>
-            </select>
+            />
           </div>
 
           <!-- Filtro Agenzia -->
           <div v-if="user.Role == 'Admin'" class="flex-shrink-0">
             <select 
               class="form-select form-select-modern" 
-              v-model="agencyId" 
+              v-model="userId" 
               style="min-width: 140px;"
             >
               <option value="">Agenzie</option>
@@ -374,7 +371,7 @@
 
   <ExportCustomerModal></ExportCustomerModal>
   <AddRequestModal 
-    @formAddSubmitted="getItems(agencyId, '')"
+      @formAddSubmitted="getItems(userId, '')"
     @limitExceeded="handleLimitExceeded"
   ></AddRequestModal>
 
@@ -402,7 +399,7 @@ import { getRequestsList, Request, deleteRequest, RequestTabelData } from "@/cor
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/auth";
 import { getSearchItems, SearchModel } from "@/core/data/events";
-import { getGroupedLocations, type LocationGroupedModel, getStructuredLocationData } from "@/core/data/locations";
+import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import Multiselect from '@vueform/multiselect'
 
 export default defineComponent({
@@ -478,65 +475,31 @@ export default defineComponent({
     const user = authStore.user;
     const tableData = ref<Array<RequestTabelData>>([]);
     const initItems = ref([]);
-    let agencyId = ref("");
+    let userId = ref("");
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
     })
-    const groupedLocations = ref<LocationGroupedModel[]>([]);
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
 
-    // Nuovi dati strutturati per i filtri a tre livelli
+    // Dati strutturati per i filtri a tre livelli (Provincia, Città, Località)
     const structuredLocationData = ref<{
-      provinces: Array<{value: string, label: string, id: number}>,
-      cities: Array<{value: string, label: string, provinceId: number, provinceName: string}>,
-      locations: Array<{value: string, label: string, cityId: number, provinceId: number, cityName: string, provinceName: string}>
+      provinces: Array<{value: string, label: string}>,
+      cities: Array<{value: string, label: string, provinceName: string}>
     }>({
       provinces: [],
-      cities: [],
-      locations: []
+      cities: []
     });
 
-    // Opzioni filtrate per città e località
+    // Opzioni filtrate per città
     const filteredCities = ref<Array<{value: string, label: string}>>([]);
-    const filteredLocations = ref<Array<{value: string, label: string}>>([]);
 
-    // Opzioni delle località
-    const options = ref<Array<{value: string, label: string}>>([{value: "", label: "Qualsiasi"}]);
-
-    // Watch per aggiornare le opzioni quando groupedLocations cambia
-    watch(groupedLocations, (newValue) => {
-      if (newValue && Array.isArray(newValue) && newValue.length > 0) {
-        const optionsArray = [{value: "", label: "Qualsiasi"}];
-        
-        newValue.forEach((cityGroup) => {
-          // Add the city itself
-          optionsArray.push({
-            value: cityGroup.City.toUpperCase(),
-            label: `${cityGroup.City.toUpperCase()}`
-          });
-          
-          // Add all zones for this city
-          if (cityGroup.Locations && Array.isArray(cityGroup.Locations)) {
-            cityGroup.Locations.forEach(location => {
-              optionsArray.push({
-                value: location.Id.toUpperCase(),
-                label: `${cityGroup.City.toUpperCase()} \\ ${location.Name.toUpperCase()}`
-              });
-            });
-          }
-        });
-        
-        options.value = optionsArray;
-      }
-    }, { immediate: true });
-
-    async function getItems(agencyId, filterRequest: string) {
+    async function getItems(userId, filterRequest: string) {
       loading.value = true;
       tableData.value = [];
-      const results = await getRequestsList(agencyId, filterRequest);
+      const results = await getRequestsList(userId, filterRequest);
       tableData.value = results || [];
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
       loading.value = false;
@@ -568,22 +531,6 @@ export default defineComponent({
       showUpgradeModal.value = true;
     };
 
-    onMounted(async () => {
-      if (authStore.user.Role == "Admin") {
-        defaultSearchItems.value = await getSearchItems(authStore.user.Id);
-      }
-      agencyId.value = "";
-
-      // Carica le località dal database
-      try {
-        groupedLocations.value = await getGroupedLocations();
-      } catch (error) {
-        console.error("Errore nel caricamento delle località:", error);
-        groupedLocations.value = [];
-      }
-
-      await getItems(agencyId.value, "");
-    });
 
 
 
@@ -592,7 +539,7 @@ export default defineComponent({
         await deleteRequest(item)
       });
       selectedIds.value.length = 0;
-      await getItems(agencyId.value, "");
+      await getItems(userId.value, "");
     };
 
     const search = ref<string>("");
@@ -627,7 +574,7 @@ export default defineComponent({
     };
 
     const searchItems = async () => {
-      await getItems(agencyId.value, "");
+      await getItems(userId.value, "");
 
       // Filtraggio per testo (search)
       if (search.value !== "") {
@@ -694,7 +641,7 @@ export default defineComponent({
         },
       }).then(async () => {
         await deleteRequest(id)
-        await getItems(agencyId.value, "");
+        await getItems(userId.value, "");
         MenuComponent.reinitialization();
       });
     }
@@ -732,29 +679,44 @@ export default defineComponent({
         );
       } else {
         filteredCities.value = [];
-        filteredLocations.value = [];
       }
     };
 
     const onCityChange = () => {
       selectedLocation.value = "";
-      
-      if (selectedCity.value) {
-        // Filtra le località per la città selezionata
-        filteredLocations.value = structuredLocationData.value.locations.filter(location => 
-          location.cityName === selectedCity.value
-        );
-      } else {
-        filteredLocations.value = [];
-      }
     };
 
-    // Carica i dati strutturati
+    // Carica i dati strutturati da italia-geographic-data.json
     const loadStructuredData = async () => {
       try {
-        structuredLocationData.value = await getStructuredLocationData();
+        // Carica le province dal JSON
+        const provinceNames = getAllProvinceNames();
+        structuredLocationData.value.provinces = provinceNames.map((name, index) => ({
+          value: name,
+          label: name
+        }));
+
+        // Carica tutte le città per ogni provincia
+        const allCities: Array<{value: string, label: string, provinceName: string}> = [];
+        
+        for (const provinceName of provinceNames) {
+          const cities = getCitiesByProvince(provinceName);
+          cities.forEach(city => {
+            allCities.push({
+              value: city.Name,
+              label: city.Name,
+              provinceName: provinceName
+            });
+          });
+        }
+
+        structuredLocationData.value.cities = allCities;
       } catch (error) {
         console.error("Errore nel caricamento dei dati strutturati:", error);
+        structuredLocationData.value = {
+          provinces: [],
+          cities: []
+        };
       }
     };
 
@@ -762,7 +724,7 @@ export default defineComponent({
     const hasActiveFilters = computed(() => {
       return search.value || fromPrice.value || toPrice.value || contract.value || 
              propertyType.value.length > 0 || selectedProvince.value || 
-             selectedCity.value || selectedLocation.value || agencyId.value;
+             selectedCity.value || selectedLocation.value || userId.value;
     });
 
     // Funzione per pulire tutti i filtri
@@ -776,7 +738,6 @@ export default defineComponent({
       selectedCity.value = "";
       selectedLocation.value = "";
       filteredCities.value = [];
-      filteredLocations.value = [];
       searchItems();
     };
 
@@ -851,12 +812,12 @@ export default defineComponent({
       if (authStore.user.Role == "Admin") {
         defaultSearchItems.value = await getSearchItems(authStore.user.Id);
       }
-      agencyId.value = "";
+      userId.value = "";
 
       // Carica i dati strutturati per i filtri
       await loadStructuredData();
 
-      await getItems(agencyId.value, "");
+      await getItems(userId.value, "");
     });
 
           return {
@@ -879,10 +840,8 @@ export default defineComponent({
         getItems,
         loading,
         user,
-        agencyId,
+        userId,
         defaultSearchItems,
-        groupedLocations,
-        options,
         removeLocation,
         removePropertyType,
         selectedProvince,
@@ -890,7 +849,6 @@ export default defineComponent({
         selectedLocation,
         structuredLocationData,
         filteredCities,
-        filteredLocations,
         onProvinceChange,
         onCityChange,
         hasActiveFilters,

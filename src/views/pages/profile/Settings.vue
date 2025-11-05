@@ -635,8 +635,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
 import { Agent, updateAgent } from "@/core/data/agents"
 import { useAuthStore, type User } from "@/stores/auth";
-import { getProvincesForSelect } from "@/core/data/locations";
-import { provinceCities, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "account-settings",
@@ -703,7 +702,18 @@ export default defineComponent({
         // Activate indicator
         submitButton1.value.setAttribute("data-kt-indicator", "on");
 
-        await updateAgent(profileDetails)
+        // Assicurati che AdminId sia preservato
+        // Se non è presente in profileDetails, recuperalo dall'utente corrente o dallo store
+        const dataToSave = { ...profileDetails };
+        if (!dataToSave.AdminId && store.user.AdminId) {
+          dataToSave.AdminId = store.user.AdminId;
+        }
+        // Se ancora non c'è, potrebbe essere che l'utente corrente è l'admin, quindi usa il suo Id
+        if (!dataToSave.AdminId && store.user.Role === "Admin") {
+          dataToSave.AdminId = store.user.Id;
+        }
+
+        await updateAgent(dataToSave)
           .then(() => {
             Swal.fire({
               text: "Continua!",
@@ -818,11 +828,14 @@ export default defineComponent({
       window.location.href = `mailto:support@kurama.com?subject=${subject}&body=${body}`;
     };
 
-    // Carica le province dal database
+    // Carica le province dal JSON
     const loadProvinces = async () => {
       try {
-        const provincesData = await getProvincesForSelect();
-        provinces.value = provincesData;
+        const provinceNames = getAllProvinceNames();
+        provinces.value = provinceNames.map((name) => ({
+          Id: name,
+          Name: name
+        }));
       } catch (error) {
         console.error("Errore nel caricamento delle province:", error);
       }
@@ -832,8 +845,12 @@ export default defineComponent({
     watch(
       () => profileDetails.Province,
       (newProvince) => {
-        if (newProvince && provinceCities[newProvince]) {
-          cities.value = provinceCities[newProvince];
+        if (newProvince) {
+          const citiesData = getCitiesByProvince(newProvince);
+          cities.value = citiesData.map((city) => ({
+            Id: city.Name,
+            Name: city.Name
+          }));
           profileDetails.City = ""; // Reset città
         } else {
           cities.value = [];
@@ -859,8 +876,12 @@ export default defineComponent({
     onMounted(() => {
       loadProvinces();
       // Se c'è già una provincia selezionata, carica le città
-      if (profileDetails.Province && provinceCities[profileDetails.Province]) {
-        cities.value = provinceCities[profileDetails.Province];
+      if (profileDetails.Province) {
+        const citiesData = getCitiesByProvince(profileDetails.Province);
+        cities.value = citiesData.map((city) => ({
+          Id: city.Name,
+          Name: city.Name
+        }));
       }
     });
 

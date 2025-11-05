@@ -15,7 +15,7 @@
             </span>
           </div>
           <div>
-            <h3 class="fw-bold m-0 text-gray-900 fs-3">âœï¸ Aggiorna Richiesta</h3>
+            <h3 class="fw-bold m-0 text-gray-900 fs-3">📋 Aggiorna Richiesta</h3>
             <span class="text-muted fs-7 fw-semibold">Modifica i dati della richiesta</span>
           </div>
         </div>
@@ -83,8 +83,8 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.Contract" required>
-              <option value="Vendita">ðŸ’° Vendita</option>
-              <option value="Affitto">ðŸ  Affitto</option>
+              <option value="Vendita">💰 Vendita</option>
+              <option value="Affitto">🏠 Affitto</option>
             </select>
           </div>
           <!--end::Col-->
@@ -105,16 +105,16 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
              <select class="form-select modern-select" multiple v-model="selectedPropertyTypes" required style="height: auto;">
-              <option value="Appartamenti">ðŸ¢ Appartamenti</option>
-              <option value="AttivitaCommerciale">ðŸª AttivitÃ  Commerciale</option>
-              <option value="Box">ðŸš— Box</option>
-              <option value="CapannoniLocArtigianali">ðŸ­ Capannoni, Loc. Artigianali</option>
-              <option value="CasaliRuderi">ðŸšï¸ Casali e Ruderi</option>
-              <option value="CaseSemindipendenti">ðŸ˜ï¸ Case Semindipendenti</option>
-              <option value="LocaliCommerciali">ðŸ¬ Locali Commerciali</option>
-              <option value="NuoveCostruzioni">ðŸ—ï¸ Nuove Costruzioni</option>
-              <option value="Terreni">ðŸŒ¾ Terreni</option>
-              <option value="VilleCaseIndipendenti">ðŸ° Ville e Case Indipendenti</option>
+              <option value="Appartamenti">🏢 Appartamenti</option>
+              <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
+              <option value="Box">🚗 Box</option>
+              <option value="CapannoniLocArtigianali">🏭 Capannoni, Loc. Artigianali</option>
+              <option value="CasaliRuderi">🏚️ Casali e Ruderi</option>
+              <option value="CaseSemindipendenti">🏘️ Case Semindipendenti</option>
+              <option value="LocaliCommerciali">🏬 Locali Commerciali</option>
+              <option value="NuoveCostruzioni">🏗️ Nuove Costruzioni</option>
+              <option value="Terreni">🌾 Terreni</option>
+              <option value="VilleCaseIndipendenti">🏰 Ville e Case Indipendenti</option>
             </select>
           </div>
           <!--end::Col-->
@@ -135,7 +135,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.Province" required>
-              <option value="">ðŸ—ºï¸ Seleziona provincia</option>
+              <option value="">🗺️ Seleziona provincia</option>
               <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
             </select>
           </div>
@@ -157,7 +157,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
               <select class="form-select modern-select" multiple v-model="selectedCities" required>
-                <option v-for="(city, index) in cities" :key="index" :value="city.Id">ðŸ™ï¸ {{ city.Name }} </option>
+                <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }}</option>
               </select>
           </div>
           <!--end::Col-->
@@ -172,14 +172,12 @@
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
-            LocalitÃ 
+            LocalitÃ 
           </label>
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-              <select class="form-select modern-select" v-model="selectedLocations" multiple>
-                <option v-for="(location, index) in locations" :key="index" :value="location.Id">ðŸ“ {{ location.Name }} </option>
-              </select>
+              <input class="form-control modern-input" v-model="formData.Location" type="text" placeholder="Inserisci la località (opzionale)" />
           </div>
           <!--end::Col-->
         </div>
@@ -377,13 +375,13 @@
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.PropertyState">
-              <option value="">ðŸ  Seleziona Stato Immobile</option>
-              <option value="0">ðŸ”’ Affittato</option>
-              <option value="1">ðŸ—ï¸ In corso di costruzione</option>
-              <option value="2">âœ… Libero</option>
-              <option value="3">ðŸ“‹ Libero al Rogito</option>
-              <option value="4">ðŸ›ï¸ Nuda ProprietÃ </option>
-              <option value="5">ðŸ‘¥ Occupato</option>
+              <option value="">🏠 Seleziona Stato Immobile</option>
+              <option value="0">🔒 Affittato</option>
+              <option value="1">🏗️ In corso di costruzione</option>
+              <option value="2">✅ Libero</option>
+              <option value="3">📋 Libero al Rogito</option>
+              <option value="4">🏛️ Nuda Proprietà</option>
+              <option value="5">👥 Occupato</option>
             </select>
           </div>
           <!--end::Input-->
@@ -404,10 +402,10 @@
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.Heating">
-              <option value="">ðŸ”¥ Seleziona Il Tipo Di Riscaldamento</option>
-              <option value="Autonomo">ðŸ  Autonomo</option>
-              <option value="Centralizzato">ðŸ¢ Centralizzato</option>
-              <option value="Inesistente">âŒ Inesistente</option>
+              <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
+              <option value="Autonomo">🏠 Autonomo</option>
+              <option value="Centralizzato">🏢 Centralizzato</option>
+              <option value="Inesistente">❌ Inesistente</option>
             </select>
           </div>
           <!--end::Input-->
@@ -428,12 +426,12 @@
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
             <select class="form-select modern-select" v-model="formData.ParkingSpaces">
-              <option value="">ðŸš— Seleziona Posto Auto</option>
-              <option value="Assegnato">ðŸŽ¯ Assegnato</option>
-              <option value="Box Auto">ðŸ  Box Auto</option>
-              <option value="Condominiale">ðŸ¢ Condominiale</option>
-              <option value="Posto auto coperto">ðŸ  Posto auto coperto</option>
-              <option value="Posto auto scoperto">â˜€ï¸ Posto auto scoperto</option>
+              <option value="">🚗 Seleziona Posto Auto</option>
+              <option value="Assegnato">🎯 Assegnato</option>
+              <option value="Box Auto">🏠 Box Auto</option>
+              <option value="Condominiale">🏢 Condominiale</option>
+              <option value="Posto auto coperto">🏠 Posto auto coperto</option>
+              <option value="Posto auto scoperto">☀️ Posto auto scoperto</option>
             </select>
           </div>
           <!--end::Input-->
@@ -539,7 +537,7 @@
               </span>
             </div>
             <div>
-              <h3 class="fw-bold m-0 text-gray-900 fs-3">ðŸ  Immobili Richiesta</h3>
+              <h3 class="fw-bold m-0 text-gray-900 fs-3">🏠 Immobili Richiesta</h3>
               <span class="text-muted fs-7 fw-semibold">Elenco degli immobili associati</span>
             </div>
           </div>
@@ -627,12 +625,11 @@ import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteReq
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
-import { getProvincesForSelect, getCitiesByProvinceName, getLocationsByCityName } from "@/core/data/locations";
+import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import arraySort from "array-sort";
 import type { RealEstateProperty } from "@/core/data/properties";
 import { MenuComponent } from "@/assets/ts/components";
-import { cityLocations } from "@/core/data/locations";
 import Multiselect from '@vueform/multiselect'
 
 export default defineComponent({
@@ -647,7 +644,6 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const firtLoad = ref(false);
     const cities = ref([]);
-    const locations = ref([]);
     const selectedPropertyTypes = ref<Array<string>>([]);
     const selectedIds = ref<Array<Number>>([]);
     const initItems = ref([]);
@@ -720,44 +716,35 @@ export default defineComponent({
 
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
     let selectedCities = ref<Array<string>>([]);
-    let selectedLocations = ref<Array<string>>([]);
 
-
-    // Funzioni per caricare i dati dal database
+    // Funzioni per caricare i dati dal JSON
     const loadProvinces = async () => {
       try {
-        const provincesData = await getProvincesForSelect();
-        provinces.value = provincesData;
+        const provinceNames = getAllProvinceNames();
+        provinces.value = provinceNames.map(name => ({
+          Id: name,
+          Name: name
+        }));
       } catch (error) {
         console.error("Errore nel caricamento delle province:", error);
+        provinces.value = [];
       }
     };
 
     const loadCitiesByProvince = async (provinceName: string) => {
       try {
         if (provinceName) {
-          const citiesData = await getCitiesByProvinceName(provinceName);
-          cities.value = citiesData;
+          const citiesData = getCitiesByProvince(provinceName);
+          cities.value = citiesData.map(city => ({
+            Id: city.Name,
+            Name: city.Name
+          }));
         } else {
           cities.value = [];
         }
       } catch (error) {
-        console.error("Errore nel caricamento delle cittÃ :", error);
+        console.error("Errore nel caricamento delle città:", error);
         cities.value = [];
-      }
-    };
-
-    const loadLocationsByCity = async (cityName: string) => {
-      try {
-        if (cityName) {
-          const locationsData = await getLocationsByCityName(cityName);
-          locations.value = locationsData;
-        } else {
-          locations.value = [];
-        }
-      } catch (error) {
-        console.error("Errore nel caricamento delle localitÃ :", error);
-        locations.value = [];
       }
     };
 
@@ -766,9 +753,9 @@ export default defineComponent({
       firtLoad.value = true;
       formData.value = await getRequest(id);
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
-      selectedCities.value = formData.value.City.split(",")
-      selectedLocations.value = formData.value.Location?.split(",")
-      inserModel.value = await getToInsert(store.user.AdminId);
+      selectedCities.value = formData.value.City.split(",");
+      // Location è già una stringa, non serve split
+      inserModel.value = await getToInsert(store.user.Id);
       initItems.value.splice(0, formData.value.RealEstateProperties.length, ...formData.value.RealEstateProperties);
       // if (inserModel.value.Customers.length > 0) {
       //   formData.value.CustomerId = inserModel.value.Customers[0].Id;
@@ -776,14 +763,9 @@ export default defineComponent({
       // Carica le province
       await loadProvinces();
       
-      // Se c'Ã¨ giÃ  una provincia selezionata, carica le cittÃ 
+      // Se c'è già una provincia selezionata, carica le città
       if (formData.value.Province) {
         await loadCitiesByProvince(formData.value.Province);
-      }
-
-      // Se ci sono cittÃ  selezionate, carica le localitÃ 
-      if (selectedCities.value.length > 0) {
-        await loadLocationsByCity(selectedCities.value[0]);
       }
 
       loading.value = false;
@@ -801,9 +783,8 @@ export default defineComponent({
             formData.value.Location = null;
           } else {
             cities.value = [];
-            locations.value = [];
             formData.value.City = null;
-            formData.value.Location = null;
+            formData.value.Location = "";
           }
         } else {
           firtLoad.value = false;
@@ -815,14 +796,9 @@ export default defineComponent({
       () => selectedCities.value,
       (newTown) => {
         if (!firtLoad.value) {
-          if (Array.isArray(newTown) && newTown.length > 0) {
-            locations.value = newTown
-              .filter(city => cityLocations[city])
-              .flatMap(city => cityLocations[city]);
-            formData.value.Location = null;
-          } else {
-            locations.value = [];
-            formData.value.Location = null;
+          // Le località sono stringhe libere, non serve caricare nulla
+          if (!newTown || (Array.isArray(newTown) && newTown.length === 0)) {
+            formData.value.Location = "";
           }
         } else {
           firtLoad.value = false;
@@ -857,8 +833,8 @@ export default defineComponent({
 
     const submit = async () => {
       loading.value = true;
-      formData.value.City = selectedCities.value.toString()
-      formData.value.Location = selectedLocations.value?.toString();
+      formData.value.City = selectedCities.value.toString();
+      // Location è già una stringa, non serve convertire
       formData.value.PropertyType = selectedPropertyTypes.value.toString();
 
       await updateRequest(formData.value)
@@ -945,14 +921,12 @@ export default defineComponent({
       inserModel,
       provinces,
       cities,
-      locations,
       sort,
       tableHeader,
       onItemSelect,
       searchItems,
       search,
       selectedCities,
-      selectedLocations,
       selectedPropertyTypes
     };
   },

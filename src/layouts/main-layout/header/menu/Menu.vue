@@ -101,7 +101,6 @@ export default defineComponent({
       '/dashboard/calendar',
       '/dashboard/agencies',
       '/dashboard/agents',
-      '/dashboard/locations'
     ];
     
     // Verifica se una route richiede abbonamento attivo

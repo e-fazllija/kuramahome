@@ -195,10 +195,8 @@
                         <span class="required">Località</span>
                         </label>
                     <!--end::Label-->
-                    <!--begin::Input-->
-                    <select class="form-select modern-select" multiple aria-label="Multiple select example" v-model="formData.Location">
-                        <option v-for="(location, index) in locations" :key="index" :value="location.Id">📍 {{ location.Name }} </option>
-                    </select>
+                    <!--begin::Input (input di testo perché le località sono stringhe libere nel database) -->
+                    <el-input v-model="formData.Location" type="text" class="modern-input" placeholder="Inserisci la località (opzionale)" />
                     <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -563,7 +561,7 @@
   import { countries } from "@/core/data/countries";
   import Swal from "sweetalert2/dist/sweetalert2.js";
   import {createRequest, Request, InsertModel, getToInsert } from "@/core/data/requests";
-  import { getCities, getLocationsByCity, getGroupedLocations, getProvincesForSelect, getCitiesByProvinceName, getLocationsByCityName } from "@/core/data/locations";
+  import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
   
   import { useAuthStore, type User } from "@/stores/auth";
   import Multiselect from '@vueform/multiselect'
@@ -580,11 +578,8 @@ export default defineComponent({
       const store = useAuthStore();
       const provincesLoading = ref<boolean>(false);
       const citiesLoading = ref<boolean>(false);
-      const locationsLoading = ref<boolean>(false);
       const provinces = ref<Array<{Id: string, Name: string}>>([]);
       const cities = ref<Array<{Id: string, Name: string}>>([]);
-      const locations = ref<Array<{Id: string, Name: string}>>([]);
-      const cityLocationsMap = ref<{[key: string]: Array<{Id: string, Name: string}>}>({});
         const formData = ref<Request>({
         CustomerId: null,  
         Contract: "Vendita",
@@ -615,26 +610,33 @@ export default defineComponent({
             Users: []
         });
 
-        // Carica le province dal database
+        // Carica le province dal JSON
         const loadProvinces = async () => {
           try {
             provincesLoading.value = true;
-            const provincesData = await getProvincesForSelect();
-            provinces.value = provincesData;
+            const provinceNames = getAllProvinceNames();
+            provinces.value = provinceNames.map(name => ({
+              Id: name,
+              Name: name
+            }));
           } catch (error) {
             console.error("Errore nel caricamento delle province:", error);
+            provinces.value = [];
           } finally {
             provincesLoading.value = false;
           }
         };
 
-        // Carica le città di una provincia specifica
+        // Carica le città di una provincia specifica dal JSON
         const loadCitiesByProvince = async (provinceName: string) => {
           try {
             citiesLoading.value = true;
             if (provinceName) {
-              const citiesData = await getCitiesByProvinceName(provinceName);
-              cities.value = citiesData;
+              const citiesData = getCitiesByProvince(provinceName);
+              cities.value = citiesData.map(city => ({
+                Id: city.Name,
+                Name: city.Name
+              }));
             } else {
               cities.value = [];
             }
@@ -646,27 +648,9 @@ export default defineComponent({
           }
         };
 
-        // Carica le località di una città specifica
-        const loadLocationsByCity = async (cityName: string) => {
-          try {
-            locationsLoading.value = true;
-            if (cityName) {
-              const locationsData = await getLocationsByCityName(cityName);
-              locations.value = locationsData;
-            } else {
-              locations.value = [];
-            }
-          } catch (error) {
-            console.error("Errore nel caricamento delle località:", error);
-            locations.value = [];
-          } finally {
-            locationsLoading.value = false;
-          }
-        };
-
         onMounted(async () => {
         loading.value = true;
-        inserModel.value = await getToInsert(store.user.AdminId);
+        inserModel.value = await getToInsert(store.user.Id);
         if(inserModel.value.Customers.length > 0){
           formData.value.CustomerId = inserModel.value.Customers[0].Id;
         } 
@@ -721,9 +705,8 @@ export default defineComponent({
                 formData.value.Location = null;
             } else {
                 cities.value = [];
-                locations.value = [];
                 formData.value.City = null;
-                formData.value.Location = null;
+                formData.value.Location = "";
             }
         }
         );
@@ -731,14 +714,9 @@ export default defineComponent({
       watch(
         () => formData.value.City,
         async (newCity) => {
-          if (Array.isArray(newCity) && newCity.length > 0) {
-            // Per le richieste, prendiamo la prima città selezionata per caricare le località
-            const firstCity = newCity[0];
-            await loadLocationsByCity(firstCity);
-            formData.value.Location = null;
-          } else {
-            locations.value = [];
-            formData.value.Location = null;
+          // Le località sono stringhe libere, non serve caricare nulla
+          if (!newCity || (Array.isArray(newCity) && newCity.length === 0)) {
+            formData.value.Location = "";
           }
         }
       );
@@ -751,9 +729,7 @@ export default defineComponent({
           if (valid) {
             loading.value = true;
             formData.value.City = (formData.value.City as any).toString()
-            if(formData.value.Location != null && formData.value.Location != undefined){
-              formData.value.Location = formData.value.Location.toString()
-            }
+            // Location è già una stringa, non serve convertire
             formData.value.PropertyType = formData.value.PropertyType.toString()
 
           try {
@@ -822,13 +798,10 @@ export default defineComponent({
         cities,
         inserModel,
         provinces,
-        locations,
         loadProvinces,
         loadCitiesByProvince,
-        loadLocationsByCity,
         provincesLoading,
         citiesLoading,
-        locationsLoading,
       };
     },
   });

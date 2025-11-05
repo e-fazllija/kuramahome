@@ -228,19 +228,16 @@
           </select>
         </div>
         
-          <!-- Filtro Località -->
+          <!-- Filtro Località (input di testo perché sono stringhe libere nel database) -->
           <div class="filter-compact">
-          <select 
-              class="form-select form-select-compact" 
-            v-model="selectedLocation" 
-            :disabled="!selectedCity"
-          >
-              <option value="">📍 Località</option>
-            <option v-for="location in filteredLocations" :key="location.value" :value="location.value">
-              {{ location.label }}
-            </option>
-          </select>
-        </div>
+            <input 
+              type="text" 
+              v-model="selectedLocation" 
+              class="form-control form-control-compact" 
+              placeholder="📍 Località" 
+              :disabled="!selectedCity"
+            />
+          </div>
 
           <!-- Filtro Agenzia -->
           <div v-if="user.Role == 'Admin'" class="filter-compact">
@@ -361,10 +358,10 @@ import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useAuthStore } from "@/stores/auth";
-import { getGroupedLocations, type LocationGroupedModel, getStructuredLocationData } from "@/core/data/locations";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "properties",
@@ -431,22 +428,17 @@ export default defineComponent({
       Agencies: [],
       Agents: [],
     });
-    const groupedLocations = ref<LocationGroupedModel[]>([]);
-
-    // Nuovi dati strutturati per i filtri a tre livelli
+    // Dati strutturati per i filtri a tre livelli (Provincia, Città, Località)
     const structuredLocationData = ref<{
-      provinces: Array<{value: string, label: string, id: number}>,
-      cities: Array<{value: string, label: string, provinceId: number, provinceName: string}>,
-      locations: Array<{value: string, label: string, cityId: number, provinceId: number, cityName: string, provinceName: string}>
+      provinces: Array<{value: string, label: string}>,
+      cities: Array<{value: string, label: string, provinceName: string}>
     }>({
       provinces: [],
-      cities: [],
-      locations: []
+      cities: []
     });
 
-    // Opzioni filtrate per città e località
+    // Opzioni filtrate per città
     const filteredCities = ref<Array<{value: string, label: string}>>([]);
-    const filteredLocations = ref<Array<{value: string, label: string}>>([]);
 
     const search = ref<string>("");
     const fromPrice = ref<number | undefined>(undefined);
@@ -457,7 +449,6 @@ export default defineComponent({
     const selectedProvince = ref<string>("");
     const selectedCity = ref<string>("");
     const selectedLocation = ref<string>("");
-    const locations = ref<Array<string>>([]);
 
     // Subscription limits state
     const isCheckingLimit = ref(false);
@@ -534,15 +525,7 @@ export default defineComponent({
       // }
       agencyId.value = authStore.user.AdminId;
 
-      // Carica le località dal database
-      try {
-        groupedLocations.value = await getGroupedLocations();
-      } catch (error) {
-        console.error("Errore nel caricamento delle località:", error);
-        groupedLocations.value = [];
-      }
-
-      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, locations.value);
+      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
     });
 
 
@@ -553,7 +536,7 @@ export default defineComponent({
         await deleteRealEstateProperty(item)
       });
       selectedIds.value.length = 0;
-      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, locations.value);
+      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
       loading.value = false;
     };
 
@@ -606,7 +589,7 @@ export default defineComponent({
         },
       }).then(async () => {
         await deleteRealEstateProperty(id)
-        await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, locations.value);
+        await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
         loading.value = false;
         MenuComponent.reinitialization();
       });
@@ -624,8 +607,16 @@ export default defineComponent({
       selectedIds.value = selectedItems;
     };
 
-    const removeLocation = (index: number) => {
-      locations.value.splice(index, 1);
+    // Funzione per preparare il filtro location basato sui filtri selezionati
+    const getLocationFilter = (): string[] => {
+      if (selectedLocation.value) {
+        return [selectedLocation.value];
+      } else if (selectedCity.value) {
+        return [selectedCity.value];
+      } else if (selectedProvince.value) {
+        return [selectedProvince.value];
+      }
+      return [];
     };
 
     // Funzioni per gestire i filtri a cascata
@@ -640,29 +631,44 @@ export default defineComponent({
         );
       } else {
         filteredCities.value = [];
-        filteredLocations.value = [];
       }
     };
 
     const onCityChange = () => {
       selectedLocation.value = "";
-      
-      if (selectedCity.value) {
-        // Filtra le località per la città selezionata
-        filteredLocations.value = structuredLocationData.value.locations.filter(location => 
-          location.cityName === selectedCity.value
-        );
-      } else {
-        filteredLocations.value = [];
-      }
     };
 
-    // Carica i dati strutturati
+    // Carica i dati strutturati da italia-geographic-data.json
     const loadStructuredData = async () => {
       try {
-        structuredLocationData.value = await getStructuredLocationData();
+        // Carica le province dal JSON
+        const provinceNames = getAllProvinceNames();
+        structuredLocationData.value.provinces = provinceNames.map((name) => ({
+          value: name,
+          label: name
+        }));
+
+        // Carica tutte le città per ogni provincia
+        const allCities: Array<{value: string, label: string, provinceName: string}> = [];
+        
+        for (const provinceName of provinceNames) {
+          const cities = getCitiesByProvince(provinceName);
+          cities.forEach(city => {
+            allCities.push({
+              value: city.Name,
+              label: city.Name,
+              provinceName: provinceName
+            });
+          });
+        }
+
+        structuredLocationData.value.cities = allCities;
       } catch (error) {
         console.error("Errore nel caricamento dei dati strutturati:", error);
+        structuredLocationData.value = {
+          provinces: [],
+          cities: []
+        };
       }
     };
 
@@ -677,7 +683,6 @@ export default defineComponent({
       selectedCity.value = "";
       selectedLocation.value = "";
       filteredCities.value = [];
-      filteredLocations.value = [];
     };
 
     onMounted(async () => {
@@ -689,7 +694,7 @@ export default defineComponent({
       // Carica i dati strutturati per i filtri
       await loadStructuredData();
 
-      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, locations.value);
+      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
     });
 
     const redirectToEdit = (propertyId: number) => {
@@ -703,7 +708,6 @@ export default defineComponent({
         search,
         searchItems,
         contract,
-        locations,
         fromPrice,
         category,
         toPrice,
@@ -718,14 +722,12 @@ export default defineComponent({
         agencyId,
         defaultSearchItems,
         typology,
-        groupedLocations,
-        removeLocation,
+        getLocationFilter,
         selectedProvince,
         selectedCity,
         selectedLocation,
         structuredLocationData,
         filteredCities,
-        filteredLocations,
         onProvinceChange,
         onCityChange,
         clearAllFilters,
