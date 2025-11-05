@@ -468,6 +468,27 @@ export default defineComponent({
       loading.value = false
     })
 
+    // Funzione per convertire una stringa ISO UTC in formato datetime-local
+    const formatDateForInput = (dateString: string | null | undefined): string | null => {
+      if (!dateString) return null;
+      // Interpreta la stringa ISO come UTC e converte in ora locale per l'input
+      const date = moment.utc(dateString);
+      if (!date.isValid()) return null;
+      // Converte in locale e formatta come datetime-local (YYYY-MM-DDTHH:mm)
+      return date.local().format('YYYY-MM-DDTHH:mm');
+    };
+
+    // Funzione per convertire una stringa datetime-local in formato ISO UTC per l'API
+    const formatDateForApi = (dateString: string | null | undefined): string | null => {
+      if (!dateString) return null;
+      // Interpreta la stringa datetime-local come ora locale dell'utente
+      // e poi converte in UTC mantenendo lo stesso momento nel tempo
+      const date = moment(dateString);
+      if (!date.isValid()) return null;
+      // Converte in UTC e formatta come ISO UTC con Z finale
+      return date.utc().format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+    };
+
     const submit = async () => {
       if (!formRef.value) {
         return;
@@ -477,10 +498,10 @@ export default defineComponent({
         if (valid) {
           loading.value = true;
           targetData.value.UserId = props.UserId
+          // Converti le date nel formato corretto per gli input datetime-local
+          targetData.value.EventStartDate = formatDateForApi(targetData.value.EventStartDate);
+          targetData.value.EventEndDate = formatDateForApi(targetData.value.EventEndDate);
 
-          console.log(targetData.value.EventStartDate)
-          console.log(targetData.value.EventEndDate)
-          
           await createEvent(targetData.value);
 
           const error = store.errors;
