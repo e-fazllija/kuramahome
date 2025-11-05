@@ -409,6 +409,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import events, { TODAY, getToInsert, updateEvent, InsertModel, getEvent, Event, deleteEvent } from "@/core/data/events";
 import { useAuthStore } from "@/stores/auth";
 import Multiselect from '@vueform/multiselect'
+import moment from "moment";
 
 export default defineComponent({
   name: "update-event-modal",
@@ -454,7 +455,7 @@ export default defineComponent({
       EventStartDate: null,
       EventEndDate: null,
       Type: "Appuntamento",
-      Color:"##5e97fd",
+      Color:"#5e97fd",
       Confirmed: false,
       Cancelled: false,
       Postponed: false,
@@ -466,6 +467,13 @@ export default defineComponent({
           required: true,
           message: "Inserisci il nome dell'evento",
           trigger: "blur",
+        },
+      ],
+      Color: [
+        {
+          required: true,
+          message: "Seleziona un colore",
+          trigger: "change",
         },
       ],
       EventStartDate: [
@@ -497,9 +505,36 @@ export default defineComponent({
       loading.value = false;
     })
 
+    // Funzione per convertire una stringa ISO UTC in formato datetime-local
+    const formatDateForInput = (dateString: string | null | undefined): string | null => {
+      if (!dateString) return null;
+      // Interpreta la stringa ISO come UTC e converte in ora locale per l'input
+      const date = moment.utc(dateString);
+      if (!date.isValid()) return null;
+      // Converte in locale e formatta come datetime-local (YYYY-MM-DDTHH:mm)
+      return date.local().format('YYYY-MM-DDTHH:mm');
+    };
+
+    // Funzione per convertire una stringa datetime-local in formato ISO UTC per l'API
+    const formatDateForApi = (dateString: string | null | undefined): string | null => {
+      if (!dateString) return null;
+      // Interpreta la stringa datetime-local come ora locale dell'utente
+      // e poi converte in UTC mantenendo lo stesso momento nel tempo
+      const date = moment(dateString);
+      if (!date.isValid()) return null;
+      // Converte in UTC e formatta come ISO UTC con Z finale
+      return date.utc().format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+    };
+
     watch(() => props.Id, async (first, second) => {
       if (first > 0) {
-        targetData.value = await getEvent(props.Id)
+        const event = await getEvent(props.Id);
+        if (event) {
+          // Converti le date nel formato corretto per gli input datetime-local
+          event.EventStartDate = formatDateForInput(event.EventStartDate);
+          event.EventEndDate = formatDateForInput(event.EventEndDate);
+          targetData.value = event;
+        }
       }
       else {
         targetData.value = null;
@@ -515,10 +550,12 @@ export default defineComponent({
         if (valid) {
           loading.value = true;
           
-          targetData.value.EventStartDate = targetData.value.EventStartDate;
-          targetData.value.EventEndDate = targetData.value.EventEndDate;
+          // Prepara i dati per l'API convertendo le date in formato UTC
+          const eventData = { ...targetData.value };
+          eventData.EventStartDate = formatDateForApi(eventData.EventStartDate);
+          eventData.EventEndDate = formatDateForApi(eventData.EventEndDate);
 
-          await updateEvent(targetData.value);
+          await updateEvent(eventData);
 
           const error = store.errors;
 
