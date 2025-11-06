@@ -120,7 +120,7 @@
             <!--begin::Input group-->
             <div class="d-flex flex-column fv-row">
               <!--begin::Input-->
-              <select class="form-select modern-select" v-model="formData.AgentId" required>
+              <select class="form-select modern-select" v-model="formData.UserId" required>
                 <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.FirstName }} {{ user.LastName }}</option>
               </select>
               <!--end::Input-->
@@ -456,7 +456,7 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.MoreDetails" type="text" />
+            <input class="form-control modern-input" v-model="formData.MoreFeatures" type="text" />
           </div>
           <!--end::Input-->
         </div>
@@ -904,7 +904,7 @@
         <!--end::Input group-->
 
       </div>
-      <div v-if="user.Id === formData.AgentId || user.Role === 'Admin' || formData.Agent.AdminId === user.Id"
+      <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
         class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
         <div>
           <AddNewForm />
@@ -921,7 +921,7 @@
           </button>
         </div>
         <div>
-          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.Agent.AdminId )" type="button" @click="deleteItem()"
+          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
@@ -1002,7 +1002,24 @@
                         <span class="path3"></span>
                       </i>
                     </div>
-                    <img :src="element.Url" :alt="`Immagine ${index + 1}`" />
+                    <img 
+                      :src="element.Url" 
+                      :alt="`Immagine ${index + 1}`"
+                      @error="handleImageError($event)"
+                      @load="handleImageLoad($event)"
+                      style="display: block; width: 100%; height: 150px; object-fit: cover;"
+                    />
+                    <div v-if="imageErrors[element.Id]" class="image-error-placeholder">
+                      <i class="ki-duotone ki-picture fs-1 text-muted">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <p class="text-muted mt-2 mb-1">Immagine non disponibile</p>
+                      <p class="text-danger fs-7 mb-0">Verifica Azure Storage Emulator</p>
+                      <a :href="element.Url" target="_blank" class="btn btn-sm btn-link text-primary mt-2" style="font-size: 0.75rem;">
+                        Prova URL
+                      </a>
+                    </div>
                     <div class="image-overlay">
                       <div class="btn-group">
                         <button 
@@ -1110,6 +1127,7 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const firtLoad = ref(false);
     const isTrattativaRiservata = ref(false);
+    const imageErrors = ref<Record<number, boolean>>({});
 
     // Funzioni per caricare i dati dal JSON
     const loadProvinces = async () => {
@@ -1164,6 +1182,7 @@ export default defineComponent({
       TotalBuildingfloors: 0,
       Elevators: 0,
       MoreDetails: "",
+      MoreFeatures: "",
       Bedrooms: 0,
       WarehouseRooms: 0,
       Kitchens: 0,
@@ -1184,9 +1203,9 @@ export default defineComponent({
       Availability: "",
       Description: "",
       CustomerId: null,
-      AgentId: "",
+      UserId: "",
       AssignmentEnd: "",
-      Agent: null,
+      User: null,
       VideoUrl: "",
       AgreedCommission: 0,
       FlatRateCommission: 0,
@@ -1280,7 +1299,7 @@ export default defineComponent({
       formData.value.AssignmentEnd = formData.value.AssignmentEnd.split('T')[0]
       inserModel.value = await getToInsert(store.user.Id);
       if (inserModel.value.Users.length > 0) {
-        formData.value.AgentId = formData.value.AgentId;
+        formData.value.UserId = formData.value.UserId;
       }
       
       // Inizializza la checkbox "Trattativa riservata" in base al prezzo
@@ -1613,6 +1632,22 @@ export default defineComponent({
       }
     };
 
+    const handleImageError = (event: Event) => {
+      const img = event.target as HTMLImageElement;
+      const photoId = formData.value.Photos?.find(p => p.Url === img.src)?.Id;
+      if (photoId) {
+        imageErrors.value[photoId] = true;
+      }
+    };
+
+    const handleImageLoad = (event: Event) => {
+      const img = event.target as HTMLImageElement;
+      const photoId = formData.value.Photos?.find(p => p.Url === img.src)?.Id;
+      if (photoId) {
+        imageErrors.value[photoId] = false;
+      }
+    };
+
     return {
       formData,
       rules,
@@ -1639,6 +1674,9 @@ export default defineComponent({
       handleFiles,
       onDragStart,
       onDragEnd,
+      imageErrors,
+      handleImageError,
+      handleImageLoad,
     };
   },
 });

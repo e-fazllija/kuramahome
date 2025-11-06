@@ -26,6 +26,7 @@ export class RealEstateProperty {
   TotalBuildingfloors: number | 0;
   Elevators: number | 0; 
   MoreDetails?: string;
+  MoreFeatures?: string;
   Bedrooms: number | 0;
   WarehouseRooms: number | 0;
   Kitchens: number | 0;
@@ -50,8 +51,8 @@ export class RealEstateProperty {
   UpdateDate?: Date;
   Photos?: Array<RealEstatePropertyPhotos>; 
   CustomerId: number | 0;
-  AgentId: string;
-  Agent?: User;
+  UserId: string;
+  User?: User;
   Files?: FileList;
   RealEstatePropertyNotes?: Notes[];
   VideoUrl?: string;
@@ -252,11 +253,11 @@ const uploadFiles = async (files: FileList, id: number) => {
 
 const createRealEstateProperty = async (form: any) => {
   const values = form as RealEstateProperty;
-  values.AgentId = store.user.Id;
+  values.UserId = store.user.Id;
   const formData = new FormData();
 
   // Campi da ignorare (non inviati al backend)
-  const ignoreFields = ['Files', 'Photos', 'Agent', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label'];
+  const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label'];
 
   for (const key in values) {
     if (ignoreFields.includes(key) || values[key as keyof RealEstateProperty] === undefined) {

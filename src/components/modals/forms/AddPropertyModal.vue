@@ -835,8 +835,8 @@
                     Altre Caratteristiche
                   </label>
                   <!--begin::Input-->
-                  <el-form-item prop="MoreDetails">
-                    <el-input v-model="formData.MoreDetails" type="text" class="modern-input" placeholder="Es: Balcone, Terrazzo, etc." />
+                  <el-form-item prop="MoreFeatures">
+                    <el-input v-model="formData.MoreFeatures" type="text" class="modern-input" placeholder="Es: Balcone, Terrazzo, etc." />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -1225,6 +1225,7 @@ export default defineComponent({
       TotalBuildingfloors: 0,
       Elevators: 0,
       MoreDetails: "",
+      MoreFeatures: "",
       Bedrooms: 0,
       WarehouseRooms: 0,
       Kitchens: 0,
