@@ -15,6 +15,10 @@ export class Documentation {
   AgencyId?: string;
   UserId?: string;
   CreationDate?: Date;
+  // Campi per permessi e proprietà
+  IsOwner?: boolean;
+  CanModify?: boolean;
+  CreatorName?: string;
 }
 
 export class CreateFolderRequest {

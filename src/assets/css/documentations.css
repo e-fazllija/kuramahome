@@ -391,3 +391,85 @@
   }
 }
 
+/* ========================================
+   Ownership & Permission Badges
+   ======================================== */
+
+/* Badge "Mio" per file/cartelle dell'utente */
+.badge-sm {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(27, 197, 189, 0.2);
+}
+
+.badge-sm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(27, 197, 189, 0.3);
+}
+
+[data-bs-theme="dark"] .badge-sm {
+  box-shadow: 0 2px 6px rgba(27, 197, 189, 0.4);
+}
+
+/* Info creatore file */
+.text-muted.fs-8 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #666666 !important;
+  font-size: 0.8rem;
+}
+
+[data-bs-theme="dark"] .text-muted.fs-8 {
+  color: #aaaaaa !important;
+}
+
+/* Badge file privato */
+.text-danger.fs-8 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #f64e60 !important;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+[data-bs-theme="dark"] .text-danger.fs-8 {
+  color: #ff6b7a !important;
+}
+
+/* Pulsante "Solo lettura" per file non modificabili */
+.btn-action[disabled] {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.btn-action[disabled]:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Gap tra badge e info */
+.gap-2 {
+  gap: 0.5rem;
+}
+
+/* Responsive per badge */
+@media (max-width: 768px) {
+  .badge-sm {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .text-muted.fs-8,
+  .text-danger.fs-8 {
+    font-size: 0.75rem;
+  }
+}
+

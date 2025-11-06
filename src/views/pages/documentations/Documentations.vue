@@ -215,15 +215,29 @@
               </div>
             </div>
             <div class="d-flex flex-column">
-              <span class="fw-semibold">{{ documentations.DisplayName }}</span>
-              <span v-if="documentations.IsPrivate && !documentations.IsFolder" class="text-muted fs-8">
-                <i class="ki-duotone ki-lock fs-8 me-1">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                </i>
-                Privato
-              </span>
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-semibold">{{ documentations.DisplayName }}</span>
+                <span v-if="documentations.IsOwner" class="badge badge-sm" style="background: linear-gradient(135deg, #1bc5bd 0%, #0bb783 100%); color: white; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                  Mio
+                </span>
+              </div>
+              <div class="d-flex align-items-center gap-2 mt-1">
+                <span v-if="documentations.CreatorName" class="text-muted fs-8">
+                  <i class="ki-duotone ki-user fs-8 me-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  {{ documentations.CreatorName }}
+                </span>
+                <span v-if="documentations.IsPrivate && !documentations.IsFolder" class="text-danger fs-8">
+                  <i class="ki-duotone ki-lock fs-8 me-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                  </i>
+                  Privato
+                </span>
+              </div>
             </div>
           </div>
         </template>
@@ -283,8 +297,9 @@
               <span class="btn-label">Scarica</span>
             </a>
             
-            <!-- Elimina -->
+            <!-- Elimina (solo se ha i permessi) -->
             <button 
+              v-if="documentations.CanModify"
               @click="deleteItem(documentations.Id)" 
               class="btn btn-action btn-action-danger"
               :title="documentations.IsFolder ? 'Elimina cartella' : 'Elimina documento'"
@@ -299,6 +314,24 @@
                 </i>
               </span>
               <span class="btn-label">Elimina</span>
+            </button>
+            
+            <!-- Visualizza (se non ha permessi di modifica) -->
+            <button 
+              v-else-if="!documentations.IsFolder"
+              class="btn btn-action btn-action-info"
+              :title="'Solo visualizzazione - File di ' + documentations.CreatorName"
+              disabled
+              style="opacity: 0.6; cursor: not-allowed;"
+            >
+              <span class="btn-icon">
+                <i class="ki-duotone ki-eye-slash fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
+              </span>
+              <span class="btn-label">Solo lettura</span>
             </button>
           </div>
         </template>
@@ -474,21 +507,14 @@ export default defineComponent({
       },
     ]);
 
-    // Helper: assicura che il path includa sempre l'agencyId
-    const ensureAgencyPath = (path: string | null): string | undefined => {
+    // Helper: costruisce il path corretto basato su userId
+    // Nota: non usiamo più agencyId come root, ma userId
+    const ensureUserPath = (path: string | null): string | undefined => {
       if (!path) return undefined;
       
-      const agencyId = store.user?.AdminId;
-      if (!agencyId) return path;
-      
-      // Se il path già inizia con agencyId, restituiscilo così com'è
-      const agencyPrefix = `${agencyId}/`;
-      if (path.startsWith(agencyPrefix)) {
-        return path;
-      }
-      
-      // Altrimenti, aggiungi agencyId all'inizio
-      return `${agencyId}/${path}`;
+      // Il path è già nella forma corretta: userId/subfolder/...
+      // Non serve modificarlo
+      return path;
     };
 
     // Naviga a una cartella specifica
@@ -505,16 +531,15 @@ export default defineComponent({
         return;
       }
 
-      const agencyId = store.user?.AdminId;
       const parts = path.split('/').filter(p => p);
       
-      // Rimuove l'agencyId dal breadcrumb se presente (primo elemento)
-      const startIndex = (agencyId && parts[0] === agencyId) ? 1 : 0;
-      const displayParts = parts.slice(startIndex);
+      // Il primo elemento è sempre un userId (può essere il nostro o di un collega)
+      // Iniziamo dal secondo elemento per il breadcrumb (saltiamo lo userId)
+      const displayParts = parts.slice(1);
       
       breadcrumbPath.value = displayParts.map((part, index) => {
-        // Costruisce il path completo con agencyId per la navigazione
-        const fullPathParts = parts.slice(0, startIndex + index + 1);
+        // Costruisce il path completo includendo lo userId
+        const fullPathParts = parts.slice(0, index + 2);
         return {
           name: decodeURIComponent(part),
           path: fullPathParts.join('/')
@@ -522,19 +547,16 @@ export default defineComponent({
       });
     };
 
-    // Ottiene il path completo di un documento/cartella con agencyId incluso
+    // Ottiene il path completo di un documento/cartella
     const getCurrentPath = (doc: Documentation): string => {
-      const agencyId = store.user?.AdminId;
-      
       // Se c'è un ParentPath, usalo e aggiungi DisplayName
       if (doc.ParentPath) {
-        // Assicura che il ParentPath abbia l'agencyId
-        const fullParentPath = ensureAgencyPath(doc.ParentPath);
-        return fullParentPath ? `${fullParentPath}/${doc.DisplayName}` : `${agencyId}/${doc.DisplayName}`;
+        return `${doc.ParentPath}/${doc.DisplayName}`;
       }
       
-      // Se non c'è ParentPath, crea il path con agencyId/DisplayName
-      return agencyId ? `${agencyId}/${doc.DisplayName}` : doc.DisplayName || '';
+      // Se non c'è ParentPath, è nella root dell'utente: userId/DisplayName
+      // Il backend ci fornisce già il UserId
+      return doc.UserId ? `${doc.UserId}/${doc.DisplayName}` : doc.DisplayName || '';
     };
 
     // Carica i documenti dalla cartella corrente
