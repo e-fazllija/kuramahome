@@ -75,7 +75,7 @@ export class RequestTabelData {
   AssignmentEnd?: string;
   Status: string;
   City: string;
-  Province?: string;
+  State?: string;
   Photos?: string | null;
   Auction:Boolean;
 }
@@ -139,7 +139,7 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         AssignmentEnd: item.AssignmentEnd,
         Status: item.Status,
         City: item.City,
-        Province: item.Province,
+        State: item.State,
         Photos: item.FirstPhotoUrl || null,
         Auction: item.Auction
       } as RequestTabelData));

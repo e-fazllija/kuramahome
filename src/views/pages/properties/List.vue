@@ -284,8 +284,8 @@
         </template>
         <template v-slot:AddressLine="{ row: item }">
           {{ item.AddressLine }} <br />
-          {{ item.Town }} <br />
-          {{ item.Province }}
+          {{ item.City }} <br />
+          {{ item.State }}
         </template>
         <template v-slot:Price="{ row: item }">
           <template v-if="item.Price === -1">

@@ -18,7 +18,7 @@ export interface RealEstatePropertyListItem {
   AddressLine?: string;
   AssignmentEnd?: string;
   CommercialSurfaceate?: number;
-  Province?: string;
+  State?: string;
   StateOfTheProperty?: string;
   FirstPhotoUrl?: string;
 }
