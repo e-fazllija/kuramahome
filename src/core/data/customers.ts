@@ -34,6 +34,7 @@ export class CustomerTabelData {
   Type: string;
   Email: string;
   Phone: string;
+  UserId?: string;
 }
 
 export class Notes {
@@ -42,7 +43,7 @@ export class Notes {
   Text: string;
 }
 
-const getCustomers = (adminId: string, filterRequest: string) : Promise<Array<Customer>> => {
+const getCustomers = (filterRequest: string) : Promise<Array<Customer>> => {
    return ApiService.get(
     `Customers/Get?filterRequest=${filterRequest}`,
     ""

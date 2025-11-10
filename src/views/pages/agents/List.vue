@@ -167,7 +167,13 @@
               <a href="#/dashboard" class="text-decoration-none fw-bold text-hover-primary" :title="`Vai alla dashboard di ${agent.UserName}`">
                 {{ agent.UserName }}
               </a>
-              <span class="badge badge-sm badge-light-success mt-1" style="width: fit-content;">Attivo</span>
+              <span
+                class="badge badge-sm mt-1"
+                :class="agent.EmailConfirmed ? 'badge-light-success' : 'badge-light-danger'"
+                style="width: fit-content;"
+              >
+                {{ agent.EmailConfirmed ? 'Attivo' : 'Non attivo' }}
+              </span>
             </div>
           </div>
         </template>
@@ -232,7 +238,7 @@
             <button
               type="button"
               class="btn btn-action btn-action-danger"
-              @click="deleteItem(agent.Id)"
+              @click="deleteItem(agent)"
               title="Elimina agente"
             >
               <span class="btn-icon">
@@ -284,6 +290,7 @@ import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.v
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import { getAgents, deleteAgent, Agent } from "@/core/data/agents";
+import { getCustomers } from "@/core/data/customers";
 import AddAgentModal from "@/components/modals/forms/agents/AddAgentModal.vue";
 import UpdateAgentModal from "@/components/modals/forms/agents/UpdateAgentModal.vue";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
@@ -442,21 +449,65 @@ export default defineComponent({
       return false;
     };
 
-    async function deleteItem(id: string) {
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+    async function deleteItem(agent: Agent) {
+      const userName = (agent as Record<string, any>)?.UserName as string | undefined;
+      const displayName = `${agent.FirstName ?? ""} ${agent.LastName ?? ""}`.trim() || agent.Email || userName || `Agente #${agent.Id}`;
+
+      let requiresTyping = false;
+      if (agent?.Id !== undefined && agent?.Id !== null) {
+        try {
+          const customers = await getCustomers("");
+          requiresTyping = !!customers?.some((customer) => {
+            const ownerId = customer.UserId ?? customer.AdminId ?? "";
+            return ownerId && ownerId === String(agent.Id);
+          });
+        } catch (error) {
+          console.error("Errore durante il controllo dei clienti collegati all'agente:", error);
+          requiresTyping = true;
+        }
+      }
+
+      const result = await Swal.fire({
+        title: "Elimina agente",
+        html: requiresTyping
+          ? `Stai per eliminare definitivamente l'agente <strong>${displayName}</strong> e tutti i clienti collegati. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`
+          : `Sei sicuro di voler eliminare definitivamente l'agente <strong>${displayName}</strong>? L'operazione non può essere annullata.`,
         icon: "warning",
+        input: requiresTyping ? "text" : undefined,
+        inputLabel: requiresTyping ? "Conferma eliminazione" : undefined,
+        inputPlaceholder: requiresTyping ? displayName : undefined,
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: requiresTyping ? "Elimina definitivamente" : "Elimina",
+        cancelButtonText: "Annulla",
+        inputValidator: requiresTyping
+          ? (value) => {
+              if (value !== displayName) {
+                return "Il nome inserito non corrisponde. Riprova.";
+              }
+              return undefined;
+            }
+          : undefined,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light",
         },
-      }).then(async () => {
-        await deleteAgent(id)
-        await getItems(agencyFilter.value, "");
-        MenuComponent.reinitialization();
       });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      if (agent?.Id === undefined || agent?.Id === null) {
+        console.error("Impossibile eliminare l'agente: Id non disponibile", agent);
+        return;
+      }
+
+      await deleteAgent(String(agent.Id));
+      await getItems(agencyFilter.value, "");
+      MenuComponent.reinitialization();
     }
 
     const sort = (sort: Sort) => {

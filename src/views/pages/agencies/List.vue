@@ -248,7 +248,13 @@
               <a href="#/dashboard" class="text-decoration-none fw-bold text-hover-primary" :title="`Vai alla dashboard di ${agent.UserName}`">
             {{ agent.UserName }}
           </a>
-              <span class="badge badge-sm badge-light-success mt-1" style="width: fit-content;">Attiva</span>
+              <span
+                class="badge badge-sm mt-1"
+                :class="agent.EmailConfirmed ? 'badge-light-success' : 'badge-light-danger'"
+                style="width: fit-content;"
+              >
+                {{ agent.EmailConfirmed ? 'Attiva' : 'Non attiva' }}
+              </span>
             </div>
           </div>
         </template>
@@ -313,7 +319,7 @@
               <button
                 type="button"
                 class="btn btn-action btn-action-danger"
-                @click="deleteItem(agent.Id)"
+                @click="deleteItem(agent)"
                 title="Elimina agenzia"
               >
                 <span class="btn-icon">
@@ -366,6 +372,7 @@ import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.v
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import { getAgencies, deleteAgency, Agency } from "@/core/data/agencies";
+import { getAgents } from "@/core/data/agents";
 import AddAgencyModal from "@/components/modals/forms/agencies/AddAgencyModal.vue";
 import UpdateAgencyModal from "@/components/modals/forms/agencies/UpdateAgencyModal.vue";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
@@ -536,23 +543,66 @@ export default defineComponent({
       return false;
     };
 
-    async function deleteItem(id: String){
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+    async function deleteItem(agency: Agency){
+      const displayName = getAgencyDisplayName(agency);
+
+      let requiresTyping = false;
+      if (agency?.Id) {
+        try {
+          const linkedAgents = await getAgents(agency.Id, "");
+          requiresTyping = !!linkedAgents?.length;
+        } catch (error) {
+          console.error("Errore durante il controllo degli agenti collegati:", error);
+          requiresTyping = true;
+        }
+      }
+
+      const result = await Swal.fire({
+        title: "Elimina agenzia",
+        html: requiresTyping
+          ? `Stai per eliminare definitivamente l'agenzia <strong>${displayName}</strong> e tutti gli agenti collegati. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`
+          : `Stai per eliminare definitivamente l'agenzia <strong>${displayName}</strong>. Questa azione non può essere annullata.`,
         icon: "warning",
+        input: requiresTyping ? "text" : undefined,
+        inputLabel: requiresTyping ? "Conferma eliminazione" : undefined,
+        inputPlaceholder: requiresTyping ? displayName : undefined,
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: requiresTyping ? "Elimina definitivamente" : "Elimina",
+        cancelButtonText: "Annulla",
+        inputValidator: requiresTyping
+          ? (value) => {
+              if (value !== displayName) {
+                return "Il nome inserito non corrisponde. Riprova.";
+              }
+              return undefined;
+            }
+          : undefined,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light",
         },
-      }).then(async () => {
-        await deleteAgency(id)
+      });
+
+      if (result.isConfirmed) {
+        await deleteAgency(agency.Id);
         await getItems("");
         MenuComponent.reinitialization(); 
-      });
-      
+      }
     }
+
+    const getAgencyDisplayName = (agency: Agency): string => {
+      if (agency.CompanyName) {
+        return agency.CompanyName;
+      }
+      const nameParts = [agency.FirstName, agency.LastName].filter(Boolean);
+      if (nameParts.length) {
+        return nameParts.join(" ");
+      }
+      return agency.UserName || "Agenzia";
+    };
     
     const sort = (sort: Sort) => {
       const reverse: boolean = sort.order === "asc";

@@ -166,13 +166,13 @@ const getRealEstateProperty = (id: number) => {
     });
 };
 
-const getToInsert = (userId?: string) : Promise<InsertModel> => {
-  return ApiService.get(`RealEstateProperty/GetToInsert?userId=${userId}`, "")
+const getToInsert = () : Promise<InsertModel> => {
+  return ApiService.get(`RealEstateProperty/GetToInsert`, "")
     .then(({ data }) => {
       const agents = data.Agents as Array<User>;
       const customers = data.Customers as Array<Customer>;
-      customers.forEach(customer => customer.label = customer.FirstName + ' ' + customer.LastName );
       agents.forEach(agent => agent.label = agent.FirstName + ' ' + agent.LastName );
+      customers.forEach(customer => customer.label = customer.FirstName + ' ' + customer.LastName );
       const result = <InsertModel>({
         Users: agents,
         Customers: customers

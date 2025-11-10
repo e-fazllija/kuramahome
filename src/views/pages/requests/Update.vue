@@ -755,7 +755,7 @@ export default defineComponent({
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
       selectedCities.value = formData.value.City.split(",");
       // Location è già una stringa, non serve split
-      inserModel.value = await getToInsert(store.user.Id);
+      inserModel.value = await getToInsert();
       initItems.value.splice(0, formData.value.RealEstateProperties.length, ...formData.value.RealEstateProperties);
       // if (inserModel.value.Customers.length > 0) {
       //   formData.value.CustomerId = inserModel.value.Customers[0].Id;
@@ -813,22 +813,53 @@ export default defineComponent({
     });
 
     async function deleteItem() {
-      loading.value = true;
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const result = await Swal.fire({
+        text: "Confermi di voler eliminare questa richiesta?",
         icon: "warning",
+        showCancelButton: true,
+        focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
+        confirmButtonText: "Sì, elimina",
+        cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light"
         },
-      }).then(async () => {
-        loading.value = false;
-        await deleteRequest(id)
-        router.push({ name: "requests" })
       });
 
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteRequest(id);
+        await Swal.fire({
+          text: "Richiesta eliminata con successo.",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        router.push({ name: "requests" });
+      } catch (error) {
+        Swal.fire({
+          text: "Si è verificato un errore durante l'eliminazione.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        loading.value = false;
+      }
     }
 
     const submit = async () => {
@@ -842,7 +873,7 @@ export default defineComponent({
           loading.value = false;
 
           Swal.fire({
-            text: "Il modulo Ã¨ stato inviato con successo!",
+            text: "Il modulo è stato inviato con successo!",
             icon: "success",
             buttonsStyling: false,
             confirmButtonText: "Continua!",

@@ -4,6 +4,7 @@ const store = useAuthStore();
 
 export class Agent {
   Id?: number;
+  UserName?: string;
   FirstName: string;
   LastName: string;
   Email: string;

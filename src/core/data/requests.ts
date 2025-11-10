@@ -51,6 +51,7 @@ export class RequestTabelData {
   PriceFrom: number;
   PropertyType: string;
   Status:string;
+  UserId?: string;
 }
 
 export class InsertModel {
@@ -79,9 +80,18 @@ const getRequests = (userId: string, filterRequest: string): Promise<Array<Reque
     });
 };
 
-const getRequestsList = (userId: string, filterRequest: string): Promise<Array<RequestTabelData>> => {
+const getRequestsList = (filterRequest: string, userIdOverride?: string): Promise<Array<RequestTabelData>> => {
+  const store = useAuthStore();
+  const role = store.user?.Role;
+  const effectiveUserId =
+    userIdOverride !== undefined
+      ? userIdOverride
+      : role === "Agent" || role === "Admin"
+        ? store.user.Id
+        : "";
+
   return ApiService.get(
-    `Requests/GetList?currentPage=0&userId=${userId}&filterRequest=${filterRequest}`,
+    `Requests/GetList?currentPage=0&userId=${effectiveUserId}&filterRequest=${filterRequest}`,
     ""
   )
     .then(({ data }) => {
@@ -100,7 +110,8 @@ const getRequestsList = (userId: string, filterRequest: string): Promise<Array<R
         PriceTo: item.PriceTo,
         PriceFrom: item.PriceFrom,
         PropertyType: item.PropertyType,
-        Status: item.Archived == true ? "Archviviata" : item.Closed == true ? "Chiusa" : "Aperta"
+        Status: item.Archived == true ? "Archviviata" : item.Closed == true ? "Chiusa" : "Aperta",
+        UserId: item.UserId
       } as RequestTabelData));
     })
     .catch(({ response }) => {
@@ -181,13 +192,13 @@ const deleteRequest = async (id: number) => {
     });
 };
 
-const getToInsert = (userId?: string): Promise<InsertModel> => {
-  return ApiService.get(`RealEstateProperty/GetToInsert?userId=${userId}`, "")
+const getToInsert = (): Promise<InsertModel> => {
+  return ApiService.get(`RealEstateProperty/GetToInsert`, "")
     .then(({ data }) => {
       const agents = data.Agents as Array<User>;
       const customers = data.Customers as Array<Customer>;
-      customers.forEach(customer => customer.label = customer.FirstName + ' ' + customer.LastName );
-      agents.forEach(agent => agent.label = agent.FirstName + ' ' + agent.LastName );
+      agents.forEach(agent => agent.label = agent.FirstName + ' ' + agent.LastName);
+      customers.forEach(customer => customer.label = customer.FirstName + ' ' + customer.LastName);
       const result = <InsertModel>({
         Users: agents,
         Customers: customers

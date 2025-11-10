@@ -298,10 +298,10 @@ export default defineComponent({
       // Get main agency coordinates
       const mainCoords = getMainAgencyCoords();
 
-      // Create map centered on main agency with wider view (completely static)
+      // Create map centered on main agency (initial view, will be adjusted by addAgencyMarkers)
       map = L.map(mapContainer.value, {
         center: mainCoords,
-        zoom: 9.56, // Increased by 5% from 9.1 (9.1 * 1.05 = 9.555)
+        zoom: 9.56, // Initial zoom, will be adjusted based on visible agencies
         zoomControl: false,
         scrollWheelZoom: false,
         doubleClickZoom: false,
@@ -520,6 +520,11 @@ export default defineComponent({
       markers.forEach(marker => marker.remove());
       markers.length = 0;
 
+      // Filter agencies based on selectedAgencyId
+      const visibleAgencies = selectedAgencyId.value 
+        ? props.agenciesList.filter(agency => agency.id === selectedAgencyId.value)
+        : props.agenciesList;
+
       const existingCoords: [number, number][] = [];
       const allCoords: [number, number][] = []; // Store all coordinates for bounds calculation
       
@@ -545,9 +550,9 @@ export default defineComponent({
       // Highlight color for selected agency
       const highlightColor = '#FFD700'; // Gold
 
-      // Process each agency
-      for (let index = 0; index < props.agenciesList.length; index++) {
-        const agency = props.agenciesList[index];
+      // Process each visible agency
+      for (let index = 0; index < visibleAgencies.length; index++) {
+        const agency = visibleAgencies[index];
         const address = agency.Address || agency.address || '';
         const city = agency.City || agency.city || '';
         const province = agency.Province || agency.province || '';
@@ -662,13 +667,25 @@ export default defineComponent({
         markers.push(marker);
       }
       
-      // Automatically adjust map view to show all markers
+      // Adjust map view based on number of visible agencies
       if (allCoords.length > 0) {
-        const bounds = L.latLngBounds(allCoords);
-        map!.fitBounds(bounds, {
-          padding: [50, 50], // Add padding around the edges
-          maxZoom: 10.3 // Don't zoom in too much (12 - 15% = 10.3, accounting for left panel)
-        });
+        if (allCoords.length === 1) {
+          // Single agency: center on it with appropriate zoom level
+          const singleCoords = allCoords[0];
+          map!.setView(singleCoords, 13, {
+            animate: true,
+            duration: 0.5
+          });
+        } else {
+          // Multiple agencies: fit bounds to show all
+          const bounds = L.latLngBounds(allCoords);
+          map!.fitBounds(bounds, {
+            padding: [50, 50], // Add padding around the edges
+            maxZoom: 12, // Maximum zoom when showing multiple agencies
+            animate: true,
+            duration: 0.5
+          });
+        }
       }
     };
 

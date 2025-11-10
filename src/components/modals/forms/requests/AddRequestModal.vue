@@ -560,8 +560,8 @@
   import { hideModal } from "@/core/helpers/dom";
   import { countries } from "@/core/data/countries";
   import Swal from "sweetalert2/dist/sweetalert2.js";
-  import {createRequest, Request, InsertModel, getToInsert } from "@/core/data/requests";
-  import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
+import {createRequest, Request, InsertModel, getToInsert } from "@/core/data/requests";
+import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
   
   import { useAuthStore, type User } from "@/stores/auth";
   import Multiselect from '@vueform/multiselect'
@@ -575,11 +575,11 @@ export default defineComponent({
       const formRef = ref<null | HTMLFormElement>(null);
       const addRequestModalRef = ref<null | HTMLElement>(null);
       const loading = ref<boolean>(false);
-      const store = useAuthStore();
-      const provincesLoading = ref<boolean>(false);
-      const citiesLoading = ref<boolean>(false);
-      const provinces = ref<Array<{Id: string, Name: string}>>([]);
-      const cities = ref<Array<{Id: string, Name: string}>>([]);
+  const store = useAuthStore();
+  const provincesLoading = ref<boolean>(false);
+  const citiesLoading = ref<boolean>(false);
+  const provinces = ref<Array<{Id: string, Name: string}>>([]);
+  const cities = ref<Array<{Id: string, Name: string}>>([]);
         const formData = ref<Request>({
         CustomerId: null,  
         Contract: "Vendita",
@@ -650,7 +650,7 @@ export default defineComponent({
 
         onMounted(async () => {
         loading.value = true;
-        inserModel.value = await getToInsert(store.user.Id);
+        inserModel.value = await getToInsert();
         if(inserModel.value.Customers.length > 0){
           formData.value.CustomerId = inserModel.value.Customers[0].Id;
         } 
@@ -720,11 +720,60 @@ export default defineComponent({
           }
         }
       );
-  
+
+      const validateRequiredFields = () => {
+        const requiredFields = [
+          { key: "CustomerId", label: "Cliente" },
+          { key: "Contract", label: "Contratto" },
+          { key: "PropertyType", label: "Tipologia Immobiliare" },
+          { key: "Province", label: "Provincia" },
+          { key: "City", label: "Comune" },
+          { key: "Location", label: "Località" },
+        ] as const;
+
+        const missingFields = requiredFields.filter(({ key }) => {
+          const value = (formData.value as any)[key];
+
+          if (Array.isArray(value)) {
+            return value.length === 0;
+          }
+
+          if (typeof value === "string") {
+            return value.trim().length === 0;
+          }
+
+          return value === null || value === undefined;
+        });
+
+        if (missingFields.length > 0) {
+          const missingLabels = missingFields.map(field => `• ${field.label}`).join("\n");
+
+          Swal.fire({
+            text: `Compila i campi obbligatori:\n${missingLabels}`,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+
+          return false;
+        }
+
+        return true;
+      };
+
       const submit = () => {
         if (!formRef.value) {
           return;
         }
+
+        if (!validateRequiredFields()) {
+          return;
+        }
+
         formRef.value.validate(async (valid: boolean) => {
           if (valid) {
             loading.value = true;

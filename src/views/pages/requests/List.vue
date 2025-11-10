@@ -371,7 +371,7 @@
 
   <ExportCustomerModal></ExportCustomerModal>
   <AddRequestModal 
-      @formAddSubmitted="getItems(userId, '')"
+      @formAddSubmitted="getItems('')"
     @limitExceeded="handleLimitExceeded"
   ></AddRequestModal>
 
@@ -496,11 +496,18 @@ export default defineComponent({
     // Opzioni filtrate per città
     const filteredCities = ref<Array<{value: string, label: string}>>([]);
 
-    async function getItems(userId, filterRequest: string) {
+    async function getItems(filterRequest: string) {
       loading.value = true;
       tableData.value = [];
-      const results = await getRequestsList(userId, filterRequest);
-      tableData.value = results || [];
+      const effectiveFilterUserId = userId.value || undefined;
+      const results = await getRequestsList(filterRequest, effectiveFilterUserId);
+      let fetchedData = results || [];
+
+      if (user.Role === "Agent") {
+        fetchedData = fetchedData.filter(item => item.UserId === user.Id);
+      }
+
+      tableData.value = fetchedData;
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
       loading.value = false;
     };
@@ -539,7 +546,7 @@ export default defineComponent({
         await deleteRequest(item)
       });
       selectedIds.value.length = 0;
-      await getItems(userId.value, "");
+      await getItems("");
     };
 
     const search = ref<string>("");
@@ -574,7 +581,7 @@ export default defineComponent({
     };
 
     const searchItems = async () => {
-      await getItems(userId.value, "");
+      await getItems("");
 
       // Filtraggio per testo (search)
       if (search.value !== "") {
@@ -641,7 +648,7 @@ export default defineComponent({
         },
       }).then(async () => {
         await deleteRequest(id)
-        await getItems(userId.value, "");
+        await getItems("");
         MenuComponent.reinitialization();
       });
     }
@@ -817,7 +824,7 @@ export default defineComponent({
       // Carica i dati strutturati per i filtri
       await loadStructuredData();
 
-      await getItems(userId.value, "");
+      await getItems("");
     });
 
           return {

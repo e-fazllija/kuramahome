@@ -565,6 +565,9 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       formData.value = await getCustomer(id)
+
+      formData.value.UserId = formData.value.UserId || store.user.Id;
+      formData.value.AdminId = formData.value.AdminId || formData.value.UserId;
       
       // Carica i dati dal JSON se non sono già caricati
       await getProvinceCities();
@@ -622,34 +625,64 @@ export default defineComponent({
     );
 
     async function deleteItem() {
-      loading.value = true;
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const displayName = `${formData.value.FirstName ?? ""} ${formData.value.LastName ?? ""}`.trim() || formData.value.Email || `Cliente #${id}`;
+
+      const htmlMessage = formData.value.CustomerNotes?.length
+        ? `Stai per eliminare definitivamente <strong>${displayName}</strong>.<br><br>Questo cliente ha richieste collegate: l'operazione non è reversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`
+        : `Stai per eliminare definitivamente <strong>${displayName}</strong>.<br><br>L'operazione è irreversibile. Vuoi continuare?`;
+
+      const requiresTyping = !!formData.value.CustomerNotes?.length;
+
+      const result = await Swal.fire({
+        title: "Elimina cliente",
+        html: htmlMessage,
         icon: "warning",
+        input: requiresTyping ? "text" : undefined,
+        inputLabel: requiresTyping ? "Conferma eliminazione" : undefined,
+        inputPlaceholder: requiresTyping ? displayName : undefined,
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: requiresTyping ? "Elimina definitivamente" : "Elimina",
+        cancelButtonText: "Annulla",
+        inputValidator: requiresTyping
+          ? (value) => {
+              if (value !== displayName) {
+                return "Il nome inserito non corrisponde. Riprova.";
+              }
+              return undefined;
+            }
+          : undefined,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light",
         },
-      }).then(async () => {
-        loading.value = false;
-        await deleteCustomer(id)
-        router.push({ name: "clients" })
       });
 
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteCustomer(id);
+        await router.push({ name: "clients" });
+      } finally {
+        loading.value = false;
+      }
     }
 
     const submit = async () => {
       loading.value = true;
-      // Assegna AdminId dall'utente autenticato
-      formData.value.AdminId = store.user.AdminId;
+      formData.value.UserId = formData.value.UserId || store.user.Id;
+      formData.value.AdminId = formData.value.AdminId || formData.value.UserId;
       await updateCustomer(formData.value)
         .then(() => {
           loading.value = false;
 
           Swal.fire({
-            text: "Il modulo Ã¨ stato inviato con successo!",
+            text: "Il modulo è stato inviato con successo!",
             icon: "success",
             buttonsStyling: false,
             confirmButtonText: "Continua!",

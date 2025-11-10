@@ -105,7 +105,7 @@
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-              <select class="form-select form-select-modern type-select" v-model="contract" style="min-width: 220px;">
+              <select class="form-select form-select-modern type-select" v-model="contract" @change="applyFilters" style="min-width: 220px;">
                 <option value="">📋 Tutte le tipologie</option>
                 <option value="Compratore">🏠 Compratore</option>
                 <option value="Venditore">💰 Venditore</option>
@@ -115,8 +115,8 @@
             </div>
         </div>
         
-          <!-- Filtro Agenzia -->
-          <div v-if="user.Role == 'Admin'" class="flex-shrink-0">
+          <!-- Filtro Proprietario -->
+          <div v-if="user.Role !== 'Agent'" class="flex-shrink-0">
             <div class="agency-filter-wrapper position-relative">
               <i class="ki-duotone ki-office-bag agency-filter-icon position-absolute">
                 <span class="path1"></span>
@@ -125,13 +125,22 @@
                 <span class="path4"></span>
                 <span class="path5"></span>
               </i>
-              <select class="form-select form-select-modern agency-select" v-model="agencyId" style="min-width: 220px;">
-            <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
-                  🏢 {{ item.FirstName }} {{ item.LastName }}
-            </option>
-          </select>
-        </div>
-      </div>
+              <select class="form-select form-select-modern agency-select" v-model="ownerFilter" @change="applyFilters" style="min-width: 220px;">
+                <option v-if="user.Role === 'Admin'" value="">📋 Tutti i clienti</option>
+                <option :value="user.Id">👤 I miei clienti</option>
+                <optgroup v-if="user.Role === 'Admin' && defaultSearchItems.Agencies.length" label="Agenzie">
+                  <option v-for="agency in defaultSearchItems.Agencies" :key="agency.Id" :value="agency.Id">
+                    🏢 {{ agency.FirstName }} {{ agency.LastName }}
+                  </option>
+                </optgroup>
+                <optgroup v-if="defaultSearchItems.Agents.length" :label="user.Role === 'Admin' ? 'Agenti' : 'Agenti collegati'">
+                  <option v-for="agent in defaultSearchItems.Agents" :key="agent.Id" :value="agent.Id">
+                    👤 {{ agent.FirstName }} {{ agent.LastName }}
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
 
           <!-- Badge Risultati migliorato -->
           <div class="flex-shrink-0">
@@ -267,7 +276,7 @@
 
   <ExportCustomerModal></ExportCustomerModal>
   <AddCustomerModal 
-    @formAddSubmitted="getItems(agencyId, '')"
+    @formAddSubmitted="getItems('')"
     @limitExceeded="handleLimitExceeded"
   ></AddCustomerModal>
 
@@ -282,7 +291,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
@@ -290,8 +299,8 @@ import AddCustomerModal from "@/components/modals/forms/customer/AddCustomerModa
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import { getCustomers, Customer, deleteCustomer, CustomerTabelData } from "@/core/data/customers";
-import Swal from "sweetalert2";
 import { getSearchItems, SearchModel } from "@/core/data/events";
+import Swal from "sweetalert2";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
@@ -307,7 +316,7 @@ export default defineComponent({
     UpgradeRequiredModal
   },
   setup() {
-    let loading = ref<boolean>(true);
+    const loading = ref<boolean>(true);
     const tableHeader = ref([
       {
         columnName: "Cliente",
@@ -342,51 +351,94 @@ export default defineComponent({
       },
     ]);
     const selectedIds = ref<Array<number>>([]);
-    let selectedId = ref(0);
+    const selectedId = ref(0);
     const tableData = ref<Array<CustomerTabelData>>([]);
-    const initItems = ref([]);
+    const rawItems = ref<Array<CustomerTabelData>>([]);
     const store = useAuthStore();
     const user = store.user;
-    let agencyId = ref("");
     const contract = ref<string>("");
+    const search = ref<string>("");
     const isSearching = ref(false);
-    const defaultSearchItems = ref<SearchModel>({
-      Agencies: [],
-      Agents: [],
-    })
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
+    const ownerFilter = ref<string>(user.Role === "Admin" ? "" : user.Id);
+    const defaultSearchItems = ref<SearchModel>({
+      Agencies: [],
+      Agents: [],
+    });
 
-    async function getItems(agencyId: string, filterRequest: string) {
-      loading.value = true;
-      tableData.value = [];
-      try {
-        const results = await getCustomers(agencyId, filterRequest);
-        if (results && Array.isArray(results)) {
-          for (const key in results) {
-            // Raccoglie tutte le tipologie attive del cliente
-            const types = [];
-            if (results[key].Buyer) types.push("Compratore");
-            if (results[key].Seller) types.push("Venditore");
-            if (results[key].Builder) types.push("Costruttore");
-            if (results[key].GoldCustomer) types.push("Cliente gold");
-            
-            const item = {
-              Id: results[key].Id,
-              Name: results[key].FirstName + " " + results[key].LastName,
-              Type: types.join(", "),
-              Email: results[key].Email,
-              Phone: results[key].Phone.toString()
-            } as CustomerTabelData;
-
-            tableData.value.push(item)
+    const searchingFunc = (obj: any, value: string): boolean => {
+      for (const key in obj) {
+        if (
+          !Number.isInteger(obj[key]) &&
+          !(typeof obj[key] === "object") &&
+          (typeof obj[key] === "string" || typeof obj[key] === "number" || Array.isArray(obj[key]))
+        ) {
+          if (obj[key]?.toString().toLowerCase().includes(value)) {
+            return true;
           }
         }
-        initItems.value.splice(0, tableData.value.length, ...tableData.value);
+      }
+      return false;
+    };
+
+    const applyFilters = () => {
+      let items = [...rawItems.value];
+
+      const filterId = ownerFilter.value || (user.Role === "Agent" ? user.Id : "");
+      if (filterId) {
+        items = items.filter((item) => item.UserId === filterId);
+      }
+
+      if (contract.value) {
+        items = items.filter((item) => {
+          if (!item.Type) {
+            return false;
+          }
+          return item.Type.split(",").map((t) => t.trim()).includes(contract.value);
+        });
+      }
+
+      if (search.value.trim()) {
+        const value = search.value.trim().toLowerCase();
+        items = items.filter((item) => searchingFunc(item, value));
+      }
+
+      tableData.value = items;
+      MenuComponent.reinitialization();
+    };
+
+    async function getItems(filterRequest: string) {
+      loading.value = true;
+      try {
+        const results = await getCustomers(filterRequest);
+        const mapped: Array<CustomerTabelData> = [];
+        if (results && Array.isArray(results)) {
+          results.forEach((customer) => {
+            const types: string[] = [];
+            if (customer.Buyer) types.push("Compratore");
+            if (customer.Seller) types.push("Venditore");
+            if (customer.Builder) types.push("Costruttore");
+            if (customer.GoldCustomer) types.push("Cliente gold");
+
+            mapped.push({
+              Id: customer.Id,
+              Name: `${customer.FirstName ?? ""} ${customer.LastName ?? ""}`.trim(),
+              Type: types.join(", "),
+              Email: customer.Email ?? "",
+              Phone: customer.Phone?.toString() ?? "",
+              UserId: customer.UserId ?? "",
+            });
+          });
+        }
+        rawItems.value = mapped;
+        applyFilters();
       } catch (error) {
         console.error('Error fetching customers:', error);
+        rawItems.value = [];
         tableData.value = [];
+        applyFilters();
       }
       loading.value = false;
     };
@@ -419,12 +471,10 @@ export default defineComponent({
 
     onMounted(async () => {
       isSearching.value = true;
-      if (store.user.Role == "Admin") {
-        defaultSearchItems.value = await getSearchItems(store.user.Id);
+      if (user.Role !== "Agent") {
+        defaultSearchItems.value = await getSearchItems(user.Id);
       }
-      agencyId.value = store.user.AdminId;
-
-      await getItems(agencyId.value, "");
+      await getItems("");
       isSearching.value = false;
       
       // Avvia animazione placeholder
@@ -436,66 +486,44 @@ export default defineComponent({
         await deleteCustomer(item)
       });
       selectedIds.value.length = 0;
-      await getItems(agencyId.value, "");
+      await getItems("");
     };
 
-    const search = ref<string>("");
-
-    const searchItems = async () => {
+    const searchItems = () => {
       isSearching.value = true;
-      
-      // Breve delay per mostrare l'animazione di loading
-      setTimeout(async () => {
-      await getItems(agencyId.value, "");
-
-      if(contract.value)
-        tableData.value = tableData.value.filter(x => x.Type == contract.value)
-
-      if (search.value !== "") {
-        let results: Array<CustomerTabelData> = [];
-        for (let j = 0; j < tableData.value.length; j++) {
-          if (searchingFunc(tableData.value[j], search.value)) {
-            results.push(tableData.value[j]);
-          }
-        }
-        tableData.value.splice(0, tableData.value.length, ...results);
-      }
-
-      MenuComponent.reinitialization();
+      setTimeout(() => {
+        applyFilters();
         isSearching.value = false;
-      }, 300);
-    };
-
-    const searchingFunc = (obj: any, value: string): boolean => {
-      for (let key in obj) {
-        if (
-          !Number.isInteger(obj[key]) &&
-          !(typeof obj[key] === "object") &&
-          (typeof obj[key] === "string" || typeof obj[key] === "number" || Array.isArray(obj[key]))
-        ) {
-          if (obj[key].toString().toLowerCase().indexOf(value) !== -1) {
-            return true;
-          }
-        }
-      }
-      return false;
+      }, 150);
     };
 
     async function deleteItem(id: number) {
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const customer = tableData.value.find((item) => item.Id === id);
+      const displayName = customer?.Name?.trim() || customer?.Email || `Cliente #${id}`;
+
+      const result = await Swal.fire({
+        title: "Elimina cliente",
+        text: `Sei sicuro di voler eliminare definitivamente ${displayName}? L'operazione non può essere annullata e rimuoverà tutte le informazioni collegate.`,
         icon: "warning",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Elimina",
+        cancelButtonText: "Annulla",
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light",
         },
-      }).then(async () => {
-        await deleteCustomer(id)
-        await getItems(agencyId.value, "");
-        MenuComponent.reinitialization();
       });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      await deleteCustomer(id);
+      await getItems("");
+      MenuComponent.reinitialization();
     }
 
     const sort = (sort: Sort) => {
@@ -516,9 +544,12 @@ export default defineComponent({
     const clearAllFilters = () => {
       search.value = "";
       contract.value = "";
-      agencyId.value = store.user.AdminId;
-      searchItems();
+      ownerFilter.value = user.Role === "Admin" ? "" : user.Id;
+      applyFilters();
     };
+
+    watch(ownerFilter, () => applyFilters());
+    watch(contract, () => applyFilters());
 
     // Placeholder dinamico
     const placeholders = [
@@ -610,7 +641,7 @@ export default defineComponent({
       getItems,
       contract,
       user,
-      agencyId,
+      ownerFilter,
       defaultSearchItems,
       clearAllFilters,
       currentPlaceholder,
@@ -618,12 +649,14 @@ export default defineComponent({
       getInitials,
       getCustomerColor,
       getTypeClass,
-      copyToClipboard
-      ,isCheckingLimit
-      ,handleNewCustomerClick
-      ,showUpgradeModal
-      ,limitStatus
-      ,handleLimitExceeded
+      copyToClipboard,
+      isCheckingLimit,
+      handleNewCustomerClick,
+      showUpgradeModal,
+      limitStatus,
+      handleLimitExceeded,
+      applyFilters,
+      loading
     };
   },
 });

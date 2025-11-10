@@ -695,6 +695,7 @@ export default defineComponent({
       ZipCode: "",
       Password: "",
       Color: "#00FFFF", // Default: Ciano
+      EmailConfirmed: true,
       // Dati Fiscali
       UserType: 1, // Default: Persona Fisica
       CompanyName: "",
