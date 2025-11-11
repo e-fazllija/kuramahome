@@ -196,7 +196,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
+            <input class="form-control modern-input" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
           </div>
           <!--end::Col-->
         </div>
@@ -215,7 +215,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
+            <input class="form-control modern-input" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
           </div>
           <!--end::Col-->
         </div>
@@ -298,7 +298,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
+            <input class="form-control modern-input" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -317,7 +317,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
+            <input class="form-control modern-input" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -336,7 +336,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
+            <input class="form-control modern-input" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -355,7 +355,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
+            <input class="form-control modern-input" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -862,13 +862,47 @@ export default defineComponent({
       }
     }
 
-    const submit = async () => {
-      loading.value = true;
-      formData.value.City = selectedCities.value.toString();
-      // Location è già una stringa, non serve convertire
-      formData.value.PropertyType = selectedPropertyTypes.value.toString();
+    const toNumber = (value: unknown): number => {
+      if (value === null || value === undefined) {
+        return 0;
+      }
+      if (typeof value === "number") {
+        return Number.isFinite(value) ? value : 0;
+      }
+      const parsed = Number((value as string).toString().replace(",", "."));
+      return Number.isNaN(parsed) ? 0 : parsed;
+    };
 
-      await updateRequest(formData.value)
+    const submit = async () => {
+      const payload: Request = {
+        ...formData.value,
+        City: selectedCities.value.join(","),
+        PropertyType: selectedPropertyTypes.value.join(","),
+        PriceFrom: toNumber(formData.value.PriceFrom),
+        PriceTo: toNumber(formData.value.PriceTo),
+        GardenFrom: toNumber(formData.value.GardenFrom),
+        GardenTo: toNumber(formData.value.GardenTo),
+        MQFrom: toNumber(formData.value.MQFrom),
+        MQTo: toNumber(formData.value.MQTo),
+        MQGarden: toNumber(formData.value.MQGarden),
+        ParkingSpaces: toNumber(formData.value.ParkingSpaces),
+      };
+
+      // Mantieni i valori normalizzati anche nel modello locale
+      formData.value.PriceFrom = payload.PriceFrom;
+      formData.value.PriceTo = payload.PriceTo;
+      formData.value.GardenFrom = payload.GardenFrom;
+      formData.value.GardenTo = payload.GardenTo;
+      formData.value.MQFrom = payload.MQFrom;
+      formData.value.MQTo = payload.MQTo;
+      formData.value.MQGarden = payload.MQGarden;
+      formData.value.ParkingSpaces = payload.ParkingSpaces;
+      formData.value.PropertyType = payload.PropertyType;
+      formData.value.City = payload.City;
+
+      loading.value = true;
+
+      await updateRequest(payload)
         .then(() => {
           loading.value = false;
 

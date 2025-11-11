@@ -97,8 +97,10 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <!--begin::Input group-->
-            <Multiselect v-model="formData.CustomerId" :options="inserModel.Customers" label="label" valueProp="Id"
-              :searchable="true" :close-on-select="true" :clear-on-select="false" placeholder="Seleziona il cliente" class="multiselect-modern" />
+            <el-form-item prop="CustomerId">
+              <Multiselect v-model="formData.CustomerId" :options="inserModel.Customers" label="label" valueProp="Id"
+                :searchable="true" :close-on-select="true" :clear-on-select="false" placeholder="Seleziona il cliente" class="multiselect-modern" style="width: 100%;" />
+            </el-form-item>
             <!--end::Input group-->
           </div>
         </div>
@@ -120,9 +122,11 @@
             <!--begin::Input group-->
             <div class="d-flex flex-column fv-row">
               <!--begin::Input-->
-              <select class="form-select modern-select" v-model="formData.UserId" required>
-                <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.FirstName }} {{ user.LastName }}</option>
-              </select>
+              <el-form-item prop="AgentId">
+                <select class="form-select modern-select" v-model="formData.AgentId" required>
+                  <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.FirstName }} {{ user.LastName }}</option>
+                </select>
+              </el-form-item>
               <!--end::Input-->
             </div>
             <!--end::Input group-->
@@ -156,18 +160,20 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <select as="select" name="Category" class="form-select modern-select"
-              v-model="formData.Category" required>
-              <option value>Seleziona una Categoria...</option>
-              <option value="Residenziale">Residenziale</option>
-              <option value="Capannone">Capannone</option>
-              <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
-              <option value="Magazzino">Magazzino</option>
-              <option value="Garage">Garage</option>
-              <option value="Ufficio">Ufficio</option>
-              <option value="Terreno">Terreno</option>
-              <option value="Rustico / Casale">Rustico / Casale</option>
-            </select>
+            <el-form-item prop="Category">
+              <select as="select" name="Category" class="form-select modern-select"
+                v-model="formData.Category" required>
+                <option value>Seleziona una Categoria...</option>
+                <option value="Residenziale">Residenziale</option>
+                <option value="Capannone">Capannone</option>
+                <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
+                <option value="Magazzino">Magazzino</option>
+                <option value="Garage">Garage</option>
+                <option value="Ufficio">Ufficio</option>
+                <option value="Terreno">Terreno</option>
+                <option value="Rustico / Casale">Rustico / Casale</option>
+              </select>
+            </el-form-item>
           </div>
           <!--end::Col-->
         </div>
@@ -175,7 +181,7 @@
         <!--begin::Input group Tipologia-->
         <div v-if="showTipologia" class="d-flex flex-column mb-7 fv-row">
           <label class="fs-6 fw-semobold mb-2">
-            <span class="required">Tipologia</span>
+            <span>Tipologia</span>
             <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"
               title="Seleziona una tipologia di immobile"></i>
           </label>
@@ -194,12 +200,14 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <select as="select" name="Status" class="form-select modern-select" v-model="formData.Status"
-              required>
-              <option value="">Scegli tra vendita e affitto</option>
-              <option value="Vendita">Vendita</option>
-              <option value="Affitto">Affitto</option>
-            </select>
+            <el-form-item prop="Status">
+              <select as="select" name="Status" class="form-select modern-select" v-model="formData.Status"
+                required>
+                <option value="">Scegli tra vendita e affitto</option>
+                <option value="Vendita">Vendita</option>
+                <option value="Affitto">Affitto</option>
+              </select>
+            </el-form-item>
           </div>
           <!--end::Col-->
         </div>
@@ -226,10 +234,12 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.State" required>
-              <option value="">🗺️ Seleziona provincia</option>
-              <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
-            </select>
+            <el-form-item prop="State">
+              <select class="form-select modern-select" v-model="formData.State" required>
+                <option value="">🗺️ Seleziona provincia</option>
+                <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
+              </select>
+            </el-form-item>
           </div>
           <!--end::Col-->
         </div>
@@ -243,10 +253,12 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <select class="form-select" v-model="formData.City" required>
-                <option value="">Seleziona città</option>
-                <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
-              </select>
+              <el-form-item prop="City">
+                <select class="form-select" v-model="formData.City" required>
+                  <option value="">Seleziona città</option>
+                  <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
+                </select>
+              </el-form-item>
             </div>
           </div>
           <!--end::Col-->
@@ -269,11 +281,13 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Codice Postale</label>
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Codice Fiscale</label>
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.PostCode" type="text" required />
+            <el-form-item prop="PostCode">
+              <input class="form-control modern-input" v-model="formData.PostCode" type="text" placeholder="Inserisci il codice fiscale" required />
+            </el-form-item>
           </div>
           <!--end::Input-->
         </div>
@@ -326,12 +340,11 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Totale piani edificio</label>
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Totale piani edificio</label>
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.TotalBuildingfloors" type="number"
-              required />
+            <input class="form-control modern-input" v-model="formData.TotalBuildingfloors" type="number" />
           </div>
           <!--end::Input-->
         </div>
@@ -518,28 +531,30 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Classe energetica</label>
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Classe energetica</label>
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <select as="select" name="EnergyClass" class="form-select modern-select"
-              v-model="formData.EnergyClass">
-              <option value="">Seleziona il tipo di Classe energetica</option>
-              <option value="Proprietà Esente">Proprietà Esente</option>
-              <option value="Non classificabile">Non classificabile</option>
-              <option value="A4">A4</option>
-              <option value="A3">A3</option>
-              <option value="A2">A2</option>
-              <option value="A1">A1</option>
-              <option value="A+">A+</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-              <option value="E">E</option>
-              <option value="F">F</option>
-              <option value="G">G</option>
-            </select>
+            <el-form-item prop="EnergyClass">
+              <select as="select" name="EnergyClass" class="form-select modern-select"
+                v-model="formData.EnergyClass">
+                <option value="">Seleziona il tipo di Classe energetica</option>
+                <option value="Proprietà Esente">Proprietà Esente</option>
+                <option value="Non classificabile">Non classificabile</option>
+                <option value="A4">A4</option>
+                <option value="A3">A3</option>
+                <option value="A2">A2</option>
+                <option value="A1">A1</option>
+                <option value="A+">A+</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="G">G</option>
+              </select>
+            </el-form-item>
             <!--end::Input-->
           </div>
           <!--end::Col-->
@@ -573,18 +588,20 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Stato dell'immobile</label>
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Stato dell'immobile</label>
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <select as="select" name="StateOfTheProperty" class="form-select modern-select"
-              v-model="formData.StateOfTheProperty">
-              <option value="">Seleziona lo Stato dell'immobile</option>
-              <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
-              <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
-              <option value="Buono / Abitabile">Buono / Abitabile</option>
-              <option value="Da Ristrutturare">Da Ristrutturare</option>
-            </select>
+            <el-form-item prop="StateOfTheProperty">
+              <select as="select" name="StateOfTheProperty" class="form-select modern-select"
+                v-model="formData.StateOfTheProperty">
+                <option value="">Seleziona lo Stato dell'immobile</option>
+                <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
+                <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
+                <option value="Buono / Abitabile">Buono / Abitabile</option>
+                <option value="Da Ristrutturare">Da Ristrutturare</option>
+              </select>
+            </el-form-item>
             <!--end::Input-->
           </div>
           <!--end::Col-->
@@ -594,12 +611,14 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Anno di costruzione</label>
+          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Anno di costruzione</label>
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.YearOfConstruction"
-              type="number" />
+            <el-form-item prop="YearOfConstruction">
+              <input class="form-control modern-input" v-model="formData.YearOfConstruction"
+                type="number" />
+            </el-form-item>
           </div>
           <!--end::Input-->
         </div>
@@ -636,12 +655,11 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Prezzo Ribassato</label>
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Prezzo Ribassato</label>
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.PriceReduced" type="number"
-              required />
+            <input class="form-control modern-input" v-model="formData.PriceReduced" type="number" />
           </div>
           <!--end::Input-->
         </div>
@@ -697,7 +715,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Imposta in Home</label>
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Imposta in Home</label>
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
@@ -713,7 +731,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Imposta in Evidenza</label>
+          <label class="col-lg-4 col-form-label fw-semobold fs-6">Imposta in Evidenza</label>
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
@@ -798,7 +816,7 @@
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
             <input class="form-control modern-input" v-model="formData.AssignmentEnd" type="date"
-              placeholder="yyyy-MM-dd" required />
+              placeholder="yyyy-MM-dd" />
           </div>
           <!--end::Input-->
         </div>
@@ -808,7 +826,7 @@
         <div class="d-flex flex-column mb-7 fv-row">
           <!--begin::Label-->
           <label class="fs-6 fw-semobold mb-2">
-            <span class="required">Tipologia Incarico</span>
+            <span>Tipologia Incarico</span>
             <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"></i>
           </label>
           <!--end::Label-->
@@ -907,18 +925,18 @@
       <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
         class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
         <div>
-          <AddNewForm />
-          <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
+          <!-- <AddNewForm /> -->
+          <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
             data-bs-target="#kt_modal_scheda">
             <KTIcon icon-name="file" icon-class="fs-2 me-1" />
             Scheda
-          </button>
-          <AddNewPreventive />
-          <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
+          </button> -->
+          <!-- <AddNewPreventive /> -->
+          <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
             data-bs-target="#kt_modal_preventivo">
             <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
             Preventivo
-          </button>
+          </button> -->
         </div>
         <div>
           <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
@@ -1086,8 +1104,8 @@
 </template>
 
 <script lang="ts">
-import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
-import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
+// import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
+// import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -1111,7 +1129,7 @@ import Multiselect from '@vueform/multiselect'
 
 export default defineComponent({
   name: "update",
-  components: { draggable, Multiselect, AddNewForm, AddNewPreventive },
+  components: { draggable, Multiselect /*, AddNewForm, AddNewPreventive */ },
   setup() {
     const store = useAuthStore();
     const user = store.user;
@@ -1204,6 +1222,7 @@ export default defineComponent({
       Description: "",
       CustomerId: null,
       UserId: "",
+      AgentId: "",
       AssignmentEnd: "",
       User: null,
       VideoUrl: "",
@@ -1218,7 +1237,49 @@ export default defineComponent({
       Users: []
     });
 
+    const validatePrice = (_rule: any, value: number | string, callback: any) => {
+      if (isTrattativaRiservata.value) {
+        return callback();
+      }
+      const numericValue = Number(value);
+      if (value === null || value === undefined || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        callback(new Error("Il prezzo è obbligatorio"));
+      } else {
+        callback();
+      }
+    };
+
+    const validateYearOfConstruction = (_rule: any, value: number | string, callback: any) => {
+      const numericValue = Number(value);
+      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        callback(new Error("L'anno di costruzione è obbligatorio"));
+      } else {
+        callback();
+      }
+    };
+
     const rules = ref({
+      CustomerId: [
+        {
+          required: true,
+          message: "Il cliente è obbligatorio",
+          trigger: "change",
+        },
+      ],
+      AgentId: [
+        {
+          required: true,
+          message: "L'agente è obbligatorio",
+          trigger: "change",
+        },
+      ],
+      Title: [
+        {
+          required: true,
+          message: "Il titolo è obbligatorio",
+          trigger: "change",
+        },
+      ],
       Category: [
         {
           required: true,
@@ -1230,6 +1291,13 @@ export default defineComponent({
         {
           required: true,
           message: "E' obbligatorio",
+          trigger: "change",
+        },
+      ],
+      Status: [
+        {
+          required: true,
+          message: "Lo stato vendita è obbligatorio",
           trigger: "change",
         },
       ],
@@ -1257,7 +1325,7 @@ export default defineComponent({
       PostCode: [
         {
           required: true,
-          message: "E' obbligatorio",
+          message: "Il codice fiscale è obbligatorio",
           trigger: "change",
         },
       ],
@@ -1275,17 +1343,30 @@ export default defineComponent({
           trigger: "change",
         },
       ],
-      TotalBuildingfloors: [
+      Price: [
+        { validator: validatePrice, trigger: "change" },
+      ],
+      EnergyClass: [
         {
-          required: false,
-          message: "E' obbligatorio",
+          required: true,
+          message: "La classe energetica è obbligatoria",
           trigger: "change",
         },
       ],
-      Price: [
+      StateOfTheProperty: [
         {
           required: true,
-          message: "E' obbligatorio",
+          message: "Lo stato dell'immobile è obbligatorio",
+          trigger: "change",
+        },
+      ],
+      YearOfConstruction: [
+        { validator: validateYearOfConstruction, trigger: "change" },
+      ],
+      Description: [
+        {
+          required: true,
+          message: "La descrizione è obbligatoria",
           trigger: "change",
         },
       ],
@@ -1298,8 +1379,11 @@ export default defineComponent({
       formData.value = await getRealEstateProperty(id)
       formData.value.AssignmentEnd = formData.value.AssignmentEnd.split('T')[0]
       inserModel.value = await getToInsert();
-      if (inserModel.value.Users.length > 0) {
-        formData.value.UserId = formData.value.UserId;
+      if (!formData.value.AgentId && formData.value.UserId) {
+        formData.value.AgentId = formData.value.UserId;
+      }
+      if (!formData.value.AgentId) {
+        formData.value.AgentId = store.user.Id;
       }
       
       // Inizializza la checkbox "Trattativa riservata" in base al prezzo
@@ -1456,24 +1540,75 @@ export default defineComponent({
       Swal.fire({
         text: "Confermare l'eliminazione?",
         icon: "warning",
+        showCancelButton: true,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
+        confirmButtonText: "Sì, elimina",
+        cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
-          confirmButton: "btn btn-danger",
+          confirmButton: "btn btn-danger me-3",
+          cancelButton: "btn btn-light"
         },
-      }).then(async () => {
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await deleteRealEstateProperty(id);
+          router.push({ name: "properties" });
+        }
         loading.value = false;
-        await deleteRealEstateProperty(id)
-        router.push({ name: "properties" })
+      }).catch(() => {
+        loading.value = false;
       });
-
     }
 
     const submit = () => {
       if (!formRef.value) {
         return;
       }
+
+      const missingFields: string[] = [];
+      if (!formData.value.CustomerId) missingFields.push("Cliente");
+      if (!formData.value.AgentId) missingFields.push("Agente");
+      if (!formData.value.Title || !formData.value.Title.trim()) missingFields.push("Titolo");
+      if (!formData.value.Category) missingFields.push("Categoria");
+      if (!formData.value.Status) missingFields.push("Stato vendita");
+      if (!formData.value.AddressLine || !formData.value.AddressLine.trim()) missingFields.push("Indirizzo");
+      if (!formData.value.State) missingFields.push("Provincia");
+      if (!formData.value.City) missingFields.push("Comune");
+      if (!formData.value.PostCode) missingFields.push("Codice fiscale");
+      if (!formData.value.CommercialSurfaceate || formData.value.CommercialSurfaceate <= 0) missingFields.push("Superficie");
+      if (!formData.value.EnergyClass) missingFields.push("Classe energetica");
+      if (!formData.value.StateOfTheProperty) missingFields.push("Stato dell'immobile");
+      if (!formData.value.YearOfConstruction || formData.value.YearOfConstruction <= 0) missingFields.push("Anno costruzione");
+      const priceValue = formData.value.Price;
+      const numericPrice = Number(priceValue);
+      if (
+        !isTrattativaRiservata.value &&
+        (priceValue === null ||
+          priceValue === undefined ||
+          Number.isNaN(numericPrice) ||
+          numericPrice <= 0)
+      ) {
+        missingFields.push("Prezzo");
+      }
+      if (!formData.value.Description || !formData.value.Description.trim()) missingFields.push("Descrizione");
+
+      if (missingFields.length > 0) {
+        Swal.fire({
+          title: "Dati mancanti",
+          icon: "error",
+          html: `<div class="text-start"><p>Completa i seguenti campi obbligatori:</p><ul>${missingFields
+            .map((field) => `<li>${field}</li>`)
+            .join("")}</ul></div>`,
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
+      }
+
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
           loading.value = true;
