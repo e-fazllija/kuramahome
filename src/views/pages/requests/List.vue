@@ -35,7 +35,7 @@
             <span class="fw-bold">Nuova Richiesta</span>
           </span>
           <span v-else>
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <KTSpinner size="sm" :inline="true" />
             Verifica in corso...
           </span>
         </button>
@@ -60,7 +60,7 @@
               </i>
               <span v-if="!loading">Cerca</span>
               <span v-else>
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <KTSpinner size="sm" :inline="true" />
                 Ricerca...
               </span>
             </button>
@@ -282,9 +282,9 @@
     <!--end::Search-->
     <div class="card-body pt-0">
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
-        :enable-items-per-page-dropdown="true" :checkbox-enabled="true" checkbox-label="Id" :loading="loading">
+        :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id" :loading="loading">
         <template v-slot:CustomerName="{ row: request }">
-          <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center clickable-row" @click="goToRequestDetails(request.Id)" style="cursor: pointer;">
             <!-- Avatar con iniziali -->
             <div class="symbol symbol-40px me-3">
               <div class="symbol-label" :style="{ 
@@ -357,12 +357,10 @@
               class="btn btn-action btn-action-info"
               title="Visualizza dettagli richiesta"
             >
-              <i class="ki-duotone ki-eye fs-4">
+              <i class="ki-duotone ki-notepad-edit fs-4">
                 <span class="path1"></span>
                 <span class="path2"></span>
-                <span class="path3"></span>
               </i>
-              <span>Dettagli</span>
             </router-link>
           </div>
         </template>
@@ -394,6 +392,7 @@
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
+import { useRouter } from "vue-router";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
@@ -409,7 +408,10 @@ import { useAuthStore } from "@/stores/auth";
 import { getSearchItems, SearchModel } from "@/core/data/events";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import Multiselect from '@vueform/multiselect'
-import '@/assets/css/filters.css'
+import KTSpinner from "@/components/Spinner.vue";
+import '@/assets/css/filters.css';
+import '@/assets/css/table-actions.css';
+import '@/assets/css/lists-common.css';
 
 export default defineComponent({
   name: "requests",
@@ -417,11 +419,13 @@ export default defineComponent({
     Datatable,
     ExportCustomerModal,
     AddRequestModal,
+    KTSpinner,
     UpgradeRequiredModal,
     Multiselect
   },
   setup() {
     const authStore = useAuthStore();
+    const router = useRouter();
     const tableHeader = ref([
       {
         columnName: "Cliente",
@@ -824,6 +828,12 @@ export default defineComponent({
       }
     };
 
+    // Funzione per navigare ai dettagli della richiesta
+    const goToRequestDetails = (id: number) => {
+      const route = router.resolve({ name: 'request', params: { id: id.toString() } });
+      window.open(route.href, '_blank');
+    };
+
     onMounted(async () => {
       if (authStore.user.Role == "Admin") {
         defaultSearchItems.value = await getSearchItems(authStore.user.Id);
@@ -878,7 +888,8 @@ export default defineComponent({
       handleNewRequestClick,
       showUpgradeModal,
       limitStatus,
-      handleLimitExceeded
+      handleLimitExceeded,
+      goToRequestDetails
       };
   },
     data() {
@@ -902,360 +913,3 @@ export default defineComponent({
 
 });
 </script>
-
-<style scoped>
-/* Search Bar stile Locations */
-.search-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.search-input {
-  background-color: #f4f6f9 !important;
-  border: 1px solid #e4e6ef !important;
-  border-radius: 1.2rem !important;
-  padding: 0.75rem 3.5rem 0.75rem 1.25rem !important;
-  font-weight: 500;
-  color: #3f4254;
-  transition: all 0.3s ease;
-}
-
-.search-input:focus {
-  background-color: #ffffff !important;
-  border-color: #0095e8 !important;
-  box-shadow: 0 0 0 0.2rem rgba(0, 149, 232, 0.15);
-}
-
-.search-input::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-.btn-search {
-  background: linear-gradient(135deg, #0095e8 0%, #00d4ff 100%);
-  border: none;
-  border-radius: 1.2rem;
-  padding: 0.75rem 1.5rem;
-  box-shadow: 0 2px 6px rgba(0, 149, 232, 0.2);
-  transition: all 0.3s ease;
-}
-
-.btn-search:hover {
-  background: linear-gradient(135deg, #006db3 0%, #0095e8 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 149, 232, 0.35);
-}
-
-.btn-clear {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #f64e60;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.btn-clear:hover {
-  background-color: #d63447;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 4px 8px rgba(246, 78, 96, 0.3);
-}
-
-.btn-clear i {
-  color: white;
-}
-
-/* Form Select Moderno */
-.form-select-modern,
-.form-control.form-select-modern {
-  background-color: #f4f6f9;
-  border: 1px solid #e4e6ef;
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  color: #3f4254;
-  transition: all 0.3s ease;
-}
-
-.form-select-modern:focus,
-.form-control.form-select-modern:focus {
-  background-color: #ffffff;
-  border-color: #0095e8;
-  box-shadow: 0 0 0 0.2rem rgba(0, 149, 232, 0.15);
-}
-
-.form-select-modern:disabled,
-.form-control.form-select-modern:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Badge moderni */
-.badge-light-info {
-  background-color: #e1f5fe;
-  color: #0095e8;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-}
-
-.badge-light-success {
-  background-color: #e8f8f5;
-  color: #1bc5bd;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-}
-
-.badge-light-warning {
-  background-color: #fff8e1;
-  color: #ffa800;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-}
-
-.badge-light-danger {
-  background-color: #ffe2e5;
-  color: #f64e60;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-}
-
-.badge-light-secondary {
-  background-color: #f4f6f9;
-  color: #7e8299;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-}
-
-.badge-light-primary {
-  background-color: #e1f0ff;
-  color: #3699ff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-}
-
-/* Selected tags */
-.selected-tags .badge {
-  padding: 0.5rem 0.85rem;
-  cursor: pointer;
-}
-
-.selected-tags .cursor-pointer {
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.selected-tags .cursor-pointer:hover {
-  color: #f64e60 !important;
-  transform: scale(1.2);
-}
-
-/* Bottoni stile Locations */
-.btn {
-  transition: all 0.3s ease;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-}
-
-.btn-sm {
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-}
-
-.btn-light {
-  background-color: #f4f6f9;
-  border: 1px solid #e4e6ef;
-  color: #7e8299;
-}
-
-.btn-light:hover {
-  background-color: #e4e6ef;
-  border-color: #d1d3e0;
-  color: #5e6278;
-}
-
-.btn-light-info {
-  background-color: #e1f5fe;
-  border: 1px solid #b3e5fc;
-  color: #0095e8;
-}
-
-.btn-light-info:hover {
-  background-color: #b3e5fc;
-  border-color: #0095e8;
-  color: #006db3;
-  box-shadow: 0 4px 12px rgba(0, 149, 232, 0.25);
-}
-
-.btn-light-danger {
-  background-color: #ffe2e5;
-  border: 1px solid #ffcdd2;
-  color: #f64e60;
-}
-
-.btn-light-danger:hover {
-  background-color: #ffcdd2;
-  border-color: #f64e60;
-  color: #d63447;
-  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.25);
-}
-
-/* Tabella uniformata */
-:deep(thead th) {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-bottom: 2px solid #e4e6ef;
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  font-size: 0.7rem;
-  color: #5e6278;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-align: center;
-}
-
-:deep(tbody td) {
-  padding: 0.85rem 1rem;
-  vertical-align: middle;
-  border-bottom: 1px solid #f4f6f9;
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.875rem;
-  text-align: center;
-}
-
-:deep(tbody tr) {
-  transition: all 0.25s ease;
-}
-
-:deep(tbody tr:hover) {
-  background-color: #f9fafb !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transform: translateX(2px);
-}
-
-/* Bottoni Azioni */
-.action-buttons {
-  gap: 0.5rem !important;
-}
-
-.btn-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  border: none;
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-.btn-action-info {
-  background-color: #e1f5fe;
-  border: 1px solid #b3e5fc;
-  color: #0095e8;
-}
-
-.btn-action-info:hover {
-  background-color: #b3e5fc;
-  border-color: #0095e8;
-  color: #006db3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 149, 232, 0.25);
-}
-
-/* Collapsible section */
-.collapsible:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%) !important;
-  border-color: #0095e8 !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 149, 232, 0.15);
-}
-
-.collapsible:hover .ki-duotone {
-  transform: scale(1.1);
-}
-
-/* Multiselect moderno */
-:deep(.multiselect-modern) {
-  background-color: #f4f6f9;
-  border: 1px solid #e4e6ef;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
-}
-
-:deep(.multiselect-modern:hover) {
-  border-color: #0095e8;
-  box-shadow: 0 4px 12px rgba(0, 149, 232, 0.15);
-}
-
-/* Spinner loading */
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.15rem;
-}
-
-.btn-search:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Link styling */
-:deep(a) {
-  color: #495057 !important;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-:deep(a:hover) {
-  color: #0095e8 !important;
-  font-weight: 600;
-}
-
-/* Bottone copia */
-.btn-copy {
-  opacity: 0;
-  transition: all 0.2s ease;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-}
-
-tbody tr:hover .btn-copy {
-  opacity: 1;
-}
-
-.btn-copy:hover {
-  transform: scale(1.1);
-}
-
-/* Avatar con iniziali */
-.symbol-label {
-  border-radius: 0.75rem !important;
-  transition: all 0.3s ease;
-}
-
-tbody tr:hover .symbol-label {
-  transform: scale(1.05);
-}
-
-</style>

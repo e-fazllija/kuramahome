@@ -283,7 +283,7 @@ export default defineComponent({
         center: mainCoords,
         zoom: 9.56, // Initial zoom, will be adjusted based on visible agencies
         zoomControl: true,
-        scrollWheelZoom: false,
+        scrollWheelZoom: true,
         doubleClickZoom: false,
         dragging: true,
         touchZoom: false,

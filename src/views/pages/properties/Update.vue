@@ -24,11 +24,7 @@
     </div>
     <!--begin::Card header-->
   </div>
-  <div v-if="loading" class="d-flex justify-content-center">
-    <div class="spinner-border" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-  </div>
+  <KTSpinner v-if="loading" :centered="true" size="md" />
   <!--begin::Content-->
   <div v-else class="collapse show">
     <!--begin::Tabs-->
@@ -963,7 +959,7 @@
               <span class="btn-label">Salva Modifiche</span>
             </span>
             <span v-if="loading" class="d-flex align-items-center">
-              <span class="spinner-border spinner-border-sm me-2"></span>
+              <KTSpinner size="sm" :inline="true" />
               <span class="btn-label">Attendere...</span>
             </span>
           </button>

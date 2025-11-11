@@ -24,11 +24,7 @@
     </div>
     <!--begin::Card header-->
   </div>
-  <div v-if="loading" class="d-flex justify-content-center">
-    <div class="spinner-border" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-  </div>
+  <KTSpinner v-if="loading" :centered="true" size="md" />
   <!--begin::Content-->
   <div v-else>
     <!--begin::Form-->
@@ -511,7 +507,7 @@
             <span class="btn-label">Salva Modifiche</span>
           </span>
           <span v-if="loading" class="d-flex align-items-center">
-            <span class="spinner-border spinner-border-sm me-2"></span>
+            <KTSpinner size="sm" :inline="true" />
             <span class="btn-label">Attendere...</span>
           </span>
         </button>
@@ -625,6 +621,7 @@ import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteReq
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
+import KTSpinner from "@/components/Spinner.vue";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import arraySort from "array-sort";
@@ -634,7 +631,7 @@ import Multiselect from '@vueform/multiselect'
 
 export default defineComponent({
   name: "update-request",
-  components: { Datatable, Multiselect },
+  components: { Datatable, Multiselect, KTSpinner },
   setup() {
     const store = useAuthStore();
     const user = store.user;

@@ -1,9 +1,9 @@
 <template>
-  <div class="kt-table-footer">
-    <div class="kt-footer-content">
+  <div class="card-footer bg-body border-top py-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
       <!-- Items per page selector - hidden on mobile -->
-      <div class="kt-items-per-page d-none d-md-flex" v-if="itemsPerPageDropdownEnabled">
-        <label class="kt-items-label">Mostra:</label>
+      <div class="d-none d-md-flex align-items-center gap-2" v-if="itemsPerPageDropdownEnabled">
+        <label class="form-label mb-0 text-muted small">Mostra:</label>
         <TableItemsPerPageSelect
           v-model:itemsPerPage="itemsCountInTable"
           :items-per-page-dropdown-enabled="itemsPerPageDropdownEnabled"
@@ -11,14 +11,14 @@
       </div>
 
       <!-- Pagination info -->
-      <div class="kt-pagination-info">
-        <span class="kt-info-text">
+      <div class="text-muted small">
+        <span class="badge bg-light text-dark border">
           {{ getShowingRange() }} di {{ count }}
         </span>
       </div>
 
       <!-- Enhanced Pagination -->
-      <div class="kt-pagination-wrapper" v-if="pageCount > 1">
+      <div v-if="pageCount > 1">
         <TablePagination
           :total-pages="pageCount"
           :total="count"

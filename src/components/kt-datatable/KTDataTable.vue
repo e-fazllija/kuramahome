@@ -1,5 +1,5 @@
 <template>
-  <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+  <div class="card border rounded">
     <TableContent
       @on-items-select="onItemSelect"
       @on-sort="onSort"
