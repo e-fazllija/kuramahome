@@ -1,21 +1,21 @@
 <template>
   <!--begin::Header-->
-  <div v-if="headerDisplay" id="kt_app_header" class="app-header header-transparent">
+  <header v-if="headerDisplay" id="kt_app_header" class="app-header header-elegant position-fixed top-0 start-0 end-0 z-index-1030">
     <!--begin::Header container-->
     <div
-      class="app-container d-flex align-items-center"
+      class="app-container d-flex align-items-center h-100"
       :class="{
         'container-fluid': headerWidthFluid,
         'container-xxl': !headerWidthFluid,
       }"
     >
       <!--begin::Logo-->
-      <div class="d-none d-lg-flex align-items-center me-3">
-        <router-link to="/dashboard">
+      <div class="d-none d-lg-flex align-items-center me-4">
+        <router-link to="/dashboard" class="text-decoration-none">
           <img
             alt="Logo"
             :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-            style="height: 50px;"
+            class="header-logo"
           />
         </router-link>
       </div>
@@ -23,11 +23,11 @@
 
       <!--begin::Mobile logo-->
       <div class="d-flex d-lg-none align-items-center me-3">
-        <router-link to="/">
+        <router-link to="/" class="text-decoration-none">
           <img
             alt="Logo"
             :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-            class="h-50px"
+            class="header-logo-mobile"
           />
         </router-link>
       </div>
@@ -35,29 +35,37 @@
 
       <!--begin::Header wrapper-->
       <div
-        class="d-flex align-items-center flex-grow-1"
+        class="d-flex align-items-center flex-grow-1 w-100"
         id="kt_app_header_wrapper"
       >
         <KTHeaderMenu />
-        <div class="d-flex align-items-center ms-auto">
+
+        <!--begin::Right side-->
+        <div class="d-flex align-items-center ms-auto gap-2">
           <KTHeaderNavbar />
-          <!--begin::Header menu toggle-->
+          <!--begin::Mobile menu toggle-->
           <button 
-            class="btn btn-icon btn-active-color-primary w-35px h-35px d-lg-none me-2"
+            class="btn btn-icon btn-active-color-primary d-lg-none"
+            :class="{
+              'btn-active': isMobileMenuOpen
+            }"
             @click="toggleMobileMenu"
             type="button"
+            aria-label="Toggle mobile menu"
           >
-            <KTIcon icon-name="text-align-left" icon-class="fs-1" />
+            <KTIcon 
+              :icon-name="isMobileMenuOpen ? 'cross' : 'text-align-left'" 
+              icon-class="fs-2" 
+            />
           </button>
-          <!--end::Header menu toggle-->
-          
+          <!--end::Mobile menu toggle-->
         </div>
+        <!--end::Right side-->
       </div>
       <!--end::Header wrapper-->
-
     </div>
     <!--end::Header container-->
-  </div>
+  </header>
   <!--end::Header-->
 
   <!--begin::Mobile Menu Drawer-->
@@ -65,55 +73,56 @@
     <Transition name="mobile-menu-overlay">
       <div 
         v-if="isMobileMenuOpen" 
-        class="mobile-menu-overlay"
+        class="mobile-menu-overlay position-fixed top-0 start-0 end-0 bottom-0"
         @click="closeMobileMenu"
+        aria-label="Close menu"
       ></div>
     </Transition>
     <Transition name="mobile-menu-drawer">
-      <div 
+      <aside 
         v-if="isMobileMenuOpen" 
-        class="mobile-menu-drawer"
+        class="mobile-menu-drawer position-fixed top-0 end-0 bottom-0 d-flex flex-column"
+        role="complementary"
+        aria-label="Mobile navigation menu"
       >
         <!--begin::Mobile Menu Header-->
-        <div class="mobile-menu-header">
-          <div class="d-flex align-items-center">
+        <div class="mobile-menu-header d-flex align-items-center justify-content-between border-bottom">
+          <router-link to="/dashboard" class="text-decoration-none" @click="closeMobileMenu">
             <img
               alt="Logo"
               :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-              style="height: 50px;"
+              class="header-logo"
             />
-          </div>
+          </router-link>
           <button 
             class="btn btn-icon btn-sm btn-active-color-primary"
             @click="closeMobileMenu"
             type="button"
+            aria-label="Close menu"
           >
-            <KTIcon icon-name="cross" icon-class="fs-1" />
+            <KTIcon icon-name="cross" icon-class="fs-2" />
           </button>
         </div>
         <!--end::Mobile Menu Header-->
 
         <!--begin::Mobile Menu Content-->
-        <div class="mobile-menu-content">
+        <nav class="mobile-menu-content flex-grow-1 overflow-auto">
           <template v-for="(item, i) in filteredMenuConfig" :key="i">
             <template v-for="(menuItem, j) in item.pages" :key="j">
               <router-link 
                 v-if="menuItem.heading && menuItem.route" 
                 :to="menuItem.route"
-                class="mobile-menu-item"
+                class="mobile-menu-item d-flex align-items-center justify-content-center text-decoration-none rounded"
                 active-class="active"
                 @click="closeMobileMenu"
               >
-                <span v-if="menuItem.keenthemesIcon" class="mobile-menu-icon">
-                  <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-2" />
-                </span>
-                <span class="mobile-menu-title">{{ translate(menuItem.heading) }}</span>
+                <span class="mobile-menu-title fw-semibold">{{ translate(menuItem.heading) }}</span>
               </router-link>
             </template>
           </template>
-        </div>
+        </nav>
         <!--end::Mobile Menu Content-->
-      </div>
+      </aside>
     </Transition>
   </Teleport>
   <!--end::Mobile Menu Drawer-->
@@ -208,194 +217,23 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.welcome-message {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
-  padding: 0.4rem 0.9rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 1px solid #dee2e6;
-  border-radius: 0.65rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+/* Header logo styles */
+.header-logo {
+  height: 50px;
+  transition: transform 0.3s ease;
 }
 
-.welcome-message:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  border-color: #3699ff;
+.header-logo:hover {
+  transform: scale(1.05);
 }
 
-.welcome-text {
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: #6c757d;
-  text-transform: uppercase;
-  line-height: 1;
+.header-logo-mobile {
+  height: 45px;
+  transition: transform 0.3s ease;
 }
 
-.user-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #495057;
-  line-height: 1.2;
-}
-
-/* Dark Mode */
-[data-bs-theme="dark"] .welcome-message {
-  background: linear-gradient(135deg, #1e1e2d 0%, #2a2a3c 100%);
-  border-color: #3a3a4c;
-}
-
-[data-bs-theme="dark"] .welcome-message:hover {
-  border-color: #3699ff;
-}
-
-[data-bs-theme="dark"] .welcome-text {
-  color: #a1a5b7;
-}
-
-[data-bs-theme="dark"] .user-name {
-  color: #f5f8fa;
-}
-
-/* Header con sfondo trasparente */
-.header-transparent {
-  background: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  height: 80px !important;
-}
-
-/* Dark mode per l'header */
-[data-bs-theme="dark"] .header-transparent {
-  background: rgba(30, 30, 45, 0.25) !important;
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* ========================================
-   MOBILE MENU STYLES
-   ======================================== */
-
-/* Mobile Menu Overlay */
-.mobile-menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
-  backdrop-filter: blur(4px);
-}
-
-/* Mobile Menu Drawer */
-.mobile-menu-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 300px;
-  max-width: 85vw;
-  background: #ffffff;
-  z-index: 1051;
-  display: flex;
-  flex-direction: column;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-}
-
-[data-bs-theme="dark"] .mobile-menu-drawer {
-  background: #1e1e2d;
-}
-
-/* Mobile Menu Header */
-.mobile-menu-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e9ecef;
-  flex-shrink: 0;
-}
-
-[data-bs-theme="dark"] .mobile-menu-header {
-  border-bottom-color: #2a2a3c;
-}
-
-/* Mobile Menu Content */
-.mobile-menu-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-}
-
-/* Mobile Menu Item */
-.mobile-menu-item {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  border-radius: 0.65rem;
-  background: #f8f9fa;
-  color: #495057;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.mobile-menu-item:hover {
-  background: #e9ecef;
-  color: #3699ff;
-  transform: translateX(4px);
-}
-
-.mobile-menu-item.active {
-  background: linear-gradient(135deg, #3699ff 0%, #2e7fd3 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);
-}
-
-[data-bs-theme="dark"] .mobile-menu-item {
-  background: #2a2a3c;
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .mobile-menu-item:hover {
-  background: #3a3a4c;
-  color: #3699ff;
-}
-
-[data-bs-theme="dark"] .mobile-menu-item.active {
-  background: linear-gradient(135deg, #3699ff 0%, #2e7fd3 100%);
-  color: #ffffff;
-}
-
-/* Mobile Menu Icon */
-.mobile-menu-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-right: 1rem;
-  background: rgba(54, 153, 255, 0.1);
-  border-radius: 0.5rem;
-  flex-shrink: 0;
-}
-
-.mobile-menu-item.active .mobile-menu-icon {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Mobile Menu Title */
-.mobile-menu-title {
-  flex: 1;
-  font-weight: 600;
+.header-logo-mobile:hover {
+  transform: scale(1.05);
 }
 
 /* CSS moved to global file: layout.css */

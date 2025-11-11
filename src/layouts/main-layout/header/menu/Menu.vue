@@ -15,22 +15,22 @@
   >
     <!--begin::Menu-->
     <div
-      class="menu menu-rounded menu-column menu-lg-row my-5 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0"
+      class="menu menu-rounded menu-column menu-lg-row my-5 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0 d-flex justify-content-center"
       id="kt_app_header_menu"
       data-kt-menu="true"
     >
       <!-- Menu Items from MainMenuConfig -->
       <template v-for="(item, i) in MainMenuConfig" :key="i">
         <template v-for="(menuItem, j) in item.pages" :key="j">
-          <div v-if="menuItem.heading" class="menu-item me-0 me-lg-2">
+          <div v-if="menuItem.heading" class="menu-item">
             <router-link 
               v-if="menuItem.route && !isSubscriptionRequired(menuItem.route)" 
               class="menu-link py-3" 
               active-class="active" 
               :to="menuItem.route"
             >
-              <span v-if="menuItem.keenthemesIcon" class="menu-icon me-0">
-                <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-2" />
+              <span v-if="menuItem.keenthemesIcon" class="menu-icon me-2">
+                <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-3" />
               </span>
               <span class="menu-title">{{ translate(menuItem.heading) }}</span>
             </router-link>
@@ -41,8 +41,8 @@
               :class="{ 'subscription-expired': subscriptionExpired }"
               @click="handleSubscriptionExpiredClick"
             >
-              <span v-if="menuItem.keenthemesIcon" class="menu-icon me-0">
-                <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-2" />
+              <span v-if="menuItem.keenthemesIcon" class="menu-icon me-2">
+                <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-3" />
               </span>
               <span class="menu-title">{{ translate(menuItem.heading) }}</span>
             </div>
@@ -53,8 +53,8 @@
               active-class="active" 
               :to="menuItem.route"
             >
-              <span v-if="menuItem.keenthemesIcon" class="menu-icon me-0">
-                <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-2" />
+              <span v-if="menuItem.keenthemesIcon" class="menu-icon me-2">
+                <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-3" />
               </span>
               <span class="menu-title">{{ translate(menuItem.heading) }}</span>
             </router-link>
