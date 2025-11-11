@@ -218,6 +218,15 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        // FAQ route
+        path: "/faq",
+        name: "faq",
+        component: () => import("@/views/pages/legal/FAQ.vue"),
+        meta: {
+          pageTitle: "FAQ",
+        },
+      },
+      {
         // the 404 route, when none of the above matches
         path: "/404",
         name: "404",

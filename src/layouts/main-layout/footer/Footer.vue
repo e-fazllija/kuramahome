@@ -36,6 +36,13 @@
             class="menu-link px-2"
             >Cookie Policy</router-link>
         </li>
+        <li class="menu-item">
+          <router-link
+            to="/faq"
+            target="_blank"
+            class="menu-link px-2"
+            >FAQ</router-link>
+        </li>
       </ul>
       <!--end::Menu-->
     </div>

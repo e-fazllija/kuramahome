@@ -44,109 +44,116 @@
     <!--end::Header-->
     
     <div class="card-body pt-0 pb-4">
-      <!-- Barra di ricerca moderna stile Locations -->
-      <div class="d-flex align-items-center gap-3 mb-4">
-        <!-- Bottone Cerca -->
-        <div class="flex-shrink-0">
-          <button 
-            @click="searchItems()" 
-            class="btn btn-primary btn-search"
-            :disabled="loading"
-          >
-            <span v-if="!loading">
-              <i class="ki-duotone ki-magnifier fs-3 me-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              <span class="fw-bold">Cerca</span>
-            </span>
-            <span v-else class="d-flex align-items-center">
-              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-              <span class="fw-bold">Ricerca...</span>
-            </span>
-          </button>
-        </div>
-        
-        <!-- Search Input -->
-        <div class="flex-grow-1" style="max-width: 400px;">
-          <div class="search-wrapper">
-            <input 
-              type="text" 
-              v-model="search" 
-              @keyup.enter="searchItems()"
-              class="form-control search-input" 
-              placeholder="Cerca per nome cliente..." 
-            />
+      <!-- Barra di ricerca moderna con Bootstrap -->
+      <div class="container-fluid px-0 filter-container">
+        <div class="row g-3 align-items-center mb-4">
+          <!-- Bottone Cerca -->
+          <div class="col-12 col-md-auto">
             <button 
-              v-if="search"
-              @click="search = ''" 
-              class="btn btn-sm btn-clear"
+              @click="searchItems()" 
+              class="btn btn-filter-search w-100 w-md-auto"
+              :disabled="loading"
             >
-              <i class="ki-duotone ki-cross fs-5">
+              <i class="ki-duotone ki-magnifier fs-4 me-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
+              <span v-if="!loading">Cerca</span>
+              <span v-else>
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Ricerca...
+              </span>
             </button>
+          </div>
+          
+          <!-- Search Input -->
+          <div class="col-12 col-md">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0">
+                <i class="ki-duotone ki-magnifier fs-4">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <input 
+                type="text" 
+                v-model="search" 
+                @keyup.enter="searchItems()"
+                class="form-control filter-input border-start-0 ps-0" 
+                placeholder="Cerca per nome cliente..." 
+              />
+              <button 
+                v-if="search"
+                @click="search = ''" 
+                class="btn btn-sm btn-outline-danger rounded-end"
+                type="button"
+              >
+                <i class="ki-duotone ki-cross fs-5">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Badge Risultati -->
+          <div class="col-12 col-md-auto">
+            <span class="badge badge-filter-results">
+              <i class="ki-duotone ki-chart-simple fs-4 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+              </i>
+              {{ tableData.length }} richieste
+            </span>
           </div>
         </div>
 
-        <!-- Badge Risultati -->
-        <div class="flex-shrink-0">
-          <span class="badge badge-light-info fs-6">{{ tableData.length }} richieste trovate</span>
-        </div>
-        
-        <!-- Spacer -->
-        <div class="flex-grow-1"></div>
-      </div>
-
-        <!-- Filtri avanzati -->
-        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        <!-- Filtri avanzati con Bootstrap Grid -->
+        <div class="row g-2 mb-3">
           <!-- Filtro Contratto -->
-          <div class="flex-shrink-0">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select 
-              class="form-select form-select-modern" 
-              v-model="contract" 
-              style="min-width: 135px;"
+              class="form-select filter-select" 
+              v-model="contract"
             >
-              <option value="">Tutti contratti</option>
-              <option value="Vendita">Vendita</option>
-              <option value="Affitto">Affitto</option>
+              <option value="">📋 Tutti contratti</option>
+              <option value="Vendita">💰 Vendita</option>
+              <option value="Affitto">🏠 Affitto</option>
             </select>
           </div>
 
           <!-- Filtro Prezzo Da -->
-          <div class="flex-shrink-0">
+          <div class="col-6 col-sm-6 col-md-4 col-lg-auto">
             <input 
               type="number" 
               v-model="fromPrice" 
-              class="form-control form-select-modern" 
+              class="form-control filter-input" 
               placeholder="€ Da" 
               min="0"
-              style="min-width: 100px;"
             />
           </div>
         
           <!-- Filtro Prezzo A -->
-          <div class="flex-shrink-0">
+          <div class="col-6 col-sm-6 col-md-4 col-lg-auto">
             <input 
               type="number" 
               v-model="toPrice" 
-              class="form-control form-select-modern" 
+              class="form-control filter-input" 
               placeholder="€ A" 
               min="0"
-              style="min-width: 100px;"
             />
           </div>
 
           <!-- Filtro Provincia -->
-          <div class="flex-shrink-0">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select 
-              class="form-select form-select-modern" 
+              class="form-select filter-select" 
               v-model="selectedProvince" 
               @change="onProvinceChange"
-              style="min-width: 130px;"
             >
-              <option value="">Province</option>
+              <option value="">🗺️ Province</option>
               <option v-for="province in structuredLocationData.provinces" :key="province.value" :value="province.value">
                 {{ province.label }}
               </option>
@@ -154,41 +161,38 @@
           </div>
         
           <!-- Filtro Città -->
-          <div class="flex-shrink-0">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select 
-              class="form-select form-select-modern" 
+              class="form-select filter-select" 
               v-model="selectedCity" 
               @change="onCityChange" 
               :disabled="!selectedProvince"
-              style="min-width: 120px;"
             >
-              <option value="">Città</option>
+              <option value="">🏙️ Città</option>
               <option v-for="city in filteredCities" :key="city.value" :value="city.value">
                 {{ city.label }}
               </option>
             </select>
           </div>
         
-          <!-- Filtro Località (input di testo perché sono stringhe libere nel database) -->
-          <div class="flex-shrink-0">
+          <!-- Filtro Località -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <input 
               type="text" 
               v-model="selectedLocation" 
-              class="form-control form-select-modern" 
-              placeholder="Località" 
+              class="form-control filter-input" 
+              placeholder="📍 Località" 
               :disabled="!selectedCity"
-              style="min-width: 120px;"
             />
           </div>
 
           <!-- Filtro Agenzia -->
-          <div v-if="user.Role == 'Admin'" class="flex-shrink-0">
+          <div v-if="user.Role == 'Admin'" class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select 
-              class="form-select form-select-modern" 
-              v-model="userId" 
-              style="min-width: 140px;"
+              class="form-select filter-select" 
+              v-model="userId"
             >
-              <option value="">Agenzie</option>
+              <option value="">🏢 Agenzie</option>
               <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
                 {{ item.FirstName }} {{ item.LastName }}
               </option>
@@ -196,78 +200,82 @@
           </div>
 
           <!-- Bottone Pulisci Filtri -->
-          <div class="flex-shrink-0 ms-auto" v-if="hasActiveFilters">
+          <div v-if="hasActiveFilters" class="col-12 col-sm-auto ms-sm-auto">
             <button 
               @click="clearAllFilters" 
-              class="btn btn-light btn-sm"
-              style="border-radius: 0.75rem; padding: 0.6rem 1rem;"
+              class="btn btn-filter-clear w-100 w-sm-auto"
             >
               <i class="ki-duotone ki-cross fs-5 me-1">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-              <span class="fw-semibold">Pulisci</span>
+              Pulisci
             </button>
           </div>
         </div>
           
         <!-- Filtro Tipologia Immobile con multiselect -->
-        <div v-if="propertyType.length > 0" class="mt-3">
-          <div class="selected-tags">
-            <span 
-              v-for="(type, index) in propertyType" 
-              :key="index" 
-              class="badge badge-light-info me-2 mb-2"
-            >
-              {{ type }}
-              <i @click="removePropertyType(index)" class="ki-duotone ki-cross fs-7 ms-1 cursor-pointer">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
+        <div v-if="propertyType.length > 0" class="row g-2 mt-2">
+          <div class="col-12">
+            <div class="d-flex flex-wrap gap-2">
+              <span 
+                v-for="(type, index) in propertyType" 
+                :key="index" 
+                class="selected-tag"
+              >
+                {{ type }}
+                <span @click="removePropertyType(index)" class="remove-icon">
+                  <i class="ki-duotone ki-cross fs-7">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </span>
               </span>
+            </div>
           </div>
         </div>
             
-      <!-- Separatore morbido -->
-      <div class="separator separator-dashed my-6"></div>
-      
-      <!-- Filtro Tipologia Immobile expandibile -->
-      <div class="mb-6">
-        <div
-          class="fw-bold fs-6 rotate collapsible p-3"
-          data-bs-toggle="collapse"
-          href="#kt_property_type_filters"
-          role="button"
-          aria-expanded="false"
-          style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0.75rem; border: 1px solid #dee2e6; cursor: pointer; transition: all 0.3s ease;"
-        >
-          <i class="ki-duotone ki-home-2 fs-3 me-3 text-primary">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-          Tipologia Immobile
-          <span class="ms-2 rotate-180">
-            <i class="ki-duotone ki-down fs-3">
+        <!-- Separatore morbido -->
+        <hr class="my-4 filter-separator" />
+        
+        <!-- Filtro Tipologia Immobile expandibile -->
+        <div class="mb-4">
+          <div
+            class="filter-collapsible-header"
+            data-bs-toggle="collapse"
+            href="#kt_property_type_filters"
+            role="button"
+            aria-expanded="false"
+          >
+            <div>
+              <i class="ki-duotone ki-home-2 fs-3 me-2 filter-icon">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              <span class="fw-bold">Tipologia Immobile</span>
+            </div>
+            <i class="ki-duotone ki-down fs-3 filter-collapsible-icon">
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
-          </span>
           </div>
-        
-        <div id="kt_property_type_filters" class="collapse mt-3">
-          <Multiselect 
-            v-model="propertyType" 
-            :options="optionsPropertyType" 
-            mode="multiple" 
-            placeholder="Seleziona tipologie immobile..."
-            class="multiselect-modern"
-            :searchable="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            trackBy="value"
-            label="label"
-          />
+          
+          <div id="kt_property_type_filters" class="collapse mt-3">
+            <div class="multiselect-wrapper">
+              <Multiselect 
+                v-model="propertyType" 
+                :options="optionsPropertyType" 
+                mode="multiple" 
+                placeholder="Seleziona tipologie immobile..."
+                :searchable="true"
+                :close-on-select="false"
+                :clear-on-select="false"
+                :preserve-search="true"
+                trackBy="value"
+                label="label"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -401,6 +409,7 @@ import { useAuthStore } from "@/stores/auth";
 import { getSearchItems, SearchModel } from "@/core/data/events";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import Multiselect from '@vueform/multiselect'
+import '@/assets/css/filters.css'
 
 export default defineComponent({
   name: "requests",

@@ -44,27 +44,49 @@
     <!--end::Header-->
     
     <div class="card-body pt-0 pb-6">
-      <!-- Barra di ricerca moderna -->
-      <div class="search-section" style="margin-top: 2rem; margin-bottom: 2.5rem;">
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-          <!-- Search Input principale -->
-          <div class="flex-grow-1" style="min-width: 300px; max-width: 550px;">
-            <div class="search-wrapper">
-              <i class="ki-duotone ki-magnifier fs-3 search-icon">
+      <!-- Barra di ricerca moderna con Bootstrap -->
+      <div class="container-fluid px-0 filter-container" style="margin-top: 2rem; margin-bottom: 2.5rem;">
+        <div class="row g-3 align-items-center mb-4">
+          <!-- Bottone Cerca con loading -->
+          <div class="col-12 col-md-auto">
+            <button 
+              @click="searchItems()" 
+              class="btn btn-filter-search w-100 w-md-auto"
+              :disabled="loading"
+            >
+              <i class="ki-duotone ki-magnifier fs-4 me-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            <input 
-              type="text" 
-              v-model="search" 
-              @keyup.enter="searchItems"
-                class="form-control search-input" 
+              <span v-if="!loading">Cerca</span>
+              <span v-else>
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Ricerca...
+              </span>
+            </button>
+          </div>
+          
+          <!-- Search Input principale -->
+          <div class="col-12 col-md">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0">
+                <i class="ki-duotone ki-magnifier fs-4">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <input 
+                type="text" 
+                v-model="search" 
+                @keyup.enter="searchItems"
+                class="form-control filter-input border-start-0 ps-0" 
                 placeholder="Cerca per indirizzo, città, provincia..." 
               />
               <button 
                 v-if="search"
                 @click="search = ''" 
-                class="btn btn-sm btn-clear"
+                class="btn btn-sm btn-outline-danger rounded-end"
+                type="button"
                 title="Cancella ricerca"
               >
                 <i class="ki-duotone ki-cross fs-5">
@@ -72,55 +94,39 @@
                   <span class="path2"></span>
                 </i>
               </button>
+            </div>
+          </div>
+
+          <!-- Badge Risultati -->
+          <div class="col-12 col-md-auto">
+            <span class="badge badge-filter-results">
+              <i class="ki-duotone ki-chart-simple fs-4 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+              </i>
+              {{ tableData.length }} immobili
+            </span>
           </div>
         </div>
         
-          <!-- Bottone Cerca con loading -->
-          <div class="flex-shrink-0">
-            <button 
-              @click="searchItems()" 
-              class="btn btn-primary btn-search"
-              :disabled="loading"
-            >
-              <span v-if="!loading">
-                <i class="ki-duotone ki-magnifier fs-3 me-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                <span class="fw-bold">Cerca</span>
-              </span>
-              <span v-else class="d-flex align-items-center">
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                <span class="fw-bold">Ricerca...</span>
-              </span>
-            </button>
-        </div>
-        
+        <!-- Filtri avanzati con Bootstrap Grid -->
+        <div class="row g-2 mb-3">
           <!-- Filtro Contratto -->
-          <div class="flex-shrink-0">
-            <div class="filter-wrapper position-relative">
-              <i class="ki-duotone ki-briefcase filter-icon position-absolute">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              <select class="form-select form-select-modern filter-select" v-model="contract" style="min-width: 200px;">
-                <option value="">📋 Tutti i contratti</option>
-                <option value="Vendita">💰 Vendita</option>
-                <option value="Affitto">🏠 Affitto</option>
-                <option value="Aste">🔨 Aste</option>
-          </select>
-            </div>
-        </div>
-        
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select class="form-select filter-select" v-model="contract">
+              <option value="">📋 Tutti i contratti</option>
+              <option value="Vendita">💰 Vendita</option>
+              <option value="Affitto">🏠 Affitto</option>
+              <option value="Aste">🔨 Aste</option>
+            </select>
+          </div>
+          
           <!-- Filtro Tipologia -->
-          <div class="flex-shrink-0">
-            <div class="filter-wrapper position-relative">
-              <i class="ki-duotone ki-category filter-icon position-absolute">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              <select class="form-select form-select-modern filter-select" v-model="typology" style="min-width: 220px;">
-            <option value="">Tutte le tipologie</option>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select class="form-select filter-select" v-model="typology">
+              <option value="">Tutte le tipologie</option>
             <!-- Residenziale -->
             <option value="Appartamento">Appartamento</option>
             <option value="Attico">Attico</option>
@@ -153,121 +159,101 @@
             <option value="Non Edificabile">Non Edificabile</option>
             <!-- Ufficio -->
             <option value="Ufficio">Ufficio</option>
-          </select>
-        </div>
-      </div>
-
-          <!-- Badge Risultati -->
-          <div class="flex-shrink-0">
-            <div class="results-badge">
-              <i class="ki-duotone ki-chart-simple fs-2 me-2 text-primary">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-              </i>
-              <div class="results-info">
-                <span class="results-number">{{ tableData.length }}</span>
-                <span class="results-label">Immobili</span>
-              </div>
-            </div>
+            </select>
           </div>
-        </div>
-      </div>
-      
-        <!-- Filtri avanzati compatti -->
-        <div class="d-flex align-items-center gap-2 flex-wrap mt-3">
+
           <!-- Filtro Prezzo Da -->
-          <div class="filter-compact">
+          <div class="col-6 col-sm-6 col-md-4 col-lg-auto">
             <input 
               type="number" 
               v-model="fromPrice" 
-              class="form-control form-control-compact" 
-              placeholder="€ Prezzo da" 
+              class="form-control filter-input" 
+              placeholder="€ Da" 
               min="0"
             />
-        </div>
-        
+          </div>
+          
           <!-- Filtro Prezzo A -->
-          <div class="filter-compact">
+          <div class="col-6 col-sm-6 col-md-4 col-lg-auto">
             <input 
               type="number" 
               v-model="toPrice" 
-              class="form-control form-control-compact" 
-              placeholder="€ Prezzo a" 
+              class="form-control filter-input" 
+              placeholder="€ A" 
               min="0"
             />
-        </div>
+          </div>
 
           <!-- Filtro Provincia -->
-          <div class="filter-compact">
-          <select 
-              class="form-select form-select-compact" 
-            v-model="selectedProvince" 
-            @change="onProvinceChange"
-          >
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select 
+              class="form-select filter-select" 
+              v-model="selectedProvince" 
+              @change="onProvinceChange"
+            >
               <option value="">🗺️ Provincia</option>
-            <option v-for="province in structuredLocationData.provinces" :key="province.value" :value="province.value">
-              {{ province.label }}
-            </option>
-          </select>
-        </div>
-        
+              <option v-for="province in structuredLocationData.provinces" :key="province.value" :value="province.value">
+                {{ province.label }}
+              </option>
+            </select>
+          </div>
+          
           <!-- Filtro Città -->
-          <div class="filter-compact">
-          <select 
-              class="form-select form-select-compact" 
-            v-model="selectedCity" 
-            @change="onCityChange" 
-            :disabled="!selectedProvince"
-          >
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select 
+              class="form-select filter-select" 
+              v-model="selectedCity" 
+              @change="onCityChange" 
+              :disabled="!selectedProvince"
+            >
               <option value="">🏙️ Città</option>
-            <option v-for="city in filteredCities" :key="city.value" :value="city.value">
-              {{ city.label }}
-            </option>
-          </select>
-        </div>
-        
-          <!-- Filtro Località (input di testo perché sono stringhe libere nel database) -->
-          <div class="filter-compact">
+              <option v-for="city in filteredCities" :key="city.value" :value="city.value">
+                {{ city.label }}
+              </option>
+            </select>
+          </div>
+          
+          <!-- Filtro Località -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <input 
               type="text" 
               v-model="selectedLocation" 
-              class="form-control form-control-compact" 
+              class="form-control filter-input" 
               placeholder="📍 Località" 
               :disabled="!selectedCity"
             />
           </div>
 
           <!-- Filtro Agenzia -->
-          <div v-if="user.Role == 'Admin'" class="filter-compact">
-            <select class="form-select form-select-compact" v-model="agencyId">
+          <div v-if="user.Role == 'Admin'" class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select class="form-select filter-select" v-model="agencyId">
               <option value="">🏢 Tutte le agenzie</option>
-            <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
-              {{ item.FirstName }} {{ item.LastName }}
-            </option>
-          </select>
-      </div>
+              <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
+                {{ item.FirstName }} {{ item.LastName }}
+              </option>
+            </select>
+          </div>
 
           <!-- Bottone Pulisci Filtri -->
-          <div class="filter-compact">
+          <div class="col-12 col-sm-auto ms-sm-auto">
             <button 
               type="button" 
               @click="clearAllFilters" 
-              class="btn btn-secondary btn-clear-filters"
+              class="btn btn-filter-clear w-100 w-sm-auto"
             >
               <i class="ki-duotone ki-cross fs-5 me-1">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-              <span class="fw-bold">Pulisci</span>
+              Pulisci
             </button>
           </div>
-            </div>
-            
-      <!-- Separatore morbido -->
-      <div class="separator separator-dashed my-6"></div>
-          </div>
+        </div>
+        
+        <!-- Separatore morbido -->
+        <hr class="my-4 filter-separator" />
+      </div>
+    </div>
     <!--end::Card body-->
     <div class="card-body pt-0">
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
@@ -362,6 +348,7 @@ import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
+import '@/assets/css/filters.css';
 
 export default defineComponent({
   name: "properties",

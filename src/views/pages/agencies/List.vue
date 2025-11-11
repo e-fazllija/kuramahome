@@ -48,78 +48,76 @@
     <!--end::Header-->
     
     <div class="card-body pt-0 pb-6">
-      <!-- Barra di ricerca moderna con più respiro -->
-      <div class="search-section" style="margin-top: 2rem; margin-bottom: 2.5rem;">
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-          <!-- Search Input con icona interna -->
-          <div class="flex-grow-1" style="min-width: 300px; max-width: 550px;">
-            <div class="search-wrapper">
-              <i class="ki-duotone ki-magnifier fs-3 search-icon">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            <input 
-              type="text" 
-              v-model="search" 
-              @keyup.enter="searchItems()"
-              class="form-control search-input" 
-                :placeholder="currentPlaceholder" 
-            />
+      <!-- Barra di ricerca moderna con Bootstrap -->
+      <div class="container-fluid px-0 filter-container" style="margin-top: 2rem; margin-bottom: 2.5rem;">
+        <div class="row g-3 align-items-center">
+          <!-- Bottone Cerca con loading -->
+          <div class="col-12 col-md-auto">
             <button 
-              v-if="search"
-              @click="clearAllFilters()" 
-              class="btn btn-sm btn-clear"
-                title="Cancella ricerca"
+              @click="searchItems()" 
+              class="btn btn-filter-search w-100 w-md-auto"
+              :disabled="isSearching"
             >
-              <i class="ki-duotone ki-cross fs-5">
+              <i class="ki-duotone ki-magnifier fs-4 me-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
-            </button>
-          </div>
-        </div>
-        
-          <!-- Bottone Cerca con loading -->
-        <div class="flex-shrink-0">
-            <button 
-              @click="searchItems()" 
-              class="btn btn-primary btn-search"
-              :disabled="isSearching"
-            >
-              <span v-if="!isSearching">
-                <i class="ki-duotone ki-magnifier fs-3 me-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                <span class="fw-bold">Cerca</span>
-              </span>
-              <span v-else class="d-flex align-items-center">
+              <span v-if="!isSearching">Cerca</span>
+              <span v-else>
                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                <span class="fw-bold">Ricerca...</span>
+                Ricerca...
               </span>
             </button>
           </div>
           
-          <!-- Badge Risultati migliorato -->
-          <div class="flex-shrink-0">
-            <div class="results-badge">
-              <i class="ki-duotone ki-chart-simple fs-2 me-2 text-primary">
+          <!-- Search Input con icona interna -->
+          <div class="col-12 col-md">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0">
+                <i class="ki-duotone ki-magnifier fs-4">
                   <span class="path1"></span>
                   <span class="path2"></span>
-                  <span class="path3"></span>
-                  <span class="path4"></span>
                 </i>
-              <div class="results-info">
-                <span class="results-number">{{ tableData.length }}</span>
-                <span class="results-label">Agenzie</span>
+              </span>
+              <input 
+                type="text" 
+                v-model="search" 
+                @keyup.enter="searchItems()"
+                class="form-control filter-input border-start-0 ps-0" 
+                :placeholder="currentPlaceholder" 
+              />
+              <button 
+                v-if="search"
+                @click="clearAllFilters()" 
+                class="btn btn-sm btn-outline-danger rounded-end"
+                type="button"
+                title="Cancella ricerca"
+              >
+                <i class="ki-duotone ki-cross fs-5">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </button>
             </div>
           </div>
+          
+          <!-- Badge Risultati -->
+          <div class="col-12 col-md-auto">
+            <span class="badge badge-filter-results">
+              <i class="ki-duotone ki-chart-simple fs-4 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+              </i>
+              {{ tableData.length }} agenzie
+            </span>
+          </div>
         </div>
-      </div>
-      </div>
       
-      <!-- Separatore morbido -->
-      <div class="separator separator-dashed my-6"></div>
+        <!-- Separatore morbido -->
+        <hr class="my-4 filter-separator" />
+      </div>
     </div>
     <!--end::Search-->
     
@@ -381,6 +379,7 @@ import { useAuthStore } from "@/stores/auth";
 import { hasAdminRole } from "@/core/helpers/auth";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import '@/assets/css/filters.css';
 
 export default defineComponent({
   name: "agencies",

@@ -625,16 +625,114 @@
   </div>
   <!--end::Sign-in Method-->
 
+  <!--begin::Theme Mode-->
+  <div class="card mb-5 mb-xl-10">
+    <!--begin::Card header-->
+    <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse"
+      data-bs-target="#kt_account_theme_mode">
+      <div class="card-title m-0">
+        <h3 class="fw-bolder m-0">Modalità Tema</h3>
+      </div>
+    </div>
+    <!--end::Card header-->
+
+    <!--begin::Content-->
+    <div id="kt_account_theme_mode" class="collapse show">
+      <!--begin::Card body-->
+      <div class="card-body border-top p-9">
+        <!--begin::Theme Mode Selection-->
+        <div class="d-flex flex-column">
+          <div class="fs-6 fw-semobold text-gray-600 mb-4">
+            Scegli la modalità di visualizzazione preferita per l'interfaccia
+          </div>
+
+          <!--begin::Theme Options-->
+          <div class="row g-4">
+            <!--begin::Light Mode-->
+            <div class="col-lg-4">
+              <div 
+                class="theme-mode-option card h-100 cursor-pointer"
+                :class="{ 'border-primary': themeMode === 'light' }"
+                @click="setThemeMode('light')"
+              >
+                <div class="card-body d-flex flex-column align-items-center p-6">
+                  <div class="mb-4">
+                    <KTIcon icon-name="night-day" icon-class="fs-1" />
+                  </div>
+                  <h4 class="fw-bold mb-2">Light</h4>
+                  <p class="text-muted text-center mb-0">Tema chiaro per un'esperienza luminosa</p>
+                  <div v-if="themeMode === 'light'" class="mt-3">
+                    <span class="badge badge-light-success">Attivo</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Light Mode-->
+
+            <!--begin::Dark Mode-->
+            <div class="col-lg-4">
+              <div 
+                class="theme-mode-option card h-100 cursor-pointer"
+                :class="{ 'border-primary': themeMode === 'dark' }"
+                @click="setThemeMode('dark')"
+              >
+                <div class="card-body d-flex flex-column align-items-center p-6">
+                  <div class="mb-4">
+                    <KTIcon icon-name="moon" icon-class="fs-1" />
+                  </div>
+                  <h4 class="fw-bold mb-2">Dark</h4>
+                  <p class="text-muted text-center mb-0">Tema scuro per ridurre l'affaticamento degli occhi</p>
+                  <div v-if="themeMode === 'dark'" class="mt-3">
+                    <span class="badge badge-light-success">Attivo</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Dark Mode-->
+
+            <!--begin::System Mode-->
+            <div class="col-lg-4">
+              <div 
+                class="theme-mode-option card h-100 cursor-pointer"
+                :class="{ 'border-primary': themeMode === 'system' }"
+                @click="setThemeMode('system')"
+              >
+                <div class="card-body d-flex flex-column align-items-center p-6">
+                  <div class="mb-4">
+                    <KTIcon icon-name="screen" icon-class="fs-1" />
+                  </div>
+                  <h4 class="fw-bold mb-2">System</h4>
+                  <p class="text-muted text-center mb-0">Segue le impostazioni del sistema operativo</p>
+                  <div v-if="themeMode === 'system'" class="mt-3">
+                    <span class="badge badge-light-success">Attivo</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::System Mode-->
+          </div>
+          <!--end::Theme Options-->
+        </div>
+        <!--end::Theme Mode Selection-->
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Content-->
+  </div>
+  <!--end::Theme Mode-->
+
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, onMounted, watch } from "vue";
+import { defineComponent, ref, onMounted, watch, computed } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
 import { Agent, updateAgent } from "@/core/data/agents"
 import { useAuthStore, type User } from "@/stores/auth";
+import { useThemeStore } from "@/stores/theme";
+import { useConfigStore } from "@/stores/config";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
@@ -655,6 +753,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const profileDetails = props.profileDetails;
     const store = useAuthStore();
+    const storeTheme = useThemeStore();
+    const storeConfig = useConfigStore();
     const submitButton1 = ref<HTMLElement | null>(null);
     const submitButton2 = ref<HTMLElement | null>(null);
     const submitButton3 = ref<HTMLElement | null>(null);
@@ -885,6 +985,17 @@ export default defineComponent({
       }
     });
 
+    // Theme mode
+    const themeMode = computed(() => {
+      return storeTheme.mode;
+    });
+
+    const setThemeMode = (mode: "dark" | "light" | "system") => {
+      let configMode = mode;
+      storeConfig.setLayoutConfigProperty("general.mode", configMode);
+      storeTheme.setThemeMode(configMode);
+    };
+
     return {
       submitButton1,
       submitButton2,
@@ -907,8 +1018,35 @@ export default defineComponent({
       newPassword,
       requestFiscalDataChange,
       provinces,
-      cities
+      cities,
+      themeMode,
+      setThemeMode
     };
   },
 });
 </script>
+
+<style scoped>
+.theme-mode-option {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.theme-mode-option:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-mode-option.border-primary {
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 4px 12px rgba(0, 119, 204, 0.2);
+}
+
+[data-bs-theme="dark"] .theme-mode-option:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .theme-mode-option.border-primary {
+  box-shadow: 0 4px 12px rgba(0, 119, 204, 0.3);
+}
+</style>

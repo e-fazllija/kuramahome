@@ -1,93 +1,82 @@
 <template>
   <!--begin::Agencies Map Widget-->
   <div class="card card-xl-stretch mb-xl-10 map-widget-container">
-    <!--begin::Map Background (Full Widget)-->
-    <div ref="mapContainer" id="leaflet-map" class="leaflet-map-full-background"></div>
-    <!--end::Map Background-->
-    
-    <!--begin::Content Over Map-->
-    <div class="widget-content-overlay">
-      <!--begin::Header Vertical Left-->
-      <div class="header-vertical-left">
-        <!--begin::Title-->
-        <div class="mb-3">
-          <span class="card-label fw-bold fs-3 text-dark">🗺️ Mappa Agenzie</span>
-        </div>
-        <!--end::Title-->
-        
-        <!--begin::Agency Filter-->
-        <div v-if="!isAgent" class="mb-3">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <i class="ki-duotone ki-filter fs-4 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            <span class="fw-semibold fs-6 text-gray-700">Agenzia:</span>
+    <!--begin::Card Header with Filters and Stats-->
+    <div class="card-header widget-13-header">
+      <!--begin::Unified Controls Row-->
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 gap-lg-4 widget-13-unified-row  my-5">
+        <!--begin::Filters Section-->
+        <div class="d-flex flex-column flex-md-row gap-3 widget-13-filters-section">
+          <!--begin::Agency Filter-->
+          <div v-if="!isAgent" class="widget-13-filter-item">
+            <label class="widget-13-filter-label">
+              <i class="ki-duotone ki-filter fs-5">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              <span class="fw-semibold">Agenzia</span>
+            </label>
+            <select 
+              v-model="selectedAgencyId" 
+              @change="onAgencyChange"
+              class="form-select widget-13-filter-select"
+            >
+              <option value="">Tutte le agenzie</option>
+              <option v-for="agency in agenciesList" :key="agency.id" :value="agency.id">
+                {{ agency.name }}
+              </option>
+            </select>
           </div>
-          <select 
-            v-model="selectedAgencyId" 
-            @change="onAgencyChange"
-            class="form-select form-select-sm agency-filter-vertical-select"
-          >
-            <option value="">Tutte le agenzie</option>
-            <option v-for="agency in agenciesList" :key="agency.id" :value="agency.id">
-              {{ agency.name }}
-            </option>
-          </select>
-        </div>
-        <!--end::Agency Filter-->
-        
-        <!--begin::Year Filter-->
-        <div class="mb-3">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <i class="ki-duotone ki-calendar fs-4 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            <span class="fw-semibold fs-6 text-gray-700">Anno:</span>
+          <!--end::Agency Filter-->
+          
+          <!--begin::Year Filter-->
+          <div class="widget-13-filter-item">
+            <label class="widget-13-filter-label">
+              <i class="ki-duotone ki-calendar fs-5">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              <span class="fw-semibold">Anno</span>
+            </label>
+            <select 
+              v-model="selectedYear" 
+              @change="onYearChange"
+              class="form-select widget-13-filter-select"
+            >
+              <option v-for="year in availableYears" :key="year" :value="year">
+                {{ year }}
+              </option>
+            </select>
           </div>
-          <select 
-            v-model="selectedYear" 
-            @change="onYearChange"
-            class="form-select form-select-sm year-filter-vertical-select"
-          >
-            <option v-for="year in availableYears" :key="year" :value="year">
-              {{ year }}
-            </option>
-          </select>
+          <!--end::Year Filter-->
         </div>
-        <!--end::Year Filter-->
+        <!--end::Filters Section-->
         
-        <!--begin::Separator-->
-        <div class="separator separator-dashed my-3"></div>
-        <!--end::Separator-->
-        
-        <!--begin::Agents Total-->
-        <div v-if="!isAgent" class="mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="symbol symbol-35px">
+        <!--begin::KPI Stats Section-->
+        <div class="d-flex flex-wrap gap-2 gap-md-3 justify-content-start justify-content-lg-end flex-grow-1 widget-13-kpi-section">
+          <!--begin::Agents Total-->
+          <div v-if="!isAgent" class="widget-13-kpi-item">
+            <div class="symbol symbol-40px">
               <span class="symbol-label bg-warning">
-                <i class="ki-duotone ki-user-tick fs-4 text-white">
+                <i class="ki-duotone ki-user-tick fs-5 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
                   <span class="path3"></span>
                 </i>
               </span>
             </div>
-            <div>
+            <div class="widget-13-kpi-content">
               <div class="fw-bold fs-4 text-warning">{{ totalAgents }}</div>
-              <div class="text-gray-700 fs-8 fw-semibold">Agenti</div>
+              <div class="text-gray-600 fs-7 fw-semibold">Agenti</div>
             </div>
           </div>
-        </div>
-        <!--end::Agents Total-->
-        
-        <!--begin::Agencies Total-->
-        <div v-if="!isAgent" class="mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="symbol symbol-35px">
+          <!--end::Agents Total-->
+          
+          <!--begin::Agencies Total-->
+          <div v-if="!isAgent" class="widget-13-kpi-item">
+            <div class="symbol symbol-40px">
               <span class="symbol-label bg-info">
-                <i class="ki-duotone ki-shop fs-4 text-white">
+                <i class="ki-duotone ki-shop fs-5 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
                   <span class="path3"></span>
@@ -96,85 +85,76 @@
                 </i>
               </span>
             </div>
-            <div>
+            <div class="widget-13-kpi-content">
               <div class="fw-bold fs-4 text-info">{{ totalAgencies }}</div>
-              <div class="text-gray-700 fs-8 fw-semibold">Agenzie</div>
+              <div class="text-gray-600 fs-7 fw-semibold">Agenzie</div>
             </div>
           </div>
-        </div>
-        <!--end::Agencies Total-->
-        
-        <!--begin::Separator-->
-        <div v-if="!isAgent" class="separator separator-dashed my-3"></div>
-        <!--end::Separator-->
-        
-        <!--begin::Sold Properties-->
-        <div class="mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="symbol symbol-35px">
+          <!--end::Agencies Total-->
+          
+          <!--begin::Sold Properties-->
+          <div class="widget-13-kpi-item">
+            <div class="symbol symbol-40px">
               <span class="symbol-label bg-success">
-                <i class="ki-duotone ki-check-circle fs-4 text-white">
+                <i class="ki-duotone ki-check-circle fs-5 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </span>
             </div>
-            <div>
+            <div class="widget-13-kpi-content">
               <div class="fw-bold fs-4 text-success">{{ soldProperties }}</div>
-              <div class="text-gray-700 fs-8 fw-semibold">Immobili Venduti</div>
+              <div class="text-gray-600 fs-7 fw-semibold">Venduti</div>
             </div>
           </div>
-        </div>
-        <!--end::Sold Properties-->
-        
-        <!--begin::Rented Properties-->
-        <div class="mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="symbol symbol-35px">
+          <!--end::Sold Properties-->
+          
+          <!--begin::Rented Properties-->
+          <div class="widget-13-kpi-item">
+            <div class="symbol symbol-40px">
               <span class="symbol-label bg-primary">
-                <i class="ki-duotone ki-home-2 fs-4 text-white">
+                <i class="ki-duotone ki-home-2 fs-5 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </span>
             </div>
-            <div>
+            <div class="widget-13-kpi-content">
               <div class="fw-bold fs-4 text-primary">{{ rentedProperties }}</div>
-              <div class="text-gray-700 fs-8 fw-semibold">Immobili Affittati</div>
+              <div class="text-gray-600 fs-7 fw-semibold">Affittati</div>
             </div>
           </div>
-        </div>
-        <!--end::Rented Properties-->
-        
-        <!--begin::Auction Properties-->
-        <div class="mb-2">
-          <div class="d-flex align-items-center gap-2">
-            <div class="symbol symbol-35px">
+          <!--end::Rented Properties-->
+          
+          <!--begin::Auction Properties-->
+          <div class="widget-13-kpi-item">
+            <div class="symbol symbol-40px">
               <span class="symbol-label bg-danger">
-                <i class="ki-duotone ki-euro fs-4 text-white">
+                <i class="ki-duotone ki-euro fs-5 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
                   <span class="path3"></span>
                 </i>
               </span>
             </div>
-            <div>
+            <div class="widget-13-kpi-content">
               <div class="fw-bold fs-4 text-danger">{{ auctionProperties }}</div>
-              <div class="text-gray-700 fs-8 fw-semibold">Immobili Asta</div>
+              <div class="text-gray-600 fs-7 fw-semibold">Asta</div>
             </div>
           </div>
+          <!--end::Auction Properties-->
         </div>
-        <!--end::Auction Properties-->
+        <!--end::KPI Stats Section-->
       </div>
-      <!--end::Header Vertical Left-->
-      
-      <!--begin::Body-->
-      <div class="card-body p-0 position-relative body-overlay">
-        <!-- Map content only -->
-      </div>
-      <!--end::Body-->
+      <!--end::Unified Controls Row-->
     </div>
-    <!--end::Content Over Map-->
+    <!--end::Card Header-->
+    
+    <!--begin::Card Body with Map-->
+    <div class="card-body p-0 position-relative">
+      <div ref="mapContainer" id="leaflet-map" class="leaflet-map-container"></div>
+    </div>
+    <!--end::Card Body-->
   </div>
   <!--end::Agencies Map Widget-->
 </template>
@@ -303,11 +283,11 @@ export default defineComponent({
         center: mainCoords,
         zoom: 9.56, // Initial zoom, will be adjusted based on visible agencies
         zoomControl: false,
-        scrollWheelZoom: false,
+        scrollWheelZoom: true,
         doubleClickZoom: false,
-        dragging: false,
-        touchZoom: false,
-        boxZoom: false,
+        dragging: true,
+        touchZoom: true,
+        boxZoom: true,
         keyboard: false
       });
 
@@ -755,398 +735,3 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-/* Map Widget Container */
-.map-widget-container {
-  position: relative;
-  overflow: hidden;
-  min-height: 550px;
-}
-
-/* Map Background - Full Widget Coverage */
-.leaflet-map-full-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  min-height: 550px;
-  z-index: 1;
-  border-radius: 0.75rem;
-}
-
-/* Widget Content Overlay */
-.widget-content-overlay {
-  position: relative;
-  width: 100%;
-  min-height: 550px;
-  z-index: 10;
-  background: transparent;
-  pointer-events: none;
-}
-
-.widget-content-overlay > * {
-  pointer-events: auto;
-}
-
-/* Ensure map remains interactive */
-.leaflet-map-full-background {
-  pointer-events: auto !important;
-}
-
-/* Header Vertical Left */
-.header-vertical-left {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(30px);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(225, 229, 233, 0.25);
-  min-width: 280px;
-  max-width: 320px;
-}
-
-/* Body Overlay */
-.body-overlay {
-  min-height: 450px;
-  padding: 1rem;
-  pointer-events: none;
-}
-
-:deep(.leaflet-container) {
-  height: 100%;
-  width: 100%;
-  border-radius: 0.75rem;
-  cursor: default !important;
-  opacity: 0.7;
-  filter: brightness(0.9) contrast(1.1);
-}
-
-:deep(.leaflet-container .leaflet-interactive) {
-  cursor: pointer !important;
-}
-
-:deep(.custom-marker) {
-  background: transparent !important;
-  border: none !important;
-  z-index: 1000 !important;
-}
-
-:deep(.leaflet-marker-pane) {
-  z-index: 1000 !important;
-}
-
-/* Pulse animation for selected marker */
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 0.9;
-  }
-}
-
-:deep(.leaflet-popup-content-wrapper) {
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-:deep(.leaflet-popup-content) {
-  margin: 12px;
-  font-family: inherit;
-}
-
-/* Custom Tooltip (Nuvoletta) */
-:deep(.custom-tooltip) {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
-  padding: 6px 10px !important;
-  font-family: inherit !important;
-  white-space: nowrap !important;
-  backdrop-filter: blur(5px) !important;
-}
-
-:deep(.custom-tooltip::before) {
-  border-top-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-:deep(.leaflet-tooltip-top::before) {
-  border-top-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-:deep(.leaflet-tooltip-bottom::before) {
-  border-bottom-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-:deep(.leaflet-tooltip-left::before) {
-  border-left-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-:deep(.leaflet-tooltip-right::before) {
-  border-right-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-/* Custom Popup Styles for Hover */
-:deep(.custom-popup-hover) {
-  z-index: 10000 !important;
-}
-
-:deep(.custom-popup-hover .leaflet-popup-content-wrapper) {
-  background: #ffffff !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
-  border: 3px solid #3699ff !important;
-  padding: 0 !important;
-  pointer-events: auto !important;
-  opacity: 1 !important;
-}
-
-:deep(.custom-popup-hover .leaflet-popup-content) {
-  margin: 14px !important;
-  line-height: 1.5 !important;
-  min-width: 200px !important;
-  color: #1e1e2d !important;
-  font-size: 13px !important;
-}
-
-:deep(.custom-popup-hover .leaflet-popup-tip) {
-  background: #ffffff !important;
-  border: 3px solid #3699ff !important;
-  border-top: none !important;
-  border-left: none !important;
-}
-
-:deep(.custom-popup-hover .leaflet-popup-close-button) {
-  display: none !important;
-}
-
-/* Ensure popup and markers are above everything (including the vertical panel) */
-:deep(.leaflet-popup-pane) {
-  z-index: 10000 !important;
-}
-
-:deep(.leaflet-popup) {
-  z-index: 10000 !important;
-}
-
-:deep(.leaflet-marker-icon) {
-  z-index: 1000 !important;
-}
-
-:deep(.leaflet-shadow-pane) {
-  z-index: 999 !important;
-}
-
-/* Custom Popup Styles (legacy) */
-:deep(.custom-popup .leaflet-popup-content-wrapper) {
-  background: rgba(255, 255, 255, 0.98) !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  backdrop-filter: blur(10px) !important;
-  padding: 0 !important;
-}
-
-:deep(.custom-popup .leaflet-popup-content) {
-  margin: 12px !important;
-  line-height: 1.4 !important;
-}
-
-:deep(.custom-popup .leaflet-popup-tip) {
-  background: rgba(255, 255, 255, 0.98) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  backdrop-filter: blur(10px) !important;
-}
-
-:deep(.custom-popup .leaflet-popup-close-button) {
-  color: #666 !important;
-  font-size: 18px !important;
-  font-weight: bold !important;
-  right: 8px !important;
-  top: 8px !important;
-  transition: color 0.2s ease !important;
-}
-
-:deep(.custom-popup .leaflet-popup-close-button:hover) {
-  color: #333 !important;
-}
-
-/* KPI Overlay */
-.kpi-overlay {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 20;
-}
-
-.kpi-card {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(15px);
-  border-radius: 0.65rem;
-  padding: 0.85rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  transition: all 0.3s ease;
-  min-width: 150px;
-}
-
-.kpi-card:hover {
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
-  transform: translateY(-3px) scale(1.02);
-  border-color: rgba(54, 153, 255, 0.5);
-}
-
-/* Year Filter */
-.year-filter-elegant {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(54, 153, 255, 0.2);
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  backdrop-filter: blur(5px);
-}
-
-.year-filter-elegant-select {
-  background: transparent !important;
-  border: none !important;
-  color: #3f4254 !important;
-  font-weight: 500 !important;
-  font-size: 13px !important;
-  padding: 2px 8px !important;
-  width: 80px !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-}
-
-.year-filter-elegant-select:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-
-/* Agency Filter Vertical Select */
-.agency-filter-vertical-select {
-  background: #ffffff !important;
-  border: 1px solid #e1e5e9 !important;
-  border-radius: 0.5rem !important;
-  color: #1e1e2d !important;
-  font-weight: 600 !important;
-  font-size: 13px !important;
-  padding: 8px 12px !important;
-  width: 100% !important;
-  transition: all 0.3s ease !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.agency-filter-vertical-select:focus {
-  background: #ffffff !important;
-  border-color: #3699ff !important;
-  box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.15) !important;
-  outline: none !important;
-}
-
-.agency-filter-vertical-select:hover {
-  border-color: #3699ff !important;
-  box-shadow: 0 4px 10px rgba(54, 153, 255, 0.12);
-}
-
-.agency-filter-vertical-select option {
-  background: white !important;
-  color: #3f4254 !important;
-  font-weight: 500 !important;
-  padding: 8px 12px !important;
-}
-
-/* Year Filter Vertical Select */
-.year-filter-vertical-select {
-  background: #ffffff !important;
-  border: 1px solid #e1e5e9 !important;
-  border-radius: 0.5rem !important;
-  color: #1e1e2d !important;
-  font-weight: 600 !important;
-  font-size: 13px !important;
-  padding: 8px 12px !important;
-  width: 100% !important;
-  transition: all 0.3s ease !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.year-filter-vertical-select:focus {
-  background: #ffffff !important;
-  border-color: #3699ff !important;
-  box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.15) !important;
-  outline: none !important;
-}
-
-.year-filter-vertical-select:hover {
-  border-color: #3699ff !important;
-  box-shadow: 0 4px 10px rgba(54, 153, 255, 0.12);
-}
-
-.year-filter-vertical-select option {
-  background: white !important;
-  color: #3f4254 !important;
-  font-weight: 500 !important;
-  padding: 8px 12px !important;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .header-vertical-left {
-    min-width: 240px;
-    max-width: 280px;
-    padding: 1.25rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .map-widget-container {
-    min-height: 450px;
-  }
-  
-  .leaflet-map-full-background {
-    height: 400px;
-  }
-  
-  .widget-content-overlay {
-    height: 400px;
-  }
-  
-  .body-overlay {
-    height: 400px;
-  }
-  
-  .header-vertical-left {
-    top: 10px;
-    left: 10px;
-    min-width: 200px;
-    max-width: 240px;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(25px);
-  }
-  
-  .agency-filter-vertical-select {
-    font-size: 12px !important;
-    padding: 6px 10px !important;
-  }
-}
-</style>

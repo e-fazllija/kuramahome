@@ -94,6 +94,7 @@ export default defineComponent({
 @import "assets/css/datatable.css";
 @import "assets/css/pricing.css";
 @import "assets/css/landing-page.css";
+@import "assets/css/faq.css";
 
 #app {
   display: contents;
