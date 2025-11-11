@@ -230,7 +230,7 @@
         checkbox-label="Id"
       >
       <template v-slot:UserName="{ row: agent }">
-          <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center clickable-row" @click="openAgencyDetails(agent.Id)" style="cursor: pointer;">
             <!-- Avatar con iniziali -->
             <div class="symbol symbol-40px me-3">
               <div class="symbol-label" :style="{ 
@@ -243,9 +243,7 @@
               </div>
             </div>
             <div class="d-flex flex-column">
-              <a href="#/dashboard" class="text-decoration-none fw-bold text-hover-primary" :title="`Vai alla dashboard di ${agent.UserName}`">
-            {{ agent.UserName }}
-          </a>
+              <span class="fw-bold text-hover-primary">{{ agent.UserName }}</span>
               <span
                 class="badge badge-sm mt-1"
                 :class="agent.EmailConfirmed ? 'badge-light-success' : 'badge-light-danger'"
@@ -302,34 +300,27 @@
                 class="btn btn-action btn-action-info"
                 data-bs-toggle="modal"
                 data-bs-target="#kt_modal_update_agency"
-                @click="selectId(agent.Id)"
+                @click.stop="selectId(agent.Id)"
                 title="Visualizza dettagli"
               >
-                <span class="btn-icon">
-                  <i class="ki-duotone ki-eye fs-3">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                  </i>
-                </span>
-                <span class="btn-label">Dettagli</span>
+                <i class="ki-duotone ki-notepad-edit fs-4">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
               </button>
               <button
                 type="button"
                 class="btn btn-action btn-action-danger"
-                @click="deleteItem(agent)"
+                @click.stop="deleteItem(agent)"
                 title="Elimina agenzia"
               >
-                <span class="btn-icon">
-                  <i class="ki-duotone ki-trash fs-3">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                    <span class="path5"></span>
-                  </i>
-                </span>
-                <span class="btn-label">Elimina</span>
+                <i class="ki-duotone ki-trash fs-4">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
               </button>
             </div>
           </template>
@@ -381,6 +372,8 @@ import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/
 import { Modal } from "bootstrap";
 import KTSpinner from "@/components/Spinner.vue";
 import '@/assets/css/filters.css';
+import '@/assets/css/table-actions.css';
+import '@/assets/css/lists-common.css';
 
 export default defineComponent({
   name: "agencies",
@@ -616,6 +609,19 @@ export default defineComponent({
       selectedId.value = id;
     };
 
+    // Funzione per aprire i dettagli dell'agenzia
+    const openAgencyDetails = (id: string) => {
+      selectId(id);
+      // Usa setTimeout per assicurarsi che il DOM sia aggiornato
+      setTimeout(() => {
+        const modalElement = document.getElementById('kt_modal_update_agency');
+        if (modalElement) {
+          const modal = new Modal(modalElement);
+          modal.show();
+        }
+      }, 10);
+    };
+
     const onItemSelect = (selectedItems: Array<String>) => {
       selectedIds.value = selectedItems;
     };
@@ -794,42 +800,15 @@ export default defineComponent({
       handleLimitExceeded,
       isCheckingLimit,
       showUpgradeModal,
-      limitStatus
+      limitStatus,
+      openAgencyDetails
     };
   },
 });
 </script>
 
 <style scoped>
-/* Sfondo univoco della pagina */
-.agencies-page-wrapper {
-  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
-  min-height: 100vh;
-  padding: 2rem 0;
-  position: relative;
-}
-
-.agencies-page-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(54, 153, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(11, 183, 175, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, rgba(54, 153, 255, 0.02) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.agencies-page-wrapper > .card {
-  position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-}
+/* Stili specifici per questa pagina */
 
 /* Animazioni fade-in */
 @keyframes fadeIn {
@@ -845,142 +824,6 @@ export default defineComponent({
 
 .fade-in {
   animation: fadeIn 0.3s ease-out;
-}
-
-/* Search Bar Moderna con icona interna */
-.search-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.search-icon {
-  position: absolute;
-  left: 1.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #a1a5b7;
-  pointer-events: none;
-  z-index: 1;
-  transition: color 0.3s ease;
-}
-
-.search-input {
-  background-color: #f1f3ff !important;
-  border: 1px solid #e8f4ff !important;
-  border-radius: 0.75rem !important;
-  padding: 0.75rem 3.5rem 0.75rem 3.5rem !important;
-  font-weight: 500;
-  color: #3f4254;
-  transition: all 0.3s ease;
-}
-
-.search-input:focus {
-  background-color: #ffffff !important;
-  border-color: #3699ff !important;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15);
-}
-
-.search-input::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-.btn-search {
-  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
-  border: none;
-  border-radius: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);
-  transition: all 0.3s ease;
-}
-
-.btn-search:hover {
-  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(54, 153, 255, 0.35);
-}
-
-.btn-clear {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #f64e60;
-  border: none;
-  border-radius: 0.5rem;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.btn-clear:hover {
-  background-color: #d63447;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 4px 8px rgba(246, 78, 96, 0.3);
-}
-
-.btn-clear i {
-  color: white;
-}
-
-/* Results Badge migliorato */
-.results-badge {
-  display: inline-flex;
-  align-items: center;
-  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
-  border: 1px solid #0bb7af;
-  border-radius: 0.95rem;
-  padding: 0.85rem 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(11, 183, 175, 0.15);
-}
-
-.results-badge:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(11, 183, 175, 0.25);
-  border-color: #0aa39a;
-}
-
-.results-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.2;
-}
-
-.results-number {
-  font-weight: 800;
-  font-size: 1.5rem;
-  color: #0bb7af;
-  letter-spacing: -0.5px;
-}
-
-.results-label {
-  font-size: 0.7rem;
-  color: #0aa39a;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Bottone copia */
-.btn-copy {
-  opacity: 0;
-  transition: all 0.2s ease;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-}
-
-tbody tr:hover .btn-copy {
-  opacity: 1;
-}
-
-.btn-copy:hover {
-  transform: scale(1.1);
 }
 
 /* Empty State */
@@ -1001,389 +844,8 @@ tbody tr:hover .btn-copy {
   }
 }
 
-/* Pulsanti Soft */
-.btn {
-  transition: all 0.3s ease;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-}
-
-.btn-sm {
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-light-info {
-  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
-  border: 1px solid #0bb7af;
-  color: #0bb7af;
-}
-
-.btn-light-info:hover {
-  background: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%);
-  border-color: #0bb7af;
-  color: #0aa39a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(11, 183, 175, 0.25);
-}
-
-.btn-light-danger {
-  background: linear-gradient(135deg, #ffe2e5 0%, #ffcdd2 100%);
-  border: 1px solid #f64e60;
-  color: #f64e60;
-}
-
-.btn-light-danger:hover {
-  background: linear-gradient(135deg, #ffcdd2 0%, #ffb3ba 100%);
-  border-color: #f64e60;
-  color: #d63447;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.25);
-}
-
-.btn-light {
-  background-color: #f4f6f9;
-  border: 1px solid #e4e6ef;
-  color: #7e8299;
-}
-
-.btn-light:hover {
-  background-color: #e4e6ef;
-  border-color: #d1d3e0;
-  color: #5e6278;
-  transform: translateY(-2px);
-}
-
-/* Stili tabella uniformati con Dashboard */
-:deep(table) {
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  width: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Header stile Dashboard */
-:deep(thead th) {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border-bottom: 2px solid #e9ecef;
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: #495057;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  vertical-align: middle;
-  white-space: nowrap;
-  text-align: center;
-}
-
-/* Celle body */
-:deep(tbody td) {
-  padding: 0.85rem 1rem;
-  vertical-align: middle;
-  border-bottom: 1px solid #f1f3f4;
-  color: #495057;
-  font-weight: 500;
-  font-size: 1rem;
-  text-align: center;
-}
-
-/* Prima colonna più scura */
-:deep(tbody td:nth-child(2)) {
-  color: #181c32;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-/* Username più grande */
-:deep(tbody td:nth-child(1)) {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #181c32;
-}
-
-/* Link Username */
-:deep(tbody td:nth-child(1) a) {
-  color: #181c32 !important;
-  text-decoration: none !important;
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-:deep(tbody td:nth-child(1) a:hover) {
-  color: #3699ff !important;
-  text-decoration: none !important;
-  transform: translateY(-1px);
-}
-
-/* Hover righe stile Dashboard */
-:deep(tbody tr) {
-  transition: all 0.25s ease;
-  background-color: #ffffff;
-  border-bottom: 1px solid #f1f3f4;
-}
-
-:deep(tbody tr:hover) {
-  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.08);
-  transform: translateX(2px);
-}
-
-/* Link email */
-:deep(a) {
-  color: #495057 !important;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-:deep(a:hover) {
-  color: #3699ff !important;
-  font-weight: 600;
-}
-
-/* Spaziatura coerente */
-.card-body {
-  padding: 1rem 1.5rem;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem !important;
-}
-
-/* Badge Risultati */
-.bg-light-primary {
-  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%) !important;
-  border: 1px solid #0bb7af;
-  box-shadow: 0 2px 8px rgba(11, 183, 175, 0.15);
-  transition: all 0.3s ease;
-}
-
-.bg-light-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(11, 183, 175, 0.25);
-}
-
-.text-primary {
-  color: #0bb7af !important;
-}
-
-/* Avatar con iniziali */
-.symbol-label {
-  border-radius: 0.75rem !important;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-
-tbody tr:hover .symbol-label {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
-}
-
-/* Badge stato */
-.badge {
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.badge-light-success {
-  background: linear-gradient(135deg, #e8fff5 0%, #d4f7e8 100%);
-  color: #1bc5bd;
-  border: 1px solid #1bc5bd;
-}
-
-/* Bottoni Azioni Moderni */
-.action-buttons {
-  gap: 0.75rem !important;
-}
-
-.btn-action {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.25rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  font-size: 0.875rem;
-  border: none;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.btn-action::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-action:hover::before {
-  left: 100%;
-}
-
-.btn-action .btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-.btn-action .btn-label {
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  transition: all 0.3s ease;
-}
-
-/* Bottone Info/Dettagli */
-.btn-action-info {
-  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);
-}
-
-.btn-action-info:hover {
-  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.4);
-  color: #ffffff;
-}
-
-.btn-action-info:hover .btn-icon {
-  transform: scale(1.15) rotate(5deg);
-}
-
-.btn-action-info:active {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(54, 153, 255, 0.3);
-}
-
-/* Bottone Elimina */
-.btn-action-danger {
-  background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.3);
-}
-
-.btn-action-danger:hover {
-  background: linear-gradient(135deg, #d63447 0%, #b92838 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(246, 78, 96, 0.5);
-  color: #ffffff;
-}
-
-.btn-action-danger:hover .btn-icon {
-  transform: scale(1.15) rotate(-5deg);
-  animation: shake 0.5s ease;
-}
-
-.btn-action-danger:active {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(246, 78, 96, 0.3);
-}
-
-/* Animazione shake per l'icona elimina */
-@keyframes shake {
-  0%, 100% { transform: rotate(0deg) scale(1.15); }
-  25% { transform: rotate(-5deg) scale(1.15); }
-  75% { transform: rotate(5deg) scale(1.15); }
-}
-
-/* Effetto ripple sui bottoni */
-.btn-action:active {
-  position: relative;
-}
-
-/* Stili responsive per i bottoni azioni */
-@media (max-width: 768px) {
-  .btn-action {
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-  }
-  
-  .btn-action .btn-label {
-    display: none;
-  }
-  
-  .btn-action .btn-icon i {
-    font-size: 1.25rem !important;
-  }
-}
-
-/* Microinterazioni sui bottoni azioni (legacy) */
-.btn-light-info,
-.btn-light-danger {
-  transition: all 0.2s ease !important;
-}
-
-.btn-light-info:hover,
-.btn-light-danger:hover {
-  transform: translateY(-2px) scale(1.05) !important;
-}
-
-.btn-light-info:active,
-.btn-light-danger:active {
-  transform: translateY(0) scale(0.95) !important;
-}
-
-/* Effetto hover su icona ricerca */
-.search-input:focus ~ .search-icon,
-.search-input:hover ~ .search-icon {
-  color: #3699ff;
-}
-
-
-/* Bottone cerca disabled */
-.btn-search:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Microinterazione placeholder */
-.search-input::placeholder {
-  transition: opacity 0.3s ease;
-}
-
-.search-input:focus::placeholder {
-  opacity: 0.5;
-}
 
 /* Dark mode support */
-[data-bs-theme="dark"] .search-input {
-  background-color: #1e1e2d !important;
-  border-color: #2d2d3f !important;
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .search-icon {
-  color: #565674;
-}
-
-[data-bs-theme="dark"] .results-badge {
-  background: linear-gradient(135deg, #1e1e2d 0%, #2d2d3f 100%);
-  border-color: #0bb7af;
-}
-
-[data-bs-theme="dark"] .results-number,
-[data-bs-theme="dark"] .results-label {
-  color: #0bb7af;
-}
-
 [data-bs-theme="dark"] .empty-state h3 {
   color: #f5f8fa;
 }
@@ -1391,29 +853,5 @@ tbody tr:hover .symbol-label {
 [data-bs-theme="dark"] .badge-light-success {
   background: linear-gradient(135deg, rgba(27, 197, 189, 0.15) 0%, rgba(27, 197, 189, 0.25) 100%);
   color: #1bc5bd;
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .search-section {
-    margin-top: 1rem !important;
-    margin-bottom: 1.5rem !important;
-  }
-  
-  .search-input {
-    font-size: 0.9rem;
-  }
-  
-  .results-badge {
-    padding: 0.65rem 1rem;
-  }
-  
-  .results-number {
-    font-size: 1.25rem;
-  }
-  
-  .btn-search {
-    padding: 0.65rem 1.25rem !important;
-  }
 }
 </style>

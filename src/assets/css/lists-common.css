@@ -1,0 +1,573 @@
+/* ==================================
+   STILI COMUNI PER LISTE
+   Supporto per modalità light e dark
+   ================================== */
+
+/* === VARIABILI CSS PER LIGHT/DARK MODE === */
+:root {
+  /* Page Wrapper */
+  --page-wrapper-bg: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+  --page-card-bg: rgba(255, 255, 255, 0.95);
+  
+  /* Search Bar */
+  --search-bg: #f1f3ff;
+  --search-border: #e8f4ff;
+  --search-icon-color: #a1a5b7;
+  --search-focus-bg: #ffffff;
+  --search-focus-border: #3699ff;
+  --search-focus-shadow: rgba(54, 153, 255, 0.15);
+  
+  /* Buttons */
+  --btn-search-bg: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  --btn-search-hover-bg: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
+  --btn-clear-bg: #f64e60;
+  --btn-clear-hover-bg: #d63447;
+  
+  /* Table */
+  --table-header-bg: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  --table-border: #e9ecef;
+  --table-row-bg: #ffffff;
+  --table-row-hover-bg: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
+  --table-text: #495057;
+  --table-text-dark: #181c32;
+  
+  /* Badge Results */
+  --badge-results-bg: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+  --badge-results-border: #0bb7af;
+  --badge-results-text: #0bb7af;
+  
+  /* Links */
+  --link-color: #495057;
+  --link-hover-color: #3699ff;
+  
+  /* Avatar */
+  --avatar-shadow: rgba(0, 0, 0, 0.15);
+  --avatar-hover-shadow: rgba(0, 0, 0, 0.25);
+}
+
+[data-bs-theme="dark"] {
+  /* Page Wrapper */
+  --page-wrapper-bg: linear-gradient(135deg, #1e1e2d 0%, #181c32 100%);
+  --page-card-bg: rgba(30, 30, 45, 0.95);
+  
+  /* Search Bar */
+  --search-bg: #1e1e2d;
+  --search-border: #2d2d3f;
+  --search-icon-color: #565674;
+  --search-focus-bg: #2d2d3f;
+  --search-focus-border: #3699ff;
+  --search-focus-shadow: rgba(54, 153, 255, 0.3);
+  
+  /* Table */
+  --table-header-bg: linear-gradient(135deg, #2d2d3f 0%, #1e1e2d 100%);
+  --table-border: #3a3a4a;
+  --table-row-bg: #1e1e2d;
+  --table-row-hover-bg: linear-gradient(90deg, #2d2d3f 0%, #1e1e2d 100%);
+  --table-text: #f5f8fa;
+  --table-text-dark: #f5f8fa;
+  
+  /* Badge Results */
+  --badge-results-bg: linear-gradient(135deg, #1e1e2d 0%, #2d2d3f 100%);
+  --badge-results-border: #0bb7af;
+  --badge-results-text: #0bb7af;
+  
+  /* Links */
+  --link-color: #f5f8fa;
+  --link-hover-color: #3699ff;
+  
+  /* Avatar */
+  --avatar-shadow: rgba(0, 0, 0, 0.5);
+  --avatar-hover-shadow: rgba(0, 0, 0, 0.7);
+}
+
+/* === PAGE WRAPPER === */
+.properties-page-wrapper,
+.clients-page-wrapper,
+.agents-page-wrapper,
+.agencies-page-wrapper {
+  background: var(--page-wrapper-bg);
+  min-height: 100vh;
+  padding: 2rem 0;
+  position: relative;
+}
+
+.properties-page-wrapper::before,
+.clients-page-wrapper::before,
+.agents-page-wrapper::before,
+.agencies-page-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(54, 153, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(11, 183, 175, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(54, 153, 255, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.properties-page-wrapper > .card,
+.clients-page-wrapper > .card,
+.agents-page-wrapper > .card,
+.agencies-page-wrapper > .card {
+  position: relative;
+  z-index: 1;
+  background: var(--page-card-bg);
+  backdrop-filter: blur(10px);
+}
+
+/* === SEARCH BAR === */
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--search-icon-color);
+  pointer-events: none;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.search-input {
+  background-color: var(--search-bg) !important;
+  border: 1px solid var(--search-border) !important;
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 3.5rem 0.75rem 3.5rem !important;
+  font-weight: 500;
+  color: var(--table-text);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  background-color: var(--search-focus-bg) !important;
+  border-color: var(--search-focus-border) !important;
+  box-shadow: 0 0 0 0.2rem var(--search-focus-shadow);
+}
+
+.search-input::placeholder {
+  color: var(--search-icon-color);
+  font-weight: 400;
+  transition: opacity 0.3s ease;
+}
+
+.search-input:focus::placeholder {
+  opacity: 0.5;
+}
+
+.search-input:focus ~ .search-icon,
+.search-input:hover ~ .search-icon {
+  color: var(--search-focus-border);
+}
+
+/* === BUTTONS === */
+.btn-search {
+  background: var(--btn-search-bg);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);
+  transition: all 0.3s ease;
+  color: #ffffff;
+}
+
+.btn-search:hover {
+  background: var(--btn-search-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(54, 153, 255, 0.35);
+  color: #ffffff;
+}
+
+.btn-search:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-clear {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--btn-clear-bg);
+  border: none;
+  border-radius: 0.5rem;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-clear:hover {
+  background-color: var(--btn-clear-hover-bg);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 8px rgba(246, 78, 96, 0.3);
+}
+
+.btn-clear i {
+  color: white;
+}
+
+/* === FORM SELECTS === */
+.form-select-modern,
+.form-control.form-select-modern {
+  background-color: var(--search-bg) !important;
+  border: 1px solid var(--search-border) !important;
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  color: var(--table-text);
+}
+
+.form-select-modern:focus,
+.form-control.form-select-modern:focus {
+  border-color: var(--search-focus-border) !important;
+  box-shadow: 0 0 0 0.2rem var(--search-focus-shadow) !important;
+  background-color: var(--search-focus-bg) !important;
+}
+
+.form-select-modern:disabled,
+.form-control.form-select-modern:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === RESULTS BADGE === */
+.results-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--badge-results-bg);
+  border: 1px solid var(--badge-results-border);
+  border-radius: 0.95rem;
+  padding: 0.85rem 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(11, 183, 175, 0.15);
+}
+
+.results-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(11, 183, 175, 0.25);
+  border-color: #0aa39a;
+}
+
+.results-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.results-number {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--badge-results-text);
+  letter-spacing: -0.5px;
+}
+
+.results-label {
+  font-size: 0.7rem;
+  color: #0aa39a;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text-primary {
+  color: var(--badge-results-text) !important;
+}
+
+.bg-light-primary {
+  background: var(--badge-results-bg) !important;
+  border: 1px solid var(--badge-results-border);
+  box-shadow: 0 2px 8px rgba(11, 183, 175, 0.15);
+  transition: all 0.3s ease;
+}
+
+.bg-light-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 183, 175, 0.25);
+}
+
+/* === BUTTON COPY === */
+.btn-copy {
+  opacity: 0;
+  transition: all 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+tbody tr:hover .btn-copy {
+  opacity: 1;
+}
+
+.btn-copy:hover {
+  transform: scale(1.1);
+}
+
+/* === AVATAR === */
+.symbol-label {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 3px 10px var(--avatar-shadow);
+  transition: all 0.3s ease;
+}
+
+tbody tr:hover .symbol-label {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px var(--avatar-hover-shadow);
+}
+
+/* === BADGES === */
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+.badge-light-success {
+  background: linear-gradient(135deg, #e8fff5 0%, #d4f7e8 100%);
+  color: #1bc5bd;
+  border: 1px solid #1bc5bd;
+}
+
+.badge-light-warning {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  color: #ffa800;
+  border: 1px solid #ffa800;
+}
+
+.badge-light-info {
+  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+  color: #3699ff;
+  border: 1px solid #3699ff;
+}
+
+.badge-light-danger {
+  background: linear-gradient(135deg, #ffe2e5 0%, #ffcdd2 100%);
+  color: #f64e60;
+  border: 1px solid #f64e60;
+}
+
+.badge-light-secondary {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  color: #7e8299;
+  border: 1px solid #7e8299;
+}
+
+.badge-light-primary {
+  background: linear-gradient(135deg, #e1f0ff 0%, #b3e5fc 100%);
+  color: #3699ff;
+  border: 1px solid #3699ff;
+}
+
+/* === BUTTONS GENERAL === */
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-sm {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-light {
+  background-color: #f4f6f9;
+  border: 1px solid #e4e6ef;
+  color: #7e8299;
+}
+
+.btn-light:hover {
+  background-color: #e4e6ef;
+  border-color: #d1d3e0;
+  color: #5e6278;
+}
+
+.btn-light-primary {
+  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+  border: 1px solid #0bb7af;
+  color: #0bb7af;
+}
+
+.btn-light-primary:hover {
+  background: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%);
+  border-color: #0bb7af;
+  color: #0aa39a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 183, 175, 0.25);
+}
+
+.btn-light-danger {
+  background: linear-gradient(135deg, #ffe2e5 0%, #ffcdd2 100%);
+  border: 1px solid #f64e60;
+  color: #f64e60;
+}
+
+.btn-light-danger:hover {
+  background: linear-gradient(135deg, #ffcdd2 0%, #ffb3ba 100%);
+  border-color: #f64e60;
+  color: #d63447;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.25);
+}
+
+/* === TABLE STYLES === */
+:deep(table) {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:deep(thead th) {
+  background: var(--table-header-bg);
+  border-bottom: 2px solid var(--table-border);
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--table-text);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  vertical-align: middle;
+  white-space: nowrap;
+  text-align: center;
+}
+
+:deep(tbody td) {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f3f4;
+  color: var(--table-text);
+  font-weight: 500;
+  font-size: 1rem;
+  text-align: center;
+}
+
+:deep(tbody tr) {
+  transition: all 0.25s ease;
+  background-color: var(--table-row-bg);
+  border-bottom: 1px solid #f1f3f4;
+}
+
+:deep(tbody tr:hover) {
+  background: var(--table-row-hover-bg) !important;
+  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.08);
+  transform: translateX(2px);
+}
+
+/* === LINKS === */
+:deep(a) {
+  color: var(--link-color) !important;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+:deep(a:hover) {
+  color: var(--link-hover-color) !important;
+  font-weight: 600;
+}
+
+/* Link nelle prime colonne (nome utente, cliente, etc.) */
+:deep(tbody td:nth-child(1) a),
+:deep(tbody td:nth-child(2) a) {
+  color: var(--table-text-dark) !important;
+  text-decoration: none !important;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+:deep(tbody td:nth-child(1) a:hover),
+:deep(tbody td:nth-child(2) a:hover) {
+  color: var(--link-hover-color) !important;
+  text-decoration: none !important;
+  transform: translateY(-1px);
+}
+
+/* Stili comuni per colonne username/nome (prima colonna) - agents e agencies */
+.agents-page-wrapper :deep(tbody td:nth-child(1)),
+.agencies-page-wrapper :deep(tbody td:nth-child(1)) {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #181c32;
+}
+
+.agents-page-wrapper :deep(tbody td:nth-child(2)) {
+  color: #181c32;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.agencies-page-wrapper :deep(tbody td:nth-child(2)) {
+  color: #181c32;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* === UTILITIES === */
+.card-body {
+  padding: 1rem 1.5rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem !important;
+}
+
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .d-flex.align-items-center.gap-3 {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  
+  .search-wrapper {
+    max-width: 100% !important;
+  }
+  
+  .flex-shrink-0 {
+    flex-shrink: 1 !important;
+  }
+  
+  .search-input {
+    font-size: 0.9rem;
+  }
+  
+  .results-badge {
+    padding: 0.65rem 1rem;
+  }
+  
+  .results-number {
+    font-size: 1.25rem;
+  }
+  
+  .btn-search {
+    padding: 0.65rem 1.25rem !important;
+  }
+}
+

@@ -1,7 +1,7 @@
 <template>
-  <thead>
-    <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-      <th v-if="checkboxEnabled" class="header-checkbox-cell">
+  <thead class="table-light">
+    <tr>
+      <th v-if="checkboxEnabled" class="header-checkbox-cell py-3 px-3">
         <div
           class="form-check form-check-sm form-check-custom form-check-solid header-checkbox-wrapper"
         >
@@ -18,6 +18,8 @@
           :class="{
             'text-end': i === header.length - 1,
             'text-center': column.textAlign === 'center',
+            'py-3': true,
+            'px-3': true,
           }"
           @click="onSort(column.columnLabel, column.sortEnabled)"
           :style="{
@@ -113,154 +115,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-thead {
-  position: relative;
-
-  tr {
-    background: linear-gradient(135deg, var(--bs-gray-50) 0%, var(--bs-gray-100) 100%);
-
-    th {
-      position: relative;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      user-select: none;
-
-      &:hover {
-        background: var(--bs-gray-200);
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      // Sortable columns
-      &[style*="cursor: pointer"] {
-        position: relative;
-
-        &:after {
-          content: "";
-          position: absolute;
-          right: 0.5rem;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 0;
-          height: 0;
-          border-left: 4px solid transparent;
-          border-right: 4px solid transparent;
-          border-bottom: 4px solid var(--bs-gray-400);
-          opacity: 0.3;
-          transition: all 0.2s ease;
-        }
-
-        &.sort-asc:after {
-          border-bottom: 4px solid var(--bs-primary);
-          border-top: none;
-          opacity: 1;
-          transform: translateY(-50%) rotate(0deg);
-        }
-
-        &.sort-desc:after {
-          border-top: 4px solid var(--bs-primary);
-          border-bottom: none;
-          opacity: 1;
-          transform: translateY(-50%) rotate(0deg);
-        }
-      }
-
-      // Checkbox column
-      &.header-checkbox-cell {
-        width: 30px;
-        min-width: 30px;
-        max-width: 30px;
-        text-align: center;
-        vertical-align: middle;
-        padding: 0.875rem 0.5rem !important;
-
-        .header-checkbox-wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0;
-        }
-
-        .header-checkbox-input {
-          margin: 0;
-          transform: scale(1.1);
-          border-radius: 4px;
-          border: 1px solid var(--bs-gray-300);
-          width: 16px;
-          height: 16px;
-
-          &:checked {
-            background-color: var(--bs-primary);
-            border-color: var(--bs-primary);
-          }
-
-          &:focus {
-            box-shadow: 0 0 0 2px rgba(54, 153, 255, 0.1);
-          }
-        }
-      }
-
-      // Professional styling for other checkboxes
-      .form-check-input:not(.header-checkbox-input) {
-        transform: scale(1.2);
-        transition: all 0.2s ease;
-
-        &:hover {
-          transform: scale(1.3);
-          box-shadow: 0 0 0 2px rgba(54, 153, 255, 0.2);
-        }
-      }
-    }
-  }
+/* Minimal custom styles - Bootstrap does the rest */
+thead th {
+  cursor: pointer;
+  user-select: none;
 }
 
-// Enhanced checkbox styling for header
-.form-check-input {
-  border-radius: 6px !important;
-  border: 2px solid var(--bs-gray-300);
-
-  &:checked {
-    background-color: var(--bs-primary) !important;
-    border-color: var(--bs-primary) !important;
-    box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.1);
-  }
-
-  &:focus {
-    box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.1);
-  }
-}
-
-// Column hover effects
-th {
-  .column-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-
-    .sort-indicator {
-      margin-left: 0.5rem;
-      opacity: 0.5;
-      transition: all 0.2s ease;
-
-      &.active {
-        opacity: 1;
-        color: var(--bs-primary);
-        transform: scale(1.1);
-      }
-    }
-  }
-
-  &:hover .sort-indicator {
-    opacity: 0.8;
-  }
-}
-
-// Real estate specific header styling
-.kt-real-estate-header {
-  th {
-    background: var(--bs-gray-50);
-    font-weight: 600;
-  }
+.header-checkbox-cell {
+  width: 40px;
+  text-align: center;
 }
 </style>

@@ -1,0 +1,140 @@
+/* ==================================
+   BOTTONI AZIONI TABELLE - STILI COMUNI
+   Supporto per modalità light e dark
+   ================================== */
+
+/* === VARIABILI CSS PER LIGHT/DARK MODE === */
+:root {
+  /* Light Mode */
+  --action-btn-bg: #f8f9fa;
+  --action-btn-bg-hover: #e9ecef;
+  --action-btn-bg-active: #dee2e6;
+  --action-btn-border: #e4e6ef;
+  --action-btn-border-hover: #d1d3e0;
+  --action-btn-text: #5e6278;
+  --action-btn-text-hover: #0077CC;
+  --action-btn-shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Danger Button */
+  --action-danger-bg-hover: #fff5f5;
+  --action-danger-border-hover: #fecaca;
+  --action-danger-text-hover: #dc3545;
+  --action-danger-bg-active: #fee2e2;
+  
+  /* Clickable Row */
+  --row-hover-opacity: 0.8;
+  --row-active-opacity: 0.6;
+}
+
+[data-bs-theme="dark"] {
+  /* Dark Mode */
+  --action-btn-bg: #2C2C2C;
+  --action-btn-bg-hover: #3a3a3a;
+  --action-btn-bg-active: #444444;
+  --action-btn-border: #444444;
+  --action-btn-border-hover: #555555;
+  --action-btn-text: #AAAAAA;
+  --action-btn-text-hover: #0077CC;
+  --action-btn-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Danger Button */
+  --action-danger-bg-hover: rgba(220, 53, 69, 0.15);
+  --action-danger-border-hover: rgba(220, 53, 69, 0.3);
+  --action-danger-text-hover: #ff6b7a;
+  --action-danger-bg-active: rgba(220, 53, 69, 0.25);
+  
+  /* Clickable Row */
+  --row-hover-opacity: 0.85;
+  --row-active-opacity: 0.7;
+}
+
+/* === CONTAINER BOTTONI AZIONI === */
+.action-buttons {
+  gap: 0.5rem !important;
+}
+
+/* === BOTTONE BASE === */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.btn-action i {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* === BOTTONE INFO/DETTAGLI === */
+.btn-action-info {
+  background-color: var(--action-btn-bg);
+  border: 1px solid var(--action-btn-border);
+  color: var(--action-btn-text);
+}
+
+.btn-action-info:hover {
+  background-color: var(--action-btn-bg-hover);
+  border-color: var(--action-btn-border-hover);
+  color: var(--action-btn-text-hover);
+  box-shadow: 0 1px 3px var(--action-btn-shadow);
+}
+
+.btn-action-info:active {
+  background-color: var(--action-btn-bg-active);
+}
+
+/* === BOTTONE ELIMINA === */
+.btn-action-danger {
+  background-color: var(--action-btn-bg);
+  border: 1px solid var(--action-btn-border);
+  color: var(--action-btn-text);
+}
+
+.btn-action-danger:hover {
+  background-color: var(--action-danger-bg-hover);
+  border-color: var(--action-danger-border-hover);
+  color: var(--action-danger-text-hover);
+  box-shadow: 0 1px 3px var(--action-btn-shadow);
+}
+
+.btn-action-danger:active {
+  background-color: var(--action-danger-bg-active);
+}
+
+/* === RIGHE CLICCABILI === */
+.clickable-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  opacity: var(--row-hover-opacity);
+}
+
+.clickable-row:active {
+  opacity: var(--row-active-opacity);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .btn-action {
+    min-width: 36px;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .btn-action i {
+    font-size: 0.9rem;
+  }
+}
+

@@ -1,8 +1,8 @@
 <template>
-  <tbody class="fw-semibold text-gray-600">
+  <tbody>
     <template v-for="(row, i) in data" :key="i">
       <tr>
-        <td v-if="checkboxEnabled" class="checkbox-cell">
+        <td v-if="checkboxEnabled" class="checkbox-cell py-3 px-3">
           <div
             class="form-check form-check-sm form-check-custom form-check-solid checkbox-wrapper"
           >
@@ -18,7 +18,9 @@
         <template v-for="(properties, j) in header" :key="j">
           <td :class="{ 
             'text-end': j === header.length - 1,
-            'text-center': properties.textAlign === 'center'
+            'text-center': properties.textAlign === 'center',
+            'py-3': true,
+            'px-3': true,
           }">
             <slot :name="`${properties.columnLabel}`" :row="row">
               {{ row }}

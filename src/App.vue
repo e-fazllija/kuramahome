@@ -91,7 +91,6 @@ export default defineComponent({
 @import "assets/css/form-multiselect.css";
 @import "assets/css/form-controls.css";
 @import "assets/css/widgets.css";
-@import "assets/css/datatable.css";
 @import "assets/css/pricing.css";
 @import "assets/css/landing-page.css";
 @import "assets/css/faq.css";
