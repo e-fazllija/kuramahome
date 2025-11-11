@@ -282,11 +282,11 @@ export default defineComponent({
       map = L.map(mapContainer.value, {
         center: mainCoords,
         zoom: 9.56, // Initial zoom, will be adjusted based on visible agencies
-        zoomControl: false,
-        scrollWheelZoom: true,
+        zoomControl: true,
+        scrollWheelZoom: false,
         doubleClickZoom: false,
         dragging: true,
-        touchZoom: true,
+        touchZoom: false,
         boxZoom: true,
         keyboard: false
       });
