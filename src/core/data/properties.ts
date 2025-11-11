@@ -51,6 +51,7 @@ export class RealEstateProperty {
   UpdateDate?: Date;
   Photos?: Array<RealEstatePropertyPhotos>; 
   CustomerId: number | 0;
+  AgentId?: string;
   UserId: string;
   User?: User;
   Files?: FileList;
@@ -157,6 +158,9 @@ const getRealEstateProperty = (id: number) => {
       const result = data as Partial<RealEstateProperty>;
       result.Photos = photos;
       result.RealEstatePropertyNotes = data.RealEstatePropertyNotes;
+      if (result.UserId && !result.AgentId) {
+        result.AgentId = result.UserId;
+      }
       return result;
     })
     .catch(({ response }) => {
@@ -253,7 +257,13 @@ const uploadFiles = async (files: FileList, id: number) => {
 
 const createRealEstateProperty = async (form: any) => {
   const values = form as RealEstateProperty;
-  values.UserId = store.user.Id;
+  const currentUser = store.user;
+  if (!values.AgentId) {
+    values.AgentId = currentUser?.Id;
+  }
+  if (!values.UserId && values.AgentId) {
+    values.UserId = values.AgentId;
+  }
   const formData = new FormData();
 
   // Campi da ignorare (non inviati al backend)
@@ -339,6 +349,12 @@ const createRealEstateProperty = async (form: any) => {
 
 const updateRealEstateProperty = async (formData: any) => {
   const values = formData as RealEstateProperty;
+  if (!values.AgentId && values.UserId) {
+    values.AgentId = values.UserId;
+  }
+  if (!values.UserId && values.AgentId) {
+    values.UserId = values.AgentId;
+  }
   return await ApiService.post("RealEstateProperty/Update", values)
     .then(({ data }) => {
       const result = data as Partial<RealEstateProperty>;

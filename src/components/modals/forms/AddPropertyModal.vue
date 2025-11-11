@@ -50,26 +50,28 @@
               <!--begin::Input group-->
               <div class="d-flex flex-column mb-5 fv-row">
                 <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.AgentId }]">
                   <i class="ki-duotone ki-user fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
-                  <span class="required">Agente</span>
+                  <span>Agente</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <select class="form-select modern-select form-control-palette" v-model="formData.AgentId">
-                  <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.FirstName }} {{ user.LastName }}</option>
-                </select>
+                <el-form-item prop="AgentId">
+                  <select class="form-select modern-select form-control-palette" v-model="formData.AgentId">
+                    <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.FirstName }} {{ user.LastName }}</option>
+                  </select>
+                </el-form-item>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
 
               <!--begin::Input group-->
-              <div class="fv-row mb-9">
+              <div class="d-flex flex-column mb-5 fv-row">
                 <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.CustomerId }]">
                   <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -77,21 +79,24 @@
                     <span class="path4"></span>
                     <span class="path5"></span>
                   </i>
-                  <span class="required">Cliente</span>
+                  <span>Cliente</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <Multiselect
-                v-model="formData.CustomerId"
-                :options="inserModel.Customers"
-                label="label"
-                valueProp="Id"
-                :searchable="true"
-                :close-on-select="true"
-                :clear-on-select="false"
-                placeholder="Seleziona il cliente"
-                class="multiselect-modern form-control-palette"
-              />
+                <el-form-item prop="CustomerId">
+                  <Multiselect
+                    v-model="formData.CustomerId"
+                    :options="inserModel.Customers"
+                    label="label"
+                    valueProp="Id"
+                    :searchable="true"
+                    :close-on-select="true"
+                    :clear-on-select="false"
+                    placeholder="Seleziona il cliente"
+                    class="multiselect-modern form-control-palette"
+                    style="width: 100%;"
+                  />
+                </el-form-item>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
@@ -99,7 +104,7 @@
               <!--begin::Input group-->
               <div class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.Title }]">
                   <i class="ki-duotone ki-text fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -118,7 +123,7 @@
               <!--begin::Input group-->
               <div class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.Description }]">
                   <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -155,7 +160,7 @@
               <!--begin::Col-->
               <div v-if="!isTrattativaRiservata" class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.Price }]">
                   <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -174,7 +179,7 @@
               <!--begin::Col-->
               <div class="d-flex flex-column mb-2 fv-row">
                 <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
                   <i class="ki-duotone ki-calendar fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -350,15 +355,16 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-7 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.Category }]">
                     <i class="ki-duotone ki-category fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    <span class="required">Categoria</span>
+                    <span>Categoria</span>
                   </label>
                   <!--end::Label-->
-                  <!--begin::Input-->
+                <!--begin::Input-->
+                <el-form-item prop="Category">
                   <select class="form-select modern-select" v-model="formData.Category">
                     <option value="Residenziale">🏠 Residenziale</option>
                     <option value="Capannone">🏭 Capannone</option>
@@ -369,43 +375,48 @@
                     <option value="Terreno">🌾 Terreno</option>
                     <option value="Rustico / Casale">🏚️ Rustico / Casale</option>
                   </select>
-                  <!--end::Input-->
+                </el-form-item>
+                <!--end::Input-->
                 </div>
                 <!--end::Input group-->
 
                 <!--begin::Input group Tipologia-->
                 <div v-if="showTipologia" class="d-flex flex-column mb-7 fv-row">
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.Typology }]">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    <span class="required">Tipologia</span>
+                    <span>Tipologia</span>
                   </label>
-                  <select class="form-select modern-select" v-model="formData.Typology">
-                    <option v-for="tipologia in typesavailable" :key="tipologia" :value="tipologia">
-                      {{ tipologia }}
-                    </option>
-                  </select>
+                  <el-form-item prop="Typology">
+                    <select class="form-select modern-select" v-model="formData.Typology">
+                      <option v-for="tipologia in typesavailable" :key="tipologia" :value="tipologia">
+                        {{ tipologia }}
+                      </option>
+                    </select>
+                  </el-form-item>
                 </div>
                 <!--end::Input group Tipologia-->
 
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.Status }]">
                     <i class="ki-duotone ki-document fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    <span class="required">Stato vendita o affitto</span>
+                    <span>Stato vendita o affitto</span>
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.Status">
-                    <option value="Vendita">💰 Vendita</option>
-                    <option value="Affitto">🏠 Affitto</option>
-                  </select>
+                  <el-form-item prop="Status">
+                    <select class="form-select modern-select" v-model="formData.Status">
+                      <option value="Vendita">💰 Vendita</option>
+                      <option value="Affitto">🏠 Affitto</option>
+                    </select>
+                  </el-form-item>
                   <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -440,7 +451,7 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-7 fv-row">
                   <!--begin::Label-->
-                  <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.AddressLine }]">
                     <i class="ki-duotone ki-map fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -459,19 +470,21 @@
                 <!--begin::Input group-->
                <div class="d-flex flex-column mb-5 fv-row">
                     <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                    <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.State }]">
                       <i class="ki-duotone ki-map fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-                      <span class="required">Provincia</span>
+                      <span>Provincia</span>
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <select class="form-select modern-select" v-model="formData.State">
-                      <option value="">🗺️ Seleziona provincia</option>
-                      <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
-                    </select>
+                    <el-form-item prop="State">
+                      <select class="form-select modern-select" v-model="formData.State">
+                        <option value="">🗺️ Seleziona provincia</option>
+                        <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
+                      </select>
+                    </el-form-item>
                     <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -479,19 +492,21 @@
                 <!--begin::Input group-->
                <div class="d-flex flex-column mb-5 fv-row">
                     <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                    <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.City }]">
                       <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-                      <span class="required">Comune</span>
+                      <span>Comune</span>
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <select class="form-select modern-select" aria-label="Single select example" v-model="formData.City" required>
-                        <option value="">🏙️ Seleziona comune</option>
-                        <option v-for="(city, index) in cities" :key="index" :value="city.Id">{{ city.Name }}</option>
-                    </select>
+                    <el-form-item prop="City">
+                      <select class="form-select modern-select" aria-label="Single select example" v-model="formData.City" required>
+                          <option value="">🏙️ Seleziona comune</option>
+                          <option v-for="(city, index) in cities" :key="index" :value="city.Id">{{ city.Name }}</option>
+                      </select>
+                    </el-form-item>
                     <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -519,17 +534,17 @@
                 <!--begin::Col-->
                   <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.PostCode }]">
                     <i class="ki-duotone ki-code fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
                     </i>
-                    Codice Postale
+                    Codice Fiscale
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="PostCode">
-                    <el-input v-model="formData.PostCode" type="number" class="modern-input" placeholder="CAP" />
+                    <el-input v-model="formData.PostCode" type="text" class="modern-input" placeholder="Inserisci il codice fiscale" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -606,7 +621,7 @@
                   <!--begin::Col-->
                   <div class="d-flex flex-column mb-7 fv-row">
                     <!--begin::Label-->
-                    <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                    <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.CommercialSurfaceate }]">
                       <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -660,7 +675,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -669,9 +684,7 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <el-form-item prop="TotalBuildingfloors">
-                    <el-input v-model="formData.TotalBuildingfloors" type="number" class="modern-input" placeholder="Numero piani" />
-                  </el-form-item>
+                  <el-input v-model="formData.TotalBuildingfloors" type="number" class="modern-input" placeholder="Numero piani" />
                   <!--end::Input-->
                 </div>
                 <!--end::Col-->
@@ -907,7 +920,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.EnergyClass }]">
                     <i class="ki-duotone ki-element-11 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -916,23 +929,25 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.EnergyClass">
-                    <option value="">Seleziona il tipo di Classe energetica</option>
-                    <option value="Proprietà Esente">Proprietà Esente</option>
-                    <option value="Non classificabile">Non classificabile</option>
-                    <option value="A4">A4</option>
-                    <option value="A3">A3</option>
-                    <option value="A2">A2</option>
-                    <option value="A1">A1</option>
-                    <option value="A+">A+</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                    <option value="E">E</option>
-                    <option value="F">F</option>
-                    <option value="G">G</option>
-                  </select>
+                  <el-form-item prop="EnergyClass">
+                    <select class="form-select modern-select" v-model="formData.EnergyClass">
+                      <option value="">Seleziona il tipo di Classe energetica</option>
+                      <option value="Proprietà Esente">Proprietà Esente</option>
+                      <option value="Non classificabile">Non classificabile</option>
+                      <option value="A4">A4</option>
+                      <option value="A3">A3</option>
+                      <option value="A2">A2</option>
+                      <option value="A1">A1</option>
+                      <option value="A+">A+</option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                      <option value="E">E</option>
+                      <option value="F">F</option>
+                      <option value="G">G</option>
+                    </select>
+                  </el-form-item>
                   <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -959,7 +974,7 @@
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.StateOfTheProperty }]">
                     <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -968,13 +983,15 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.StateOfTheProperty">
-                    <option value="">🏠 Seleziona lo Stato dell'immobile</option>
-                    <option value="Nuovo / In Costruzione">🏗️ Nuovo / In Costruzione</option>
-                    <option value="Ottimo / Ristrutturato">⭐ Ottimo / Ristrutturato</option>
-                    <option value="Buono / Abitabile">✅ Buono / Abitabile</option>
-                    <option value="Da Ristrutturare">🔧 Da Ristrutturare</option>
-                  </select>
+                  <el-form-item prop="StateOfTheProperty">
+                    <select class="form-select modern-select" v-model="formData.StateOfTheProperty">
+                      <option value="">🏠 Seleziona lo Stato dell'immobile</option>
+                      <option value="Nuovo / In Costruzione">🏗️ Nuovo / In Costruzione</option>
+                      <option value="Ottimo / Ristrutturato">⭐ Ottimo / Ristrutturato</option>
+                      <option value="Buono / Abitabile">✅ Buono / Abitabile</option>
+                      <option value="Da Ristrutturare">🔧 Da Ristrutturare</option>
+                    </select>
+                  </el-form-item>
                   <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -982,7 +999,7 @@
                 <!--begin::Col-->
                 <div class="col-md-6 fv-row">
                   <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.YearOfConstruction }]">
                     <i class="ki-duotone ki-calendar fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -1025,7 +1042,7 @@
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
-            <span class="required">Tipologia Incarico</span>
+            <span>Tipologia Incarico</span>
           </label>
           <!--end::Label-->
           <!--begin::Input-->
@@ -1111,7 +1128,7 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-2 fv-row">
                   <!--begin::Label-->
-                  <label class="required fs-6 fw-bold mb-3 text-palette-primary">
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
                     <i class="ki-duotone ki-youtube fs-5 me-2 text-primary">
                       <span class="path1"></span>
                       <span class="path2"></span>
@@ -1184,7 +1201,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, watch, onMounted } from "vue";
+import { defineComponent, ref, watch, onMounted, reactive } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -1246,9 +1263,9 @@ export default defineComponent({
       Availability: "",
       Description: "Descrizione dell'immobile",
       CustomerId: null,
+      UserId: "",
       AgentId: "",
       AssignmentEnd: new Date().toISOString().split('T')[0], // Data odierna come default
-      Agent: null,
       VideoUrl: "",
       AgreedCommission: 0,
       FlatRateCommission: 0,
@@ -1260,6 +1277,32 @@ export default defineComponent({
       Users: []
     });
     const showTipologia = ref(true);
+    const invalidFields = reactive<Record<string, boolean>>({});
+
+    const markFieldInvalid = (field: string) => {
+      invalidFields[field] = true;
+    };
+
+    const clearFieldError = (field: string) => {
+      if (invalidFields[field]) {
+        delete invalidFields[field];
+      }
+    };
+
+    const resetInvalidFields = () => {
+      Object.keys(invalidFields).forEach((key) => {
+        delete invalidFields[key];
+      });
+    };
+
+    const hasText = (value: string | null | undefined) => {
+      return typeof value === "string" && value.trim().length > 0;
+    };
+
+    const hasPositiveNumber = (value: number | string | null | undefined) => {
+      const numericValue = Number(value);
+      return !Number.isNaN(numericValue) && numericValue > 0;
+    };
 
     // Carica le province dal JSON
     const loadProvinces = async () => {
@@ -1294,27 +1337,86 @@ export default defineComponent({
     };
 
 
-    const tipologiePerCategoria = {
-          Residenziale: ["Appartamento", "Attico", "Mansarda", "Loft", "Soffitta", "Casale", "Rustico", "Villa Unifamiliare",
-          "Villa Bifamiliare", "Villa Plurifamiliare", "Villa a Schiera"],
-          Commerciale :["Locale commerciale", "Negozio"],
-          Capannone: ["Capannone artigianale", "Capannone industriale"],
-          Garage: ["Box singolo", "Box doppio", "Posto auto"],
-          Terreno: ["Edificabile", "Agricolo", "Non Edificabile"],
+    const tipologiePerCategoria: Record<string, string[]> = {
+      "Residenziale": [
+        "Appartamento",
+        "Attico",
+        "Mansarda",
+        "Loft",
+        "Soffitta",
+        "Casale",
+        "Rustico",
+        "Villa Unifamiliare",
+        "Villa Bifamiliare",
+        "Villa Plurifamiliare",
+        "Villa a Schiera"
+      ],
+      "Capannone": [
+        "Capannone artigianale",
+        "Capannone industriale",
+        "Capannone logistico"
+      ],
+      "Negozi-Locale Commerciale": [
+        "Negozio",
+        "Locale commerciale",
+        "Showroom",
+        "Chiosco"
+      ],
+      "Magazzino": [
+        "Magazzino",
+        "Deposito",
+        "Laboratorio"
+      ],
+      "Garage": [
+        "Box singolo",
+        "Box doppio",
+        "Posto auto coperto",
+        "Posto auto scoperto"
+      ],
+      "Ufficio": [
+        "Ufficio",
+        "Studio professionale",
+        "Business center",
+        "Co-working"
+      ],
+      "Terreno": [
+        "Edificabile",
+        "Agricolo",
+        "Non edificabile",
+        "Boschivo"
+      ],
+      "Rustico / Casale": [
+        "Rustico",
+        "Casale",
+        "Cascina",
+        "Masseria"
+      ]
     };
 
-    const typesavailable = ref<string[]>(tipologiePerCategoria[formData.value.Category]);
+    const typesavailable = ref<string[]>(tipologiePerCategoria[formData.value.Category] || []);
+    if (typesavailable.value.length > 0) {
+      formData.value.Typology = typesavailable.value[0];
+      showTipologia.value = true;
+    } else {
+      formData.value.Typology = "";
+      showTipologia.value = false;
+    }
 
     watch(
       () => formData.value.Category,
       (newCategoria) => {
-        if (newCategoria && tipologiePerCategoria[formData.value.Category]) {
-          typesavailable.value = tipologiePerCategoria[formData.value.Category];
+        const available = (newCategoria && tipologiePerCategoria[newCategoria]) ? [...tipologiePerCategoria[newCategoria]] : [];
+        typesavailable.value = available;
+
+        if (available.length > 0) {
           showTipologia.value = true;
+          formData.value.Typology = available.includes(formData.value.Typology)
+            ? formData.value.Typology
+            : available[0];
+          clearFieldError("Typology");
         } else {
           showTipologia.value = false;
           formData.value.Typology = "";
-          typesavailable.value = [];
         }
       }
     );
@@ -1326,6 +1428,7 @@ export default defineComponent({
                 // Carica le città della provincia selezionata
                 await loadCitiesByProvince(newProvince);
                 formData.value.City = null;
+                clearFieldError("State");
             } else {
                 cities.value = [];
                 formData.value.City = null;
@@ -1341,13 +1444,152 @@ export default defineComponent({
               const cap = getCAPByCity(formData.value.State, newCity);
               if (cap) {
                 formData.value.PostCode = cap;
+                clearFieldError("PostCode");
               }
+            }
+            if (newCity) {
+              clearFieldError("City");
             }
         }
         );
 
+    watch(() => formData.value.CustomerId, (value) => {
+      if (value !== null && value !== undefined) {
+        clearFieldError("CustomerId");
+      }
+    });
+
+    watch(() => formData.value.AgentId, (value) => {
+      if (typeof value === "string" && value.trim().length > 0) {
+        clearFieldError("AgentId");
+      }
+    });
+
+    watch(() => formData.value.Title, (value) => {
+      if (hasText(value)) {
+        clearFieldError("Title");
+      }
+    });
+
+    watch(() => formData.value.Description, (value) => {
+      if (hasText(value)) {
+        clearFieldError("Description");
+      }
+    });
+
+    watch(() => formData.value.Category, (value) => {
+      if (typeof value === "string" && value.length > 0) {
+        clearFieldError("Category");
+      }
+    });
+
+    watch(() => formData.value.Typology, (value) => {
+      if (typeof value === "string" && value.length > 0) {
+        clearFieldError("Typology");
+      }
+    });
+
+    watch(() => formData.value.Status, (value) => {
+      if (typeof value === "string" && value.length > 0) {
+        clearFieldError("Status");
+      }
+    });
+
+    watch(() => formData.value.AddressLine, (value) => {
+      if (hasText(value)) {
+        clearFieldError("AddressLine");
+      }
+    });
+
+    watch(() => formData.value.State, (value) => {
+      if (typeof value === "string" && value.length > 0) {
+        clearFieldError("State");
+      }
+    });
+
+    watch(() => formData.value.PostCode, (value) => {
+      if (hasText(value)) {
+        clearFieldError("PostCode");
+      }
+    });
+
+    watch(() => formData.value.CommercialSurfaceate, (value) => {
+      if (hasPositiveNumber(value)) {
+        clearFieldError("CommercialSurfaceate");
+      }
+    });
+
+    watch(
+      [() => formData.value.Price, isTrattativaRiservata],
+      ([priceValue, trattativa]) => {
+        if (trattativa || hasPositiveNumber(priceValue)) {
+          clearFieldError("Price");
+        }
+      }
+    );
+
+    watch(() => formData.value.EnergyClass, (value) => {
+      if (typeof value === "string" && value.length > 0) {
+        clearFieldError("EnergyClass");
+      }
+    });
+
+    watch(() => formData.value.StateOfTheProperty, (value) => {
+      if (typeof value === "string" && value.length > 0) {
+        clearFieldError("StateOfTheProperty");
+      }
+    });
+
+    watch(() => formData.value.YearOfConstruction, (value) => {
+      if (hasPositiveNumber(value)) {
+        clearFieldError("YearOfConstruction");
+      }
+    });
+
+
+    const validatePrice = (_rule: any, value: number | string, callback: any) => {
+      if (isTrattativaRiservata.value) {
+        return callback();
+      }
+      const numericValue = Number(value);
+      if (value === null || value === undefined || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        callback(new Error("Il prezzo è obbligatorio"));
+      } else {
+        callback();
+      }
+    };
+
+    const validateYearOfConstruction = (_rule: any, value: number | string, callback: any) => {
+      const numericValue = Number(value);
+      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        callback(new Error("L'anno di costruzione è obbligatorio"));
+      } else {
+        callback();
+      }
+    };
 
     const rules = ref({
+      CustomerId: [
+        {
+          required: true,
+          message: "Il cliente è obbligatorio",
+          trigger: "change",
+        },
+      ],
+      Typology: [
+        {
+          required: true,
+          message: "La tipologia è obbligatoria",
+          trigger: "change",
+        },
+      ],
+      AgentId: [
+        {
+          required: true,
+          message: "L'agente è obbligatorio",
+          trigger: "change",
+        },
+      ],
       Title: [
         {
           required: true,
@@ -1371,6 +1613,20 @@ export default defineComponent({
           trigger: "change",
         },
       ],
+      Category: [
+        {
+          required: true,
+          message: "La categoria è obbligatoria",
+          trigger: "change",
+        },
+      ],
+      Status: [
+        {
+          required: true,
+          message: "Lo stato vendita è obbligatorio",
+          trigger: "change",
+        },
+      ],
       City: [
         {
           required: true,
@@ -1388,7 +1644,7 @@ export default defineComponent({
       PostCode: [
         {
           required: true,
-          message: "Il codice postale è obbligatorio",
+          message: "Il codice fiscale è obbligatorio",
           trigger: "change",
         },
       ],
@@ -1399,26 +1655,25 @@ export default defineComponent({
           trigger: "change",
         },
       ],
-      TotalBuildingfloors: [
-        {
-          required: true,
-          message: "Il totale piani edificio è obbligatorio",
-          trigger: "change",
-        },
-      ],
       Price: [
+        { validator: validatePrice, trigger: "change" },
+      ],
+      EnergyClass: [
         {
           required: true,
-          message: "Il prezzo è obbligatorio",
+          message: "La classe energetica è obbligatoria",
           trigger: "change",
         },
       ],
-      AssignmentEnd: [
+      StateOfTheProperty: [
         {
           required: true,
-          message: "La data fine incarico è obbligatoria",
+          message: "Lo stato dell'immobile è obbligatorio",
           trigger: "change",
         },
+      ],
+      YearOfConstruction: [
+        { validator: validateYearOfConstruction, trigger: "change" },
       ],
     });
 
@@ -1439,7 +1694,110 @@ export default defineComponent({
       if (!formRef.value) {
         return;
       }
-      await formRef.value.validate(async (valid: boolean) => {
+
+      resetInvalidFields();
+
+      const missingFields: string[] = [];
+      if (!formData.value.CustomerId) {
+        missingFields.push("Cliente");
+        markFieldInvalid("CustomerId");
+      }
+      if (!formData.value.AgentId) {
+        missingFields.push("Agente");
+        markFieldInvalid("AgentId");
+      }
+      if (!formData.value.Title || !formData.value.Title.trim()) {
+        missingFields.push("Titolo");
+        markFieldInvalid("Title");
+      }
+      if (!formData.value.Category) {
+        missingFields.push("Categoria");
+        markFieldInvalid("Category");
+      }
+      if (!formData.value.Typology) {
+        missingFields.push("Tipologia");
+        markFieldInvalid("Typology");
+      }
+      if (!formData.value.Status) {
+        missingFields.push("Stato vendita");
+        markFieldInvalid("Status");
+      }
+      if (!formData.value.AddressLine || !formData.value.AddressLine.trim()) {
+        missingFields.push("Indirizzo");
+        markFieldInvalid("AddressLine");
+      }
+      if (!formData.value.State) {
+        missingFields.push("Provincia");
+        markFieldInvalid("State");
+      }
+      if (!formData.value.City) {
+        missingFields.push("Comune");
+        markFieldInvalid("City");
+      }
+      if (!formData.value.PostCode) {
+        missingFields.push("Codice fiscale");
+        markFieldInvalid("PostCode");
+      }
+      if (!formData.value.CommercialSurfaceate || formData.value.CommercialSurfaceate <= 0) {
+        missingFields.push("Superficie");
+        markFieldInvalid("CommercialSurfaceate");
+      }
+      if (!formData.value.EnergyClass) {
+        missingFields.push("Classe energetica");
+        markFieldInvalid("EnergyClass");
+      }
+      if (!formData.value.StateOfTheProperty) {
+        missingFields.push("Stato dell'immobile");
+        markFieldInvalid("StateOfTheProperty");
+      }
+      if (!formData.value.YearOfConstruction || formData.value.YearOfConstruction <= 0) {
+        missingFields.push("Anno costruzione");
+        markFieldInvalid("YearOfConstruction");
+      }
+      const priceValue = formData.value.Price;
+      const numericPrice = Number(priceValue);
+      if (
+        !isTrattativaRiservata.value &&
+        (priceValue === null ||
+          priceValue === undefined ||
+          Number.isNaN(numericPrice) ||
+          numericPrice <= 0)
+      ) {
+        missingFields.push("Prezzo");
+        markFieldInvalid("Price");
+      }
+      if (!formData.value.Description || !formData.value.Description.trim()) {
+        missingFields.push("Descrizione");
+        markFieldInvalid("Description");
+      }
+
+      if (missingFields.length > 0) {
+        Swal.fire({
+          title: "Dati mancanti",
+          icon: "error",
+          html: `<div class="text-start"><p>Completa i seguenti campi obbligatori:</p><ul>${missingFields
+            .map((field) => `<li>${field}</li>`)
+            .join("")}</ul></div>`,
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
+      }
+
+      await formRef.value.validate(async (valid: boolean, fields?: Record<string, unknown>) => {
+        if (!valid) {
+          if (fields) {
+            Object.keys(fields).forEach((fieldKey) => {
+              markFieldInvalid(fieldKey);
+            });
+          }
+          return;
+        }
+
         if (valid) {
           loading.value = true;
           
@@ -1530,7 +1888,8 @@ export default defineComponent({
       loadProvinces,
       loadCitiesByProvince,
       isTrattativaRiservata,
-      inserModel
+      inserModel,
+      invalidFields
     };
   },
 });
@@ -1544,5 +1903,20 @@ export default defineComponent({
 .el-date-editor.el-input,
 .el-date-editor.el-input__inner {
   width: 100%;
+}
+
+.required-label::after {
+  content: " *";
+  color: currentColor;
+  font-weight: 600;
+  margin-left: 0.125rem;
+}
+
+.required-label--error {
+  color: #dc3545 !important;
+}
+
+.required-label--error::after {
+  color: #dc3545;
 }
 </style>
