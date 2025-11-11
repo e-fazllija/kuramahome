@@ -154,22 +154,25 @@ export default defineComponent({
 <style lang="scss" scoped>
 .kt-table-responsive {
   position: relative;
-  overflow-x: auto;
+  overflow-x: auto !important;
+  overflow-y: visible;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: block;
 
   &::-webkit-scrollbar {
-    height: 6px;
+    height: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f3f4;
-    border-radius: 3px;
+    background: #f0f0f0;
+    border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
     background: #c1c8cd;
-    border-radius: 3px;
+    border-radius: 4px;
     transition: background 0.2s ease;
 
     &:hover {
@@ -182,14 +185,20 @@ export default defineComponent({
   min-height: 200px;
   background: #ffffff;
   border-radius: 0.5rem;
-  overflow: hidden;
+  /* Allow container to expand beyond parent width when table is wider */
+  width: auto;
+  min-width: 100%;
 }
 
 .kt-table-modern {
   margin: 0;
   border-collapse: separate;
   border-spacing: 0;
-  width: 100%;
+  width: auto !important;
+  min-width: 100%;
+  /* Use fixed layout to respect column widths, or auto to let content determine */
+  table-layout: auto;
+  display: table;
 
   thead {
     th {
@@ -201,6 +210,7 @@ export default defineComponent({
       color: #495057;
       text-align: left;
       vertical-align: middle;
+      white-space: nowrap;
     }
   }
 
@@ -218,6 +228,8 @@ export default defineComponent({
         color: #495057;
         font-size: 0.875rem;
         vertical-align: middle;
+        /* Ensure cells match header width */
+        white-space: nowrap;
       }
     }
   }
@@ -257,6 +269,23 @@ export default defineComponent({
     bottom: 0;
     background: rgba(255, 255, 255, 0.8);
     z-index: 100;
+  }
+}
+
+/* Dark mode support for scrollbar */
+@media (prefers-color-scheme: dark) {
+  .kt-table-responsive {
+    &::-webkit-scrollbar-track {
+      background: #2C2C2C;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #666666;
+
+      &:hover {
+        background: #AAAAAA;
+      }
+    }
   }
 }
 

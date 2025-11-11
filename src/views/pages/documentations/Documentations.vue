@@ -174,7 +174,7 @@
       <!--end::Group actions-->
       
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
-        :loading="loading" :enable-items-per-page-dropdown="true" :checkbox-enabled="true" checkbox-label="Id">
+        :loading="loading" :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id">
         <template v-slot:DisplayName="{ row: documentations }">
           <div 
             class="d-flex align-items-center"

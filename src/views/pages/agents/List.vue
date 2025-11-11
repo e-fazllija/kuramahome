@@ -38,7 +38,7 @@
           <span class="fw-bold">Nuovo Agente</span>
           </span>
           <span v-else>
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <KTSpinner size="sm" :inline="true" />
             Verifica in corso...
           </span>
         </button>
@@ -63,7 +63,7 @@
               </i>
               <span v-if="!isSearching">Cerca</span>
               <span v-else>
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <KTSpinner size="sm" :inline="true" />
                 Ricerca...
               </span>
             </button>
@@ -290,6 +290,7 @@ import { useAuthStore, type User } from "@/stores/auth";
 import { canCreateAgent as canUserCreateAgent } from "@/core/helpers/auth";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import KTSpinner from "@/components/Spinner.vue";
 import '@/assets/css/filters.css';
 
 export default defineComponent({
@@ -300,6 +301,7 @@ export default defineComponent({
     AddAgentModal,
     UpdateAgentModal,
     UpgradeRequiredModal,
+    KTSpinner,
   },
   setup() {
     const tableHeader = ref([
@@ -1195,13 +1197,6 @@ tbody tr:hover .symbol-label {
 .search-input:focus ~ .search-icon,
 .search-input:hover ~ .search-icon {
   color: #3699ff;
-}
-
-/* Spinner loading */
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.15rem;
 }
 
 /* Bottone cerca disabled */

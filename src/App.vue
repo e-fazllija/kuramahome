@@ -95,6 +95,7 @@ export default defineComponent({
 @import "assets/css/pricing.css";
 @import "assets/css/landing-page.css";
 @import "assets/css/faq.css";
+@import "assets/css/spinner.css";
 
 #app {
   display: contents;

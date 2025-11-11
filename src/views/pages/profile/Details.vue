@@ -1,9 +1,5 @@
 <template>
-<div v-if="loading" class="d-flex justify-content-center">
-  <div class="spinner-border" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>
-</div>
+  <KTSpinner v-if="loading" :centered="true" size="md" />
     <!--begin::Navbar-->
     <div v-if="!loading" class="card mb-5 mb-xl-10">
       <div class="card-body pt-9 pb-0">
@@ -92,6 +88,7 @@
   import { defineComponent, ref, onMounted } from "vue";
   import Dropdown3 from "@/components/dropdown/Dropdown3.vue";
   import Settings from "@/views/pages/profile/Settings.vue"
+  import KTSpinner from "@/components/Spinner.vue";
   import { useRoute, useRouter } from "vue-router";
   import { useAuthStore, type User } from "@/stores/auth";
   import { getAgent, Agent } from "@/core/data/agents"
@@ -100,7 +97,8 @@
     name: "kt-account",
     components: {
       Dropdown3,
-      Settings
+      Settings,
+      KTSpinner
     },
     setup() {
         const route = useRoute();

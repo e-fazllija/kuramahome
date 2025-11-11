@@ -11,9 +11,19 @@
   background: #ffffff;
   border-radius: 0.75rem;
   box-shadow: 0 2px 8px rgba(54, 153, 255, 0.08);
-  overflow: hidden;
   transition: all 0.3s ease;
   margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: visible;
+}
+
+/* Ensure footer doesn't scroll and stays at bottom */
+.dataTables_wrapper .kt-table-footer {
+  flex-shrink: 0;
+  width: 100%;
+  overflow: visible;
 }
 
 .dataTables_wrapper .table {
@@ -21,6 +31,75 @@
   border-spacing: 0;
   margin: 0;
   width: 100%;
+  min-width: 100%;
+}
+
+/* Ensure table content can exceed container width and scroll horizontally */
+.dataTables_wrapper .kt-table-responsive,
+:deep(.kt-table-responsive) {
+  overflow-x: auto !important;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  /* Remove max-width to allow table to grow */
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #c1c8cd #f0f0f0;
+  display: block;
+}
+
+/* Horizontal scrollbar styling for table (light mode) */
+.dataTables_wrapper .kt-table-responsive::-webkit-scrollbar,
+:deep(.kt-table-responsive::-webkit-scrollbar) {
+  height: 8px;
+}
+
+.dataTables_wrapper .kt-table-responsive::-webkit-scrollbar-track,
+:deep(.kt-table-responsive::-webkit-scrollbar-track) {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.dataTables_wrapper .kt-table-responsive::-webkit-scrollbar-thumb,
+:deep(.kt-table-responsive::-webkit-scrollbar-thumb) {
+  background: #c1c8cd;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.dataTables_wrapper .kt-table-responsive::-webkit-scrollbar-thumb:hover,
+:deep(.kt-table-responsive::-webkit-scrollbar-thumb:hover) {
+  background: #a8b2ba;
+}
+
+.dataTables_wrapper .kt-table-container,
+:deep(.kt-table-container) {
+  /* Remove width constraints to allow table to expand */
+  width: auto;
+  min-width: 100%;
+}
+
+/* Ensure table can grow beyond container width when needed */
+.dataTables_wrapper table,
+:deep(.dataTables_wrapper table),
+.dataTables_wrapper .kt-table-modern,
+:deep(.kt-table-modern) {
+  width: auto !important;
+  min-width: 100%;
+  table-layout: auto;
+  display: table;
+}
+
+/* Allow table headers to determine minimum column width */
+.dataTables_wrapper .kt-table-modern th,
+:deep(.kt-table-modern th) {
+  white-space: nowrap;
+}
+
+/* Table cells can wrap if needed, but columns maintain min width from headers */
+.dataTables_wrapper .kt-table-modern td,
+:deep(.kt-table-modern td) {
+  /* Allow wrapping but respect header width */
 }
 
 /* ========================================
@@ -698,6 +777,36 @@
 /* ========================================
    DARK MODE SUPPORT
    ======================================== */
+
+/* Dark mode scrollbar for table */
+[data-bs-theme="dark"] .dataTables_wrapper .kt-table-responsive::-webkit-scrollbar-track,
+[data-bs-theme="dark"] :deep(.kt-table-responsive::-webkit-scrollbar-track) {
+  background: #2C2C2C;
+  border-radius: 4px;
+}
+
+[data-bs-theme="dark"] .dataTables_wrapper .kt-table-responsive::-webkit-scrollbar-thumb,
+[data-bs-theme="dark"] :deep(.kt-table-responsive::-webkit-scrollbar-thumb) {
+  background: #666666;
+  border-radius: 4px;
+}
+
+[data-bs-theme="dark"] .dataTables_wrapper .kt-table-responsive::-webkit-scrollbar-thumb:hover,
+[data-bs-theme="dark"] :deep(.kt-table-responsive::-webkit-scrollbar-thumb:hover) {
+  background: #AAAAAA;
+}
+
+/* Firefox dark mode scrollbar */
+[data-bs-theme="dark"] .dataTables_wrapper .kt-table-responsive,
+[data-bs-theme="dark"] :deep(.kt-table-responsive) {
+  scrollbar-color: #666666 #2C2C2C;
+}
+
+/* Dark mode wrapper background */
+[data-bs-theme="dark"] .dataTables_wrapper {
+  background: #1A1A1A;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
 
 @media (prefers-color-scheme: dark) {
   .kt-loading-overlay {

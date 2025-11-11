@@ -451,7 +451,7 @@
             <span class="indicator-label"> Salva </span>
             <span class="indicator-progress">
               Attendere...
-              <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              <KTSpinner size="sm" :inline="true" class="align-middle ms-2" />
             </span>
           </button>
         </div>
@@ -523,7 +523,7 @@
                   <span class="indicator-label"> Update Email </span>
                   <span class="indicator-progress">
                     Attendere...
-                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    <KTSpinner size="sm" :inline="true" class="align-middle ms-2" />
                   </span>
                 </button>
                 <button id="kt_signin_cancel" type="button" class="btn btn-color-gray-400 btn-active-light-primary px-6"
@@ -600,7 +600,7 @@
                   <span class="indicator-label"> Aggiorna Password </span>
                   <span class="indicator-progress">
                     Attendere...
-                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    <KTSpinner size="sm" :inline="true" class="align-middle ms-2" />
                   </span>
                 </button>
                 <button id="kt_password_cancel" type="button" @click="passwordFormDisplay = !passwordFormDisplay"
@@ -734,6 +734,7 @@ import { useAuthStore, type User } from "@/stores/auth";
 import { useThemeStore } from "@/stores/theme";
 import { useConfigStore } from "@/stores/config";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
+import KTSpinner from "@/components/Spinner.vue";
 
 export default defineComponent({
   name: "account-settings",
@@ -741,6 +742,7 @@ export default defineComponent({
     ErrorMessage,
     Field,
     VForm,
+    KTSpinner,
   },
   props: {
     profileDetails:

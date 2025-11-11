@@ -24,11 +24,7 @@
     </div>
     <!--begin::Card header-->
   </div>
-  <div v-if="loading" class="d-flex justify-content-center">
-    <div class="spinner-border" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-  </div>
+  <KTSpinner v-if="loading" :centered="true" size="md" />
   <!--begin::Content-->
   <div v-else class="collapse show">
     <!--begin::Tabs-->
@@ -945,7 +941,7 @@
               <span class="btn-label">Salva Modifiche</span>
             </span>
             <span v-if="loading" class="d-flex align-items-center">
-              <span class="spinner-border spinner-border-sm me-2"></span>
+              <KTSpinner size="sm" :inline="true" />
               <span class="btn-label">Attendere...</span>
             </span>
           </button>
@@ -1088,6 +1084,7 @@
 <script lang="ts">
 import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
 import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
+import KTSpinner from "@/components/Spinner.vue";
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -1111,7 +1108,7 @@ import Multiselect from '@vueform/multiselect'
 
 export default defineComponent({
   name: "update",
-  components: { draggable, Multiselect, AddNewForm, AddNewPreventive },
+  components: { draggable, Multiselect, AddNewForm, AddNewPreventive, KTSpinner },
   setup() {
     const store = useAuthStore();
     const user = store.user;

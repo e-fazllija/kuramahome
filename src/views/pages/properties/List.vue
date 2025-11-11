@@ -35,7 +35,7 @@
           <span class="fw-bold">Nuovo Immobile</span>
           </span>
           <span v-else>
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <KTSpinner size="sm" :inline="true" />
             Verifica in corso...
           </span>
         </button>
@@ -60,7 +60,7 @@
               </i>
               <span v-if="!loading">Cerca</span>
               <span v-else>
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <KTSpinner size="sm" :inline="true" />
                 Ricerca...
               </span>
             </button>
@@ -257,7 +257,7 @@
     <!--end::Card body-->
     <div class="card-body pt-0">
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
-        :enable-items-per-page-dropdown="true" :checkbox-enabled="true" checkbox-label="Id" :loading="loading">
+        :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id" :loading="loading">
         <template v-slot:Id="{ row: item }">
           {{ item.Id }}
         </template>
@@ -348,6 +348,7 @@ import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
+import KTSpinner from "@/components/Spinner.vue";
 import '@/assets/css/filters.css';
 
 export default defineComponent({
@@ -357,6 +358,7 @@ export default defineComponent({
     ExportCustomerModal,
     AddPropertyModal,
     UpgradeRequiredModal,
+    KTSpinner,
   },
   setup() {
     const authStore = useAuthStore();
@@ -1242,12 +1244,6 @@ tbody tr:hover .btn-copy {
   transform: scale(1.1);
 }
 
-/* Spinner loading */
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.15rem;
-}
 
 .btn-search-modern:disabled {
   opacity: 0.7;

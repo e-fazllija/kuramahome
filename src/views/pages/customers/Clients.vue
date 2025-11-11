@@ -37,7 +37,7 @@
             <span class="fw-bold">Nuovo Cliente</span>
           </span>
           <span v-else>
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <KTSpinner size="sm" :inline="true" />
             Verifica in corso...
           </span>
         </button>
@@ -62,7 +62,7 @@
               </i>
               <span v-if="!isSearching">Cerca</span>
               <span v-else>
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <KTSpinner size="sm" :inline="true" />
                 Ricerca...
               </span>
             </button>
@@ -291,6 +291,7 @@ import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
 import { useAuthStore, type User } from "@/stores/auth";
+import KTSpinner from "@/components/Spinner.vue";
 import '@/assets/css/filters.css';
 
 
@@ -300,7 +301,8 @@ export default defineComponent({
     Datatable,
     ExportCustomerModal,
     AddCustomerModal,
-    UpgradeRequiredModal
+    UpgradeRequiredModal,
+    KTSpinner
   },
   setup() {
     const loading = ref<boolean>(true);
@@ -1196,12 +1198,6 @@ tbody tr:hover .symbol-label {
   color: #3699ff;
 }
 
-/* Spinner loading */
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.15rem;
-}
 
 /* Bottone cerca disabled */
 .btn-search:disabled {

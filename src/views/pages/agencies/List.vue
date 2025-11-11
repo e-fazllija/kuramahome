@@ -39,7 +39,7 @@
           <span class="fw-bold">Nuova Agenzia</span>
           </span>
           <span v-else>
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <KTSpinner size="sm" :inline="true" />
             Verifica in corso...
           </span>
         </button>
@@ -64,7 +64,7 @@
               </i>
               <span v-if="!isSearching">Cerca</span>
               <span v-else>
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <KTSpinner size="sm" :inline="true" />
                 Ricerca...
               </span>
             </button>
@@ -226,7 +226,7 @@
         :data="tableData"
         :header="tableHeader"
         :enable-items-per-page-dropdown="true"
-        :checkbox-enabled="true"
+        :checkbox-enabled="false"
         checkbox-label="Id"
       >
       <template v-slot:UserName="{ row: agent }">
@@ -379,6 +379,7 @@ import { useAuthStore } from "@/stores/auth";
 import { hasAdminRole } from "@/core/helpers/auth";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import KTSpinner from "@/components/Spinner.vue";
 import '@/assets/css/filters.css';
 
 export default defineComponent({
@@ -389,6 +390,7 @@ export default defineComponent({
     AddAgencyModal,
     UpdateAgencyModal,
     UpgradeRequiredModal,
+    KTSpinner,
   },
   setup() {
     const authStore = useAuthStore();
@@ -1344,12 +1346,6 @@ tbody tr:hover .symbol-label {
   color: #3699ff;
 }
 
-/* Spinner loading */
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.15rem;
-}
 
 /* Bottone cerca disabled */
 .btn-search:disabled {
