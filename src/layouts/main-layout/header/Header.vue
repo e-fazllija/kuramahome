@@ -40,8 +40,11 @@
       >
         <KTHeaderMenu />
 
-        <!--begin::Right side-->
-        <div class="d-flex align-items-center ms-auto gap-2">
+        
+      </div>
+      <!--end::Header wrapper-->
+      <!--begin::Right side-->
+      <div class="d-flex align-items-center ms-auto gap-2">
           <KTHeaderNavbar />
           <!--begin::Mobile menu toggle-->
           <button 
@@ -61,8 +64,6 @@
           <!--end::Mobile menu toggle-->
         </div>
         <!--end::Right side-->
-      </div>
-      <!--end::Header wrapper-->
     </div>
     <!--end::Header container-->
   </header>
