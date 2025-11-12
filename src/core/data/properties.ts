@@ -8,7 +8,7 @@ export class RealEstateProperty {
   Id?: number;
   Title: string;
   Category: string;
-  Typology: string;
+  Typology?: string;
   InHome: boolean;
   Highlighted: boolean;
   Auction: boolean;
@@ -19,7 +19,7 @@ export class RealEstateProperty {
   AddressLine: string;
   City: string;
   State: string;
-  Location: string;
+  Location?: string;
   PostCode: string;
   CommercialSurfaceate: number | 0;
   Floor?: string;
@@ -45,7 +45,7 @@ export class RealEstateProperty {
   MQGarden: number | 0;
   CondominiumExpenses: number | 0;
   Availability?: string;
-  Description?: string;
+  Description: string;
   AssignmentEnd?: string;
   CreationDate?: Date;
   UpdateDate?: Date;
@@ -58,7 +58,7 @@ export class RealEstateProperty {
   RealEstatePropertyNotes?: Notes[];
   VideoUrl?: string;
   label?: string;
-  TypeOfAssignment: string;
+  TypeOfAssignment?: string;
   AgreedCommission: number;
   FlatRateCommission: number;
   StornoProvvigione: number;

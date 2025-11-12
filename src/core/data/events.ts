@@ -177,6 +177,10 @@ const getEvent = (id: number): Promise<Event> => {
 const getToInsert = (): Promise<InsertModel> => {
   return ApiService.get(`Calendar/GetToInsert`, "")
     .then(({ data }) => {
+      console.log(data);
+      console.log(data.Requests);
+      console.log(data.Customers);
+      console.log(data.RealEstateProperties);
       const requests = data.Requests as Array<Request>;
       const customers = data.Customers as Array<Customer>;
       const properties = data.RealEstateProperties as Array<RealEstateProperty>;
@@ -189,6 +193,7 @@ const getToInsert = (): Promise<InsertModel> => {
         Customers: customers,
         RealEstateProperties: properties,
       })
+      console.log(result);
       return result;
     })
     .catch(({ response }) => {
