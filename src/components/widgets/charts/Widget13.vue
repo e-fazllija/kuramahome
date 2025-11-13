@@ -171,11 +171,13 @@ interface Agency {
   address: string;
   city: string;
   province: string;
+  zipCode?: string;
   phone?: string;
   color?: string;
   Address?: string;
   City?: string;
   Province?: string;
+  ZipCode?: string;
   PhoneNumber?: string;
   Color?: string;
   UserName?: string;
@@ -283,7 +285,7 @@ export default defineComponent({
         center: mainCoords,
         zoom: 9.56, // Initial zoom, will be adjusted based on visible agencies
         zoomControl: true,
-        scrollWheelZoom: true,
+        scrollWheelZoom: false,
         doubleClickZoom: false,
         dragging: true,
         touchZoom: false,
@@ -336,19 +338,19 @@ export default defineComponent({
     };
 
     // Geocode address using Nominatim (OpenStreetMap)
-    const geocodeAddress = async (address: string, city: string, province?: string): Promise<[number, number] | null> => {
+    const geocodeLocation = async (city: string, province?: string, zipCode?: string): Promise<[number, number] | null> => {
       try {
         // Normalize names
         const normalizedCity = normalizeCityName(city);
-        const normalizedAddress = normalizeCityName(address);
         const normalizedProvince = province ? normalizeProvince(province) : '';
+        const normalizedZip = zipCode ? zipCode.trim() : '';
         
-        // Try with full address first for better precision
+        // Compose the most precise query using ZIP, city and province
         let fullAddress;
-        if (normalizedAddress && normalizedProvince) {
-          fullAddress = `${normalizedAddress}, ${normalizedCity}, ${normalizedProvince}, Italia`;
-        } else if (normalizedAddress) {
-          fullAddress = `${normalizedAddress}, ${normalizedCity}, Italia`;
+        if (normalizedZip && normalizedProvince) {
+          fullAddress = `${normalizedZip} ${normalizedCity}, ${normalizedProvince}, Italia`;
+        } else if (normalizedZip) {
+          fullAddress = `${normalizedZip} ${normalizedCity}, Italia`;
         } else if (normalizedProvince) {
           fullAddress = `${normalizedCity}, ${normalizedProvince}, Italia`;
         } else {
@@ -533,22 +535,25 @@ export default defineComponent({
       // Process each visible agency
       for (let index = 0; index < visibleAgencies.length; index++) {
         const agency = visibleAgencies[index];
-        const address = agency.Address || agency.address || '';
         const city = agency.City || agency.city || '';
         const province = agency.Province || agency.province || '';
+        const zipCode = agency.ZipCode || agency.zipCode || '';
         const agencyName = agency.UserName || agency.userName || agency.name || 'Agency';
         
         let coords: [number, number] | null = null;
 
-        // Try to geocode the full address with province
-        if (address && city) {
-          coords = await geocodeAddress(address, city, province);
-          
-          if (!coords) {
-            // Try again with just city and province if full address fails
-            coords = await geocodeAddress('', city, province);
+        // Try to geocode using city, province and zip code
+        if (city) {
+          coords = await geocodeLocation(city, province, zipCode);
+
+          if (!coords && province) {
+            coords = await geocodeLocation(city, province);
           }
-          
+
+          if (!coords) {
+            coords = await geocodeLocation(city);
+          }
+
           // Add small delay to respect rate limits
           await new Promise(resolve => setTimeout(resolve, 200));
         }
@@ -608,12 +613,18 @@ export default defineComponent({
         
         // Create popup content with UserName and address
         const userName = agency.UserName || agency.userName || agency.name || 'Agency';
-        const fullAddress = `${address || ''}${address && city ? ', ' : ''}${city || ''}`.trim();
+        const fullAddressParts = [
+          zipCode || '',
+          city || '',
+          province || ''
+        ].filter(part => part && part.length > 0);
+
+        const fullAddress = fullAddressParts.join(' ').trim();
         
         const popupContent = `
           <div style="min-width: 220px; text-align: left;">
             <h4 style="margin: 0 0 8px 0; color: ${color}; font-weight: bold; font-size: 14px;">${userName}</h4>
-            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>📍</strong> ${fullAddress}</p>
+            <p style="margin: 4px 0; font-size: 12px; color: #666;"><strong>📍</strong> ${fullAddress || 'Località non disponibile'}</p>
             ${agency.PhoneNumber || agency.phone ? `<p style="margin: 4px 0; font-size: 12px;"><strong>📞</strong> ${agency.PhoneNumber || agency.phone}</p>` : ''}
             ${agency.Email || agency.email ? `<p style="margin: 4px 0; font-size: 12px;"><strong>✉️</strong> ${agency.Email || agency.email}</p>` : ''}
           </div>

@@ -11,7 +11,7 @@
   <SubscriptionExpiryBanner v-if="!loading && !isAgent" />
   <!--end::Subscription Expiry Banner-->
   <!--begin::Agencies Map-->
-  <div v-if="!loading" class="row mb-8">
+  <div v-if="!loading && isAdmin" class="row mb-8">
     <div class="col-xl-12">
       <Chart13 
         :agencies-list="agenciesList"
@@ -571,7 +571,7 @@ import {
   processCustomersForChart 
 } from "@/core/data/dashboard";
 import type { DashboardDetails, DashboardAggregatedData } from "@/core/data/dashboard";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore, type User } from "@/stores/auth";
 import { isAgent as helperIsAgent, getUserAgencyId } from "@/core/helpers/auth";
 import { getCurrentSubscription } from "@/core/data/subscription";
 import PremiumLock from "@/components/PremiumLock.vue";
@@ -633,6 +633,9 @@ export default defineComponent({
             const availablePropertiesCount = ref<number>(0);
             const salePropertiesCount = ref<number>(0);
             const rentPropertiesCount = ref<number>(0);
+            // Admin profile details (for map positioning)
+            const adminProfile = ref<Partial<User> | null>(null);
+            const isAdminProfileLoaded = ref<boolean>(false);
             
             // Agency filter
             const selectedAgencyId = ref<string>('');
@@ -686,7 +689,7 @@ export default defineComponent({
               } else {
                 // Se agenzia specifica selezionata, mostra le sotto-agenzie
                 const subAgencies = agenciesList.value.filter(agency => 
-                  agency.AgencyId === selectedAgencyId.value
+                  agency.AdminId === selectedAgencyId.value
                 );
                 
                 // Se non ci sono sotto-agenzie, mostra l'agenzia selezionata stessa
@@ -797,10 +800,35 @@ export default defineComponent({
             });
         
 
+        async function ensureAdminProfileLoaded() {
+          if (!isAdmin.value) {
+            return;
+          }
+
+          if (isAdminProfileLoaded.value) {
+            return;
+          }
+
+          try {
+            const currentUserId = store.user?.Id;
+            if (!currentUserId) {
+              return;
+            }
+
+            const profile = await store.getUser(currentUserId);
+            adminProfile.value = profile;
+            isAdminProfileLoaded.value = true;
+          } catch (error) {
+            console.error("Errore nel caricamento del profilo admin:", error);
+          }
+        }
+
         async function getItems(agencyId?: string) {
       loading.value = true;
       
       try {
+        await ensureAdminProfileLoaded();
+
         // 🚀 NUOVA API AGGREGATA - Una singola chiamata invece di 8+!
         const dashboardData = await getDashboardAggregatedData(agencyId, selectedYear.value);
         
@@ -895,13 +923,37 @@ export default defineComponent({
         }
         
         // Processa i dati delle agenzie
-        if (dashboardData.Agencies) {
-          agenciesList.value = dashboardData.Agencies.map(agency => ({
-            ...agency,
-            name: agency.UserName || `${agency.FirstName || ''} ${agency.LastName || ''}`.trim(),
-            id: agency.Id
-          }));
+        const mappedAgencies: any[] = dashboardData.Agencies
+          ? dashboardData.Agencies.map(agency => ({
+              ...agency,
+              name: agency.UserName || `${agency.FirstName || ''} ${agency.LastName || ''}`.trim(),
+              id: agency.Id,
+            AdminId: (agency as any).AdminId || null,
+            City: (agency as any).City || (agency as any).city || '',
+            Province: (agency as any).Province || (agency as any).province || '',
+            ZipCode: (agency as any).ZipCode || (agency as any).zipCode || ''
+            }))
+          : [];
+
+        if (isAdmin.value && store.user) {
+          const profileSource = adminProfile.value || store.user;
+          const loggedAgency = {
+            ...profileSource,
+            name: profileSource?.Username || `${profileSource?.FirstName || ''} ${profileSource?.LastName || ''}`.trim(),
+            id: profileSource?.Id,
+            AdminId: profileSource?.AdminId || profileSource?.Id || null,
+            ZipCode: profileSource?.ZipCode || '',
+            City: profileSource?.City || '',
+            Province: profileSource?.Province || ''
+          };
+
+          const alreadyIncluded = mappedAgencies.some(agency => agency.id === loggedAgency.id);
+          if (!alreadyIncluded) {
+            mappedAgencies.push(loggedAgency);
+          }
         }
+
+        agenciesList.value = mappedAgencies;
         
         // Processa i dati degli agenti solo se premium
         if (isPremium.value && dashboardData.Agents) {
@@ -953,6 +1005,7 @@ export default defineComponent({
     onMounted(async () => {
       // Carica la subscription per verificare premium
       await loadSubscription();
+      await ensureAdminProfileLoaded();
       
       // Usa helper per ottenere l'AgencyId corretto in base al ruolo
       const initialAgencyId = getUserAgencyId();
@@ -1076,7 +1129,7 @@ export default defineComponent({
             return [];
           }
 
-          const agenciesWithCounts = agenciesList.value.map(agency => {
+            const agenciesWithCounts = agenciesList.value.map(agency => {
             let count = 0;
             const agencyName = agency.UserName || agency.name || 'Agency';
             const agencyId = agency.Id;
@@ -1084,7 +1137,8 @@ export default defineComponent({
             if (selectedAgencyRankingType.value === 'sales') {
               // Conta immobili venduti dell'agenzia nell'anno selezionato
               count = allSoldPropertiesData.value.filter(property => {
-                if (property.AgencyId !== agencyId) return false;
+                const propertyAdminId = property.AgencyId ?? property.AdminId;
+                if (propertyAdminId !== agencyId) return false;
                 
                 // Filtra per anno
                 const updateDate = property.UpdateDate && property.UpdateDate !== '0001-01-01T00:00:00' 
@@ -1095,7 +1149,8 @@ export default defineComponent({
             } else if (selectedAgencyRankingType.value === 'appointments') {
               // Conta immobili caricati dall'agenzia nell'anno selezionato
               count = allPropertiesData.value.filter(property => {
-                if (property.AgencyId !== agencyId) return false;
+                const propertyAdminId = property.AgencyId ?? property.AdminId;
+                if (propertyAdminId !== agencyId) return false;
                 
                 // Filtra per anno
                 const creationDate = new Date(property.CreationDate);
@@ -1167,6 +1222,7 @@ export default defineComponent({
       subscriptionExpired,
       isAgent,
       isAdmin,
+      adminProfile,
       isPremium,
       isLoadingSubscription
     }

@@ -177,24 +177,51 @@ const getEvent = (id: number): Promise<Event> => {
 const getToInsert = (): Promise<InsertModel> => {
   return ApiService.get(`Calendar/GetToInsert`, "")
     .then(({ data }) => {
-      console.log(data);
-      console.log(data.Requests);
-      console.log(data.Customers);
-      console.log(data.RealEstateProperties);
-      const requests = data.Requests as Array<Request>;
-      const customers = data.Customers as Array<Customer>;
-      const properties = data.RealEstateProperties as Array<RealEstateProperty>;
-      requests.forEach(x => x.label = x.Customer.FirstName + ' ' + x.Customer.LastName);
-      customers.forEach(x => x.label = x.FirstName + ' ' + x.LastName);
-      properties.forEach(x => x.label = x.City + ', ' + x.AddressLine + ', Cod. 00' + x.Id + ', Prezzo: € ' + x.Price);
-      
-      const result = <InsertModel>({
+      const payload = (data && typeof data === "object" && "Data" in data ? data.Data : data) ?? {};
+
+      const rawRequests = Array.isArray(payload?.Requests) ? payload.Requests : [];
+      const rawCustomers = Array.isArray(payload?.Customers) ? payload.Customers : [];
+      const rawProperties = Array.isArray(payload?.RealEstateProperties) ? payload.RealEstateProperties : [];
+
+      const requests = rawRequests.map((request: Request) => {
+        const firstName = request?.Customer?.FirstName ?? "";
+        const lastName = request?.Customer?.LastName ?? "";
+        const labelParts = [firstName, lastName].filter(Boolean);
+        const fallback = request?.Customer?.Email ?? (request?.Id ? `Richiesta ${request.Id}` : "Richiesta");
+        return {
+          ...request,
+          label: labelParts.length > 0 ? labelParts.join(" ") : fallback
+        } as Request;
+      });
+
+      const customers = rawCustomers.map((customer: Customer) => {
+        const firstName = customer?.FirstName ?? "";
+        const lastName = customer?.LastName ?? "";
+        const labelParts = [firstName, lastName].filter(Boolean);
+        const fallback = customer?.Email ?? (customer?.Id ? `Cliente ${customer.Id}` : "Cliente");
+        return {
+          ...customer,
+          label: labelParts.length > 0 ? labelParts.join(" ") : fallback
+        } as Customer;
+      });
+
+      const properties = rawProperties.map((property: RealEstateProperty) => {
+        const city = property?.City ?? "";
+        const addressLine = property?.AddressLine ?? "";
+        const code = property?.Id ? `Cod. 00${property.Id}` : "";
+        const price = property?.Price ? `Prezzo: € ${property.Price}` : "";
+        const labelParts = [city, addressLine, code, price].filter(Boolean);
+        return {
+          ...property,
+          label: labelParts.join(", ")
+        } as RealEstateProperty;
+      });
+
+      return <InsertModel>({
         Requests: requests,
         Customers: customers,
         RealEstateProperties: properties,
-      })
-      console.log(result);
-      return result;
+      });
     })
     .catch(({ response }) => {
       store.setError(response.data.Message, response.status);

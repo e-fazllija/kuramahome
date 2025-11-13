@@ -76,847 +76,765 @@
           <!--begin::Form-->
           <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
       <!--begin::Card body-->
-      <div class="card-body border-top p-9">
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-            </i>
-            Cliente
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <!--begin::Input group-->
-            <el-form-item prop="CustomerId">
-              <Multiselect v-model="formData.CustomerId" :options="inserModel.Customers" label="label" valueProp="Id"
-                :searchable="true" :close-on-select="true" :clear-on-select="false" placeholder="Seleziona il cliente" class="multiselect-modern" style="width: 100%;" />
-            </el-form-item>
-            <!--end::Input group-->
-          </div>
-        </div>
-        <!--end::Input group-->
+      <div class="card-body border-top p-9 compact-body">
+        <div class="form-sections">
+          <div class="compact-section mb-12">
+            <div class="section-header">
+              <div class="section-icon">
+                <i class="ki-duotone ki-notepad fs-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+              </div>
+              <div>
+                <h4 class="section-title">Dati Principali</h4>
+                <p class="section-subtitle">Informazioni generali sull&apos;immobile.</p>
+              </div>
+            </div>
+            <div class="compact-grid">
+              <div class="form-field">
+                <label class="form-label required">
+                  <i class="ki-duotone ki-profile-user fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Cliente
+                </label>
+                <el-form-item prop="CustomerId">
+                  <Multiselect
+                    v-model="formData.CustomerId"
+                    :options="inserModel.Customers"
+                    label="label"
+                    valueProp="Id"
+                    :searchable="true"
+                    :close-on-select="true"
+                    :clear-on-select="false"
+                    placeholder="Seleziona il cliente"
+                    class="multiselect-modern w-100"
+                  />
+                </el-form-item>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-user fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Agente
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <!--begin::Input group-->
-            <div class="d-flex flex-column fv-row">
-              <!--begin::Input-->
-              <el-form-item prop="AgentId">
-                <select class="form-select modern-select" v-model="formData.AgentId" required>
-                  <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">{{ user.FirstName }} {{ user.LastName }}</option>
+              <div class="form-field">
+                <label class="form-label required">
+                  <i class="ki-duotone ki-user fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Agente
+                </label>
+                <el-form-item prop="AgentId">
+                  <select class="form-select modern-select" v-model="formData.AgentId" required>
+                    <option
+                      v-for="(user, index) in inserModel.Users"
+                      :key="index"
+                      :value="user.Id"
+                    >
+                      {{ user.FirstName }} {{ user.LastName }}
+                    </option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">
+                  <i class="ki-duotone ki-text fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Titolo
+                </label>
+                <el-form-item prop="Title">
+                  <input
+                    class="form-control modern-input"
+                    v-model="formData.Title"
+                    type="text"
+                    placeholder="Inserisci il titolo dell'immobile"
+                    required
+                  />
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">
+                  <i class="ki-duotone ki-category fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Categoria
+                </label>
+                <el-form-item prop="Category">
+                  <select class="form-select modern-select" v-model="formData.Category" required>
+                    <option value="">Seleziona una Categoria...</option>
+                    <option value="Residenziale">Residenziale</option>
+                    <option value="Capannone">Capannone</option>
+                    <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
+                    <option value="Magazzino">Magazzino</option>
+                    <option value="Garage">Garage</option>
+                    <option value="Ufficio">Ufficio</option>
+                    <option value="Terreno">Terreno</option>
+                    <option value="Rustico / Casale">Rustico / Casale</option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div v-if="showTipologia" class="form-field">
+                <label class="form-label">
+                  <i class="ki-duotone ki-element-plus fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Tipologia
+                </label>
+                <el-form-item prop="Typology">
+                  <select class="form-select modern-select" v-model="formData.Typology">
+                    <option
+                      v-for="tipologia in typesavailable"
+                      :key="tipologia"
+                      :value="tipologia"
+                    >
+                      {{ tipologia }}
+                    </option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">
+                  <i class="ki-duotone ki-home fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Stato vendita o affitto
+                </label>
+                <el-form-item prop="Status">
+                  <select class="form-select modern-select" v-model="formData.Status" required>
+                    <option value="">Scegli tra vendita e affitto</option>
+                    <option value="Vendita">Vendita</option>
+                    <option value="Affitto">Affitto</option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">
+                  <i class="ki-duotone ki-briefcase fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Tipologia incarico
+                </label>
+                <select class="form-select modern-select" v-model="formData.TypeOfAssignment">
+                  <option value="Verbale">Verbale</option>
+                  <option value="Esclusivo">Esclusivo</option>
+                  <option value="Semi-Verbale">Semi-Verbale</option>
+                  <option value="Immobile MLS">Immobile MLS</option>
                 </select>
-              </el-form-item>
-              <!--end::Input-->
+              </div>
             </div>
-            <!--end::Input group-->
           </div>
-        </div>
-        <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-text fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Titolo
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Title" type="text" placeholder="Inserisci il titolo dell'immobile" required />
+          <div class="compact-section mb-12">
+            <div class="section-header">
+              <div class="section-icon">
+                <i class="ki-duotone ki-geolocation fs-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <div>
+                <h4 class="section-title">Localizzazione</h4>
+                <p class="section-subtitle">Riferimenti geografici e indirizzo completo.</p>
+              </div>
+            </div>
+            <div class="compact-grid">
+              <div class="form-field">
+                <label class="form-label required">Indirizzo</label>
+                <el-form-item prop="AddressLine">
+                  <input
+                    class="form-control modern-input"
+                    v-model="formData.AddressLine"
+                    type="text"
+                    required
+                  />
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">Provincia</label>
+                <el-form-item prop="State">
+                  <select class="form-select modern-select" v-model="formData.State" required>
+                    <option value="">🗺️ Seleziona provincia</option>
+                    <option
+                      v-for="(province, index) in provinces"
+                      :key="index"
+                      :value="province.Id"
+                    >
+                      {{ province.Name }}
+                    </option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">Comune</label>
+                <el-form-item prop="City">
+                  <select class="form-select" v-model="formData.City" required>
+                    <option value="">Seleziona città</option>
+                    <option
+                      v-for="(city, index) in cities"
+                      :key="index"
+                      :value="city.Name"
+                    >
+                      {{ city.Name }}
+                    </option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Località</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.Location"
+                  type="text"
+                  placeholder="Inserisci la località"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">Codice Fiscale</label>
+                <el-form-item prop="PostCode">
+                  <input
+                    class="form-control modern-input"
+                    v-model="formData.PostCode"
+                    type="text"
+                    placeholder="Inserisci il codice fiscale"
+                    required
+                  />
+                </el-form-item>
+              </div>
+            </div>
           </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Categoria</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <el-form-item prop="Category">
-              <select as="select" name="Category" class="form-select modern-select"
-                v-model="formData.Category" required>
-                <option value>Seleziona una Categoria...</option>
-                <option value="Residenziale">Residenziale</option>
-                <option value="Capannone">Capannone</option>
-                <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
-                <option value="Magazzino">Magazzino</option>
-                <option value="Garage">Garage</option>
-                <option value="Ufficio">Ufficio</option>
-                <option value="Terreno">Terreno</option>
-                <option value="Rustico / Casale">Rustico / Casale</option>
-              </select>
-            </el-form-item>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-        <!--begin::Input group Tipologia-->
-        <div v-if="showTipologia" class="d-flex flex-column mb-7 fv-row">
-          <label class="fs-6 fw-semobold mb-2">
-            <span>Tipologia</span>
-            <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"
-              title="Seleziona una tipologia di immobile"></i>
-          </label>
-          <select class="form-select modern-select" v-model="formData.Typology">
-            <option v-for="tipologia in typesavailable" :key="tipologia" :value="tipologia">
-              {{ tipologia }}
-            </option>
-          </select>
-        </div>
-        <!--end::Input group Tipologia-->
+          <div class="compact-section mb-12">
+            <div class="section-header">
+              <div class="section-icon">
+                <i class="ki-duotone ki-setting fs-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <div>
+                <h4 class="section-title">Caratteristiche Tecniche</h4>
+                <p class="section-subtitle">Dimensioni, dotazioni e finiture dell&apos;immobile.</p>
+              </div>
+            </div>
+            <div class="compact-grid">
+              <div class="form-field">
+                <label class="form-label required">Superficie commerciale (m²)</label>
+                <el-form-item prop="CommercialSurfaceate">
+                  <input
+                    class="form-control modern-input"
+                    v-model="formData.CommercialSurfaceate"
+                    type="number"
+                    required
+                  />
+                </el-form-item>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Stato vendita o affitto</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <el-form-item prop="Status">
-              <select as="select" name="Status" class="form-select modern-select" v-model="formData.Status"
-                required>
-                <option value="">Scegli tra vendita e affitto</option>
-                <option value="Vendita">Vendita</option>
-                <option value="Affitto">Affitto</option>
-              </select>
-            </el-form-item>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Indirizzo</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.AddressLine" type="text"
-              required />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-                <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Provincia</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <el-form-item prop="State">
-              <select class="form-select modern-select" v-model="formData.State" required>
-                <option value="">🗺️ Seleziona provincia</option>
-                <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
-              </select>
-            </el-form-item>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6 required">Comune</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <el-form-item prop="City">
-                <select class="form-select" v-model="formData.City" required>
-                  <option value="">Seleziona città</option>
-                  <option v-for="(city, index) in cities" :key="index" :value="city.Name">{{ city.Name }}</option>
+              <div class="form-field">
+                <label class="form-label">Piano</label>
+                <select class="form-select modern-select" v-model="formData.Floor">
+                  <option value="">Scegli</option>
+                  <option value="Interrato -2">Interrato -2</option>
+                  <option value="Interrato -1">Interrato -1</option>
+                  <option value="Seminterrato">Seminterrato</option>
+                  <option value="Piano Terra">Piano Terra</option>
+                  <option value="Piano Rialzato">Piano Rialzato</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
                 </select>
-              </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Totale piani edificio</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.TotalBuildingfloors"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Giardino (mq)</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.MQGarden"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Ascensori</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.Elevators"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Camere da letto</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.Bedrooms"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Locali</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.WarehouseRooms"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Cucine</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.Kitchens"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Bagni</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.Bathrooms"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Arredamento</label>
+                <select class="form-select modern-select" v-model="formData.Furniture">
+                  <option value="">Seleziona il tipo di arredamento</option>
+                  <option value="Arredato">Arredato</option>
+                  <option value="Non Arredato">Non Arredato</option>
+                  <option value="Parzialmente Arredato">Parzialmente Arredato</option>
+                  <option value="Arredato Solo Cucina">Arredato Solo Cucina</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Posti auto</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.ParkingSpaces"
+                  type="number"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Riscaldamento</label>
+                <select class="form-select modern-select" v-model="formData.Heating">
+                  <option value="Nessuno">Nessuno</option>
+                  <option value="Autonomo">Autonomo</option>
+                  <option value="Centralizzato">Centralizzato</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Esposizione</label>
+                <select class="form-select modern-select" v-model="formData.Exposure">
+                  <option value="">Selezionare l'esposizione</option>
+                  <option value="Nord">Nord</option>
+                  <option value="Sud">Sud</option>
+                  <option value="Est">Est</option>
+                  <option value="Ovest">Ovest</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">Classe energetica</label>
+                <el-form-item prop="EnergyClass">
+                  <select class="form-select modern-select" v-model="formData.EnergyClass">
+                    <option value="">Seleziona il tipo di Classe energetica</option>
+                    <option value="Proprietà Esente">Proprietà Esente</option>
+                    <option value="Non classificabile">Non classificabile</option>
+                    <option value="A4">A4</option>
+                    <option value="A3">A3</option>
+                    <option value="A2">A2</option>
+                    <option value="A1">A1</option>
+                    <option value="A+">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="G">G</option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Tipo di proprietà</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.TypeOfProperty"
+                  type="text"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">Stato dell&apos;immobile</label>
+                <el-form-item prop="StateOfTheProperty">
+                  <select class="form-select modern-select" v-model="formData.StateOfTheProperty">
+                    <option value="">Seleziona lo Stato dell'immobile</option>
+                    <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
+                    <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
+                    <option value="Buono / Abitabile">Buono / Abitabile</option>
+                    <option value="Da Ristrutturare">Da Ristrutturare</option>
+                  </select>
+                </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">Anno di costruzione</label>
+                <el-form-item prop="YearOfConstruction">
+                  <input
+                    class="form-control modern-input"
+                    v-model="formData.YearOfConstruction"
+                    type="number"
+                  />
+                </el-form-item>
+              </div>
+
+              <div class="form-field full-width">
+                <label class="form-label">Altri dettagli</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.MoreDetails"
+                  type="text"
+                />
+              </div>
+
+              <div class="form-field full-width">
+                <label class="form-label">Altre caratteristiche</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.MoreFeatures"
+                  type="text"
+                />
+              </div>
             </div>
           </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
 
-         <!--begin::Input group-->
-         <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Località</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Location" type="text" placeholder="Inserisci la località" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
+          <div class="compact-section mb-12">
+            <div class="section-header">
+              <div class="section-icon">
+                <i class="ki-duotone ki-wallet fs-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <div>
+                <h4 class="section-title">Valori Economici</h4>
+                <p class="section-subtitle">Gestisci prezzi, trattative e provvigioni.</p>
+              </div>
+            </div>
+            <div class="compact-grid">
+              <div class="form-field">
+                <label class="form-label">Trattativa riservata</label>
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-private-deal"
+                    v-model="isTrattativaRiservata"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-private-deal">
+                    Nascondi il prezzo pubblico
+                  </label>
+                </div>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Codice Fiscale</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <el-form-item prop="PostCode">
-              <input class="form-control modern-input" v-model="formData.PostCode" type="text" placeholder="Inserisci il codice fiscale" required />
-            </el-form-item>
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+              <div
+                v-if="!isTrattativaRiservata"
+                class="form-field"
+              >
+                <label class="form-label required">Prezzo</label>
+                <el-form-item prop="Price">
+                  <input
+                    class="form-control modern-input"
+                    v-model="formData.Price"
+                    type="number"
+                    required
+                  />
+                </el-form-item>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Superficie commerciale (mÂ²)</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.CommercialSurfaceate"
-              type="number" required />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+              <div class="form-field">
+                <label class="form-label">Prezzo ribassato</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.PriceReduced"
+                  type="number"
+                />
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Piano</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <select as="select" name="Floor" class="form-select modern-select" v-model="formData.Floor">
-              <option value="">Scegli</option>
-              <option value="Interrato -2">Interrato -2</option>
-              <option value="Interrato -1">Interrato -1</option>
-              <option value="Seminterrato">Seminterrato</option>
-              <option value="Piano Terra">Piano Terra</option>
-              <option value="Piano Rialzato">Piano Rialzato</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-            </select>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
+              <div class="form-field">
+                <label class="form-label">Spese condominiali</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.CondominiumExpenses"
+                  type="number"
+                />
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Totale piani edificio</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.TotalBuildingfloors" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+              <div class="form-field">
+                <label class="form-label required">Disponibilità</label>
+                <select class="form-select modern-select" v-model="formData.Availability">
+                  <option value="">Seleziona la Disponibilità</option>
+                  <option value="Libero">Libero</option>
+                  <option value="Occupato">Occupato</option>
+                </select>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Giardino Mq</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.MQGarden" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+              <div class="form-field">
+                <label class="form-label">Provvigione concordata</label>
+                <el-form-item prop="AgreedCommission">
+                  <el-input
+                    v-model="formData.AgreedCommission"
+                    type="number"
+                    placeholder="Inserisci percentuale"
+                  >
+                    <template #append>
+                      <span>%</span>
+                    </template>
+                  </el-input>
+                </el-form-item>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Ascensori</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Elevators" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+              <div class="form-field">
+                <label class="form-label">Provvigione forfettaria</label>
+                <el-form-item prop="FlatRateCommission">
+                  <el-input
+                    v-model="formData.FlatRateCommission"
+                    type="number"
+                    placeholder="Inserisci percentuale"
+                  >
+                    <template #append>
+                      <span>%</span>
+                    </template>
+                  </el-input>
+                </el-form-item>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Altri dettagli</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.MoreDetails" type="text" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Camere da letto</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Bedrooms" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Locali</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.WarehouseRooms" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Cucine</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Kitchens" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Bagni</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Bathrooms" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Arredamento</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <select as="select" name="Furniture" class="form-select modern-select"
-              v-model="formData.Furniture">
-              <option value="">Seleziona il tipo di arredamento</option>
-              <option value="Arredato">Arredato</option>
-              <option value="Non Arredato">Non Arredato</option>
-              <option value="Parzialmente Arredato">Parzialmente Arredato</option>
-              <option value="Arredato Solo Cucina">Arredato Solo Cucina</option>
-            </select>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Altre Caratteristiche</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.MoreFeatures" type="text" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Posti Auto</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.ParkingSpaces" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Riscaldamento</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <select as="select" name="Heating" class="form-select modern-select"
-              v-model="formData.Heating">
-              <option value="Nessuno">Nessuno</option>
-              <option value="Autonomo">Autonomo</option>
-              <option value="Centralizzato">Centralizzato</option>
-            </select>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Esposizione</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <select as="select" name="Exposure" class="form-select modern-select"
-              v-model="formData.Exposure">
-              <option value="">Selezionare l'esposizione</option>
-              <option value="Nord">Nord</option>
-              <option value="Sud">Sud</option>
-              <option value="Est">Est</option>
-              <option value="Ovest">Ovest</option>
-            </select>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Classe energetica</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <el-form-item prop="EnergyClass">
-              <select as="select" name="EnergyClass" class="form-select modern-select"
-                v-model="formData.EnergyClass">
-                <option value="">Seleziona il tipo di Classe energetica</option>
-                <option value="Proprietà Esente">Proprietà Esente</option>
-                <option value="Non classificabile">Non classificabile</option>
-                <option value="A4">A4</option>
-                <option value="A3">A3</option>
-                <option value="A2">A2</option>
-                <option value="A1">A1</option>
-                <option value="A+">A+</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-                <option value="F">F</option>
-                <option value="G">G</option>
-              </select>
-            </el-form-item>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Indica il tipo di proprietà</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.TypeOfProperty" type="text" />
-            <!-- <select as="select" name="TypeOfProperty" class="form-select modern-select"
-              v-model="formData.TypeOfProperty">
-              <option value="">Seleziona il tipo di proprietà</option>
-              <option value="Intera Proprietà">Intera Proprietà</option>
-              <option value="Nuda Proprietà">Nuda Proprietà</option>
-              <option value="Parziale Proprietà">Parziale Proprietà</option>
-              <option value="Usufrutto">Usufrutto</option>
-              <option value="Multiproprietà">Multiproprietà</option>
-              <option value="Diritto di Superficie">Diritto di Superficie</option>
-            </select> -->
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Stato dell'immobile</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <el-form-item prop="StateOfTheProperty">
-              <select as="select" name="StateOfTheProperty" class="form-select modern-select"
-                v-model="formData.StateOfTheProperty">
-                <option value="">Seleziona lo Stato dell'immobile</option>
-                <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
-                <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
-                <option value="Buono / Abitabile">Buono / Abitabile</option>
-                <option value="Da Ristrutturare">Da Ristrutturare</option>
-              </select>
-            </el-form-item>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Anno di costruzione</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <el-form-item prop="YearOfConstruction">
-              <input class="form-control modern-input" v-model="formData.YearOfConstruction"
-                type="number" />
-            </el-form-item>
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Trattativa riservata</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" value="" v-model="isTrattativaRiservata" />
+              <div class="form-field">
+                <label class="form-label">Storno provvigione</label>
+                <el-form-item prop="StornoProvvigione">
+                  <el-input
+                    v-model="formData.StornoProvvigione"
+                    type="number"
+                    placeholder="Inserisci percentuale"
+                  >
+                    <template #append>
+                      <span>%</span>
+                    </template>
+                  </el-input>
+                </el-form-item>
+              </div>
             </div>
           </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
 
-        <!--begin::Input group-->
-        <div v-if="!isTrattativaRiservata" class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Prezzo</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Price" type="number" required />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+          <div class="compact-section mb-12">
+            <div class="section-header">
+              <div class="section-icon">
+                <i class="ki-duotone ki-shield-tick fs-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <div>
+                <h4 class="section-title">Stato e Impostazioni</h4>
+                <p class="section-subtitle">Controlla disponibilità, scadenze e stati rapidi.</p>
+              </div>
+            </div>
+            <div class="compact-grid">
+              <div class="form-field">
+                <label class="form-label">Data fine incarico</label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.AssignmentEnd"
+                  type="date"
+                  placeholder="yyyy-MM-dd"
+                />
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Prezzo Ribassato</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.PriceReduced" type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Spese condominiali</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.CondominiumExpenses"
-              type="number" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Disponibilità</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <select as="select" name="Availability" class="form-select modern-select"
-              v-model="formData.Availability">
-              <option value="">Seleziona la Disponibilità</option>
-              <option value="Libero">Libero</option>
-              <option value="Occupato">Occupato</option>
-            </select>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-semobold fs-6">Descrizione</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <textarea class="form-control modern-input" v-model="formData.Description"
-              type="text"></textarea>
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Imposta in Home</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" value="" v-model="formData.InHome" />
+              <div class="form-field full-width">
+                <label class="form-label required">Descrizione</label>
+                <el-form-item prop="Description">
+                  <textarea
+                    class="form-control modern-input"
+                    v-model="formData.Description"
+                    rows="4"
+                  ></textarea>
+                </el-form-item>
+              </div>
             </div>
 
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
+            <div class="toggle-grid">
+              <div class="toggle-card">
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-in-home"
+                    v-model="formData.InHome"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-in-home">
+                    In Home
+                  </label>
+                </div>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Imposta in Evidenza</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" value="" v-model="formData.Highlighted" />
+              <div class="toggle-card">
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-highlighted"
+                    v-model="formData.Highlighted"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-highlighted">
+                    In Evidenza
+                  </label>
+                </div>
+              </div>
+
+              <div class="toggle-card">
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-auction"
+                    v-model="formData.Auction"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-auction">
+                    Asta
+                  </label>
+                </div>
+              </div>
+
+              <div class="toggle-card">
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-negotiation"
+                    v-model="formData.Negotiation"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-negotiation">
+                    In trattativa
+                  </label>
+                </div>
+              </div>
+
+              <div class="toggle-card">
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-sold"
+                    v-model="formData.Sold"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-sold">
+                    Venduto
+                  </label>
+                </div>
+              </div>
+
+              <div class="toggle-card">
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-archived"
+                    v-model="formData.Archived"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-archived">
+                    Archiviato
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="compact-section">
+            <div class="section-header">
+              <div class="section-icon">
+                <i class="ki-duotone ki-link-square fs-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <div>
+                <h4 class="section-title">Media e Note</h4>
+                <p class="section-subtitle">Collega risorse aggiuntive e consulta le note inserite.</p>
+              </div>
+            </div>
+            <div class="compact-grid">
+              <div class="form-field">
+                <label class="form-label">
+                  <i class="ki-duotone ki-camera fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  URL Video
+                </label>
+                <input
+                  class="form-control modern-input"
+                  v-model="formData.VideoUrl"
+                  type="text"
+                  placeholder="https://"
+                />
+              </div>
             </div>
 
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Asta</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" value="" v-model="formData.Auction" />
+            <div
+              v-if="formData.RealEstatePropertyNotes && formData.RealEstatePropertyNotes.length"
+              class="notes-wrapper mt-4"
+            >
+              <div
+                v-for="(note, index) in formData.RealEstatePropertyNotes"
+                :key="index"
+                class="note-card"
+              >
+                <div v-html="note.Text"></div>
+              </div>
             </div>
-
           </div>
-          <!--end::Input-->
         </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">In Trattativa</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" value="" v-model="formData.Negotiation" />
-            </div>
-
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Venduto</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" value="" v-model="formData.Sold" />
-            </div>
-
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Archiviato</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" value="" v-model="formData.Archived" />
-            </div>
-
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Data fine incarico</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.AssignmentEnd" type="date"
-              placeholder="yyyy-MM-dd" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="d-flex flex-column mb-7 fv-row">
-          <!--begin::Label-->
-          <label class="fs-6 fw-semobold mb-2">
-            <span>Tipologia Incarico</span>
-            <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"></i>
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <select class="form-select modern-select" v-model="formData.TypeOfAssignment">
-            <option value="Verbale">Verbale</option>
-            <option value="Esclusivo">Esclusivo</option>
-            <option value="Semi-Verbale">Semi-Verbale</option>
-            <option value="Immobile MLS">Immobile MLS</option>
-          </select>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-         <!--begin::Col-->
-        <div class="col-md-4 fv-row">
-          <!--begin::Label-->
-          <label class="fs-6 fw-semobold mb-2">Provvigione Concordata</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <el-form-item prop="AgreedCommission">
-            <el-input v-model="formData.AgreedCommission" type="number" placeholder="Inserisci percentuale">
-              <template #append>
-                <span>%</span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <!--end::Input-->
-        </div>
-        <!--end::Col-->
-
-        <!--begin::Col-->
-        <div class="col-md-4 fv-row">
-          <!--begin::Label-->
-          <label class="fs-6 fw-semobold mb-2">Provvigione Forfettaria</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <el-form-item prop="FlatRateCommission">
-            <el-input v-model="formData.FlatRateCommission" type="number" placeholder="Inserisci percentuale">
-              <template #append>
-                <span>%</span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <!--end::Input-->
-        </div>
-        <!--end::Col-->
-
-        <!--begin::Col-->
-        <div class="col-md-4 fv-row">
-          <!--begin::Label-->
-          <label class="fs-6 fw-semobold mb-2">Storno Provvigione</label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <el-form-item prop="StornoProvvigione">
-            <el-input v-model="formData.StornoProvvigione" type="number" placeholder="Inserisci percentuale">
-              <template #append>
-                <span>%</span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <!--end::Input-->
-        </div>
-        <!--end::Col-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Url Video</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.VideoUrl" type="text" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Riepilogo Note</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div v-for="(note, index) in formData.RealEstatePropertyNotes" :key="index" class="col-lg-8 fv-row">
-            <div class="border border-secondary" v-html="note.Text"></div>
-            <hr>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
       </div>
       <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
         class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
@@ -934,7 +852,16 @@
             Preventivo
           </button> -->
         </div>
-        <div>
+        <div class="d-flex align-items-center">
+          <button type="button" class="btn btn-modal-cancel me-3" @click="cancelEdit">
+            <span class="btn-icon">
+              <i class="ki-duotone ki-cross fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </span>
+            <span class="btn-label">Annulla</span>
+          </button>
           <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
             <span class="btn-icon">
@@ -1245,6 +1172,15 @@ export default defineComponent({
       }
     };
 
+    const validateCommercialSurface = (_rule: any, value: number | string, callback: any) => {
+      const numericValue = Number(value);
+      if (value === null || value === undefined || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        callback(new Error("La superficie commerciale è obbligatoria"));
+      } else {
+        callback();
+      }
+    };
+
     const validateYearOfConstruction = (_rule: any, value: number | string, callback: any) => {
       const numericValue = Number(value);
       if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
@@ -1304,7 +1240,7 @@ export default defineComponent({
           trigger: "change",
         },
       ],
-      Town: [
+      City: [
         {
           required: true,
           message: "E' obbligatorio",
@@ -1326,11 +1262,7 @@ export default defineComponent({
         },
       ],
       CommercialSurfaceate: [
-        {
-          required: false,
-          message: "E' obbligatorio",
-          trigger: "change",
-        },
+        { validator: validateCommercialSurface, trigger: "change" },
       ],
       Floor: [
         {
@@ -1530,6 +1462,10 @@ export default defineComponent({
       },
       { immediate: true }
     )
+
+    const cancelEdit = () => {
+      router.back();
+    };
 
     async function deleteItem() {
       loading.value = true;
@@ -1808,6 +1744,7 @@ export default defineComponent({
       imageErrors,
       handleImageError,
       handleImageLoad,
+      cancelEdit,
     };
   },
 });
@@ -1815,6 +1752,215 @@ export default defineComponent({
 
 <style scoped>
 @import '@/assets/css/property-tabs.css';
+
+.compact-body {
+  background: transparent;
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.compact-section {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 0.95rem;
+  padding: 2rem 1.75rem;
+  box-shadow: 0 16px 32px rgba(15, 34, 58, 0.06);
+  transition: transform 0.2s ease;
+}
+
+.compact-section:hover {
+  transform: translateY(-2px);
+}
+
+body[data-bs-theme="dark"] .compact-section {
+  background: #1a1a1a;
+  border-color: #2c2c2c;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.section-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  border: 1px solid #e9ecef;
+}
+
+body[data-bs-theme="dark"] .section-icon {
+  background: #2c2c2c;
+  border-color: #333333;
+}
+
+.section-title {
+  margin: 0;
+  font-weight: 700;
+  color: #333333;
+}
+
+body[data-bs-theme="dark"] .section-title {
+  color: #e0e0e0;
+}
+
+.section-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666666;
+}
+
+body[data-bs-theme="dark"] .section-subtitle {
+  color: #aaaaaa;
+}
+
+.compact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+.form-field {
+  background: #f9fbfd;
+  border: 1px solid #e9ecef;
+  border-radius: 0.85rem;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-field:hover {
+  border-color: #0077cc;
+  box-shadow: 0 12px 24px rgba(0, 119, 204, 0.08);
+}
+
+body[data-bs-theme="dark"] .form-field {
+  background: #2c2c2c;
+  border-color: #333333;
+}
+
+body[data-bs-theme="dark"] .form-field:hover {
+  border-color: #0077cc;
+  box-shadow: 0 12px 28px rgba(0, 119, 204, 0.2);
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-weight: 600;
+  color: #333333;
+  font-size: 0.95rem;
+}
+
+body[data-bs-theme="dark"] .form-label {
+  color: #e0e0e0;
+}
+
+.form-label.required::after {
+  content: '*';
+  color: #e70f86;
+  font-weight: 600;
+  margin-left: 0.35rem;
+}
+
+.form-field .form-control,
+.form-field .form-select,
+.form-field .multiselect-modern,
+.form-field .el-input,
+.form-field .el-select {
+  width: 100%;
+}
+
+:deep(.form-field .el-form-item) {
+  margin-bottom: 0;
+}
+
+:deep(.form-field .el-input__wrapper),
+:deep(.form-field .el-select .el-input__wrapper) {
+  background: transparent;
+  box-shadow: none;
+}
+
+.toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.toggle-card {
+  background: #f0f0f0;
+  border: 1px solid #e9ecef;
+  border-radius: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  align-items: center;
+}
+
+body[data-bs-theme="dark"] .toggle-card {
+  background: #2c2c2c;
+  border-color: #333333;
+}
+
+.toggle-card .form-check-input {
+  cursor: pointer;
+}
+
+.toggle-card .form-check-label {
+  color: #333333;
+}
+
+body[data-bs-theme="dark"] .toggle-card .form-check-label {
+  color: #e0e0e0;
+}
+
+.notes-wrapper {
+  display: grid;
+  gap: 1rem;
+}
+
+.note-card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 0.85rem;
+  padding: 1.25rem;
+}
+
+body[data-bs-theme="dark"] .note-card {
+  background: #1a1a1a;
+  border-color: #2c2c2c;
+}
+
+@media (max-width: 991.98px) {
+  .compact-section {
+    padding: 1.5rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
 
 .highlighted-badge {
   position: absolute;

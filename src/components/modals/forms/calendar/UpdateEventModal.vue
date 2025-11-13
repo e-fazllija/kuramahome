@@ -607,19 +607,54 @@ export default defineComponent({
     };
 
     async function deleteItem(id: number) {
-      Swal.fire({
+      const result = await Swal.fire({
         text: "Confermare l'eliminazione?",
         icon: "warning",
+        showCancelButton: true,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
+        confirmButtonText: "Sì, elimina",
+        cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
-          confirmButton: "btn btn-danger",
+          confirmButton: "btn btn-danger me-3",
+          cancelButton: "btn btn-light",
         },
-      }).then(async () => {
-        await deleteEvent(id);
-        emit('formUpdateSubmitted', targetData.value);
       });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteEvent(id);
+        loading.value = false;
+
+        Swal.fire({
+          text: "Evento eliminato con successo!",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Continua!",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        }).then(() => {
+          emit('formUpdateSubmitted', targetData.value);
+        });
+      } catch (error) {
+        loading.value = false;
+        Swal.fire({
+          text: "Attenzione, si è verificato un errore.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     }
 
     return {
