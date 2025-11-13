@@ -225,21 +225,21 @@
         :checkbox-enabled="false"
         checkbox-label="Id"
       >
-      <template v-slot:UserName="{ row: agent }">
+      <template v-slot:AgencyName="{ row: agent }">
           <div class="d-flex align-items-center clickable-row" @click="openAgencyDetails(agent.Id)" style="cursor: pointer;">
             <!-- Avatar con iniziali -->
             <div class="symbol symbol-40px me-3">
               <div class="symbol-label" :style="{ 
-                background: getAgencyColor(agent.UserName),
+                background: getAgencyColor(getAgencyDisplayName(agent)),
                 color: '#ffffff',
                 fontWeight: 'bold',
                 fontSize: '14px'
               }">
-                {{ getInitials(agent.UserName) }}
+                {{ getInitials(getAgencyDisplayName(agent)) }}
               </div>
             </div>
             <div class="d-flex flex-column">
-              <span class="fw-bold text-hover-primary">{{ agent.UserName }}</span>
+              <span class="fw-bold text-hover-primary">{{ getAgencyDisplayName(agent) }}</span>
               <span
                 class="badge badge-sm mt-1"
                 :class="agent.EmailConfirmed ? 'badge-light-success' : 'badge-light-danger'"
@@ -249,12 +249,6 @@
               </span>
             </div>
           </div>
-        </template>
-        <template v-slot:FirstName="{ row: agent }">
-          {{ agent.FirstName }}
-        </template>
-        <template v-slot:LastName="{ row: agent }">
-          {{ agent.LastName }}
         </template>
         <template v-slot:Email="{ row: agent }">
           <div class="d-flex align-items-center justify-content-center gap-2">
@@ -275,11 +269,28 @@
         </template>
         <template v-slot:PhoneNumber="{ row: agent }">
           <div class="d-flex align-items-center justify-content-center gap-2">
-            <span>{{ agent.PhoneNumber }}</span>
+            <span>{{ agent.PhoneNumber || '-' }}</span>
             <button 
-              @click="copyToClipboard(agent.PhoneNumber, 'Telefono')"
+              v-if="agent.PhoneNumber"
+              @click="copyToClipboard(agent.PhoneNumber.toString(), 'Telefono')"
               class="btn btn-sm btn-icon btn-light-primary btn-copy"
               title="Copia telefono"
+            >
+              <i class="ki-duotone ki-copy fs-6">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+          </div>
+        </template>
+        <template v-slot:MobilePhone="{ row: agent }">
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <span>{{ agent.MobilePhone || '-' }}</span>
+            <button 
+              v-if="agent.MobilePhone"
+              @click="copyToClipboard(agent.MobilePhone.toString(), 'Cellulare')"
+              class="btn btn-sm btn-icon btn-light-primary btn-copy"
+              title="Copia cellulare"
             >
               <i class="ki-duotone ki-copy fs-6">
                 <span class="path1"></span>
@@ -388,23 +399,11 @@ export default defineComponent({
     const isAdmin = computed(() => hasAdminRole());
     
     const tableHeader = ref([
-    {
-        columnName: "UserName",
-        columnLabel: "UserName",
-        sortEnabled: true,
-        columnWidth: 165,
-      },
       {
-        columnName: "Nome",
-        columnLabel: "FirstName",
+        columnName: "Agenzia",
+        columnLabel: "AgencyName",
         sortEnabled: true,
-        columnWidth: 165,
-      },
-      {
-        columnName: "Cognome",
-        columnLabel: "LastName",
-        sortEnabled: true,
-        columnWidth: 165,
+        columnWidth: 200,
       },
       {
         columnName: "Email",
@@ -415,6 +414,12 @@ export default defineComponent({
       {
         columnName: "Telefono",
         columnLabel: "PhoneNumber",
+        sortEnabled: true,
+        columnWidth: 160,
+      },
+      {
+        columnName: "Cellulare",
+        columnLabel: "MobilePhone",
         sortEnabled: true,
         columnWidth: 160,
       },
@@ -790,6 +795,7 @@ export default defineComponent({
       isSearching,
       getInitials,
       getAgencyColor,
+      getAgencyDisplayName,
       isAdmin,
       copyToClipboard,
       handleNewAgencyClick,
