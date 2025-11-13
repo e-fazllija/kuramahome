@@ -1,7 +1,7 @@
 <template>
   <thead class="table-light">
     <tr>
-      <th v-if="checkboxEnabled" class="header-checkbox-cell py-3 px-3">
+      <th v-if="checkboxEnabled" class="header-checkbox-cell py-3 px-3" scope="col">
         <div
           class="form-check form-check-sm form-check-custom form-check-solid header-checkbox-wrapper"
         >
@@ -10,31 +10,37 @@
             type="checkbox"
             v-model="checked"
             @change="selectAll()"
+            aria-label="Select all rows"
           />
         </div>
       </th>
       <template v-for="(column, i) in header" :key="i">
         <th
+          scope="col"
           :class="{
             'text-end': i === header.length - 1,
             'text-center': column.textAlign === 'center',
+            'text-start': !column.textAlign && i !== header.length - 1,
             'py-3': true,
             'px-3': true,
+            'sortable': column.sortEnabled,
+            'text-nowrap': true,
           }"
           @click="onSort(column.columnLabel, column.sortEnabled)"
           :style="{
-            minWidth: column.columnWidth ? `${column.columnWidth}px` : '0',
+            minWidth: column.columnWidth ? `${column.columnWidth}px` : '100px',
             width: 'auto',
             cursor: column.sortEnabled ? 'pointer' : 'auto',
           }"
         >
-          {{ column.columnName }}
+          <span class="fw-semibold">{{ column.columnName }}</span>
           <span
             v-if="
               columnLabelAndOrder.label === column.columnLabel &&
               column.sortEnabled
             "
             v-html="sortArrow"
+            class="ms-1"
           ></span>
         </th>
       </template>

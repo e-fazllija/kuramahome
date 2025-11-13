@@ -21,6 +21,8 @@ import "@/core/plugins/prismjs";
 
 // Import palette colori globale
 import "@/assets/css/palette-variables.css";
+// Import datatable styles
+import "@/assets/css/datatable.css";
 
 const app = createApp(App);
 

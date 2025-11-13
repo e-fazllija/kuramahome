@@ -1,5 +1,5 @@
 <template>
-  <div class="card border rounded">
+  <div class="card border rounded shadow-sm kt-datatable-card">
     <TableContent
       @on-items-select="onItemSelect"
       @on-sort="onSort"
