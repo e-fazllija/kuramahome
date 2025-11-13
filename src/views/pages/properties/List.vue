@@ -1,22 +1,22 @@
 <template>
-  <div class="properties-page-wrapper">
-    <div class="card shadow-sm" style="border-radius: 0.95rem; border: 1px solid #e9ecef;">
+  <div class="list-page-wrapper">
+    <div class="card shadow-sm">
     <!--begin::Header-->
-    <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0;">
+    <div class="card-header border-0 pt-6 pb-4">
       <div class="card-title">
         <div class="d-flex align-items-center">
           <div class="symbol symbol-45px me-3">
-            <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+            <span class="symbol-label">
               <i class="ki-duotone ki-home fs-2 text-white">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
             </span>
-      </div>
+          </div>
           <div>
             <h3 class="fw-bold m-0 text-gray-900 fs-3">🏠 Gestione Immobili</h3>
             <span class="text-muted fs-7 fw-semibold">Ricerca e amministrazione proprietà</span>
-    </div>
+          </div>
         </div>
       </div>
       <div class="card-toolbar">
@@ -25,7 +25,6 @@
           class="btn btn-sm btn-primary"
           @click="handleNewPropertyClick"
           :disabled="isCheckingLimit"
-          style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);"
         >
           <span v-if="!isCheckingLimit">
           <i class="ki-duotone ki-plus fs-3 me-2">
@@ -43,9 +42,9 @@
     </div>
     <!--end::Header-->
     
-    <div class="card-body pt-0 pb-6">
+    <div class="card-body pt-5 pb-6">
       <!-- Barra di ricerca moderna con Bootstrap -->
-      <div class="container-fluid px-0 filter-container" style="margin-top: 2rem; margin-bottom: 2.5rem;">
+      <div class="container-fluid px-0 filter-container">
         <div class="row g-3 align-items-center mb-4">
           <!-- Bottone Cerca con loading -->
           <div class="col-12 col-md-auto">
@@ -742,33 +741,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-/* Stili specifici per questa pagina */
-
-/* Responsive design specifico per properties */
-@media (max-width: 768px) {
-  .row.g-4 {
-    margin: 0;
-  }
-  
-  .col-md-2, .col-md-3, .col-md-4, .col-md-6 {
-    margin-bottom: 1rem;
-  }
-  
-  .d-flex.justify-content-between {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch !important;
-  }
-  
-  .d-flex.justify-content-between > div {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* Stili specifici per righe cliccabili in properties */
-.clickable-row:hover {
-  text-decoration: underline;
-}
-</style>
+<!-- Stili comuni gestiti da lists-common.css -->

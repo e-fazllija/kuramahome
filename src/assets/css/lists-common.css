@@ -5,37 +5,6 @@
 
 /* === VARIABILI CSS PER LIGHT/DARK MODE === */
 :root {
-  /* Page Wrapper */
-  --page-wrapper-bg: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
-  --page-card-bg: rgba(255, 255, 255, 0.95);
-  
-  /* Search Bar */
-  --search-bg: #f1f3ff;
-  --search-border: #e8f4ff;
-  --search-icon-color: #a1a5b7;
-  --search-focus-bg: #ffffff;
-  --search-focus-border: #3699ff;
-  --search-focus-shadow: rgba(54, 153, 255, 0.15);
-  
-  /* Buttons */
-  --btn-search-bg: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
-  --btn-search-hover-bg: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
-  --btn-clear-bg: #f64e60;
-  --btn-clear-hover-bg: #d63447;
-  
-  /* Table */
-  --table-header-bg: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  --table-border: #e9ecef;
-  --table-row-bg: #ffffff;
-  --table-row-hover-bg: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
-  --table-text: #495057;
-  --table-text-dark: #181c32;
-  
-  /* Badge Results */
-  --badge-results-bg: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
-  --badge-results-border: #0bb7af;
-  --badge-results-text: #0bb7af;
-  
   /* Links */
   --link-color: #495057;
   --link-hover-color: #3699ff;
@@ -43,34 +12,19 @@
   /* Avatar */
   --avatar-shadow: rgba(0, 0, 0, 0.15);
   --avatar-hover-shadow: rgba(0, 0, 0, 0.25);
+  
+  /* Header Colors */
+  --header-bg: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  --header-icon-bg: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  --header-icon-shadow: rgba(54, 153, 255, 0.3);
+  
+  /* Card */
+  --card-border: 1px solid #e9ecef;
+  --card-border-radius: 0.95rem;
+  --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
 }
 
 [data-bs-theme="dark"] {
-  /* Page Wrapper */
-  --page-wrapper-bg: linear-gradient(135deg, #1e1e2d 0%, #181c32 100%);
-  --page-card-bg: rgba(30, 30, 45, 0.95);
-  
-  /* Search Bar */
-  --search-bg: #1e1e2d;
-  --search-border: #2d2d3f;
-  --search-icon-color: #565674;
-  --search-focus-bg: #2d2d3f;
-  --search-focus-border: #3699ff;
-  --search-focus-shadow: rgba(54, 153, 255, 0.3);
-  
-  /* Table */
-  --table-header-bg: linear-gradient(135deg, #2d2d3f 0%, #1e1e2d 100%);
-  --table-border: #3a3a4a;
-  --table-row-bg: #1e1e2d;
-  --table-row-hover-bg: linear-gradient(90deg, #2d2d3f 0%, #1e1e2d 100%);
-  --table-text: #f5f8fa;
-  --table-text-dark: #f5f8fa;
-  
-  /* Badge Results */
-  --badge-results-bg: linear-gradient(135deg, #1e1e2d 0%, #2d2d3f 100%);
-  --badge-results-border: #0bb7af;
-  --badge-results-text: #0bb7af;
-  
   /* Links */
   --link-color: #f5f8fa;
   --link-hover-color: #3699ff;
@@ -78,226 +32,94 @@
   /* Avatar */
   --avatar-shadow: rgba(0, 0, 0, 0.5);
   --avatar-hover-shadow: rgba(0, 0, 0, 0.7);
+  
+  /* Header Colors */
+  --header-bg: linear-gradient(135deg, #1e1e2d 0%, #2b2b40 100%);
+  --header-icon-bg: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  --header-icon-shadow: rgba(54, 153, 255, 0.5);
+  
+  /* Card */
+  --card-border: 1px solid #323248;
+  --card-border-radius: 0.95rem;
+  --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
 }
 
-/* === PAGE WRAPPER === */
-.properties-page-wrapper,
-.clients-page-wrapper,
-.agents-page-wrapper,
-.agencies-page-wrapper {
-  background: var(--page-wrapper-bg);
-  min-height: 100vh;
-  padding: 2rem 0;
-  position: relative;
+/* === PAGE WRAPPER UNIFICATO === */
+/* La classe .list-page-wrapper è un container semantico senza stili specifici */
+
+/* === CARD PRINCIPALE === */
+.list-page-wrapper .card {
+  border-radius: var(--card-border-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
-.properties-page-wrapper::before,
-.clients-page-wrapper::before,
-.agents-page-wrapper::before,
-.agencies-page-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(54, 153, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(11, 183, 175, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, rgba(54, 153, 255, 0.02) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
+/* === HEADER CARD === */
+.list-page-wrapper .card-header {
+  background: var(--header-bg);
+  border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
+  border: 0;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
 }
 
-.properties-page-wrapper > .card,
-.clients-page-wrapper > .card,
-.agents-page-wrapper > .card,
-.agencies-page-wrapper > .card {
-  position: relative;
-  z-index: 1;
-  background: var(--page-card-bg);
-  backdrop-filter: blur(10px);
+/* Simbolo/Icona nell'header */
+.list-page-wrapper .card-header .symbol-label {
+  background: var(--header-icon-bg);
+  box-shadow: 0 4px 12px var(--header-icon-shadow);
 }
 
-/* === SEARCH BAR === */
-.search-wrapper {
-  position: relative;
-  width: 100%;
+.list-page-wrapper .card-header .card-title h3 {
+  font-weight: 700;
+  margin: 0;
+  color: #181c32;
+  font-size: 1.25rem;
 }
 
-.search-icon {
-  position: absolute;
-  left: 1.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--search-icon-color);
-  pointer-events: none;
-  z-index: 1;
-  transition: color 0.3s ease;
+[data-bs-theme="dark"] .list-page-wrapper .card-header .card-title h3 {
+  color: #f5f8fa;
 }
 
-.search-input {
-  background-color: var(--search-bg) !important;
-  border: 1px solid var(--search-border) !important;
-  border-radius: 0.75rem !important;
-  padding: 0.75rem 3.5rem 0.75rem 3.5rem !important;
-  font-weight: 500;
-  color: var(--table-text);
-  transition: all 0.3s ease;
+.list-page-wrapper .card-header .card-title .text-muted {
+  font-size: 0.813rem;
+  font-weight: 600;
 }
 
-.search-input:focus {
-  background-color: var(--search-focus-bg) !important;
-  border-color: var(--search-focus-border) !important;
-  box-shadow: 0 0 0 0.2rem var(--search-focus-shadow);
-}
-
-.search-input::placeholder {
-  color: var(--search-icon-color);
-  font-weight: 400;
-  transition: opacity 0.3s ease;
-}
-
-.search-input:focus::placeholder {
-  opacity: 0.5;
-}
-
-.search-input:focus ~ .search-icon,
-.search-input:hover ~ .search-icon {
-  color: var(--search-focus-border);
-}
-
-/* === BUTTONS === */
-.btn-search {
-  background: var(--btn-search-bg);
+/* Bottone Primario nell'Header (es. "Nuovo Agente") */
+.list-page-wrapper .card-toolbar .btn-primary {
+  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
   border: none;
   border-radius: 0.75rem;
   padding: 0.75rem 1.5rem;
   box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);
+  font-weight: 700;
   transition: all 0.3s ease;
-  color: #ffffff;
 }
 
-.btn-search:hover {
-  background: var(--btn-search-hover-bg);
+.list-page-wrapper .card-toolbar .btn-primary:hover {
+  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(54, 153, 255, 0.35);
-  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.4);
 }
 
-.btn-search:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn-clear {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: var(--btn-clear-bg);
+.list-page-wrapper .card-toolbar .btn-success {
+  background: linear-gradient(135deg, #1bc5bd 0%, #0bb783 100%);
   border: none;
-  border-radius: 0.5rem;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(27, 197, 189, 0.25);
+  font-weight: 700;
   transition: all 0.3s ease;
 }
 
-.btn-clear:hover {
-  background-color: var(--btn-clear-hover-bg);
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 4px 8px rgba(246, 78, 96, 0.3);
-}
-
-.btn-clear i {
-  color: white;
-}
-
-/* === FORM SELECTS === */
-.form-select-modern,
-.form-control.form-select-modern {
-  background-color: var(--search-bg) !important;
-  border: 1px solid var(--search-border) !important;
-  border-radius: 0.75rem !important;
-  padding: 0.75rem 1rem !important;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  color: var(--table-text);
-}
-
-.form-select-modern:focus,
-.form-control.form-select-modern:focus {
-  border-color: var(--search-focus-border) !important;
-  box-shadow: 0 0 0 0.2rem var(--search-focus-shadow) !important;
-  background-color: var(--search-focus-bg) !important;
-}
-
-.form-select-modern:disabled,
-.form-control.form-select-modern:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* === RESULTS BADGE === */
-.results-badge {
-  display: inline-flex;
-  align-items: center;
-  background: var(--badge-results-bg);
-  border: 1px solid var(--badge-results-border);
-  border-radius: 0.95rem;
-  padding: 0.85rem 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(11, 183, 175, 0.15);
-}
-
-.results-badge:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(11, 183, 175, 0.25);
-  border-color: #0aa39a;
-}
-
-.results-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.2;
-}
-
-.results-number {
-  font-weight: 800;
-  font-size: 1.5rem;
-  color: var(--badge-results-text);
-  letter-spacing: -0.5px;
-}
-
-.results-label {
-  font-size: 0.7rem;
-  color: #0aa39a;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.text-primary {
-  color: var(--badge-results-text) !important;
-}
-
-.bg-light-primary {
-  background: var(--badge-results-bg) !important;
-  border: 1px solid var(--badge-results-border);
-  box-shadow: 0 2px 8px rgba(11, 183, 175, 0.15);
-  transition: all 0.3s ease;
-}
-
-.bg-light-primary:hover {
+.list-page-wrapper .card-toolbar .btn-success:hover {
+  background: linear-gradient(135deg, #0bb783 0%, #0a9d6b 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(11, 183, 175, 0.25);
+  box-shadow: 0 8px 20px rgba(27, 197, 189, 0.4);
 }
+
+/* === STILI SPECIFICI PER LISTE === */
+/* Gli stili di search, filtri e badge sono gestiti da filters.css */
 
 /* === BUTTON COPY === */
 .btn-copy {
@@ -433,51 +255,7 @@ tbody tr:hover .symbol-label {
   box-shadow: 0 4px 12px rgba(246, 78, 96, 0.25);
 }
 
-/* === TABLE STYLES === */
-:deep(table) {
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  width: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-:deep(thead th) {
-  background: var(--table-header-bg);
-  border-bottom: 2px solid var(--table-border);
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: var(--table-text);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  vertical-align: middle;
-  white-space: nowrap;
-  text-align: center;
-}
-
-:deep(tbody td) {
-  padding: 0.85rem 1rem;
-  vertical-align: middle;
-  border-bottom: 1px solid #f1f3f4;
-  color: var(--table-text);
-  font-weight: 500;
-  font-size: 1rem;
-  text-align: center;
-}
-
-:deep(tbody tr) {
-  transition: all 0.25s ease;
-  background-color: var(--table-row-bg);
-  border-bottom: 1px solid #f1f3f4;
-}
-
-:deep(tbody tr:hover) {
-  background: var(--table-row-hover-bg) !important;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.08);
-  transform: translateX(2px);
-}
+/* Stili tabella gestiti da datatable.css */
 
 /* === LINKS === */
 :deep(a) {
@@ -508,24 +286,47 @@ tbody tr:hover .symbol-label {
   transform: translateY(-1px);
 }
 
-/* Stili comuni per colonne username/nome (prima colonna) - agents e agencies */
-.agents-page-wrapper :deep(tbody td:nth-child(1)),
-.agencies-page-wrapper :deep(tbody td:nth-child(1)) {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #181c32;
-}
-
-.agents-page-wrapper :deep(tbody td:nth-child(2)) {
-  color: #181c32;
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-.agencies-page-wrapper :deep(tbody td:nth-child(2)) {
-  color: #181c32;
+/* Stili comuni per prima colonna (nome, cliente, etc.) */
+.list-page-wrapper :deep(tbody td:nth-child(1)) {
+  font-size: 1.05rem;
   font-weight: 600;
-  font-size: 1.1rem;
+  color: #181c32;
+}
+
+/* === SELECTION TOOLBAR === */
+.list-page-wrapper .selection-toolbar {
+  background: linear-gradient(135deg, #fff3f4 0%, #fffafb 100%);
+  border-left: 4px solid #f64e60 !important;
+  box-shadow: 0 4px 20px rgba(246, 78, 96, 0.15);
+  border-radius: 0.75rem;
+}
+
+[data-bs-theme="dark"] .list-page-wrapper .selection-toolbar {
+  background: linear-gradient(135deg, #2b1d1e 0%, #3d2629 100%);
+  border-left: 4px solid #f64e60 !important;
+  box-shadow: 0 4px 20px rgba(246, 78, 96, 0.25);
+}
+
+.list-page-wrapper .selection-toolbar .symbol-label {
+  background: #f64e60;
+  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.3);
+  border-radius: 0.75rem;
+}
+
+.list-page-wrapper .selection-toolbar .progress-bar {
+  background-color: #f64e60;
+  border-radius: 0.5rem;
+  transition: width 0.5s ease;
+}
+
+.list-page-wrapper .selection-toolbar .progress {
+  height: 6px;
+  background-color: #ffe2e5;
+  border-radius: 0.5rem;
+}
+
+[data-bs-theme="dark"] .list-page-wrapper .selection-toolbar .progress {
+  background-color: rgba(246, 78, 96, 0.2);
 }
 
 /* === UTILITIES === */
@@ -535,6 +336,80 @@ tbody tr:hover .symbol-label {
 
 .mb-6 {
   margin-bottom: 1.5rem !important;
+}
+
+/* Separatore */
+.filter-separator {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+  margin: 1.5rem 0;
+}
+
+[data-bs-theme="dark"] .filter-separator {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+
+/* === CLICKABLE ROW === */
+.clickable-row {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-row:hover {
+  text-decoration: underline;
+  color: var(--link-hover-color) !important;
+}
+
+/* === ANIMAZIONI === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+  animation: fadeIn 0.4s ease-out;
+  padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+  animation: float 3s ease-in-out infinite;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state h3 {
+  color: var(--table-text-dark);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state p {
+  color: var(--search-icon-color);
+  margin-bottom: 1.5rem;
+}
+
+[data-bs-theme="dark"] .empty-state h3 {
+  color: #f5f8fa;
 }
 
 

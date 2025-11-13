@@ -1,47 +1,48 @@
 <template>
-  <div class="kt-table-responsive">
-    <div class="kt-table-container">
-      <table
-        :class="[
-          loading && 'kt-table-loading',
-          'table table-hover align-middle'
-        ]"
+  <div class="table-responsive">
+    <table
+      :class="[
+        loading && 'kt-table-loading',
+        'table table-hover table-striped align-middle mb-0 kt-custom-table'
+      ]"
+    >
+      <TableHeadRow
+        @onSort="onSort"
+        @onSelect="selectAll"
+        :checkboxEnabledValue="check"
+        :checkboxEnabled="checkboxEnabled"
+        :sort-label="sortLabel"
+        :sort-order="sortOrder"
+        :header="header"
+      />
+      <TableBodyRow
+        v-if="data.length !== 0"
+        @onSelect="itemsSelect"
+        :currentlySelectedItems="selectedItems"
+        :data="data"
+        :header="header"
+        :checkbox-enabled="checkboxEnabled"
+        :checkbox-label="checkboxLabel"
       >
-        <TableHeadRow
-          @onSort="onSort"
-          @onSelect="selectAll"
-          :checkboxEnabledValue="check"
-          :checkboxEnabled="checkboxEnabled"
-          :sort-label="sortLabel"
-          :sort-order="sortOrder"
-          :header="header"
-        />
-        <TableBodyRow
-          v-if="data.length !== 0"
-          @onSelect="itemsSelect"
-          :currentlySelectedItems="selectedItems"
-          :data="data"
-          :header="header"
-          :checkbox-enabled="checkboxEnabled"
-          :checkbox-label="checkboxLabel"
-        >
-          <template v-for="(_, name) in $slots" :key="name" v-slot:[name]="{ row: item }">
-            <slot :name="name" :row="item" />
-          </template>
-        </TableBodyRow>
-        <template v-else>
+        <template v-for="(_, name) in $slots" :key="name" v-slot:[name]="{ row: item }">
+          <slot :name="name" :row="item" />
+        </template>
+      </TableBodyRow>
+      <template v-else>
+        <tbody>
           <tr class="kt-empty-state-row">
-            <td colspan="7" class="kt-empty-state-cell">
-              <div class="kt-empty-state-content">
-                <div class="kt-empty-state-title">No Data Available</div>
-                <div class="kt-empty-state-subtitle">{{ emptyTableText }}</div>
+            <td :colspan="header.length + (checkboxEnabled ? 1 : 0)" class="kt-empty-state-cell">
+              <div class="kt-empty-state-content text-center py-5">
+                <i class="ki-outline ki-information fs-3x text-muted mb-3"></i>
+                <div class="kt-empty-state-title fw-bold fs-5 mb-2">No Data Available</div>
+                <div class="kt-empty-state-subtitle text-muted fs-6">{{ emptyTableText }}</div>
               </div>
             </td>
           </tr>
-        </template>
-        <Loading v-if="loading" />
-      </table>
-    </div>
+        </tbody>
+      </template>
+      <Loading v-if="loading" />
+    </table>
   </div>
 </template>
 

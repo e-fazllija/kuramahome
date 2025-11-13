@@ -1,22 +1,22 @@
 <template>
-  <div class="requests-page-wrapper">
+  <div class="list-page-wrapper">
     <div class="card shadow-sm">
     <!--begin::Header-->
-    <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+    <div class="card-header border-0 pt-6 pb-4">
       <div class="card-title">
         <div class="d-flex align-items-center">
           <div class="symbol symbol-45px me-3">
-            <span class="symbol-label" style="background: linear-gradient(135deg, #0095e8 0%, #00d4ff 100%);">
+            <span class="symbol-label">
               <i class="ki-duotone ki-document fs-2 text-white">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
             </span>
-      </div>
+          </div>
           <div>
-            <h3 class="fw-bold m-0 text-gray-900 fs-3">Gestione Richieste</h3>
+            <h3 class="fw-bold m-0 text-gray-900 fs-3">📋 Gestione Richieste</h3>
             <span class="text-muted fs-7 fw-semibold">Amministrazione e ricerca richieste</span>
-    </div>
+          </div>
         </div>
       </div>
       <div class="card-toolbar">
@@ -25,7 +25,6 @@
           class="btn btn-sm btn-primary"
           @click="handleNewRequestClick"
           :disabled="isCheckingLimit"
-          style="background: linear-gradient(135deg, #0095e8 0%, #00d4ff 100%); border: none; border-radius: 8px; padding: 0.6rem 1.25rem;"
         >
           <span v-if="!isCheckingLimit">
             <i class="ki-duotone ki-plus fs-4 me-2">
@@ -43,7 +42,7 @@
     </div>
     <!--end::Header-->
     
-    <div class="card-body pt-0 pb-4">
+    <div class="card-body pt-5 pb-4">
       <!-- Barra di ricerca moderna con Bootstrap -->
       <div class="container-fluid px-0 filter-container">
         <div class="row g-3 align-items-center mb-4">

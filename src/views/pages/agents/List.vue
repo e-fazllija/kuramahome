@@ -1,12 +1,12 @@
 <template>
-  <div class="agents-page-wrapper">
-    <div class="card shadow-sm" style="border-radius: 0.95rem; border: 1px solid #e9ecef;">
+  <div class="list-page-wrapper">
+    <div class="card shadow-sm">
     <!--begin::Header-->
-    <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0;">
+    <div class="card-header border-0 pt-6 pb-4">
       <div class="card-title">
         <div class="d-flex align-items-center">
           <div class="symbol symbol-45px me-3">
-            <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+            <span class="symbol-label">
               <i class="ki-duotone ki-user fs-2 text-white">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -28,7 +28,6 @@
           class="btn btn-sm btn-primary"
           @click="handleNewAgentClick"
           :disabled="isCheckingLimit"
-          style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);"
         >
           <span v-if="!isCheckingLimit">
           <i class="ki-duotone ki-plus fs-3 me-2">
@@ -46,9 +45,9 @@
     </div>
     <!--end::Header-->
     
-    <div class="card-body pt-0 pb-6">
+    <div class="card-body pt-5 pb-6">
       <!-- Barra di ricerca moderna con Bootstrap -->
-      <div class="container-fluid px-0 filter-container" style="margin-top: 2rem; margin-bottom: 2.5rem;">
+      <div class="container-fluid px-0 filter-container">
         <div class="row g-3 align-items-center mb-4">
           <!-- Bottone Cerca con loading -->
           <div class="col-12 col-md-auto">
@@ -140,21 +139,21 @@
     <div class="card-body pt-0">
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
         :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id">
-        <template v-slot:UserName="{ row: agent }">
+        <template v-slot:AgentName="{ row: agent }">
           <div class="d-flex align-items-center clickable-row" @click="openAgentDetails(agent.Id)" style="cursor: pointer;">
             <!-- Avatar con iniziali -->
             <div class="symbol symbol-40px me-3">
               <div class="symbol-label" :style="{ 
-                background: getAgentColor(agent.UserName),
+                background: getAgentColor(getAgentDisplayName(agent)),
                 color: '#ffffff',
                 fontWeight: 'bold',
                 fontSize: '14px'
               }">
-                {{ getInitials(agent.UserName) }}
+                {{ getInitials(getAgentDisplayName(agent)) }}
               </div>
             </div>
             <div class="d-flex flex-column">
-              <span class="fw-bold text-hover-primary">{{ agent.UserName }}</span>
+              <span class="fw-bold text-hover-primary">{{ getAgentDisplayName(agent) }}</span>
               <span
                 class="badge badge-sm mt-1"
                 :class="agent.EmailConfirmed ? 'badge-light-success' : 'badge-light-danger'"
@@ -164,12 +163,6 @@
               </span>
             </div>
           </div>
-        </template>
-        <template v-slot:FirstName="{ row: agent }">
-          {{ agent.FirstName }}
-        </template>
-        <template v-slot:LastName="{ row: agent }">
-          {{ agent.LastName }}
         </template>
         <template v-slot:Email="{ row: agent }">
           <div class="d-flex align-items-center justify-content-center gap-2">
@@ -190,11 +183,28 @@
         </template>
         <template v-slot:PhoneNumber="{ row: agent }">
           <div class="d-flex align-items-center justify-content-center gap-2">
-            <span>{{ agent.PhoneNumber }}</span>
+            <span>{{ agent.PhoneNumber || '-' }}</span>
             <button 
-              @click="copyToClipboard(agent.PhoneNumber, 'Telefono')"
+              v-if="agent.PhoneNumber"
+              @click="copyToClipboard(agent.PhoneNumber.toString(), 'Telefono')"
               class="btn btn-sm btn-icon btn-light-primary btn-copy"
               title="Copia telefono"
+            >
+              <i class="ki-duotone ki-copy fs-6">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+          </div>
+        </template>
+        <template v-slot:MobilePhone="{ row: agent }">
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <span>{{ agent.MobilePhone || '-' }}</span>
+            <button 
+              v-if="agent.MobilePhone"
+              @click="copyToClipboard(agent.MobilePhone.toString(), 'Cellulare')"
+              class="btn btn-sm btn-icon btn-light-primary btn-copy"
+              title="Copia cellulare"
             >
               <i class="ki-duotone ki-copy fs-6">
                 <span class="path1"></span>
@@ -299,22 +309,10 @@ export default defineComponent({
   setup() {
     const tableHeader = ref([
       {
-        columnName: "UserName",
-        columnLabel: "UserName",
+        columnName: "Agente",
+        columnLabel: "AgentName",
         sortEnabled: true,
-        columnWidth: 165,
-      },
-      {
-        columnName: "Nome",
-        columnLabel: "FirstName",
-        sortEnabled: true,
-        columnWidth: 165,
-      },
-      {
-        columnName: "Cognome",
-        columnLabel: "LastName",
-        sortEnabled: true,
-        columnWidth: 165,
+        columnWidth: 200,
       },
       {
         columnName: "Email",
@@ -325,6 +323,12 @@ export default defineComponent({
       {
         columnName: "Telefono",
         columnLabel: "PhoneNumber",
+        sortEnabled: true,
+        columnWidth: 160,
+      },
+      {
+        columnName: "Cellulare",
+        columnLabel: "MobilePhone",
         sortEnabled: true,
         columnWidth: 160,
       },
@@ -569,6 +573,15 @@ export default defineComponent({
       return colors[Math.abs(hash) % colors.length];
     };
 
+    // Funzione per ottenere il nome completo dell'agente
+    const getAgentDisplayName = (agent: Agent): string => {
+      const nameParts = [agent.FirstName, agent.LastName].filter(Boolean);
+      if (nameParts.length) {
+        return nameParts.join(" ");
+      }
+      return agent.UserName || "Agente";
+    };
+
     // Funzione per copiare negli appunti
     const copyToClipboard = async (text: string, type: string) => {
       try {
@@ -691,6 +704,7 @@ export default defineComponent({
       isSearching,
       getInitials,
       getAgentColor,
+      getAgentDisplayName,
       copyToClipboard,
       canCreateAgent,
       handleNewAgentClick,
@@ -704,6 +718,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-/* Stili specifici per questa pagina */
-</style>
+<!-- Stili comuni gestiti da lists-common.css -->

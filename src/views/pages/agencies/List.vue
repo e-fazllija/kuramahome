@@ -1,12 +1,12 @@
 <template>
-  <div class="agencies-page-wrapper">
-    <div class="card shadow-sm" style="border-radius: 0.95rem; border: 1px solid #e9ecef;">
+  <div class="list-page-wrapper">
+    <div class="card shadow-sm">
     <!--begin::Header-->
-    <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0;">
+    <div class="card-header border-0 pt-6 pb-4">
       <div class="card-title">
         <div class="d-flex align-items-center">
           <div class="symbol symbol-45px me-3">
-            <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+            <span class="symbol-label">
               <i class="ki-duotone ki-shop fs-2 text-white">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -29,7 +29,6 @@
           class="btn btn-sm btn-primary"
           @click="handleNewAgencyClick"
           :disabled="isCheckingLimit"
-          style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);"
         >
           <span v-if="!isCheckingLimit">
           <i class="ki-duotone ki-plus fs-3 me-2">
@@ -47,9 +46,9 @@
     </div>
     <!--end::Header-->
     
-    <div class="card-body pt-0 pb-6">
+    <div class="card-body pt-5 pb-6">
       <!-- Barra di ricerca moderna con Bootstrap -->
-      <div class="container-fluid px-0 filter-container" style="margin-top: 2rem; margin-bottom: 2.5rem;">
+      <div class="container-fluid px-0 filter-container">
         <div class="row g-3 align-items-center">
           <!-- Bottone Cerca con loading -->
           <div class="col-12 col-md-auto">
@@ -123,12 +122,12 @@
     
 <!--begin::Selection Toolbar-->
 <div class="card-body pt-0 pb-4" v-if="selectedIds.length > 0">
-  <div class="card border-0" style="background: linear-gradient(135deg, #fff3f4 0%, #fffafb 100%); border-left: 4px solid #f64e60 !important; box-shadow: 0 4px 20px rgba(246, 78, 96, 0.15); border-radius: 0.75rem;">
+  <div class="card border-0 selection-toolbar">
     <div class="card-body p-4">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <div class="symbol symbol-45px me-4">
-            <span class="symbol-label bg-danger d-flex align-items-center justify-content-center" style="box-shadow: 0 4px 12px rgba(246, 78, 96, 0.3); border-radius: 0.75rem;">
+            <span class="symbol-label bg-danger d-flex align-items-center justify-content-center">
               <i class="ki-duotone ki-check-square fs-2 text-white">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -145,7 +144,6 @@
             type="button"
             class="btn btn-danger d-flex align-items-center"
             @click="deleteFewItems()"
-            style="border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(246, 78, 96, 0.25); transition: all 0.3s ease;"
           >
             <i class="ki-duotone ki-trash fs-3 me-2">
               <span class="path1"></span>
@@ -160,7 +158,6 @@
             type="button"
             class="btn btn-light-danger d-flex align-items-center"
             @click="clearSelection()"
-            style="border-radius: 0.75rem; padding: 0.75rem 1.5rem; border: 1px solid #ffe2e5; background: #ffffff; transition: all 0.3s ease;"
           >
             <i class="ki-duotone ki-cross-circle fs-3 me-2 text-danger">
               <span class="path1"></span>
@@ -173,12 +170,11 @@
       
       <!-- Progress Bar Opzionale -->
       <div class="mt-3">
-        <div class="progress" style="height: 6px; background-color: #ffe2e5; border-radius: 0.5rem;">
+        <div class="progress">
           <div 
             class="progress-bar bg-danger" 
             role="progressbar" 
             :style="{ width: Math.min((selectedIds.length / tableData.length) * 100, 100) + '%' }"
-            style="border-radius: 0.5rem; transition: width 0.5s ease;"
           ></div>
         </div>
         <div class="d-flex justify-content-between mt-1">
@@ -229,21 +225,21 @@
         :checkbox-enabled="false"
         checkbox-label="Id"
       >
-      <template v-slot:UserName="{ row: agent }">
+      <template v-slot:AgencyName="{ row: agent }">
           <div class="d-flex align-items-center clickable-row" @click="openAgencyDetails(agent.Id)" style="cursor: pointer;">
             <!-- Avatar con iniziali -->
             <div class="symbol symbol-40px me-3">
               <div class="symbol-label" :style="{ 
-                background: getAgencyColor(agent.UserName),
+                background: getAgencyColor(getAgencyDisplayName(agent)),
                 color: '#ffffff',
                 fontWeight: 'bold',
                 fontSize: '14px'
               }">
-                {{ getInitials(agent.UserName) }}
+                {{ getInitials(getAgencyDisplayName(agent)) }}
               </div>
             </div>
             <div class="d-flex flex-column">
-              <span class="fw-bold text-hover-primary">{{ agent.UserName }}</span>
+              <span class="fw-bold text-hover-primary">{{ getAgencyDisplayName(agent) }}</span>
               <span
                 class="badge badge-sm mt-1"
                 :class="agent.EmailConfirmed ? 'badge-light-success' : 'badge-light-danger'"
@@ -253,12 +249,6 @@
               </span>
             </div>
           </div>
-        </template>
-        <template v-slot:FirstName="{ row: agent }">
-          {{ agent.FirstName }}
-        </template>
-        <template v-slot:LastName="{ row: agent }">
-          {{ agent.LastName }}
         </template>
         <template v-slot:Email="{ row: agent }">
           <div class="d-flex align-items-center justify-content-center gap-2">
@@ -279,11 +269,28 @@
         </template>
         <template v-slot:PhoneNumber="{ row: agent }">
           <div class="d-flex align-items-center justify-content-center gap-2">
-            <span>{{ agent.PhoneNumber }}</span>
+            <span>{{ agent.PhoneNumber || '-' }}</span>
             <button 
-              @click="copyToClipboard(agent.PhoneNumber, 'Telefono')"
+              v-if="agent.PhoneNumber"
+              @click="copyToClipboard(agent.PhoneNumber.toString(), 'Telefono')"
               class="btn btn-sm btn-icon btn-light-primary btn-copy"
               title="Copia telefono"
+            >
+              <i class="ki-duotone ki-copy fs-6">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </button>
+          </div>
+        </template>
+        <template v-slot:MobilePhone="{ row: agent }">
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <span>{{ agent.MobilePhone || '-' }}</span>
+            <button 
+              v-if="agent.MobilePhone"
+              @click="copyToClipboard(agent.MobilePhone.toString(), 'Cellulare')"
+              class="btn btn-sm btn-icon btn-light-primary btn-copy"
+              title="Copia cellulare"
             >
               <i class="ki-duotone ki-copy fs-6">
                 <span class="path1"></span>
@@ -392,23 +399,11 @@ export default defineComponent({
     const isAdmin = computed(() => hasAdminRole());
     
     const tableHeader = ref([
-    {
-        columnName: "UserName",
-        columnLabel: "UserName",
-        sortEnabled: true,
-        columnWidth: 165,
-      },
       {
-        columnName: "Nome",
-        columnLabel: "FirstName",
+        columnName: "Agenzia",
+        columnLabel: "AgencyName",
         sortEnabled: true,
-        columnWidth: 165,
-      },
-      {
-        columnName: "Cognome",
-        columnLabel: "LastName",
-        sortEnabled: true,
-        columnWidth: 165,
+        columnWidth: 200,
       },
       {
         columnName: "Email",
@@ -419,6 +414,12 @@ export default defineComponent({
       {
         columnName: "Telefono",
         columnLabel: "PhoneNumber",
+        sortEnabled: true,
+        columnWidth: 160,
+      },
+      {
+        columnName: "Cellulare",
+        columnLabel: "MobilePhone",
         sortEnabled: true,
         columnWidth: 160,
       },
@@ -794,6 +795,7 @@ export default defineComponent({
       isSearching,
       getInitials,
       getAgencyColor,
+      getAgencyDisplayName,
       isAdmin,
       copyToClipboard,
       handleNewAgencyClick,
@@ -807,51 +809,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-/* Stili specifici per questa pagina */
-
-/* Animazioni fade-in */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Empty State */
-.empty-state {
-  animation: fadeIn 0.4s ease-out;
-}
-
-.empty-state-icon {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-
-/* Dark mode support */
-[data-bs-theme="dark"] .empty-state h3 {
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .badge-light-success {
-  background: linear-gradient(135deg, rgba(27, 197, 189, 0.15) 0%, rgba(27, 197, 189, 0.25) 100%);
-  color: #1bc5bd;
-}
-</style>
+<!-- Stili comuni gestiti da lists-common.css -->
