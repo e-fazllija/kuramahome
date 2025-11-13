@@ -8,11 +8,12 @@ export class Agency {
   FirstName: string;
   LastName: string;
   Email: string;
-  PhoneNumber: number;
-  MobilePhone?: number;
+  PhoneNumber: string;
+  MobilePhone?: string;
   Referent?: string;
   Address: string;
   City: string;
+  ZipCode?: string;
   Province?: string;
   CreationDate?: Date;
   UpdateDate?: Date;

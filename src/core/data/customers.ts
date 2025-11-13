@@ -24,7 +24,6 @@ export class Customer{
   OngoingAssignment: boolean;
   CustomerNotes?: Notes[];
   UserId?: string;
-  AdminId?: string;  // Aggiunto per risolvere l'errore di validazione AdminId
   label?: string;
 }
 

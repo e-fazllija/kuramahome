@@ -118,9 +118,9 @@ export class Event {
   User?: User;
   EventName: string;
   Type: string;
-  CustomerId: number;
-  RealEstatePropertyId: number;
-  RequestId: number;
+  CustomerId?: number;
+  RealEstatePropertyId?: number;
+  RequestId?: number;
   EventDescription: string;
   EventLocation: string;
   EventStartDate?: string;

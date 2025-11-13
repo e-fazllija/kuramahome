@@ -61,7 +61,7 @@ export class RealEstateProperty {
   TypeOfAssignment?: string;
   AgreedCommission: number;
   FlatRateCommission: number;
-  StornoProvvigione: number;
+  CommissionReversal: number;
 }
 
 export class RequestTabelData {
@@ -282,9 +282,7 @@ const createRealEstateProperty = async (form: any) => {
     }
     
     // Mappatura campi frontend -> backend
-    if (key === 'StornoProvvigione') {
-      formData.append('CommissionReversal', value?.toString() || "");
-    } else if (key === 'Town') {
+    if (key === 'Town') {
       // Se per caso c'è ancora Town, usa City
       formData.append('City', value?.toString() || "");
     } else if (key === 'AssignmentEnd') {

@@ -3,13 +3,13 @@ import { useAuthStore, type User } from "@/stores/auth";
 const store = useAuthStore();
 
 export class Agent {
-  Id?: number;
+  Id?: string;
   UserName?: string;
   FirstName: string;
   LastName: string;
   Email: string;
-  PhoneNumber: number;
-  MobilePhone?: number;
+  PhoneNumber: string;
+  MobilePhone?: string;
   Referent?: string;
   Address: string;
   City: string;
