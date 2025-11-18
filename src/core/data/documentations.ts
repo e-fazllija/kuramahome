@@ -34,7 +34,7 @@ const getDocumentations = (parentPath?: string): Promise<Array<Documentation>> =
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };

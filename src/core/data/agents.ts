@@ -45,7 +45,7 @@ const getAgents = (agencyFilter: string, filterRequest: string) : Promise<Array<
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -57,7 +57,7 @@ const getAgent = (id: String) : Promise<Agent> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -70,12 +70,12 @@ const createAgent = async (formData: any) => {
     })
     .catch(({ response }) => {
       // Se errore 429 (limite raggiunto), rilanciamo con response data per gestirlo nel componente
-      if (response.status === 429) {
+      if (response?.status === 429) {
         const error = new Error('Subscription limit exceeded') as any;
         error.response = response;
         throw error;
       }
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -88,7 +88,7 @@ const updateAgent = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -101,7 +101,7 @@ const deleteAgent = async (id: String) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };

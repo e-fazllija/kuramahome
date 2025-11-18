@@ -393,7 +393,6 @@ export default defineComponent({
     KTSpinner,
   },
   setup() {
-    const authStore = useAuthStore();
     
     // Verifica se l'utente è Admin usando helper
     const isAdmin = computed(() => hasAdminRole());
@@ -436,7 +435,8 @@ export default defineComponent({
     const tableData = ref([]);
     const initAgents = ref([]);
     const isSearching = ref(false);
-    
+    const store = useAuthStore();
+
     // Subscription limits state
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
@@ -445,12 +445,15 @@ export default defineComponent({
     async function getItems(filterRequest: string) {
       isSearching.value = true;
       try {
-        const result = await getAgencies(filterRequest);
+        if (store.user.Role == "Admin") {
+          const result = await getAgencies(filterRequest);
         tableData.value = result || [];
         // Aggiorna anche initAgents per mantenere il dataset completo
         if (!filterRequest) {
           initAgents.value.splice(0, initAgents.value.length, ...tableData.value);
         }
+        }
+        
       } catch (error) {
         console.error('Error fetching agencies:', error);
         tableData.value = [];
@@ -582,9 +585,42 @@ export default defineComponent({
       });
 
       if (result.isConfirmed) {
-        await deleteAgency(agency.Id);
-        await getItems("");
-        MenuComponent.reinitialization(); 
+        try {
+          await deleteAgency(agency.Id);
+          
+          // Mostra messaggio di successo
+          Swal.fire({
+            title: "Eliminata!",
+            text: `L'agenzia "${displayName}" è stata eliminata con successo.`,
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+          
+          await getItems("");
+          MenuComponent.reinitialization(); 
+        } catch (error: any) {
+          // Mostra messaggio di errore dettagliato
+          const errorMessage = error?.data?.Message || error?.data?.message || "Si è verificato un errore durante l'eliminazione dell'agenzia.";
+          
+          Swal.fire({
+            title: "Errore",
+            text: errorMessage,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+          
+          console.error("Errore durante l'eliminazione dell'agenzia:", error);
+        }
       }
     }
 

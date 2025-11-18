@@ -74,7 +74,7 @@ const getRequests = (userId: string, filterRequest: string): Promise<Array<Reque
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -114,7 +114,7 @@ const getRequestsList = (filterRequest: string, userIdOverride?: string): Promis
       } as RequestTabelData));
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -129,7 +129,7 @@ const getCustomerRequests = (customerId: number): Promise<Array<Request>> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -144,7 +144,7 @@ const getRequest = (id: number): Promise<Request> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -173,7 +173,7 @@ const updateRequest = async (formData: Request) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -233,7 +233,7 @@ const getToInsert = (): Promise<InsertModel> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };

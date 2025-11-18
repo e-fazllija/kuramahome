@@ -154,7 +154,7 @@ const getEvents = (): Promise<Array<Event>> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -169,7 +169,7 @@ const getEvent = (id: number): Promise<Event> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -224,7 +224,7 @@ const getToInsert = (): Promise<InsertModel> => {
       });
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -244,7 +244,7 @@ const getSearchItems = (userId: string, agencyId?: string): Promise<SearchModel>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -256,7 +256,7 @@ const createEvent = async (formData: Event) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -268,7 +268,7 @@ const updateEvent = async (formData: Event) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -279,7 +279,7 @@ const deleteEvent = async (id: number) => {
       return data;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };

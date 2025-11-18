@@ -116,7 +116,7 @@ const getRealEstateProperties = (agencyId: string, filterRequest: string, contra
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -146,7 +146,7 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
       } as RequestTabelData));
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -165,7 +165,7 @@ const getRealEstateProperty = (id: number) => {
     })
     .catch(({ response }) => {
       console.log(response)
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -184,7 +184,7 @@ const getToInsert = () : Promise<InsertModel> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -198,7 +198,7 @@ const setRealEstatePropertyPhotoHighlighted = (id : number) => {
     return data;
   })
   .catch(({ response }) => {
-    store.setError(response.data.Message, response.status);
+    store.setError(response?.data?.Message, response?.status);
     return undefined;
   });
 }
@@ -250,7 +250,7 @@ const uploadFiles = async (files: FileList, id: number) => {
   return await ApiService.post("RealEstateProperty/UploadFiles", formData)
     .then(({ data }) => data)
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -335,12 +335,12 @@ const createRealEstateProperty = async (form: any) => {
       return data as Partial<RealEstateProperty> & { Id?: number };
     })
     .catch(({ response }) => {
-      if (response.status === 429) {
+      if (response?.status === 429) {
         const error = new Error('Subscription limit exceeded') as any;
         error.response = response;
         throw error;
       }
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -359,7 +359,7 @@ const updateRealEstateProperty = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -372,7 +372,7 @@ const updatePhotosOrder = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
@@ -396,7 +396,7 @@ const deletePhoto = async (id: number) => {
       return data;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 }
@@ -416,7 +416,7 @@ const getSearchItems = (userId: string, agencyId?: string): Promise<SearchModel>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
+      store.setError(response?.data?.Message, response?.status);
       return undefined;
     });
 };
