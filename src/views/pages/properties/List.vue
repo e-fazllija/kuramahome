@@ -574,12 +574,26 @@ export default defineComponent({
           confirmButton: "btn btn-danger",
         },
       }).then(async () => {
-        await deleteRealEstateProperty(id)
-        await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
-        loading.value = false;
-        MenuComponent.reinitialization();
+        try {
+          await deleteRealEstateProperty(id);
+          await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
+          MenuComponent.reinitialization();
+        } catch (error: any) {
+          const errorMessage = error?.data?.Message || error?.response?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+          Swal.fire({
+            text: errorMessage,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+        } finally {
+          loading.value = false;
+        }
       });
-      loading.value = false;
     }
 
     const sort = (sort: Sort) => {

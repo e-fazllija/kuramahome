@@ -184,7 +184,7 @@
               </div>
 
               <div v-if="showTipologia" class="form-field">
-                <label class="form-label">
+                <label class="form-label required">
                   <i class="ki-duotone ki-element-plus fs-5 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -652,9 +652,9 @@
 
               <div class="form-field">
                 <label class="form-label">Storno provvigione</label>
-                <el-form-item prop="StornoProvvigione">
+                <el-form-item prop="CommissionReversal">
                   <el-input
-                    v-model="formData.StornoProvvigione"
+                    v-model="formData.CommissionReversal"
                     type="number"
                     placeholder="Inserisci percentuale"
                   >
@@ -1047,6 +1047,7 @@ import {
 } from "@/core/data/properties";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { getEvents, type Event as CalendarEvent } from "@/core/data/events";
 import draggable from 'vuedraggable';
 import Multiselect from '@vueform/multiselect'
 
@@ -1101,6 +1102,62 @@ export default defineComponent({
       }
     };
 
+    const tipologiePerCategoria: Record<string, string[]> = {
+      "Residenziale": [
+        "Appartamento",
+        "Attico",
+        "Mansarda",
+        "Loft",
+        "Soffitta",
+        "Casale",
+        "Rustico",
+        "Villa Unifamiliare",
+        "Villa Bifamiliare",
+        "Villa Plurifamiliare",
+        "Villa a Schiera"
+      ],
+      "Capannone": [
+        "Capannone artigianale",
+        "Capannone industriale",
+        "Capannone logistico"
+      ],
+      "Negozi-Locale Commerciale": [
+        "Negozio",
+        "Locale commerciale",
+        "Showroom",
+        "Chiosco"
+      ],
+      "Magazzino": [
+        "Magazzino",
+        "Deposito",
+        "Laboratorio"
+      ],
+      "Garage": [
+        "Box singolo",
+        "Box doppio",
+        "Posto auto coperto",
+        "Posto auto scoperto"
+      ],
+      "Ufficio": [
+        "Ufficio",
+        "Studio professionale",
+        "Business center",
+        "Co-working"
+      ],
+      "Terreno": [
+        "Edificabile",
+        "Agricolo",
+        "Non edificabile",
+        "Boschivo"
+      ],
+      "Rustico / Casale": [
+        "Rustico",
+        "Casale",
+        "Cascina",
+        "Masseria"
+      ]
+    };
+
 
 
     const formData = ref<RealEstateProperty>({
@@ -1151,7 +1208,7 @@ export default defineComponent({
       VideoUrl: "",
       AgreedCommission: 0,
       FlatRateCommission: 0,
-      StornoProvvigione: 0,
+      CommissionReversal: 0,
       TypeOfAssignment: "",
     });
 
@@ -1185,6 +1242,8 @@ export default defineComponent({
       const numericValue = Number(value);
       if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
         callback(new Error("L'anno di costruzione è obbligatorio"));
+      } else if (numericValue < 1000 || numericValue > 3000) {
+        callback(new Error("L'anno di costruzione deve essere compreso tra 1000 e 3000"));
       } else {
         callback();
       }
@@ -1323,7 +1382,24 @@ export default defineComponent({
       // Se c'è già una provincia selezionata, carica le città
       if (formData.value.State) {
         await loadCitiesByProvince(formData.value.State);
-      }      
+      }
+      
+      // Inizializza le tipologie disponibili in base alla categoria esistente
+      if (formData.value.Category && tipologiePerCategoria[formData.value.Category]) {
+        typesavailable.value = [...tipologiePerCategoria[formData.value.Category]];
+        if (typesavailable.value.length > 0) {
+          showTipologia.value = true;
+          // Se la tipologia esistente non è valida per la categoria, usa la prima disponibile
+          if (!typesavailable.value.includes(formData.value.Typology)) {
+            formData.value.Typology = typesavailable.value[0];
+          }
+        } else {
+          showTipologia.value = false;
+        }
+      } else {
+        showTipologia.value = false;
+        typesavailable.value = [];
+      }
       
       loading.value = false;
       firtLoad.value = false;
@@ -1361,6 +1437,26 @@ export default defineComponent({
       }
     }
 );
+
+    watch(
+      () => formData.value.Category,
+      (newCategoria) => {
+        if (!firtLoad.value) {
+          const available = (newCategoria && tipologiePerCategoria[newCategoria]) ? [...tipologiePerCategoria[newCategoria]] : [];
+          typesavailable.value = available;
+
+          if (available.length > 0) {
+            showTipologia.value = true;
+            formData.value.Typology = available.includes(formData.value.Typology)
+              ? formData.value.Typology
+              : available[0];
+          } else {
+            showTipologia.value = false;
+            formData.value.Typology = "";
+          }
+        }
+      }
+    );
 
     const onFileChanged = async (event: Event) => {
       const target = event.target as HTMLInputElement;
@@ -1467,6 +1563,25 @@ export default defineComponent({
       router.back();
     };
 
+    const hasRelatedCalendarEvents = async (propertyId: number): Promise<boolean> => {
+      try {
+        const events = await getEvents();
+        if (!Array.isArray(events)) {
+          return false;
+        }
+        return events.some((event: CalendarEvent) => {
+          if (!event) return false;
+          const belongsToProperty = event.RealEstatePropertyId === propertyId;
+          if (!belongsToProperty) return false;
+          // Consideriamo bloccanti solo eventi non cancellati
+          return !event.Cancelled;
+        });
+      } catch (error) {
+        console.warn("Impossibile verificare le associazioni in calendario:", error);
+        return false;
+      }
+    };
+
     async function deleteItem() {
       loading.value = true;
       Swal.fire({
@@ -1483,10 +1598,65 @@ export default defineComponent({
         },
       }).then(async (result) => {
         if (result.isConfirmed) {
-          await deleteRealEstateProperty(id);
-          router.push({ name: "properties" });
+          try {
+            const hasCalendarLinks = await hasRelatedCalendarEvents(id);
+            if (hasCalendarLinks) {
+              loading.value = false;
+              Swal.fire({
+                text: "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova.",
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok",
+                heightAuto: false,
+                customClass: {
+                  confirmButton: "btn btn-primary",
+                },
+              });
+              return;
+            }
+
+            await deleteRealEstateProperty(id);
+            loading.value = false;
+            await Swal.fire({
+              text: "Immobile eliminato con successo!",
+              icon: "success",
+              buttonsStyling: false,
+              confirmButtonText: "Continua",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+            router.push({ name: "properties" });
+          } catch (response: any) {
+            loading.value = false;
+            const backendMessage: string =
+              response?.data?.Message ||
+              response?.data?.Detail ||
+              response?.data?.message ||
+              "";
+            const normalizedMessage = backendMessage.toLowerCase();
+            const isCalendarConflict =
+              normalizedMessage.includes("calendar") ||
+              normalizedMessage.includes("appunt");
+            const message = isCalendarConflict
+              ? "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova."
+              : backendMessage || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+
+            Swal.fire({
+              text: message,
+              icon: "error",
+              buttonsStyling: false,
+              confirmButtonText: "Ok",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+          }
+        } else {
+          loading.value = false;
         }
-        loading.value = false;
       }).catch(() => {
         loading.value = false;
       });
@@ -1502,6 +1672,7 @@ export default defineComponent({
       if (!formData.value.AgentId) missingFields.push("Agente");
       if (!formData.value.Title || !formData.value.Title.trim()) missingFields.push("Titolo");
       if (!formData.value.Category) missingFields.push("Categoria");
+      if (showTipologia.value && (!formData.value.Typology || !formData.value.Typology.trim())) missingFields.push("Tipologia");
       if (!formData.value.Status) missingFields.push("Stato vendita");
       if (!formData.value.AddressLine || !formData.value.AddressLine.trim()) missingFields.push("Indirizzo");
       if (!formData.value.State) missingFields.push("Provincia");
@@ -1729,6 +1900,7 @@ export default defineComponent({
       setPhotoHighlighted,
       deleteFile,
       deleteItem,
+      hasRelatedCalendarEvents,
       inserModel,
       user,
       checkMove,

@@ -665,6 +665,18 @@ export default defineComponent({
         loading.value = true;
         await deleteCustomer(id);
         await router.push({ name: "clients" });
+      } catch (error: any) {
+        const errorMessage = error?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione del cliente.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
       } finally {
         loading.value = false;
       }

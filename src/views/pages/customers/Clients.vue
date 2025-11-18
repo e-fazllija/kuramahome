@@ -503,9 +503,23 @@ export default defineComponent({
         return;
       }
 
-      await deleteCustomer(id);
-      await getItems("");
-      MenuComponent.reinitialization();
+      try {
+        await deleteCustomer(id);
+        await getItems("");
+        MenuComponent.reinitialization();
+      } catch (error: any) {
+        const errorMessage = error?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione del cliente.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     }
 
     const sort = (sort: Sort) => {
