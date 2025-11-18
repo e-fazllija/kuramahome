@@ -492,8 +492,7 @@ export default defineComponent({
       State: "",
       AcquisitionDone: false,
       OngoingAssignment: false,
-      UserId: store.user.Id,
-      AdminId: store.user.Id
+      UserId: store.user.Id
     });
 
     // Watcher per caricare le città quando si seleziona la provincia
@@ -557,7 +556,6 @@ export default defineComponent({
           loading.value = true;
           try {
             formData.value.UserId = formData.value.UserId || store.user.Id;
-            formData.value.AdminId = formData.value.AdminId || store.user.Id;
             await createCustomer(formData.value);
 
             const error = store.errors;

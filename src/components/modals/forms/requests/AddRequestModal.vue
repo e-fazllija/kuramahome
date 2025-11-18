@@ -591,7 +591,6 @@ export default defineComponent({
         Archived: false,
         Closed: false,
         RoomsNumber: "",
-        MQGarden: 0,
         GardenTo:0,
         GardenFrom:0,
         MQFrom: 0, 

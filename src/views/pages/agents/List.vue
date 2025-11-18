@@ -448,7 +448,7 @@ export default defineComponent({
         try {
           const customers = await getCustomers("");
           requiresTyping = !!customers?.some((customer) => {
-            const ownerId = customer.UserId ?? customer.AdminId ?? "";
+            const ownerId = customer.UserId ?? "";
             return ownerId && ownerId === String(agent.Id);
           });
         } catch (error) {

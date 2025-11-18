@@ -579,7 +579,7 @@ export default defineComponent({
           await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
           MenuComponent.reinitialization();
         } catch (error: any) {
-          const errorMessage = error?.data?.Message || error?.response?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+          const errorMessage = error?.data?.Message || error?.response?.data?.Message || "Si è verificato un errore durante l'eliminazione dell'immobile.";
           Swal.fire({
             text: errorMessage,
             icon: "error",

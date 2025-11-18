@@ -655,7 +655,6 @@ export default defineComponent({
       Archived: false,
       Closed: false,
       RoomsNumber: "",
-      MQGarden: 0,
       GardenTo:0,
       GardenFrom:0,
       MQFrom: 0,
@@ -913,7 +912,6 @@ export default defineComponent({
         GardenTo: toNumber(formData.value.GardenTo),
         MQFrom: toNumber(formData.value.MQFrom),
         MQTo: toNumber(formData.value.MQTo),
-        MQGarden: toNumber(formData.value.MQGarden),
         ParkingSpaces: toNumber(formData.value.ParkingSpaces),
       };
 
@@ -924,7 +922,6 @@ export default defineComponent({
       formData.value.GardenTo = payload.GardenTo;
       formData.value.MQFrom = payload.MQFrom;
       formData.value.MQTo = payload.MQTo;
-      formData.value.MQGarden = payload.MQGarden;
       formData.value.ParkingSpaces = payload.ParkingSpaces;
       formData.value.PropertyType = payload.PropertyType;
       formData.value.City = payload.City;

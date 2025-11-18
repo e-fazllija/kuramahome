@@ -564,8 +564,7 @@ export default defineComponent({
       formData.value = await getCustomer(id)
 
       formData.value.UserId = formData.value.UserId || store.user.Id;
-      formData.value.AdminId = formData.value.AdminId || formData.value.UserId;
-      
+
       // Carica i dati dal JSON se non sono già caricati
       await getProvinceCities();
       
@@ -685,7 +684,6 @@ export default defineComponent({
     const submit = async () => {
       loading.value = true;
       formData.value.UserId = formData.value.UserId || store.user.Id;
-      formData.value.AdminId = formData.value.AdminId || formData.value.UserId;
       await updateCustomer(formData.value)
         .then(() => {
           loading.value = false;
