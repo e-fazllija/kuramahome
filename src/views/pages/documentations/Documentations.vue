@@ -584,10 +584,11 @@ export default defineComponent({
         await getItems();
         selectedFile.value = null;
         isPrivateFile.value = false;
-      } catch (error) {
+      } catch (error: any) {
         loading.value = false;
+        const errorMessage = error?.message || "Errore durante l'upload del file";
         Swal.fire({
-          text: "Errore durante l'upload del file",
+          text: errorMessage,
           icon: "error",
           confirmButtonText: "Ok",
           buttonsStyling: false,
@@ -626,10 +627,11 @@ export default defineComponent({
 
         await getItems();
         newFolderName.value = "";
-      } catch (error) {
+      } catch (error: any) {
         loading.value = false;
+        const errorMessage = error?.message || "Errore durante la creazione della cartella";
         Swal.fire({
-          text: "Errore durante la creazione della cartella",
+          text: errorMessage,
           icon: "error",
           confirmButtonText: "Ok",
           buttonsStyling: false,

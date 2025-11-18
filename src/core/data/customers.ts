@@ -52,8 +52,9 @@ const getCustomers = (filterRequest: string) : Promise<Array<Customer>> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei clienti";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -65,8 +66,9 @@ const getCustomer = (id: number) : Promise<Customer> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento del cliente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -82,8 +84,9 @@ const createCustomer = async (formData:Customer) => {
         error.response = response;
         throw error;
       }
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione del cliente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -94,8 +97,9 @@ const updateCustomer = async (formData:Customer) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento del cliente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 

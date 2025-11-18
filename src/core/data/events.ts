@@ -154,8 +154,9 @@ const getEvents = (): Promise<Array<Event>> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento degli eventi";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -165,12 +166,13 @@ const getEvent = (id: number): Promise<Event> => {
     ""
   )
     .then(({ data }) => {
-      const result = data as Partial<Event>;
+      const result = data as Event;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dell'evento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -224,8 +226,9 @@ const getToInsert = (): Promise<InsertModel> => {
       });
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dati per l'inserimento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -244,8 +247,9 @@ const getSearchItems = (userId: string, agencyId?: string): Promise<SearchModel>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dati di ricerca";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -256,8 +260,9 @@ const createEvent = async (formData: Event) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione dell'evento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -268,8 +273,9 @@ const updateEvent = async (formData: Event) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento dell'evento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -279,8 +285,9 @@ const deleteEvent = async (id: number) => {
       return data;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'eliminazione dell'evento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 

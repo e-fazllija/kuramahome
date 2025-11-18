@@ -45,20 +45,22 @@ const getAgents = (agencyFilter: string, filterRequest: string) : Promise<Array<
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento degli agenti";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
-const getAgent = (id: String) : Promise<Agent> => {
+const getAgent = (id: String) : Promise<Partial<Agent>> => {
   return ApiService.get(`Agents/GetById?id=${id}`, "")
     .then(({ data }) => {
       const result = data as Partial<Agent>;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dell'agente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -75,8 +77,9 @@ const createAgent = async (formData: any) => {
         error.response = response;
         throw error;
       }
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione dell'agente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -88,8 +91,9 @@ const updateAgent = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento dell'agente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -101,8 +105,9 @@ const deleteAgent = async (id: String) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'eliminazione dell'agente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 

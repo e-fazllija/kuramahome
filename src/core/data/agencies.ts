@@ -41,20 +41,22 @@ const getAgencies = (filterRequest: string) : Promise<Array<Agency>> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento delle agenzie";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
-const getAgency = (id: String) : Promise<Agency> => {
+const getAgency = (id: String) : Promise<Partial<Agency>> => {
   return ApiService.get(`Agencies/GetById?id=${id}`, "")
     .then(({ data }) => {
       const result = data as Partial<Agency>;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dell'agenzia";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -71,8 +73,9 @@ const createAgency = async (formData: any) => {
         error.response = response;
         throw error;
       }
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione dell'agenzia";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -84,8 +87,9 @@ const updateAgency = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento dell'agenzia";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 

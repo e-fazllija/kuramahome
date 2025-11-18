@@ -116,8 +116,9 @@ const getRealEstateProperties = (agencyId: string, filterRequest: string, contra
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento degli immobili";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -146,8 +147,9 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
       } as RequestTabelData));
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento della lista immobili";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -165,8 +167,9 @@ const getRealEstateProperty = (id: number) => {
     })
     .catch(({ response }) => {
       console.log(response)
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dell'immobile";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -184,8 +187,9 @@ const getToInsert = () : Promise<InsertModel> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dati per l'inserimento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -198,8 +202,9 @@ const setRealEstatePropertyPhotoHighlighted = (id : number) => {
     return data;
   })
   .catch(({ response }) => {
-    store.setError(response?.data?.Message, response?.status);
-    return undefined;
+    const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento della foto in evidenza";
+    store.setError(errorMessage, response?.status);
+    throw new Error(errorMessage);
   });
 }
 
@@ -250,8 +255,9 @@ const uploadFiles = async (files: FileList, id: number) => {
   return await ApiService.post("RealEstateProperty/UploadFiles", formData)
     .then(({ data }) => data)
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei file";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -340,8 +346,9 @@ const createRealEstateProperty = async (form: any) => {
         error.response = response;
         throw error;
       }
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione dell'immobile";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -359,8 +366,9 @@ const updateRealEstateProperty = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento dell'immobile";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -372,8 +380,9 @@ const updatePhotosOrder = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento dell'ordine delle foto";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -396,8 +405,9 @@ const deletePhoto = async (id: number) => {
       return data;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'eliminazione della foto";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 }
 
@@ -416,8 +426,9 @@ const getSearchItems = (userId: string, agencyId?: string): Promise<SearchModel>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dati di ricerca";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 

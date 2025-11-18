@@ -34,8 +34,9 @@ const getDocumentations = (parentPath?: string): Promise<Array<Documentation>> =
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei documenti";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -46,8 +47,9 @@ const createFolder = async (folderRequest: CreateFolderRequest) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data?.Message || "Errore durante la creazione della cartella", response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione della cartella";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -65,8 +67,9 @@ const uploadFile = async (file: File, parentPath?: string, isPrivate: boolean = 
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data?.Message || "Errore durante l'upload del file", response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'upload del file";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -77,8 +80,9 @@ const deleteDocumentation = async (id: number) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data?.Message || "Errore durante l'eliminazione", response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'eliminazione";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
