@@ -1,10 +1,13 @@
 <template>
   <div class="landing-page">
     <!--begin::Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" :class="{ 'navbar-scrolled': isScrolled }">
       <div class="container">
         <router-link class="navbar-brand" to="/">
-          <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="KuramaHome" height="40" />
+          <div class="navbar-brand-wrapper">
+            <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="KuramaHome" class="navbar-logo" />
+            <span class="navbar-brand-text">KuramaHome</span>
+          </div>
         </router-link>
         
         <button
@@ -20,18 +23,46 @@
         </button>
         
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item">
-              <a class="nav-link" href="#features">Funzionalità</a>
+              <a class="nav-link" href="#features">
+                <span class="nav-link-text">Funzionalità</span>
+              </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#benefits">Vantaggi</a>
+              <a class="nav-link" href="#pricing">
+                <span class="nav-link-text">Piani</span>
+              </a>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/sign-in">Accedi</router-link>
+              <a class="nav-link" href="#how-it-works">
+                <span class="nav-link-text">Come Funziona</span>
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a class="nav-link" href="#testimonials">
+                <span class="nav-link-text">Recensioni</span>
+              </a>
+            </li> -->
+            <li class="nav-item">
+              <a class="nav-link" href="#faq">
+                <span class="nav-link-text">FAQ</span>
+              </a>
+            </li>
+            <li class="nav-item nav-divider"></li>
+            <li class="nav-item">
+              <router-link class="nav-link nav-link-login" to="/sign-in">
+                <span class="nav-link-text">Accedi</span>
+              </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="btn btn-primary ms-2" to="/sign-up">Inizia</router-link>
+              <router-link class="btn btn-primary btn-navbar-cta" to="/sign-up">
+                <i class="ki-duotone ki-rocket me-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                <span>Inizia Gratis</span>
+              </router-link>
             </li>
           </ul>
         </div>
@@ -296,6 +327,170 @@
     </section>
     <!--end::Benefits Section-->
 
+    <!--begin::Pricing Section-->
+    <section id="pricing" class="pricing-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center mb-8">
+            <h2 class="section-title">Scegli il piano perfetto per la tua agenzia</h2>
+            <p class="section-description">
+              Piani flessibili pensati per agenzie di ogni dimensione. Inizia con il piano Basic e scala quando cresci.
+            </p>
+          </div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+          <div class="col-lg-4 col-md-6" v-for="(plan, index) in pricingPlans" :key="plan.id">
+            <div class="pricing-card-landing" :class="{ 'pricing-card-featured-landing': index === 1 }">
+              <div v-if="index === 1" class="pricing-badge-landing">
+                <span class="badge badge-primary">Più Popolare</span>
+              </div>
+              <div class="pricing-card-header">
+                <div class="pricing-icon-wrapper-landing">
+                  <i :class="plan.icon" class="fs-2x text-primary"></i>
+                </div>
+                <h3 class="pricing-plan-name">{{ plan.name }}</h3>
+                <div class="pricing-price-landing">
+                  <span class="price-amount">€{{ plan.price }}</span>
+                  <span class="price-period">/{{ plan.period }}</span>
+                </div>
+                <p class="pricing-description">{{ plan.description }}</p>
+              </div>
+              <div class="pricing-card-body">
+                <ul class="pricing-features-list">
+                  <li v-for="feature in plan.features" :key="feature">
+                    <i class="ki-duotone ki-check-circle fs-5 text-success me-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    {{ feature }}
+                  </li>
+                </ul>
+              </div>
+              <div class="pricing-card-footer">
+                <router-link :to="'/sign-up'" class="btn btn-lg w-100" :class="index === 1 ? 'btn-primary' : 'btn-outline-primary'">
+                  Inizia Ora
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--end::Pricing Section-->
+
+    <!--begin::How It Works Section-->
+    <section id="how-it-works" class="how-it-works-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center mb-8">
+            <h2 class="section-title">Come Funziona</h2>
+            <p class="section-description">
+              Inizia a usare KuramaHome in pochi semplici passaggi
+            </p>
+          </div>
+        </div>
+        
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6" v-for="(step, index) in howItWorksSteps" :key="index">
+            <div class="step-card">
+              <div class="step-number">{{ index + 1 }}</div>
+              <div class="step-icon">
+                <i :class="step.icon" class="fs-1 text-primary"></i>
+              </div>
+              <h4 class="step-title">{{ step.title }}</h4>
+              <p class="step-description">{{ step.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--end::How It Works Section-->
+
+    <!--begin::Testimonials Section-->
+    <!-- <section id="testimonials" class="testimonials-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center mb-8">
+            <h2 class="section-title">Cosa dicono i nostri clienti</h2>
+            <p class="section-description">
+              Centinaia di agenzie immobiliari si fidano di KuramaHome per gestire il loro business
+            </p>
+          </div>
+        </div>
+        
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6" v-for="testimonial in testimonials" :key="testimonial.id">
+            <div class="testimonial-card">
+              <div class="testimonial-rating">
+                <i v-for="n in 5" :key="n" class="ki-duotone ki-star fs-5 text-warning">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <p class="testimonial-text">"{{ testimonial.text }}"</p>
+              <div class="testimonial-author">
+                <div class="author-avatar">
+                  <span>{{ testimonial.initials }}</span>
+                </div>
+                <div class="author-info">
+                  <div class="author-name">{{ testimonial.name }}</div>
+                  <div class="author-role">{{ testimonial.role }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section> -->
+    <!--end::Testimonials Section-->
+
+    <!--begin::FAQ Section-->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center mb-8">
+            <h2 class="section-title">Domande Frequenti</h2>
+            <p class="section-description">
+              Trova risposte alle domande più comuni su KuramaHome
+            </p>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <div class="accordion" id="faqAccordion">
+              <div class="accordion-item" v-for="(faq, index) in faqs" :key="index">
+                <h2 class="accordion-header">
+                  <button 
+                    class="accordion-button" 
+                    :class="{ 'collapsed': index !== 0 }"
+                    type="button" 
+                    :data-bs-toggle="'collapse'" 
+                    :data-bs-target="'#faq' + index"
+                    :aria-expanded="index === 0 ? 'true' : 'false'"
+                  >
+                    {{ faq.question }}
+                  </button>
+                </h2>
+                <div 
+                  :id="'faq' + index" 
+                  class="accordion-collapse collapse" 
+                  :class="{ 'show': index === 0 }"
+                  :data-bs-parent="'#faqAccordion'"
+                >
+                  <div class="accordion-body">
+                    {{ faq.answer }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--end::FAQ Section-->
+
     <!--begin::CTA Section-->
     <section class="cta-section">
       <div class="container">
@@ -348,13 +543,157 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { getAssetPath } from "@/core/helpers/assets";
+import { getActivePlans, type SubscriptionPlan } from "@/core/data/subscription-plans";
 
 export default defineComponent({
   name: "landing-page",
   setup() {
-    onMounted(() => {
+    const isScrolled = ref(false);
+    const pricingPlans = ref([
+      {
+        id: 1,
+        name: "Basic",
+        price: "12",
+        period: "mese",
+        description: "Perfetto per piccole agenzie e singoli agenti",
+        icon: "ki-duotone ki-rocket",
+        features: [
+          "Fino a 1 agenzia",
+          "Fino a 5 agenti",
+          "Fino a 20 immobili",
+          "Fino a 50 clienti",
+          "Fino a 100 richieste",
+          "Calendario appuntamenti",
+          "1 GB di storage",
+          "Supporto email"
+        ]
+      },
+      {
+        id: 2,
+        name: "Pro",
+        price: "39",
+        period: "mese",
+        description: "Ideale per agenzie medie in crescita",
+        icon: "ki-duotone ki-crown",
+        features: [
+          "Fino a 5 agenzie",
+          "Fino a 25 agenti",
+          "Fino a 100 immobili",
+          "Fino a 500 clienti",
+          "Fino a 1000 richieste",
+          "Export dati (10/mese)",
+          "10 GB di storage",
+          "Report avanzati",
+          "Supporto prioritario"
+        ]
+      },
+      {
+        id: 3,
+        name: "Premium",
+        price: "99",
+        period: "mese",
+        description: "Per grandi agenzie e gruppi immobiliari",
+        icon: "ki-duotone ki-shield-tick",
+        features: [
+          "Agenzie illimitate",
+          "Agenti illimitati",
+          "Immobili illimitati",
+          "Clienti illimitati",
+          "Richieste illimitate",
+          "Export dati illimitato",
+          "Storage illimitato",
+          "Report avanzati",
+          "API avanzate",
+          "Supporto prioritario 24/7"
+        ]
+      }
+    ]);
+
+    const howItWorksSteps = ref([
+      {
+        icon: "ki-duotone ki-user-square",
+        title: "Registrati",
+        description: "Crea il tuo account in meno di 2 minuti. Non serve carta di credito per iniziare."
+      },
+      {
+        icon: "ki-duotone ki-setting-2",
+        title: "Configura",
+        description: "Imposta la tua agenzia, aggiungi i tuoi agenti e personalizza le impostazioni."
+      },
+      {
+        icon: "ki-duotone ki-home",
+        title: "Aggiungi Immobili",
+        description: "Carica i tuoi immobili con foto, dettagli e tutte le informazioni necessarie."
+      },
+      {
+        icon: "ki-duotone ki-chart-simple",
+        title: "Gestisci e Cresci",
+        description: "Monitora le performance, gestisci clienti e appuntamenti, e scala il tuo business."
+      }
+    ]);
+
+    const testimonials = ref([
+      {
+        id: 1,
+        text: "KuramaHome ha rivoluzionato il modo in cui gestiamo la nostra agenzia. Tutto è più organizzato e efficiente.",
+        name: "Marco Rossi",
+        role: "Titolare, Immobiliare Rossi",
+        initials: "MR"
+      },
+      {
+        id: 2,
+        text: "La gestione dei clienti e degli appuntamenti è diventata molto più semplice. Consigliatissimo!",
+        name: "Laura Bianchi",
+        role: "Agente Immobiliare",
+        initials: "LB"
+      },
+      {
+        id: 3,
+        text: "Ottimo rapporto qualità-prezzo. Il piano Pro ha tutto quello che serve per la nostra agenzia media.",
+        name: "Giuseppe Verdi",
+        role: "Direttore, Casa & Affari",
+        initials: "GV"
+      }
+    ]);
+
+    const faqs = ref([
+      {
+        question: "Posso cambiare piano in qualsiasi momento?",
+        answer: "Sì, puoi aggiornare o modificare il tuo piano in qualsiasi momento dalla sezione Abbonamento. I cambi di piano vengono applicati immediatamente. Nota: per i downgrade potrebbe essere necessario ridurre alcune risorse se superano i limiti del nuovo piano."
+      },
+      {
+        question: "Cosa succede se supero i limiti del mio piano?",
+        answer: "Riceverai una notifica quando ti avvicini ai limiti del tuo piano. Potrai decidere di aggiornare al piano superiore o ridurre le risorse utilizzate per rimanere entro i limiti."
+      },
+      {
+        question: "I miei dati sono al sicuro?",
+        answer: "Assolutamente sì. Utilizziamo i migliori standard di sicurezza e crittografia per proteggere i tuoi dati. Eseguiamo backup automatici quotidiani e i tuoi dati sono protetti da accessi non autorizzati."
+      },
+      {
+        question: "Offrite supporto tecnico?",
+        answer: "Sì, offriamo supporto via email per tutti i piani. I piani Pro e Premium includono supporto prioritario con tempi di risposta più rapidi. Il piano Premium include anche supporto 24/7."
+      },
+      {
+        question: "Posso provare KuramaHome gratuitamente?",
+        answer: "Sì, puoi registrarti e iniziare a usare KuramaHome senza impegno. Non richiediamo carta di credito per la registrazione. Puoi esplorare tutte le funzionalità e decidere se passare a un piano a pagamento quando sei pronto."
+      },
+      {
+        question: "Come funziona l'export dei dati?",
+        answer: "I piani Pro e Premium includono la possibilità di esportare i dati in formato Excel o CSV. Il piano Pro include 10 export al mese, mentre il piano Premium include export illimitati. L'export è disponibile per immobili, clienti, agenti e altre entità."
+      }
+    ]);
+
+    const handleScroll = () => {
+      isScrolled.value = window.scrollY > 50;
+    };
+
+    onMounted(async () => {
+      // Scroll effect for navbar
+      window.addEventListener('scroll', handleScroll);
+      handleScroll(); // Check initial state
+
       // Smooth scrolling for anchor links
       const anchorLinks = document.querySelectorAll('a[href^="#"]');
       anchorLinks.forEach(link => {
@@ -372,10 +711,41 @@ export default defineComponent({
           }
         });
       });
+
+      // Try to load real plans from API, fallback to static data
+      try {
+        const activePlans = await getActivePlans();
+        if (activePlans && activePlans.length > 0) {
+          // Map API plans to our format
+          pricingPlans.value = activePlans.slice(0, 3).map((plan, index) => {
+            const features = plan.Features?.slice(0, 8).map(f => f.Description || f.FeatureName) || [];
+            return {
+              id: plan.Id,
+              name: plan.Name,
+              price: plan.Price.toString(),
+              period: plan.BillingPeriod === 'monthly' ? 'mese' : 'anno',
+              description: plan.Description || pricingPlans.value[index]?.description || '',
+              icon: index === 0 ? "ki-duotone ki-rocket" : index === 1 ? "ki-duotone ki-crown" : "ki-duotone ki-shield-tick",
+              features: features.length > 0 ? features : pricingPlans.value[index]?.features || []
+            };
+          });
+        }
+      } catch (error) {
+        console.log('Using static pricing plans data');
+      }
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll);
     });
 
     return {
       getAssetPath,
+      pricingPlans,
+      howItWorksSteps,
+      testimonials,
+      faqs,
+      isScrolled,
     };
   },
 });
