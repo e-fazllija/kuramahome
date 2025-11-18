@@ -1,0 +1,667 @@
+/* ========================================
+   MODAL FORMS DARK MODE STYLES
+   Stili completi per modali in modalità dark
+   Risolve problemi di visualizzazione in dark mode
+   ======================================== */
+
+/* ========================================
+   MODAL BASE STYLES
+   ======================================== */
+
+/* Modal Content */
+[data-bs-theme="dark"] .modal-content {
+  background-color: var(--bs-bg-primary, #1A1A1A) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+/* Modal Header */
+[data-bs-theme="dark"] .modal-header {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-bottom-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+/* Modal Body */
+[data-bs-theme="dark"] .modal-body {
+  background-color: var(--bs-bg-primary, #1A1A1A) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+/* Modal Footer */
+[data-bs-theme="dark"] .modal-footer {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-top-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+/* ========================================
+   TEXT COLORS
+   ======================================== */
+
+/* Text Gray Variants */
+[data-bs-theme="dark"] .text-gray-800,
+[data-bs-theme="dark"] .text-gray-900 {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .text-gray-700 {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .text-gray-600 {
+  color: var(--bs-text-secondary, #AAAAAA) !important;
+}
+
+[data-bs-theme="dark"] .text-muted {
+  color: var(--bs-text-secondary, #AAAAAA) !important;
+}
+
+[data-bs-theme="dark"] .text-dark {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+/* ========================================
+   FORM CONTROLS - NATIVE HTML
+   ======================================== */
+
+/* Standard Form Control */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-control-solid {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-control-solid:focus {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .form-control::placeholder,
+[data-bs-theme="dark"] .form-control-solid::placeholder {
+  color: var(--bs-text-secondary, #AAAAAA) !important;
+  opacity: 0.6;
+}
+
+[data-bs-theme="dark"] .form-control:disabled,
+[data-bs-theme="dark"] .form-control-solid:disabled {
+  background-color: #1A1A1A !important;
+  opacity: 0.6;
+}
+
+/* ========================================
+   SELECT ELEMENTS
+   ======================================== */
+
+/* Standard Select */
+[data-bs-theme="dark"] select.form-select,
+[data-bs-theme="dark"] select.form-control,
+[data-bs-theme="dark"] select.modern-select {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+  /* Rimuove completamente le frecce */
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 1rem !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+[data-bs-theme="dark"] select.form-select:hover,
+[data-bs-theme="dark"] select.form-control:hover,
+[data-bs-theme="dark"] select.modern-select:hover {
+  background-color: #3A3A3A !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  /* Nessuna freccia al hover */
+  background-image: none !important;
+}
+
+[data-bs-theme="dark"] select.form-select:focus,
+[data-bs-theme="dark"] select.form-control:focus,
+[data-bs-theme="dark"] select.modern-select:focus {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+  outline: none !important;
+  /* Nessuna freccia al focus */
+  background-image: none !important;
+}
+
+[data-bs-theme="dark"] select.form-select:disabled,
+[data-bs-theme="dark"] select.form-control:disabled,
+[data-bs-theme="dark"] select.modern-select:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  background-color: #1A1A1A !important;
+}
+
+/* Select Options - Massima visibilità */
+[data-bs-theme="dark"] select option {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+  padding: 8px 12px !important;
+  font-weight: 500 !important;
+}
+
+[data-bs-theme="dark"] select option:hover {
+  background-color: rgba(0, 119, 204, 0.3) !important;
+  color: #FFFFFF !important;
+}
+
+[data-bs-theme="dark"] select option:checked,
+[data-bs-theme="dark"] select option:focus {
+  background-color: var(--bs-accent-primary, #0077CC) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+
+/* Opzioni placeholder */
+[data-bs-theme="dark"] select option[value=""],
+[data-bs-theme="dark"] select option[value="0"],
+[data-bs-theme="dark"] select option:disabled {
+  color: #6C757D !important;
+  font-style: italic !important;
+}
+
+/* ========================================
+   ELEMENT PLUS COMPONENTS
+   ======================================== */
+
+/* Element Plus Input */
+[data-bs-theme="dark"] .el-input__wrapper {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  box-shadow: none !important;
+}
+
+[data-bs-theme="dark"] .el-input__wrapper:hover {
+  background-color: #3A3A3A !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .el-input__wrapper.is-focus {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .el-input__inner {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .el-input__inner::placeholder {
+  color: var(--bs-text-secondary, #AAAAAA) !important;
+  opacity: 0.6;
+}
+
+/* Element Plus Select */
+[data-bs-theme="dark"] .el-select__wrapper {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  box-shadow: none !important;
+}
+
+[data-bs-theme="dark"] .el-select__wrapper:hover {
+  background-color: #3A3A3A !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .el-select__wrapper.is-focus,
+[data-bs-theme="dark"] .el-select__wrapper.is-focused {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .el-select__placeholder {
+  color: var(--bs-text-secondary, #AAAAAA) !important;
+}
+
+[data-bs-theme="dark"] .el-select__selected-item {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+/* Element Plus Select Dropdown */
+[data-bs-theme="dark"] .el-select-dropdown {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+[data-bs-theme="dark"] .el-select-dropdown__item {
+  background-color: transparent !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .el-select-dropdown__item:hover,
+[data-bs-theme="dark"] .el-select-dropdown__item.is-hovering {
+  background-color: rgba(0, 119, 204, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .el-select-dropdown__item.is-selected {
+  background-color: var(--bs-accent-primary, #0077CC) !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+}
+
+/* Element Plus Popper */
+[data-bs-theme="dark"] .el-popper {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+[data-bs-theme="dark"] .el-popper.is-light {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+/* Element Plus Date Picker */
+[data-bs-theme="dark"] .el-date-editor {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+}
+
+[data-bs-theme="dark"] .el-date-editor .el-input__wrapper {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+[data-bs-theme="dark"] .el-picker-panel {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .el-date-table td.available:hover {
+  background-color: rgba(0, 119, 204, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .el-date-table td.today span {
+  color: var(--bs-accent-primary, #0077CC) !important;
+  font-weight: 700;
+}
+
+[data-bs-theme="dark"] .el-date-table td.current:not(.disabled) span {
+  background-color: var(--bs-accent-primary, #0077CC) !important;
+  color: #FFFFFF !important;
+}
+
+/* Element Plus Radio */
+[data-bs-theme="dark"] .el-radio {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .el-radio__input.is-checked .el-radio__inner {
+  background-color: var(--bs-accent-primary, #0077CC) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .el-radio__label {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+/* ========================================
+   RADIO & CHECKBOX CUSTOM STYLES
+   ======================================== */
+
+/* Custom Radio Buttons */
+[data-bs-theme="dark"] .form-check-input[type="radio"] {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+[data-bs-theme="dark"] .form-check-input[type="radio"]:checked {
+  background-color: var(--bs-accent-primary, #0077CC) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .form-check-input[type="radio"]:focus {
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+/* Custom Checkbox */
+[data-bs-theme="dark"] .form-check-input[type="checkbox"] {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+[data-bs-theme="dark"] .form-check-input[type="checkbox"]:checked {
+  background-color: var(--bs-accent-primary, #0077CC) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .form-check-input[type="checkbox"]:focus {
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+/* Form Check Label */
+[data-bs-theme="dark"] .form-check-label {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+/* ========================================
+   BUTTONS IN MODALS
+   ======================================== */
+
+/* Button Outline Variants */
+[data-bs-theme="dark"] .btn-outline {
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .btn-outline:hover {
+  background-color: rgba(0, 119, 204, 0.1) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .btn-outline.active {
+  background-color: rgba(0, 119, 204, 0.2) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+/* Button Light */
+[data-bs-theme="dark"] .btn-light {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .btn-light:hover {
+  background-color: #3A3A3A !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+/* Close Button */
+[data-bs-theme="dark"] .btn-icon.btn-sm {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .btn-active-icon-primary:hover {
+  background-color: rgba(0, 119, 204, 0.2) !important;
+}
+
+/* ========================================
+   LABELS & TYPOGRAPHY
+   ======================================== */
+
+/* Form Labels */
+[data-bs-theme="dark"] .form-label,
+[data-bs-theme="dark"] label {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .fw-bold {
+  color: var(--bs-text-primary, #E0E0E0);
+}
+
+[data-bs-theme="dark"] .fs-6,
+[data-bs-theme="dark"] .fs-5 {
+  color: inherit;
+}
+
+/* Required Indicator */
+[data-bs-theme="dark"] .required::after,
+[data-bs-theme="dark"] .required-label::after {
+  color: #ff6b6b !important;
+}
+
+/* ========================================
+   SYMBOLS & ICONS
+   ======================================== */
+
+/* Symbol Labels */
+[data-bs-theme="dark"] .symbol-label {
+  background: var(--bs-accent-primary, #0077CC) !important;
+}
+
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+
+/* Scrollbar for Modal Body */
+[data-bs-theme="dark"] .scroll-y::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-bs-theme="dark"] .scroll-y::-webkit-scrollbar-track {
+  background: var(--bs-bg-secondary, #2C2C2C);
+}
+
+[data-bs-theme="dark"] .scroll-y::-webkit-scrollbar-thumb {
+  background: rgba(0, 119, 204, 0.5);
+  border-radius: 4px;
+}
+
+[data-bs-theme="dark"] .scroll-y::-webkit-scrollbar-thumb:hover {
+  background: var(--bs-accent-primary, #0077CC);
+}
+
+/* ========================================
+   TEXTAREA
+   ======================================== */
+
+[data-bs-theme="dark"] textarea.form-control,
+[data-bs-theme="dark"] textarea.modern-textarea {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] textarea.form-control:focus,
+[data-bs-theme="dark"] textarea.modern-textarea:focus {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+[data-bs-theme="dark"] textarea.form-control::placeholder,
+[data-bs-theme="dark"] textarea.modern-textarea::placeholder {
+  color: var(--bs-text-secondary, #AAAAAA) !important;
+  opacity: 0.6;
+}
+
+/* ========================================
+   NOTICE & ALERTS IN MODALS
+   ======================================== */
+
+[data-bs-theme="dark"] .notice {
+  background-color: rgba(0, 119, 204, 0.15) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .notice .text-gray-600,
+[data-bs-theme="dark"] .notice .text-gray-800 {
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .bg-light-warning {
+  background-color: rgba(255, 168, 0, 0.15) !important;
+}
+
+/* ========================================
+   COLLAPSIBLE SECTIONS
+   ======================================== */
+
+[data-bs-theme="dark"] .collapsible {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .collapsible:hover {
+  background-color: rgba(0, 119, 204, 0.1) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+/* ========================================
+   SEPARATOR
+   ======================================== */
+
+[data-bs-theme="dark"] .separator {
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+/* ========================================
+   OVERRIDES FOR INLINE STYLES
+   ======================================== */
+
+/* Override inline background gradients in headers */
+[data-bs-theme="dark"] .modal-header[style*="background"] {
+  background: var(--bs-bg-secondary, #2C2C2C) !important;
+}
+
+/* Override inline borders */
+[data-bs-theme="dark"] .modal-content[style*="border"],
+[data-bs-theme="dark"] .modal-header[style*="border"] {
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+}
+
+/* ========================================
+   FIX FOR MODERN INPUT/SELECT GRADIENTS
+   ======================================== */
+
+/* Modern Input Dark Override */
+[data-bs-theme="dark"] .modern-input {
+  background: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .modern-input:hover {
+  background: #3A3A3A !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .modern-input:focus {
+  background: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+/* Modern Select Dark Override */
+[data-bs-theme="dark"] .modern-select {
+  background: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+  /* Nessuna freccia */
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 1rem !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+[data-bs-theme="dark"] .modern-select:hover {
+  background: #3A3A3A !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  /* Nessuna freccia al hover */
+  background-image: none !important;
+}
+
+[data-bs-theme="dark"] .modern-select:focus {
+  background: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+  outline: none !important;
+  /* Nessuna freccia al focus */
+  background-image: none !important;
+}
+
+[data-bs-theme="dark"] .modern-select option {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+  padding: 8px 12px !important;
+}
+
+[data-bs-theme="dark"] .modern-select option:hover {
+  background-color: rgba(0, 119, 204, 0.3) !important;
+  color: #FFFFFF !important;
+}
+
+[data-bs-theme="dark"] .modern-select option:checked {
+  background-color: var(--bs-accent-primary, #0077CC) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+
+/* Modern Textarea Dark Override */
+[data-bs-theme="dark"] .modern-textarea {
+  background: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .modern-textarea:hover {
+  background: #3A3A3A !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+[data-bs-theme="dark"] .modern-textarea:focus {
+  background: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.25) !important;
+}
+
+/* ========================================
+   PDF BUTTONS & ACTIONS
+   ======================================== */
+
+[data-bs-theme="dark"] .pdf-view-btn,
+[data-bs-theme="dark"] .pdf-upload-btn {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  border-color: var(--bs-border-color, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .pdf-view-btn:hover,
+[data-bs-theme="dark"] .pdf-upload-btn:hover {
+  background-color: rgba(0, 119, 204, 0.2) !important;
+  border-color: var(--bs-accent-primary, #0077CC) !important;
+}
+
+/* ========================================
+   VALIDATION FEEDBACK
+   ======================================== */
+
+[data-bs-theme="dark"] .fv-plugins-message-container {
+  color: #ff6b6b !important;
+}
+
+[data-bs-theme="dark"] .fv-help-block {
+  color: #ff6b6b !important;
+}
+
+[data-bs-theme="dark"] .invalid-feedback {
+  color: #ff6b6b !important;
+}
+
+[data-bs-theme="dark"] .valid-feedback {
+  color: #51cf66 !important;
+}
+
+/* ========================================
+   BADGE & TAG ELEMENTS
+   ======================================== */
+
+[data-bs-theme="dark"] .badge {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+
+[data-bs-theme="dark"] .badge-light {
+  background-color: var(--bs-bg-secondary, #2C2C2C) !important;
+  color: var(--bs-text-primary, #E0E0E0) !important;
+}
+

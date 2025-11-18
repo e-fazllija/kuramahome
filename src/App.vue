@@ -83,6 +83,7 @@ export default defineComponent({
 @import "assets/css/auth-layout.css";
 @import "assets/css/wizard.css";
 @import "assets/css/modal-forms.css";
+@import "assets/css/modal-forms-dark.css";
 @import "assets/css/modal-buttons.css";
 @import "assets/css/select-styles.css";
 @import "assets/css/form-inputs.css";

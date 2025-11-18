@@ -1,37 +1,40 @@
 <template>
   <Loading v-if="loading" />
   <!--begin::Calendar wrapper-->
-  <div v-else class="calendar-page-wrapper">
+  <div v-else class="list-page-wrapper">
     <!--begin::Card-->
-    <div class="card shadow-sm" style="border-radius: 0.95rem; border: 1px solid #e9ecef;">
+    <div class="card shadow-sm">
       <!--begin::Card header-->
-      <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0;">
+      <div class="card-header border-0 pt-6 pb-4">
         <!-- Title Section -->
         <div class="card-title">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-45px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
-                <i class="ki-duotone ki-calendar fs-2 text-white">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </span>
-            </div>
-            <div>
-              <h3 class="fw-bold m-0 text-gray-900 fs-3">📅 Calendario Eventi</h3>
-              <span class="text-muted fs-7 fw-semibold">Gestione appuntamenti e eventi</span>
-            </div>
+        <div class="d-flex align-items-center">
+          <div class="symbol symbol-45px me-3">
+            <span class="symbol-label">
+              <i class="ki-duotone ki-shop fs-2 text-white">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </span>
+          </div>
+          <div>
+            <h3 class="fw-bold m-0 text-gray-900 fs-3">📅 Calendario Eventi</h3>
+            <span class="text-muted fs-7 fw-semibold">Gestione appuntamenti e eventi</span>
           </div>
         </div>
+      </div>
         
         <!-- Add Event Button -->
+
         <div class="card-toolbar">
           <button
             type="button"
             class="btn btn-sm btn-primary"
             @click="newEvent(null, null)"
-            style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);"
-          >
+            >
             <i class="ki-duotone ki-plus fs-3 me-2">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -43,12 +46,28 @@
       <!--end::Card header-->
 
       <!--begin::Filters Section-->
-      <div class="card-body pt-0 pb-4">
-        <div class="filter-section" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
-          <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="card-body pt-5 pb-4">
+        <div class="container-fluid px-0 filter-container">
+          <div class="row g-3 align-items-center">
+            <!-- Bottone Cerca con loading -->
+            <div class="col-12 col-md-auto">
+              <button 
+                @click="searchItemsFunc()" 
+                class="btn btn-filter-search w-100 w-md-auto"
+                :disabled="isSearching"
+              >
+                <i class="ki-duotone ki-magnifier fs-4 me-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                <span v-if="!isSearching">Cerca</span>
+                <span v-else>Ricerca...</span>
+              </button>
+            </div>
+            
             <!-- Agency Filter (Admin only) -->
-            <div v-if="user.Role == 'Admin'" class="flex-shrink-0">
-              <select class="form-select form-select-modern" v-model="agencyId" style="min-width: 160px;">
+            <div v-if="user.Role == 'Admin'" class="col-12 col-sm-6 col-lg-auto">
+              <select class="form-select form-select-modern" v-model="agencyId">
                 <option value="">🏢 Tutte le agenzie</option>
                 <option v-for="(item, index) in searchItems.Agencies" :key="index" :value="item.Id">
                   🏢 {{ item.FirstName }} {{ item.LastName }}
@@ -57,8 +76,8 @@
             </div>
 
             <!-- Agent Filter -->
-            <div v-if="user.Role == 'Admin' || user.Role == 'Agency'" class="flex-shrink-0">
-              <select class="form-select form-select-modern" v-model="agentId" style="min-width: 150px;">
+            <div v-if="user.Role == 'Admin' || user.Role == 'Agency'" class="col-12 col-sm-6 col-lg-auto">
+              <select class="form-select form-select-modern" v-model="agentId">
                 <option value="">👥 Tutti gli agenti</option>
                 <option v-for="(item, index) in searchItems.Agents" :key="index" :value="item.Id">
                   👤 {{ item.FirstName }} {{ item.LastName }}
@@ -67,8 +86,8 @@
             </div>
 
             <!-- Status Filter -->
-            <div class="flex-shrink-0">
-              <select class="form-select form-select-modern" v-model="statusFilter" style="min-width: 140px;">
+            <div class="col-12 col-sm-6 col-lg-auto">
+              <select class="form-select form-select-modern" v-model="statusFilter">
                 <option value="">📊 Tutti stati</option>
                 <option value="confirmed">✓ Confermati</option>
                 <option value="cancelled">✗ Disdetti</option>
@@ -77,24 +96,27 @@
               </select>
             </div>
 
-            <!-- Search -->
-            <div class="flex-grow-1" style="min-width: 250px; max-width: 400px;">
-              <div class="search-wrapper">
-                <i class="ki-duotone ki-magnifier fs-3 search-icon">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
+            <!-- Search Input con icona interna -->
+            <div class="col-12 col-md">
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0">
+                  <i class="ki-duotone ki-magnifier fs-4">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </span>
                 <input 
                   type="text" 
                   v-model="search" 
-                  @input="searchItemsFunc()"
-                  class="form-control search-input" 
-                  placeholder="Cerca evento, descrizione..." 
+                  @keyup.enter="searchItemsFunc()"
+                  class="form-control filter-input border-start-0 ps-0" 
+                  :placeholder="currentPlaceholder" 
                 />
                 <button 
                   v-if="search"
-                  @click="search = ''" 
-                  class="btn btn-sm btn-clear"
+                  @click="clearAllFilters()" 
+                  class="btn btn-sm btn-outline-danger rounded-end"
+                  type="button"
                   title="Cancella ricerca"
                 >
                   <i class="ki-duotone ki-cross fs-5">
@@ -104,11 +126,22 @@
                 </button>
               </div>
             </div>
+            
+            <!-- Badge Risultati -->
+            <div class="col-12 col-md-auto">
+              <span class="badge badge-filter-results">
+                <i class="ki-duotone ki-calendar fs-4 me-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                {{ tableData.length }} eventi
+              </span>
+            </div>
           </div>
-        </div>
         
-        <!-- Separatore -->
-        <div class="separator separator-dashed my-4"></div>
+          <!-- Separatore morbido -->
+          <hr class="my-4 filter-separator" />
+        </div>
       </div>
       <!--end::Filters Section-->
 
@@ -149,6 +182,9 @@ import Loading from "@/components/kt-datatable/table-partials/Loading.vue";
 import itLocale from '@fullcalendar/core/locales/it';
 import Multiselect from '@vueform/multiselect';
 import { MenuComponent } from "@/assets/ts/components";
+import '@/assets/css/filters.css';
+import '@/assets/css/table-actions.css';
+import '@/assets/css/lists-common.css';
 
 
 export default defineComponent({
@@ -322,6 +358,9 @@ export default defineComponent({
         }
       }
       
+      // Avvia animazione placeholder
+      initPlaceholderAnimation();
+      
       loading.value = false;
     });
 
@@ -342,18 +381,26 @@ export default defineComponent({
 
 
     const search = ref<string>("");
+    const isSearching = ref(false);
+    
     const searchItemsFunc = () => {
-      tableData.value.splice(0, tableData.value.length, ...initItems.value);
-      if (search.value !== "") {
-        let results: Array<EventInput> = [];
-        for (let j = 0; j < tableData.value.length; j++) {
-          if (searchingFunc(tableData.value[j], search.value)) {
-            results.push(tableData.value[j]);
+      isSearching.value = true;
+      
+      // Breve delay per mostrare l'animazione di loading
+      setTimeout(() => {
+        tableData.value.splice(0, tableData.value.length, ...initItems.value);
+        if (search.value !== "") {
+          let results: Array<EventInput> = [];
+          for (let j = 0; j < tableData.value.length; j++) {
+            if (searchingFunc(tableData.value[j], search.value)) {
+              results.push(tableData.value[j]);
+            }
           }
+          tableData.value.splice(0, tableData.value.length, ...results);
         }
-        tableData.value.splice(0, tableData.value.length, ...results);
-      }
-      MenuComponent.reinitialization();
+        MenuComponent.reinitialization();
+        isSearching.value = false;
+      }, 300);
     };
 
     const searchingFunc = (obj: any, value: string): boolean => {
@@ -384,6 +431,29 @@ export default defineComponent({
         default:
           return true;
       }
+    };
+
+    const clearAllFilters = () => {
+      search.value = "";
+      searchItemsFunc();
+    };
+
+    // Placeholder dinamico
+    const placeholders = [
+      "Cerca per nome evento...",
+      "Cerca per descrizione...",
+      "Cerca evento, cliente...",
+      "Cerca per data o orario..."
+    ];
+    const currentPlaceholder = ref(placeholders[0]);
+    let placeholderIndex = 0;
+    
+    // Inizializza placeholder animato
+    const initPlaceholderAnimation = () => {
+      setInterval(() => {
+        placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+        currentPlaceholder.value = placeholders[placeholderIndex];
+      }, 3000);
     };
 
     const calendarOptions = {
@@ -458,173 +528,13 @@ export default defineComponent({
       userId,
       color,
       search,
-      searchItemsFunc
+      searchItemsFunc,
+      isSearching,
+      clearAllFilters,
+      currentPlaceholder,
+      tableData
     };
   },
 });
 </script>
 
-<style lang="scss">
-.fc .fc-button {
-  padding: 0.75rem 1.25rem;
-  box-shadow: none !important;
-  border: 0 !important;
-  border-radius: 0.475rem;
-  vertical-align: middle;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-</style>
-
-<style scoped>
-/* Sfondo univoco della pagina calendario */
-.calendar-page-wrapper {
-  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
-  min-height: 100vh;
-  padding: 2rem 0;
-  position: relative;
-}
-
-.calendar-page-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(54, 153, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(11, 183, 175, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, rgba(54, 153, 255, 0.02) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.calendar-page-wrapper > .card {
-  position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-}
-
-/* Search Bar Moderna con icona interna */
-.search-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.search-icon {
-  position: absolute;
-  left: 1.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #a1a5b7;
-  pointer-events: none;
-  z-index: 1;
-  transition: color 0.3s ease;
-}
-
-.search-input {
-  background-color: #f1f3ff !important;
-  border: 1px solid #e8f4ff !important;
-  border-radius: 0.75rem !important;
-  padding: 0.75rem 3.5rem 0.75rem 3.5rem !important;
-  font-weight: 500;
-  color: #3f4254;
-  transition: all 0.3s ease;
-}
-
-.search-input:focus {
-  background-color: #ffffff !important;
-  border-color: #3699ff !important;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15);
-}
-
-.search-input::placeholder {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-.btn-clear {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #f64e60;
-  border: none;
-  border-radius: 0.5rem;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.btn-clear:hover {
-  background-color: #d63447;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 4px 8px rgba(246, 78, 96, 0.3);
-}
-
-.btn-clear i {
-  color: white;
-}
-
-/* Stili per i select moderni */
-.form-select-modern {
-  background-color: #f8f9fa !important;
-  border: 1px solid #e9ecef !important;
-  border-radius: 0.75rem !important;
-  padding: 0.75rem 1rem !important;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%) !important;
-  border: 1px solid #e8f4ff !important;
-  font-weight: 500;
-  color: #3f4254;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-}
-
-.form-select-modern:focus {
-  border-color: #3699ff !important;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15) !important;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-  transform: translateY(-1px);
-}
-
-.form-select-modern:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%) !important;
-  border-color: #3699ff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-/* Bottone Nuovo Evento */
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(54, 153, 255, 0.35) !important;
-}
-
-/* Effetto hover su icona ricerca */
-.search-input:focus ~ .search-icon,
-.search-input:hover ~ .search-icon {
-  color: #3699ff;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .d-flex.align-items-center.gap-2 {
-    gap: 1rem !important;
-  }
-  
-  .search-wrapper {
-    max-width: 100% !important;
-  }
-  
-  .flex-shrink-0 {
-    flex-shrink: 1 !important;
-  }
-}
-</style>
