@@ -42,13 +42,23 @@ export class Notes {
   Text: string;
 }
 
+export interface CustomerExportPayload {
+  format?: "csv" | "excel";
+  fromDate?: string | null;
+  toDate?: string | null;
+  type?: string;
+  ownerId?: string;
+  goldCustomer?: boolean | null;
+  filter?: string;
+}
+
 const getCustomers = (filterRequest: string) : Promise<Array<Customer>> => {
    return ApiService.get(
     `Customers/Get?filterRequest=${filterRequest}`,
     ""
   )
     .then(({ data }) => {
-      const result = data.Data as Partial<Array<Customer>>
+      const result = data.Data as Array<Customer>
       return result;
     })
     .catch(({ response }) => {
@@ -61,7 +71,7 @@ const getCustomers = (filterRequest: string) : Promise<Array<Customer>> => {
 const getCustomer = (id: number) : Promise<Customer> => {
   return ApiService.get(`Customers/GetById?id=${id}`, "")
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       result.CustomerNotes = data.CustomerNotes;
       return result;
     })
@@ -75,7 +85,7 @@ const getCustomer = (id: number) : Promise<Customer> => {
 const createCustomer = async (formData:Customer) => {
   return ApiService.post("Customers/Create", formData)
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       return result;
     })
     .catch(({ response }) => {
@@ -93,7 +103,7 @@ const createCustomer = async (formData:Customer) => {
 const updateCustomer = async (formData:Customer) => {
   return ApiService.post("Customers/Update", formData)
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       return result;
     })
     .catch(({ response }) => {
@@ -106,7 +116,7 @@ const updateCustomer = async (formData:Customer) => {
 const deleteCustomer = async (id: number) => {
   return await ApiService.delete(`Customers/Delete?id=${id}`)
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       return result;
     })
     .catch(({ response }) => {
@@ -116,4 +126,8 @@ const deleteCustomer = async (id: number) => {
     });
 };
 
-export { getCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer }
+const exportCustomers = (payload: CustomerExportPayload) => {
+  return ApiService.postBlob("Customers/Export", payload);
+};
+
+export { getCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer, exportCustomers }

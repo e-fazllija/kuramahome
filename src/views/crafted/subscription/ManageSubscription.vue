@@ -246,7 +246,7 @@
                         </div>
                         <button 
                           @click="contactSupport"
-                          class="btn btn-sm btn-light-primary flex-shrink-0"
+                          class="btn btn-sm btn-light flex-shrink-0"
                         >
                           <i class="ki-duotone ki-sms fs-5 me-1">
                             <span class="path1"></span>

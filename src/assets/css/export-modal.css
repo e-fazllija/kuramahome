@@ -1,0 +1,92 @@
+/* ==================================
+   Export Modal Styling
+   Supports light/dark palette
+   ================================== */
+
+:root {
+  --export-modal-bg: #ffffff;
+  --export-modal-text: #333333;
+  --export-modal-muted: #666666;
+  --export-modal-accent: #0077cc;
+  --export-modal-border: #f0f0f0;
+}
+
+[data-bs-theme="dark"] {
+  --export-modal-bg: #1a1a1a;
+  --export-modal-text: #e0e0e0;
+  --export-modal-muted: #aaaaaa;
+  --export-modal-accent: #0077cc;
+  --export-modal-border: #2c2c2c;
+}
+
+.export-modal {
+  background: var(--export-modal-bg);
+  color: var(--export-modal-text);
+  border: 1px solid var(--export-modal-border);
+  border-radius: 1rem;
+  box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.08);
+}
+
+.export-modal .modal-header {
+  border-bottom: 1px solid var(--export-modal-border);
+}
+
+.export-modal .modal-title {
+  font-weight: 700;
+}
+
+.export-modal .modal-body {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.export-modal .form-label {
+  font-weight: 600;
+  color: var(--export-modal-text);
+}
+
+.export-modal .form-control,
+.export-modal .form-select {
+  border-radius: 0.65rem;
+  border-color: var(--export-modal-border);
+  color: var(--export-modal-text);
+  background: var(--export-modal-bg);
+}
+
+.export-modal .form-control:focus,
+.export-modal .form-select:focus {
+  border-color: var(--export-modal-accent);
+  box-shadow: 0 0 0 0.25rem rgba(0, 119, 204, 0.15);
+}
+
+.export-modal .modal-footer {
+  border-top: 1px solid var(--export-modal-border);
+}
+
+.export-modal .btn-primary {
+  background: var(--export-modal-accent);
+  border-color: var(--export-modal-accent);
+}
+
+.export-modal .btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.export-modal .form-check-input:checked {
+  background-color: var(--export-modal-accent);
+  border-color: var(--export-modal-accent);
+}
+
+.export-modal .multiselect {
+  --ms-border-color: var(--export-modal-border);
+  --ms-bg: var(--export-modal-bg);
+  --ms-border-radius: 0.65rem;
+  --ms-color: var(--export-modal-text);
+}
+
+@media (max-width: 767.98px) {
+  .export-modal .modal-dialog {
+    margin: 0.5rem;
+  }
+}
+

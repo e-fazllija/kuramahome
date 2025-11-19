@@ -144,13 +144,23 @@ export class SearchModel {
   Agents: User[];
 }
 
+export interface CalendarExportPayload {
+  format?: "csv" | "excel";
+  fromDate?: string | null;
+  toDate?: string | null;
+  status?: string;
+  agencyId?: string;
+  agentId?: string;
+  filter?: string;
+}
+
 const getEvents = (): Promise<Array<Event>> => {
   return ApiService.get(
     `Calendar/Get`,
     ""
   )
     .then(({ data }) => {
-      const result = data.Data as Partial<Array<Event>>
+      const result = data.Data as Array<Event>
       return result;
     })
     .catch(({ response }) => {
@@ -256,7 +266,7 @@ const getSearchItems = (userId: string, agencyId?: string): Promise<SearchModel>
 const createEvent = async (formData: Event) => {
   return ApiService.post("Calendar/Create", formData)
     .then(({ data }) => {
-      const result = data as Partial<Event>;
+      const result = data as Event;
       return result;
     })
     .catch(({ response }) => {
@@ -269,7 +279,7 @@ const createEvent = async (formData: Event) => {
 const updateEvent = async (formData: Event) => {
   return ApiService.post("Calendar/Update", formData)
     .then(({ data }) => {
-      const result = data as Partial<Event>;
+      const result = data as Event;
       return result;
     })
     .catch(({ response }) => {
@@ -291,6 +301,24 @@ const deleteEvent = async (id: number) => {
     });
 };
 
+const exportCalendarEvents = (payload: CalendarExportPayload) => {
+  return ApiService.postBlob("Calendar/Export", payload);
+};
+
 export default events;
 
-export { todayDate, YM, YESTERDAY, TODAY, TOMORROW, getEvents, getEvent, getToInsert, createEvent, updateEvent, getSearchItems, deleteEvent };
+export {
+  todayDate,
+  YM,
+  YESTERDAY,
+  TODAY,
+  TOMORROW,
+  getEvents,
+  getEvent,
+  getToInsert,
+  createEvent,
+  updateEvent,
+  getSearchItems,
+  deleteEvent,
+  exportCalendarEvents
+};

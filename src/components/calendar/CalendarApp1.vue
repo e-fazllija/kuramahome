@@ -29,17 +29,35 @@
         
         <!-- Add Event Button -->
 
-        <div class="card-toolbar">
+        <div class="card-toolbar d-flex flex-wrap gap-3">
           <button
             type="button"
-            class="btn btn-sm btn-primary"
-            @click="newEvent(null, null)"
-            >
-            <i class="ki-duotone ki-plus fs-3 me-2">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            <span class="fw-bold">Nuovo Evento</span>
+            class="btn btn-sm btn-light"
+            @click="openExportModal"
+            :disabled="exportLoading"
+          >
+            <span v-if="!exportLoading" class="d-flex align-items-center">
+              <i class="ki-duotone ki-exit-down fs-3 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              <span class="fw-bold">Esporta</span>
+            </span>
+            <span v-else class="d-flex align-items-center gap-2">
+              <KTSpinner size="sm" :inline="true" />
+              Preparazione...
+            </span>
+          </button>
+          <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          @click="newEvent(null, null)"
+          >
+          <i class="ki-duotone ki-plus fs-3 me-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <span class="fw-bold">Nuovo Evento</span>
           </button>
         </div>
       </div>
@@ -162,6 +180,23 @@
   </NewEventModal>
   <UpdateEventModal :Id="selectedId" @formUpdateSubmitted="loadAllEvents()">
   </UpdateEventModal>
+  <ExportDataModal
+    v-model="exportFilters"
+    :modal-id="exportModalId"
+    title="Esporta eventi calendario"
+    description="Scarica gli eventi filtrati del calendario in formato CSV o Excel."
+    entity-label="eventi"
+    :fields="calendarExportFields"
+    :loading="exportLoading"
+    date-tooltip="Filtra gli eventi pianificati dopo la data selezionata."
+    @export="handleExportCalendar"
+  />
+  <UpgradeRequiredModal
+    :isOpen="showUpgradeModal"
+    :featureDisplayName="'Eventi'"
+    :limitStatus="limitStatus"
+    @close="showUpgradeModal = false"
+  />
 </template>
 
 <script lang="ts">
@@ -172,15 +207,22 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
-import { TODAY, todayDate, getEvents, getSearchItems, SearchModel, Event } from "@/core/data/events";
+import { TODAY, todayDate, getEvents, getSearchItems, SearchModel, Event, exportCalendarEvents, type CalendarExportPayload } from "@/core/data/events";
 import NewEventModal from "@/components/modals/forms/calendar/NewEventModal.vue";
 import UpdateEventModal from "@/components/modals/forms/calendar/UpdateEventModal.vue";
+import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
+import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { Modal } from "bootstrap";
 import { useAuthStore } from "@/stores/auth";
+import type { SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import type { EventInput } from "@fullcalendar/core";
 import Loading from "@/components/kt-datatable/table-partials/Loading.vue";
+import KTSpinner from "@/components/Spinner.vue";
 import itLocale from '@fullcalendar/core/locales/it';
 import Multiselect from '@vueform/multiselect';
+import Swal from "sweetalert2";
+import { downloadBlobResponse } from "@/core/helpers/download";
+import type { ExportFieldDefinition } from "@/types/export";
 import { MenuComponent } from "@/assets/ts/components";
 import '@/assets/css/filters.css';
 import '@/assets/css/table-actions.css';
@@ -194,7 +236,10 @@ export default defineComponent({
     NewEventModal,
     UpdateEventModal,
     Loading,
-    Multiselect
+    Multiselect,
+    ExportDataModal,
+    UpgradeRequiredModal,
+    KTSpinner
   },
   setup() {
     const loading = ref<boolean>(true);
@@ -217,6 +262,73 @@ export default defineComponent({
       Agencies: [],
       Agents: [],
     })
+    const showUpgradeModal = ref(false);
+    const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
+    const exportModalId = "calendar_export_modal";
+    const exportLoading = ref(false);
+    const buildDefaultExportFilters = (): CalendarExportPayload => ({
+      format: "excel",
+      fromDate: null,
+      toDate: null,
+      status: "",
+      agencyId: user.Role === "Admin" ? "" : user.Role === "Agency" ? user.Id : "",
+      agentId: user.Role === "Agent" ? user.Id : "",
+      filter: "",
+    });
+    const exportFilters = ref<CalendarExportPayload>(buildDefaultExportFilters());
+    const agencyOptions = computed(() =>
+      searchItems.value.Agencies.map((agency) => ({
+        label: `${agency.FirstName} ${agency.LastName}`.trim(),
+        value: agency.Id,
+      }))
+    );
+    const agentOptions = computed(() =>
+      searchItems.value.Agents.map((agent) => ({
+        label: `${agent.FirstName} ${agent.LastName}`.trim(),
+        value: agent.Id,
+      }))
+    );
+    const calendarExportFields = computed<ExportFieldDefinition[]>(() => {
+      const fields: ExportFieldDefinition[] = [
+        {
+          key: "status",
+          label: "Stato evento",
+          type: "select",
+          placeholder: "Tutti gli stati",
+          options: [
+            { label: "Confermati", value: "confirmed" },
+            { label: "Disdetti", value: "cancelled" },
+            { label: "Rimandati", value: "postponed" },
+            { label: "In attesa", value: "pending" },
+          ],
+        },
+        {
+          key: "filter",
+          label: "Ricerca testuale",
+          type: "text",
+          placeholder: "Titolo, descrizione, cliente...",
+        },
+      ];
+      if (user.Role === "Admin") {
+        fields.splice(1, 0, {
+          key: "agencyId",
+          label: "Agenzia",
+          type: "select",
+          placeholder: "Tutte le agenzie",
+          options: agencyOptions.value,
+        });
+      }
+      if (user.Role === "Admin" || user.Role === "Agency") {
+        fields.splice(fields.length - 1, 0, {
+          key: "agentId",
+          label: "Agente",
+          type: "select",
+          placeholder: "Tutti gli agenti",
+          options: agentOptions.value,
+        });
+      }
+      return fields;
+    });
 
     const userId = computed(() => {
       if (user.Role == "Admin" || user.Role == "Agency") {
@@ -456,6 +568,77 @@ export default defineComponent({
       }, 3000);
     };
 
+    const openExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getOrCreateInstance(modalElement).show();
+      }
+    };
+
+    const closeExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getInstance(modalElement)?.hide();
+      }
+    };
+
+    const resetExportFilters = () => {
+      exportFilters.value = {
+        ...buildDefaultExportFilters(),
+      };
+    };
+
+    const handleExportCalendar = async (payload: CalendarExportPayload) => {
+      exportLoading.value = true;
+      try {
+        const response = await exportCalendarEvents(payload);
+        const fallbackName = payload.format === "csv" ? "calendario.csv" : "calendario.xlsx";
+        downloadBlobResponse(response, fallbackName);
+        closeExportModal();
+        Swal.fire({
+          icon: "success",
+          title: "Export completato",
+          text: "Il file è stato scaricato correttamente.",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        resetExportFilters();
+      } catch (error: any) {
+        let message = "Errore durante l'esportazione degli eventi.";
+        const response = error?.response;
+        if (response?.data instanceof Blob) {
+          const text = await response.data.text();
+          try {
+            const parsed = JSON.parse(text);
+            message = parsed?.Message || parsed?.message || message;
+            if (parsed?.CanProceed === false) {
+              limitStatus.value = parsed;
+              showUpgradeModal.value = true;
+            }
+          } catch {
+            message = text || message;
+          }
+        } else if (response?.data?.Message) {
+          message = response.data.Message;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Export non riuscito",
+          text: message,
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        exportLoading.value = false;
+      }
+    };
+
     const calendarOptions = {
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
       initialView: "timeGridDay",
@@ -532,7 +715,15 @@ export default defineComponent({
       isSearching,
       clearAllFilters,
       currentPlaceholder,
-      tableData
+      tableData,
+      exportModalId,
+      exportFilters,
+      calendarExportFields,
+      exportLoading,
+      openExportModal,
+      handleExportCalendar,
+      showUpgradeModal,
+      limitStatus
     };
   },
 });

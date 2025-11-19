@@ -35,13 +35,22 @@ export class InsertModel {
   Users: User[];
 }
 
+export interface AgentExportPayload {
+  format?: "csv" | "excel";
+  fromDate?: string | null;
+  toDate?: string | null;
+  agencyId?: string;
+  onlyActive?: boolean | null;
+  search?: string;
+}
+
 const getAgents = (agencyFilter: string, filterRequest: string) : Promise<Array<Agent>> => {
    return ApiService.get(
     `Agents/Get?filterRequest=${filterRequest}&agencyFilter=${agencyFilter}`,
     ""
   )
     .then(({ data }) => {
-      const result = data.Data as Partial<Array<Agent>>
+      const result = data.Data as Array<Agent>
       return result;
     })
     .catch(({ response }) => {
@@ -51,10 +60,10 @@ const getAgents = (agencyFilter: string, filterRequest: string) : Promise<Array<
     });
 };
 
-const getAgent = (id: String) : Promise<Partial<Agent>> => {
+const getAgent = (id: String) : Promise<Agent> => {
   return ApiService.get(`Agents/GetById?id=${id}`, "")
     .then(({ data }) => {
-      const result = data as Partial<Agent>;
+      const result = data as Agent;
       return result;
     })
     .catch(({ response }) => {
@@ -87,7 +96,7 @@ const updateAgent = async (formData: any) => {
   const values = formData as User;
   return await ApiService.post("Agents/Update", values)
     .then(({ data }) => {
-      const result = data as Partial<Agent>;
+      const result = data as Agent;
       return result;
     })
     .catch(({ response }) => {
@@ -101,7 +110,7 @@ const deleteAgent = async (id: String) => {
   console.log(id)
   return await ApiService.delete(`Agents/Delete?id=${id}`)
     .then(({ data }) => {
-      const result = data as Partial<Agent>;
+      const result = data as Agent;
       return result;
     })
     .catch(({ response }) => {
@@ -111,4 +120,8 @@ const deleteAgent = async (id: String) => {
     });
 };
 
-export { getAgents, getAgent, createAgent, updateAgent, deleteAgent }
+const exportAgents = (payload: AgentExportPayload) => {
+  return ApiService.postBlob("Agents/Export", payload);
+};
+
+export { getAgents, getAgent, createAgent, updateAgent, deleteAgent, exportAgents }
