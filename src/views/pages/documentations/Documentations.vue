@@ -48,7 +48,7 @@
     
     <div class="card-body pt-0 pb-6">
       <!-- Breadcrumb Navigation -->
-      <div class="breadcrumb-section" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+      <div class="breadcrumb-section">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb-custom">
             <li class="breadcrumb-item-custom">
@@ -191,17 +191,13 @@
         <template v-slot:DisplayName="{ row: documentations }">
           <div 
             class="d-flex align-items-center"
-            :style="documentations.IsFolder ? 'cursor: pointer;' : ''"
+            :class="{ 'cursor-pointer': documentations.IsFolder }"
             @dblclick="documentations.IsFolder ? navigateToFolder(getCurrentPath(documentations)) : null"
           >
             <div class="symbol symbol-35px me-3">
               <div 
-                class="symbol-label" 
-                :style="documentations.IsFolder 
-                  ? 'background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);' 
-                  : documentations.IsPrivate 
-                    ? 'background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);'
-                    : 'background: linear-gradient(135deg, #8950fc 0%, #6610f2 100%);'"
+                class="symbol-label"
+                :class="getSymbolVariant(documentations)"
               >
                 <i 
                   v-if="documentations.IsFolder"
@@ -230,7 +226,7 @@
             <div class="d-flex flex-column">
               <div class="d-flex align-items-center gap-2">
                 <span class="fw-semibold">{{ documentations.DisplayName }}</span>
-                <span v-if="documentations.IsOwner" class="badge badge-sm" style="background: linear-gradient(135deg, #1bc5bd 0%, #0bb783 100%); color: white; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                <span v-if="documentations.IsOwner" class="badge badge-sm document-owner-badge">
                   Mio
                 </span>
               </div>
@@ -277,7 +273,7 @@
               :href="documentations.FileUrl"
               title="Scarica documento"
             >
-              <i class="ki-duotone ki-file-down">
+              <i class="ki-duotone ki-file-down fs-4">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
@@ -290,13 +286,13 @@
               class="btn btn-action btn-action-danger"
               :title="documentations.IsFolder ? 'Elimina cartella' : 'Elimina documento'"
             >
-              <i class="ki-duotone ki-trash">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
-              </i>
+            <i class="ki-duotone ki-trash fs-4">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
             </button>
           </div>
         </template>
@@ -707,6 +703,16 @@ export default defineComponent({
       searchItems();
     };
 
+    const getSymbolVariant = (item: any) => {
+      if (item?.IsFolder) {
+        return "symbol-label-folder";
+      }
+      if (item?.IsPrivate) {
+        return "symbol-label-private";
+      }
+      return "symbol-label-shared";
+    };
+
     async function deleteItem(id: number) {
       const result = await Swal.fire({
         text: "Confermare l'eliminazione?",
@@ -766,7 +772,8 @@ export default defineComponent({
       sort,
       onItemSelect,
       deleteItem,
-      clearAllFilters
+      clearAllFilters,
+      getSymbolVariant
     };
   },
 });
