@@ -133,6 +133,10 @@ class ApiService {
     return await ApiService.axiosInstance.post(`${resource}`, params);
   }
 
+  public static async postBlob(resource: string, params: any): Promise<AxiosResponse<Blob>> {
+    return await ApiService.axiosInstance.post(`${resource}`, params, { responseType: "blob" });
+  }
+
   /**
    * @description send the UPDATE HTTP request
    * @param resource: string

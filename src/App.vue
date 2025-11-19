@@ -23,7 +23,7 @@ export default defineComponent({
     const bodyStore = useBodyStore();
     const authStore = useAuthStore();
 
-    onMounted(async () => {
+    onBeforeMount(async () => {
       /**
        * Overrides the layout config using saved data from localStorage
        * remove this to use static config (@/core/config/DefaultLayoutConfig.ts)
@@ -39,7 +39,7 @@ export default defineComponent({
        * Verifica l'autenticazione solo all'avvio dell'app o al refresh
        * Non viene chiamato ad ogni cambio di route
        */
-      await authStore.verifyAuth();
+      //await authStore.verifyAuth();
     });
 
     onMounted(() => {
@@ -83,6 +83,7 @@ export default defineComponent({
 @import "assets/css/auth-layout.css";
 @import "assets/css/wizard.css";
 @import "assets/css/modal-forms.css";
+@import "assets/css/modal-forms-dark.css";
 @import "assets/css/modal-buttons.css";
 @import "assets/css/select-styles.css";
 @import "assets/css/form-inputs.css";

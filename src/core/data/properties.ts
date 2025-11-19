@@ -61,7 +61,7 @@ export class RealEstateProperty {
   TypeOfAssignment?: string;
   AgreedCommission: number;
   FlatRateCommission: number;
-  StornoProvvigione: number;
+  CommissionReversal: number;
 }
 
 export class RequestTabelData {
@@ -106,18 +106,38 @@ export class SearchModel {
   Agents: User[];
 }
 
+export interface PropertyExportPayload {
+  format?: "csv" | "excel";
+  fromDate?: string | null;
+  toDate?: string | null;
+  filter?: string;
+  contract?: string;
+  priceFrom?: number | null;
+  priceTo?: number | null;
+  category?: string;
+  typologie?: string;
+  city?: string;
+  province?: string;
+  sold?: boolean | null;
+  auction?: boolean | null;
+  status?: string;
+  agencyId?: string;
+  agentId?: string;
+}
+
 const getRealEstateProperties = (agencyId: string, filterRequest: string, contract?: string, priceFrom?: number, priceTo?: number, category?: string, typologie?: string, town?: string[]) : Promise<Array<RealEstateProperty>> => {
    return ApiService.get(
     `RealEstateProperty/Get?currentPage=0&agencyId=${agencyId}&filterRequest=${filterRequest}&contract=${contract}&priceFrom=${priceFrom}&priceTo=${priceTo}&category=${category}&typologie=${typologie}&town=${town}`,
     ""
   )
     .then(({ data }) => {
-      const result = data.Data as Partial<Array<RealEstateProperty>>
+      const result = data.Data as Array<RealEstateProperty>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento degli immobili";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -146,8 +166,9 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
       } as RequestTabelData));
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento della lista immobili";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -155,7 +176,7 @@ const getRealEstateProperty = (id: number) => {
   return ApiService.get(`RealEstateProperty/GetById?id=${id}`, "")
     .then(({ data }) => {
       const photos = data.Photos as Array<RealEstatePropertyPhotos>;
-      const result = data as Partial<RealEstateProperty>;
+      const result = data as RealEstateProperty;
       result.Photos = photos;
       result.RealEstatePropertyNotes = data.RealEstatePropertyNotes;
       if (result.UserId && !result.AgentId) {
@@ -165,8 +186,9 @@ const getRealEstateProperty = (id: number) => {
     })
     .catch(({ response }) => {
       console.log(response)
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dell'immobile";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -184,8 +206,9 @@ const getToInsert = () : Promise<InsertModel> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dati per l'inserimento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -198,8 +221,9 @@ const setRealEstatePropertyPhotoHighlighted = (id : number) => {
     return data;
   })
   .catch(({ response }) => {
-    store.setError(response.data.Message, response.status);
-    return undefined;
+    const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento della foto in evidenza";
+    store.setError(errorMessage, response?.status);
+    throw new Error(errorMessage);
   });
 }
 
@@ -250,8 +274,9 @@ const uploadFiles = async (files: FileList, id: number) => {
   return await ApiService.post("RealEstateProperty/UploadFiles", formData)
     .then(({ data }) => data)
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei file";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -282,9 +307,7 @@ const createRealEstateProperty = async (form: any) => {
     }
     
     // Mappatura campi frontend -> backend
-    if (key === 'StornoProvvigione') {
-      formData.append('CommissionReversal', value?.toString() || "");
-    } else if (key === 'Town') {
+    if (key === 'Town') {
       // Se per caso c'è ancora Town, usa City
       formData.append('City', value?.toString() || "");
     } else if (key === 'AssignmentEnd') {
@@ -334,16 +357,17 @@ const createRealEstateProperty = async (form: any) => {
 
   return await ApiService.post("RealEstateProperty/Create", formData)
     .then(({ data }) => {
-      return data as Partial<RealEstateProperty> & { Id?: number };
+      return data as RealEstateProperty & { Id?: number };
     })
     .catch(({ response }) => {
-      if (response.status === 429) {
+      if (response?.status === 429) {
         const error = new Error('Subscription limit exceeded') as any;
         error.response = response;
         throw error;
       }
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione dell'immobile";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -357,12 +381,13 @@ const updateRealEstateProperty = async (formData: any) => {
   }
   return await ApiService.post("RealEstateProperty/Update", values)
     .then(({ data }) => {
-      const result = data as Partial<RealEstateProperty>;
+      const result = data as RealEstateProperty;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento dell'immobile";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -374,15 +399,16 @@ const updatePhotosOrder = async (formData: any) => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento dell'ordine delle foto";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const deleteRealEstateProperty = async (id: Number) => {
   return await ApiService.delete(`RealEstateProperty/Delete?id=${id}`)
     .then(({ data }) => {
-      const result = data as Partial<RealEstateProperty>;
+      const result = data as RealEstateProperty;
       return result;
     })
     .catch(({ response }) => {
@@ -398,8 +424,9 @@ const deletePhoto = async (id: number) => {
       return data;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'eliminazione della foto";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 }
 
@@ -418,9 +445,14 @@ const getSearchItems = (userId: string, agencyId?: string): Promise<SearchModel>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dati di ricerca";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
+};
+
+const exportProperties = (payload: PropertyExportPayload) => {
+  return ApiService.postBlob("RealEstateProperty/Export", payload);
 };
 
 export { 
@@ -435,4 +467,5 @@ export {
   deletePhoto,
   uploadFiles,
   updatePhotosOrder,
-  getSearchItems }
+  getSearchItems,
+  exportProperties }

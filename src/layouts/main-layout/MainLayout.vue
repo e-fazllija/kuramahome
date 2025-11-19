@@ -28,7 +28,6 @@
   <!--end::App-->
 
   <KTScrollTop />
-  <KTModals />
 </template>
 
 <script lang="ts">

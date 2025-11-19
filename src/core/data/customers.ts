@@ -24,7 +24,6 @@ export class Customer{
   OngoingAssignment: boolean;
   CustomerNotes?: Notes[];
   UserId?: string;
-  AdminId?: string;  // Aggiunto per risolvere l'errore di validazione AdminId
   label?: string;
 }
 
@@ -43,38 +42,50 @@ export class Notes {
   Text: string;
 }
 
+export interface CustomerExportPayload {
+  format?: "csv" | "excel";
+  fromDate?: string | null;
+  toDate?: string | null;
+  type?: string;
+  ownerId?: string;
+  goldCustomer?: boolean | null;
+  filter?: string;
+}
+
 const getCustomers = (filterRequest: string) : Promise<Array<Customer>> => {
    return ApiService.get(
     `Customers/Get?filterRequest=${filterRequest}`,
     ""
   )
     .then(({ data }) => {
-      const result = data.Data as Partial<Array<Customer>>
+      const result = data.Data as Array<Customer>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei clienti";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const getCustomer = (id: number) : Promise<Customer> => {
   return ApiService.get(`Customers/GetById?id=${id}`, "")
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       result.CustomerNotes = data.CustomerNotes;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento del cliente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const createCustomer = async (formData:Customer) => {
   return ApiService.post("Customers/Create", formData)
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       return result;
     })
     .catch(({ response }) => {
@@ -83,27 +94,29 @@ const createCustomer = async (formData:Customer) => {
         error.response = response;
         throw error;
       }
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione del cliente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const updateCustomer = async (formData:Customer) => {
   return ApiService.post("Customers/Update", formData)
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento del cliente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const deleteCustomer = async (id: number) => {
   return await ApiService.delete(`Customers/Delete?id=${id}`)
     .then(({ data }) => {
-      const result = data as Partial<Customer>;
+      const result = data as Customer;
       return result;
     })
     .catch(({ response }) => {
@@ -113,4 +126,8 @@ const deleteCustomer = async (id: number) => {
     });
 };
 
-export { getCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer }
+const exportCustomers = (payload: CustomerExportPayload) => {
+  return ApiService.postBlob("Customers/Export", payload);
+};
+
+export { getCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer, exportCustomers }

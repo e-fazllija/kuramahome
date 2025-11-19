@@ -631,6 +631,7 @@ export default defineComponent({
             const auctionData = ref<any>(null);
             const soldPropertiesCount = ref<number>(0);
             const availablePropertiesCount = ref<number>(0);
+            const insertedPropertiesCount = ref<number>(0);
             const salePropertiesCount = ref<number>(0);
             const rentPropertiesCount = ref<number>(0);
             // Admin profile details (for map positioning)
@@ -766,7 +767,7 @@ export default defineComponent({
                   closedData: closedRequestsData
                 },
                 properties: {
-                  total: availablePropertiesCount.value,
+                  total: insertedPropertiesCount.value,
                   monthlyData: propertiesData,
                   soldData: soldData
                 },
@@ -850,38 +851,51 @@ export default defineComponent({
           return;
         }
         
-        // Processa i dati degli immobili disponibili solo se premium
-        if (isPremium.value && dashboardData.AvailableProperties) {
+        // Processa i dati degli immobili (disponibili e venduti) solo se premium
+        if (isPremium.value) {
           try {
-            // Processa per i grafici
-            chartData.value = processPropertiesForChart(dashboardData.AvailableProperties, selectedYear.value);
-            
+            const availableProperties = dashboardData.AvailableProperties ?? [];
+            const soldProperties = dashboardData.SoldProperties ?? [];
+            const allPropertiesMap = new Map<number | string, any>();
+
+            availableProperties.forEach(property => {
+              allPropertiesMap.set(property.Id, property);
+            });
+
+            soldProperties.forEach(property => {
+              allPropertiesMap.set(property.Id, property);
+            });
+
+            const allProperties = Array.from(allPropertiesMap.values());
+
+            // Processa per i grafici (immobili inseriti = totale immessi)
+            chartData.value = processPropertiesForChart(allProperties, selectedYear.value);
+
             // Salva i dati per il ranking
-            allPropertiesData.value = dashboardData.AvailableProperties;
-            
-            // Salva il totale degli immobili disponibili
-            availablePropertiesCount.value = dashboardData.AvailableProperties.length;
-            
-            // Calcola i totali per Status
-            const saleProperties = dashboardData.AvailableProperties.filter(p => p.Status === 'Vendita' && !p.Auction);
-            const rentProperties = dashboardData.AvailableProperties.filter(p => p.Status === 'Affitto' && !p.Auction);
-            const auctionProperties = dashboardData.AvailableProperties.filter(p => p.Auction === true);
-            
+            allPropertiesData.value = allProperties;
+
+            // Salva i totali
+            insertedPropertiesCount.value = allProperties.length;
+            availablePropertiesCount.value = availableProperties.length;
+
+            // Calcola i totali per Status (solo disponibili)
+            const saleProperties = availableProperties.filter(p => p.Status === 'Vendita' && !p.Auction);
+            const rentProperties = availableProperties.filter(p => p.Status === 'Affitto' && !p.Auction);
+            const auctionProperties = availableProperties.filter(p => p.Auction === true);
+
             salePropertiesCount.value = saleProperties.length;
             rentPropertiesCount.value = rentProperties.length;
-            
+
             auctionData.value = {
               total: auctionProperties.length,
-              percentage: dashboardData.AvailableProperties.length > 0 
-                ? Math.round((auctionProperties.length / dashboardData.AvailableProperties.length) * 100) 
+              percentage: availableProperties.length > 0 
+                ? Math.round((auctionProperties.length / availableProperties.length) * 100) 
                 : 0
             };
-            
-            // Processa dati delle tipologie
-            typologyData.value = processTypologyDistribution(dashboardData.AvailableProperties);
-            
-            // Processa dati delle zone
-            topZonesData.value = processTopZones(dashboardData.AvailableProperties);
+
+            // Processa dati delle tipologie e delle zone (solo disponibili)
+            typologyData.value = processTypologyDistribution(availableProperties);
+            topZonesData.value = processTopZones(availableProperties);
           } catch (error: any) {
             if (error?.response?.status === 403) {
               console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
@@ -1187,6 +1201,7 @@ export default defineComponent({
       auctionData,
       soldPropertiesCount,
       availablePropertiesCount,
+      insertedPropertiesCount,
       salePropertiesCount,
       rentPropertiesCount,
       agentsRankingData,

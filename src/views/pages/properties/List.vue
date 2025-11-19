@@ -19,7 +19,25 @@
           </div>
         </div>
       </div>
-      <div class="card-toolbar">
+      <div class="card-toolbar d-flex flex-wrap gap-3">
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          @click="openExportModal"
+          :disabled="exportLoading"
+        >
+          <span v-if="!exportLoading" class="d-flex align-items-center">
+            <i class="ki-duotone ki-exit-down fs-3 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Esporta</span>
+          </span>
+          <span v-else class="d-flex align-items-center gap-2">
+            <KTSpinner size="sm" :inline="true" />
+            Preparazione...
+          </span>
+        </button>
         <button
           type="button"
           class="btn btn-sm btn-primary"
@@ -310,7 +328,17 @@
   </div>
   <!--end::Properties page wrapper-->
 
-  <ExportCustomerModal></ExportCustomerModal>
+  <ExportDataModal
+    v-model="exportFilters"
+    :modal-id="exportModalId"
+    title="Esporta immobili"
+    description="Configura i filtri e scarica l'elenco degli immobili in CSV o Excel."
+    entity-label="immobili"
+    :fields="propertyExportFields"
+    :loading="exportLoading"
+    date-tooltip="Considera gli immobili inseriti dopo la data selezionata."
+    @export="handleExportProperties"
+  />
   <AddPropertyModal 
     @formAddSubmitted="getItems(agencyId, '')" 
     @redirectToEdit="redirectToEdit"
@@ -332,9 +360,9 @@ import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
-import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
+import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import AddPropertyModal from "@/components/modals/forms/AddPropertyModal.vue";
-import { getRealEstatePropertiesList, deleteRealEstateProperty, RequestTabelData, getSearchItems, SearchModel } from "@/core/data/properties";
+import { getRealEstatePropertiesList, deleteRealEstateProperty, RequestTabelData, getSearchItems, SearchModel, exportProperties, type PropertyExportPayload } from "@/core/data/properties";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -344,6 +372,8 @@ import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/
 import { Modal } from "bootstrap";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import KTSpinner from "@/components/Spinner.vue";
+import { downloadBlobResponse } from "@/core/helpers/download";
+import type { ExportFieldDefinition } from "@/types/export";
 import '@/assets/css/filters.css';
 import '@/assets/css/table-actions.css';
 import '@/assets/css/lists-common.css';
@@ -352,7 +382,7 @@ export default defineComponent({
   name: "properties",
   components: {
     Datatable,
-    ExportCustomerModal,
+    ExportDataModal,
     AddPropertyModal,
     UpgradeRequiredModal,
     KTSpinner,
@@ -440,6 +470,150 @@ export default defineComponent({
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
+    const exportModalId = "properties_export_modal";
+    const exportLoading = ref(false);
+    const buildDefaultExportFilters = (): PropertyExportPayload => ({
+      format: "excel",
+      fromDate: null,
+      toDate: null,
+      contract: "",
+      typologie: "",
+      priceFrom: null,
+      priceTo: null,
+      city: "",
+      province: "",
+      sold: null,
+      auction: null,
+      status: "",
+      filter: "",
+      agencyId: user.Role === "Agency" ? user.Id : "",
+      agentId: "",
+    });
+    const exportFilters = ref<PropertyExportPayload>(buildDefaultExportFilters());
+    const typologyOptions = [
+      "Appartamento",
+      "Attico",
+      "Mansarda",
+      "Loft",
+      "Soffitta",
+      "Casale",
+      "Rustico",
+      "Villa Unifamiliare",
+      "Villa Bifamiliare",
+      "Villa Plurifamiliare",
+      "Villa a Schiera",
+      "Locale commerciale",
+      "Negozio",
+      "Capannone artigianale",
+      "Capannone industriale",
+      "Box singolo",
+      "Box doppio",
+      "Posto auto",
+      "Magazzino",
+      "Rustico / Casale",
+      "Edificabile",
+      "Agricolo",
+      "Non Edificabile",
+      "Ufficio"
+    ];
+    const agencyOptions = computed(() =>
+      defaultSearchItems.value.Agencies.map((agency) => ({
+        label: `${agency.FirstName} ${agency.LastName}`.trim(),
+        value: agency.Id,
+      }))
+    );
+    const agentOptions = computed(() =>
+      defaultSearchItems.value.Agents.map((agent) => ({
+        label: `${agent.FirstName} ${agent.LastName}`.trim(),
+        value: agent.Id,
+      }))
+    );
+    const propertyExportFields = computed<ExportFieldDefinition[]>(() => {
+      const fields: ExportFieldDefinition[] = [
+        {
+          key: "contract",
+          label: "Contratto",
+          type: "select",
+          placeholder: "Tutti i contratti",
+          options: [
+            { label: "Vendita", value: "Vendita" },
+            { label: "Affitto", value: "Affitto" },
+            { label: "Aste", value: "Aste" },
+          ],
+        },
+        {
+          key: "typologie",
+          label: "Tipologia",
+          type: "select",
+          placeholder: "Tutte le tipologie",
+          options: typologyOptions.map((label) => ({ label, value: label })),
+        },
+        {
+          type: "range",
+          label: "Prezzo (€)",
+          minKey: "priceFrom",
+          maxKey: "priceTo",
+          minPlaceholder: "Da",
+          maxPlaceholder: "A",
+          tooltip: "Limita l'export agli immobili compresi nel range indicato.",
+        },
+        {
+          key: "city",
+          label: "Città",
+          type: "text",
+          placeholder: "Es. Milano",
+        },
+        {
+          key: "province",
+          label: "Provincia",
+          type: "text",
+          placeholder: "Es. MI",
+        },
+        {
+          key: "status",
+          label: "Stato incarico",
+          type: "text",
+          placeholder: "Es. Attivo, Venduto...",
+        },
+        {
+          key: "sold",
+          label: "Solo venduti",
+          type: "checkbox",
+          placeholder: "Includi immobili venduti",
+        },
+        {
+          key: "auction",
+          label: "Solo aste",
+          type: "checkbox",
+          placeholder: "Includi immobili in asta",
+        },
+        {
+          key: "filter",
+          label: "Ricerca testuale",
+          type: "text",
+          placeholder: "Indirizzo, cliente, note...",
+        },
+      ];
+      if (user.Role === "Admin") {
+        fields.push({
+          key: "agencyId",
+          label: "Agenzia",
+          type: "select",
+          placeholder: "Tutte le agenzie",
+          options: agencyOptions.value,
+        });
+      }
+      if (user.Role === "Admin" || user.Role === "Agency") {
+        fields.push({
+          key: "agentId",
+          label: "Agente",
+          type: "select",
+          placeholder: "Tutti gli agenti",
+          options: agentOptions.value,
+        });
+      }
+      return fields;
+    });
 
     // Gestione click "Nuovo Immobile" con controllo limiti
     const handleNewPropertyClick = async () => {
@@ -574,12 +748,26 @@ export default defineComponent({
           confirmButton: "btn btn-danger",
         },
       }).then(async () => {
-        await deleteRealEstateProperty(id)
-        await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
-        loading.value = false;
-        MenuComponent.reinitialization();
+        try {
+          await deleteRealEstateProperty(id);
+          await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
+          MenuComponent.reinitialization();
+        } catch (error: any) {
+          const errorMessage = error?.data?.Message || error?.response?.data?.Message || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+          Swal.fire({
+            text: errorMessage,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+        } finally {
+          loading.value = false;
+        }
       });
-      loading.value = false;
     }
 
     const sort = (sort: Sort) => {
@@ -609,6 +797,77 @@ export default defineComponent({
     const goToPropertyDetails = (id: number) => {
       const route = router.resolve({ name: 'property', params: { id: id.toString() } });
       window.open(route.href, '_blank');
+    };
+    const openExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        const modalInstance = Modal.getOrCreateInstance(modalElement);
+        modalInstance.show();
+      }
+    };
+
+    const closeExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getInstance(modalElement)?.hide();
+      }
+    };
+
+    const resetExportFilters = () => {
+      exportFilters.value = {
+        ...buildDefaultExportFilters(),
+      };
+    };
+
+    const handleExportProperties = async (payload: PropertyExportPayload) => {
+      exportLoading.value = true;
+      try {
+        const response = await exportProperties(payload);
+        const fallbackName = payload.format === "csv" ? "immobili.csv" : "immobili.xlsx";
+        downloadBlobResponse(response, fallbackName);
+        closeExportModal();
+        Swal.fire({
+          icon: "success",
+          title: "Export completato",
+          text: "Il file è stato scaricato correttamente.",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        resetExportFilters();
+      } catch (error: any) {
+        let message = "Errore durante l'esportazione degli immobili.";
+        const response = error?.response;
+        if (response?.data instanceof Blob) {
+          const text = await response.data.text();
+          try {
+            const parsed = JSON.parse(text);
+            message = parsed?.Message || parsed?.message || message;
+            if (parsed?.CanProceed === false) {
+              limitStatus.value = parsed;
+              showUpgradeModal.value = true;
+            }
+          } catch {
+            message = text || message;
+          }
+        } else if (response?.data?.Message) {
+          message = response.data.Message;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Export non riuscito",
+          text: message,
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        exportLoading.value = false;
+      }
     };
 
     // Funzioni per gestire i filtri a cascata
@@ -729,7 +988,13 @@ export default defineComponent({
         isCheckingLimit,
         showUpgradeModal,
         limitStatus,
-        goToPropertyDetails
+        goToPropertyDetails,
+        exportModalId,
+        exportFilters,
+        propertyExportFields,
+        exportLoading,
+        openExportModal,
+        handleExportProperties
       };
   },
   data() {

@@ -127,7 +127,6 @@ export const useAuthStore = defineStore("auth", () => {
         .catch(({ response }) => {
           setError(response.data.Message);
           refreshToken();
-          //purgeAuth();
         });
     } else {
       purgeAuth();

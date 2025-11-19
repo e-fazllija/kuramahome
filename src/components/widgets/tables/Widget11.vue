@@ -11,7 +11,7 @@
         >
       </h3>
       <div class="card-toolbar">
-        <a href="#" class="btn btn-sm btn-light-primary">
+        <a href="#" class="btn btn-sm btn-light">
           <KTIcon icon-name="plus" icon-class="fs-2" />
           New Member
         </a>

@@ -21,7 +21,25 @@
           </div>
         </div>
       </div>
-      <div class="card-toolbar">
+      <div class="card-toolbar d-flex flex-wrap gap-3">
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          @click="openExportModal"
+          :disabled="exportLoading"
+        >
+          <span v-if="!exportLoading" class="d-flex align-items-center">
+            <i class="ki-duotone ki-exit-down fs-3 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Esporta</span>
+          </span>
+          <span v-else class="d-flex align-items-center gap-2">
+            <KTSpinner size="sm" :inline="true" />
+            Preparazione...
+          </span>
+        </button>
         <button
           type="button"
           class="btn btn-sm btn-primary"
@@ -249,7 +267,17 @@
     </div>
   </div>
 
-  <ExportCustomerModal></ExportCustomerModal>
+  <ExportDataModal
+    v-model="exportFilters"
+    :modal-id="exportModalId"
+    title="Esporta clienti"
+    description="Genera un report dei clienti applicando i filtri desiderati."
+    entity-label="clienti"
+    :fields="customerExportFields"
+    :loading="exportLoading"
+    date-tooltip="Esporta solo i clienti creati dopo la data indicata."
+    @export="handleExportCustomers"
+  />
   <AddCustomerModal 
     @formAddSubmitted="getItems('')"
     @limitExceeded="handleLimitExceeded"
@@ -266,15 +294,15 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
-import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
+import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import AddCustomerModal from "@/components/modals/forms/customer/AddCustomerModal.vue";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
-import { getCustomers, Customer, deleteCustomer, CustomerTabelData } from "@/core/data/customers";
+import { getCustomers, Customer, deleteCustomer, CustomerTabelData, exportCustomers, type CustomerExportPayload } from "@/core/data/customers";
 import { getSearchItems, SearchModel } from "@/core/data/events";
 import Swal from "sweetalert2";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
@@ -282,6 +310,8 @@ import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/
 import { Modal } from "bootstrap";
 import { useAuthStore, type User } from "@/stores/auth";
 import KTSpinner from "@/components/Spinner.vue";
+import { downloadBlobResponse } from "@/core/helpers/download";
+import type { ExportFieldDefinition } from "@/types/export";
 import '@/assets/css/filters.css';
 import '@/assets/css/table-actions.css';
 import '@/assets/css/lists-common.css';
@@ -291,7 +321,7 @@ export default defineComponent({
   name: "clients",
   components: {
     Datatable,
-    ExportCustomerModal,
+    ExportDataModal,
     AddCustomerModal,
     UpgradeRequiredModal,
     KTSpinner
@@ -344,10 +374,80 @@ export default defineComponent({
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
+    const exportModalId = "customers_export_modal";
+    const exportLoading = ref(false);
+    const buildDefaultExportFilters = (): CustomerExportPayload => ({
+      format: "excel",
+      fromDate: null,
+      toDate: null,
+      type: "",
+      ownerId: user.Role === "Agent" ? user.Id : user.Role === "Admin" ? "" : user.Id,
+      goldCustomer: null,
+      filter: "",
+    });
+    const exportFilters = ref<CustomerExportPayload>(buildDefaultExportFilters());
     const ownerFilter = ref<string>(user.Role === "Admin" ? "" : user.Id);
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
+    });
+    const ownerOptions = computed(() => {
+      const options: Array<{ label: string; value: string }> = [];
+      if (user.Role === "Admin") {
+        options.push({ label: "Tutti i clienti", value: "" });
+      }
+      options.push({ label: "I miei clienti", value: user.Id });
+      defaultSearchItems.value.Agencies.forEach((agency) => {
+        options.push({
+          label: `🏢 ${agency.FirstName} ${agency.LastName}`.trim(),
+          value: agency.Id,
+        });
+      });
+      defaultSearchItems.value.Agents.forEach((agent) => {
+        options.push({
+          label: `👤 ${agent.FirstName} ${agent.LastName}`.trim(),
+          value: agent.Id,
+        });
+      });
+      return options;
+    });
+    const customerExportFields = computed<ExportFieldDefinition[]>(() => {
+      const fields: ExportFieldDefinition[] = [
+        {
+          key: "type",
+          label: "Tipologia cliente",
+          type: "select",
+          placeholder: "Tutte le tipologie",
+          options: [
+            { label: "Compratore", value: "Compratore" },
+            { label: "Venditore", value: "Venditore" },
+            { label: "Costruttore", value: "Costruttore" },
+            { label: "Cliente gold", value: "Cliente gold" },
+          ],
+        },
+        {
+          key: "goldCustomer",
+          label: "Solo clienti gold",
+          type: "checkbox",
+          placeholder: "Includi solo clienti gold",
+        },
+        {
+          key: "filter",
+          label: "Ricerca testuale",
+          type: "text",
+          placeholder: "Nome, email, telefono...",
+        },
+      ];
+      if (user.Role !== "Agent") {
+        fields.splice(1, 0, {
+          key: "ownerId",
+          label: "Proprietario",
+          type: "select",
+          placeholder: "Seleziona proprietario",
+          options: ownerOptions.value,
+        });
+      }
+      return fields;
     });
 
     const searchingFunc = (obj: any, value: string): boolean => {
@@ -503,9 +603,23 @@ export default defineComponent({
         return;
       }
 
-      await deleteCustomer(id);
-      await getItems("");
-      MenuComponent.reinitialization();
+      try {
+        await deleteCustomer(id);
+        await getItems("");
+        MenuComponent.reinitialization();
+      } catch (error: any) {
+        const errorMessage = error?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione del cliente.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     }
 
     const sort = (sort: Sort) => {
@@ -611,6 +725,76 @@ export default defineComponent({
       const route = router.resolve({ name: 'client', params: { id: id.toString() } });
       window.open(route.href, '_blank');
     };
+    const openExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getOrCreateInstance(modalElement).show();
+      }
+    };
+
+    const closeExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getInstance(modalElement)?.hide();
+      }
+    };
+
+    const resetExportFilters = () => {
+      exportFilters.value = {
+        ...buildDefaultExportFilters(),
+      };
+    };
+
+    const handleExportCustomers = async (payload: CustomerExportPayload) => {
+      exportLoading.value = true;
+      try {
+        const response = await exportCustomers(payload);
+        const fallbackName = payload.format === "csv" ? "clienti.csv" : "clienti.xlsx";
+        downloadBlobResponse(response, fallbackName);
+        closeExportModal();
+        Swal.fire({
+          icon: "success",
+          title: "Export completato",
+          text: "Il file è stato scaricato correttamente.",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        resetExportFilters();
+      } catch (error: any) {
+        let message = "Errore durante l'esportazione dei clienti.";
+        const response = error?.response;
+        if (response?.data instanceof Blob) {
+          const text = await response.data.text();
+          try {
+            const parsed = JSON.parse(text);
+            message = parsed?.Message || parsed?.message || message;
+            if (parsed?.CanProceed === false) {
+              limitStatus.value = parsed;
+              showUpgradeModal.value = true;
+            }
+          } catch {
+            message = text || message;
+          }
+        } else if (response?.data?.Message) {
+          message = response.data.Message;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Export non riuscito",
+          text: message,
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        exportLoading.value = false;
+      }
+    };
 
     return {
       tableData,
@@ -645,7 +829,13 @@ export default defineComponent({
       handleLimitExceeded,
       applyFilters,
       loading,
-      goToClientDetails
+      goToClientDetails,
+      exportModalId,
+      exportFilters,
+      customerExportFields,
+      exportLoading,
+      openExportModal,
+      handleExportCustomers
     };
   },
 });

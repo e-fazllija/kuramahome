@@ -21,7 +21,26 @@
           </div>
         </div>
       </div>
-      <div class="card-toolbar">
+      <div class="card-toolbar d-flex flex-wrap gap-3">
+        <button
+          v-if="user.Role !== 'Agent'"
+          type="button"
+          class="btn btn-sm btn-light"
+          @click="openExportModal"
+          :disabled="exportLoading"
+        >
+          <span v-if="!exportLoading" class="d-flex align-items-center">
+            <i class="ki-duotone ki-exit-down fs-3 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Esporta</span>
+          </span>
+          <span v-else class="d-flex align-items-center gap-2">
+            <KTSpinner size="sm" :inline="true" />
+            Preparazione...
+          </span>
+        </button>
         <button
           v-if="canCreateAgent"
           type="button"
@@ -255,7 +274,17 @@
     </div>
     </div>
 
-    <ExportCustomerModal></ExportCustomerModal>
+    <ExportDataModal
+      v-model="exportFilters"
+      :modal-id="exportModalId"
+      title="Esporta agenti"
+      description="Scarica un elenco degli agenti con i filtri desiderati."
+      entity-label="agenti"
+      :fields="agentExportFields"
+      :loading="exportLoading"
+      date-tooltip="Considera gli agenti creati dal periodo selezionato."
+      @export="handleExportAgents"
+    />
     <AddAgentModal 
       @formAddSubmitted="getItems(agencyFilter, '')"
       @limitExceeded="handleLimitExceeded"
@@ -277,10 +306,10 @@ import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, computed } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
-import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
+import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
-import { getAgents, deleteAgent, Agent } from "@/core/data/agents";
+import { getAgents, deleteAgent, Agent, exportAgents, type AgentExportPayload } from "@/core/data/agents";
 import { getCustomers } from "@/core/data/customers";
 import AddAgentModal from "@/components/modals/forms/agents/AddAgentModal.vue";
 import UpdateAgentModal from "@/components/modals/forms/agents/UpdateAgentModal.vue";
@@ -292,6 +321,8 @@ import { canCreateAgent as canUserCreateAgent } from "@/core/helpers/auth";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
 import KTSpinner from "@/components/Spinner.vue";
+import { downloadBlobResponse } from "@/core/helpers/download";
+import type { ExportFieldDefinition } from "@/types/export";
 import '@/assets/css/filters.css';
 import '@/assets/css/table-actions.css';
 import '@/assets/css/lists-common.css';
@@ -300,7 +331,7 @@ export default defineComponent({
   name: "agents",
   components: {
     Datatable,
-    ExportCustomerModal,
+    ExportDataModal,
     AddAgentModal,
     UpdateAgentModal,
     UpgradeRequiredModal,
@@ -356,11 +387,52 @@ export default defineComponent({
       Agencies: [],
       Agents: [],
     });
+    const agentExportFields = computed<ExportFieldDefinition[]>(() => {
+      const fields: ExportFieldDefinition[] = [];
+      if (user.Role === "Admin") {
+        fields.push({
+          key: "agencyId",
+          label: "Agenzia",
+          type: "select",
+          placeholder: "Tutte le agenzie",
+          options: defaultSearchItems.value.Agencies.map((agency) => ({
+            label: `${agency.FirstName} ${agency.LastName}`.trim(),
+            value: agency.Id,
+          })),
+        });
+      }
+      fields.push(
+        {
+          key: "onlyActive",
+          label: "Solo attivi",
+          type: "checkbox",
+          placeholder: "Includi solo agenti attivi",
+        },
+        {
+          key: "search",
+          label: "Ricerca testuale",
+          type: "text",
+          placeholder: "Nome, email, telefono...",
+        }
+      );
+      return fields;
+    });
     
     // Subscription limits state
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
+    const exportModalId = "agents_export_modal";
+    const exportLoading = ref(false);
+    const buildDefaultExportFilters = (): AgentExportPayload => ({
+      format: "excel",
+      fromDate: null,
+      toDate: null,
+      agencyId: user.Role === "Agency" ? user.Id : "",
+      onlyActive: null,
+      search: "",
+    });
+    const exportFilters = ref<AgentExportPayload>(buildDefaultExportFilters());
 
     async function getItems(agencyFilter: string, filterRequest: string) {
       try {
@@ -448,7 +520,7 @@ export default defineComponent({
         try {
           const customers = await getCustomers("");
           requiresTyping = !!customers?.some((customer) => {
-            const ownerId = customer.UserId ?? customer.AdminId ?? "";
+            const ownerId = customer.UserId ?? "";
             return ownerId && ownerId === String(agent.Id);
           });
         } catch (error) {
@@ -600,6 +672,77 @@ export default defineComponent({
       }
     };
 
+    const openExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getOrCreateInstance(modalElement).show();
+      }
+    };
+
+    const closeExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getInstance(modalElement)?.hide();
+      }
+    };
+
+    const resetExportFilters = () => {
+      exportFilters.value = {
+        ...buildDefaultExportFilters(),
+      };
+    };
+
+    const handleExportAgents = async (payload: AgentExportPayload) => {
+      exportLoading.value = true;
+      try {
+        const response = await exportAgents(payload);
+        const fallbackName = payload.format === "csv" ? "agenti.csv" : "agenti.xlsx";
+        downloadBlobResponse(response, fallbackName);
+        closeExportModal();
+        Swal.fire({
+          icon: "success",
+          title: "Export completato",
+          text: "Il file è stato scaricato correttamente.",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        resetExportFilters();
+      } catch (error: any) {
+        let message = "Errore durante l'esportazione degli agenti.";
+        const response = error?.response;
+        if (response?.data instanceof Blob) {
+          const text = await response.data.text();
+          try {
+            const parsed = JSON.parse(text);
+            message = parsed?.Message || parsed?.message || message;
+            if (parsed?.CanProceed === false) {
+              limitStatus.value = parsed;
+              showUpgradeModal.value = true;
+            }
+          } catch {
+            message = text || message;
+          }
+        } else if (response?.data?.Message) {
+          message = response.data.Message;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Export non riuscito",
+          text: message,
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        exportLoading.value = false;
+      }
+    };
+
     // Gestione click "Nuovo Agente" con controllo limiti
     const handleNewAgentClick = async () => {
       try {
@@ -712,7 +855,13 @@ export default defineComponent({
       isCheckingLimit,
       showUpgradeModal,
       limitStatus,
-      openAgentDetails
+      openAgentDetails,
+      exportModalId,
+      exportFilters,
+      agentExportFields,
+      exportLoading,
+      openExportModal,
+      handleExportAgents
     };
   },
 });

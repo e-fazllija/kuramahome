@@ -19,7 +19,25 @@
           </div>
         </div>
       </div>
-      <div class="card-toolbar">
+      <div class="card-toolbar d-flex flex-wrap gap-3">
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          @click="openExportModal"
+          :disabled="exportLoading"
+        >
+          <span v-if="!exportLoading" class="d-flex align-items-center">
+            <i class="ki-duotone ki-exit-down fs-4 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Esporta</span>
+          </span>
+          <span v-else class="d-flex align-items-center gap-2">
+            <KTSpinner size="sm" :inline="true" />
+            Preparazione...
+          </span>
+        </button>
         <button
           type="button"
           class="btn btn-sm btn-primary"
@@ -374,7 +392,17 @@
     </div>
   </div>
 
-  <ExportCustomerModal></ExportCustomerModal>
+  <ExportDataModal
+    v-model="exportFilters"
+    :modal-id="exportModalId"
+    title="Esporta richieste"
+    description="Seleziona i filtri per scaricare il report delle richieste."
+    entity-label="richieste"
+    :fields="requestExportFields"
+    :loading="exportLoading"
+    date-tooltip="Limita le richieste create dopo la data indicata."
+    @export="handleExportRequests"
+  />
   <AddRequestModal 
       @formAddSubmitted="getItems('')"
     @limitExceeded="handleLimitExceeded"
@@ -394,20 +422,29 @@ import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
-import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
 import AddRequestModal from "@/components/modals/forms/requests/AddRequestModal.vue";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
+import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
-import { getRequestsList, Request, deleteRequest, RequestTabelData } from "@/core/data/requests";
+import {
+  getRequestsList,
+  Request,
+  deleteRequest,
+  RequestTabelData,
+  exportRequests,
+  type RequestExportPayload,
+} from "@/core/data/requests";
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/auth";
 import { getSearchItems, SearchModel } from "@/core/data/events";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
-import Multiselect from '@vueform/multiselect'
+import Multiselect from "@vueform/multiselect";
 import KTSpinner from "@/components/Spinner.vue";
+import { downloadBlobResponse } from "@/core/helpers/download";
+import type { ExportFieldDefinition } from "@/types/export";
 import '@/assets/css/filters.css';
 import '@/assets/css/table-actions.css';
 import '@/assets/css/lists-common.css';
@@ -416,15 +453,28 @@ export default defineComponent({
   name: "requests",
   components: {
     Datatable,
-    ExportCustomerModal,
     AddRequestModal,
     KTSpinner,
     UpgradeRequiredModal,
-    Multiselect
+    Multiselect,
+    ExportDataModal
   },
   setup() {
     const authStore = useAuthStore();
     const router = useRouter();
+    const optionsPropertyType = ref([
+      { value: "Appartamenti", label: "Appartamenti" },
+      { value: "AttivitaCommerciale", label: "Attività Commerciale" },
+      { value: "Box", label: "Box" },
+      { value: "CapannoniLocArtigianali", label: "Capannoni, Loc. Artigianali" },
+      { value: "CasaliRuderi", label: "Casali e Ruderi" },
+      { value: "CaseSemindipendenti", label: "Case Semindipendenti" },
+      { value: "LocaliCommerciali", label: "Locali Commerciali" },
+      { value: "NuoveCostruzioni", label: "Nuove Costruzioni" },
+      { value: "Terreni", label: "Terreni" },
+      { value: "VilleCaseIndipendenti", label: "Ville e Case Indipendenti" },
+      { value: "VillaASchiera", label: "Villa a Schiera" }
+    ]);
     const tableHeader = ref([
       {
         columnName: "Cliente",
@@ -495,6 +545,80 @@ export default defineComponent({
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
+    const exportModalId = "requests_export_modal";
+    const exportLoading = ref(false);
+    const buildDefaultExportFilters = (): RequestExportPayload => ({
+      format: "excel",
+      fromDate: null,
+      toDate: null,
+      priceFrom: null,
+      priceTo: null,
+      contract: "",
+      propertyTypes: [],
+      province: "",
+      city: "",
+      status: "",
+      search: ""
+    });
+    const exportFilters = ref<RequestExportPayload>(buildDefaultExportFilters());
+    const requestExportFields = computed<ExportFieldDefinition[]>(() => [
+      {
+        key: "contract",
+        label: "Contratto",
+        type: "select",
+        placeholder: "Tutti i contratti",
+        options: [
+          { label: "Vendita", value: "Vendita" },
+          { label: "Affitto", value: "Affitto" },
+          { label: "Aste", value: "Aste" }
+        ]
+      },
+      {
+        key: "propertyTypes",
+        label: "Tipologie immobile",
+        type: "multiselect",
+        placeholder: "Seleziona tipologie",
+        options: optionsPropertyType.value
+      },
+      {
+        type: "range",
+        label: "Budget (€)",
+        minKey: "priceFrom",
+        maxKey: "priceTo",
+        minPlaceholder: "Da",
+        maxPlaceholder: "A",
+        tooltip: "Filtra per budget minimo e massimo indicato dal cliente."
+      },
+      {
+        key: "province",
+        label: "Provincia",
+        type: "text",
+        placeholder: "Es. Torino"
+      },
+      {
+        key: "city",
+        label: "Città",
+        type: "text",
+        placeholder: "Es. Rivoli"
+      },
+      {
+        key: "status",
+        label: "Stato richiesta",
+        type: "select",
+        placeholder: "Tutti gli stati",
+        options: [
+          { label: "Aperta", value: "Aperta" },
+          { label: "Chiusa", value: "Chiusa" },
+          { label: "Archiviata", value: "Archiviata" }
+        ]
+      },
+      {
+        key: "search",
+        label: "Ricerca testuale",
+        type: "text",
+        placeholder: "Nome cliente, email..."
+      }
+    ]);
 
     // Dati strutturati per i filtri a tre livelli (Provincia, Città, Località)
     const structuredLocationData = ref<{
@@ -832,6 +956,78 @@ export default defineComponent({
       const route = router.resolve({ name: 'request', params: { id: id.toString() } });
       window.open(route.href, '_blank');
     };
+    const openExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        const modalInstance = Modal.getOrCreateInstance(modalElement);
+        modalInstance.show();
+      }
+    };
+
+    const closeExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        const modalInstance = Modal.getInstance(modalElement);
+        modalInstance?.hide();
+      }
+    };
+
+    const resetExportFilters = () => {
+      exportFilters.value = {
+        ...buildDefaultExportFilters(),
+      };
+    };
+
+    const handleExportRequests = async (payload: RequestExportPayload) => {
+      exportLoading.value = true;
+      try {
+        const response = await exportRequests(payload);
+        const fallbackName = payload.format === "csv" ? "richieste.csv" : "richieste.xlsx";
+        downloadBlobResponse(response, fallbackName);
+        closeExportModal();
+        Swal.fire({
+          icon: "success",
+          title: "Export completato",
+          text: "Il file è stato scaricato correttamente.",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        resetExportFilters();
+      } catch (error: any) {
+        let message = "Errore durante l'esportazione delle richieste.";
+        const response = error?.response;
+        if (response?.data instanceof Blob) {
+          const text = await response.data.text();
+          try {
+            const parsed = JSON.parse(text);
+            message = parsed?.Message || parsed?.message || message;
+            if (parsed?.CanProceed === false) {
+              limitStatus.value = parsed;
+              showUpgradeModal.value = true;
+            }
+          } catch {
+            message = text || message;
+          }
+        } else if (response?.data?.Message) {
+          message = response.data.Message;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Export non riuscito",
+          text: message,
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        exportLoading.value = false;
+      }
+    };
 
     onMounted(async () => {
       if (authStore.user.Role == "Admin") {
@@ -888,27 +1084,15 @@ export default defineComponent({
       showUpgradeModal,
       limitStatus,
       handleLimitExceeded,
-      goToRequestDetails
+      goToRequestDetails,
+      optionsPropertyType,
+      exportFilters,
+      exportModalId,
+      requestExportFields,
+      exportLoading,
+      openExportModal,
+      handleExportRequests
       };
   },
-    data() {
-    return {
-  optionsPropertyType: [
-    { value: "Appartamenti", label: "Appartamenti" },
-    { value: "AttivitaCommerciale", label: "Attività Commerciale" },
-    { value: "Box", label: "Box" },
-    { value: "CapannoniLocArtigianali", label: "Capannoni, Loc. Artigianali" },
-    { value: "CasaliRuderi", label: "Casali e Ruderi" },
-    { value: "CaseSemindipendenti", label: "Case Semindipendenti" },
-    { value: "LocaliCommerciali", label: "Locali Commerciali" },
-    { value: "NuoveCostruzioni", label: "Nuove Costruzioni" },
-    { value: "Terreni", label: "Terreni" },
-    { value: "VilleCaseIndipendenti", label: "Ville e Case Indipendenti" },
-    { value: "VillaASchiera", label: "Villa a Schiera" }
-  ]
-    };
-  },
-
-
 });
 </script>

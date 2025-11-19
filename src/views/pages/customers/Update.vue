@@ -564,8 +564,7 @@ export default defineComponent({
       formData.value = await getCustomer(id)
 
       formData.value.UserId = formData.value.UserId || store.user.Id;
-      formData.value.AdminId = formData.value.AdminId || formData.value.UserId;
-      
+
       // Carica i dati dal JSON se non sono già caricati
       await getProvinceCities();
       
@@ -665,6 +664,18 @@ export default defineComponent({
         loading.value = true;
         await deleteCustomer(id);
         await router.push({ name: "clients" });
+      } catch (error: any) {
+        const errorMessage = error?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione del cliente.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
       } finally {
         loading.value = false;
       }
@@ -673,7 +684,6 @@ export default defineComponent({
     const submit = async () => {
       loading.value = true;
       formData.value.UserId = formData.value.UserId || store.user.Id;
-      formData.value.AdminId = formData.value.AdminId || formData.value.UserId;
       await updateCustomer(formData.value)
         .then(() => {
           loading.value = false;

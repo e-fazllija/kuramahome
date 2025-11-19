@@ -266,8 +266,11 @@ router.beforeEach(async (to, from, next) => {
   // reset config to initial state
   configStore.resetLayoutConfig();
 
-  // La verifica del token viene fatta solo all'avvio dell'app (App.vue onMounted)
-  // Non serve chiamare verifyAuth() ad ogni cambio di route
+  // Se c'è un token ma l'utente non è ancora stato caricato (es. dopo un refresh),
+  // attendiamo che verifyAuth() completi il caricamento dell'utente
+  if (authStore.isAuthenticated && !authStore.user.Role) {
+    await authStore.verifyAuth();
+  }
 
   // before page access check if page requires authentication
   if (to.meta.middleware == "auth") {

@@ -22,7 +22,26 @@
           </div>
         </div>
       </div>
-      <div class="card-toolbar">
+      <div class="card-toolbar d-flex flex-wrap gap-3">
+        <button
+          v-if="isAdmin"
+          type="button"
+          class="btn btn-sm btn-light"
+          @click="openExportModal"
+          :disabled="exportLoading"
+        >
+          <span v-if="!exportLoading" class="d-flex align-items-center">
+            <i class="ki-duotone ki-exit-down fs-3 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fw-bold">Esporta</span>
+          </span>
+          <span v-else class="d-flex align-items-center gap-2">
+            <KTSpinner size="sm" :inline="true" />
+            Preparazione...
+          </span>
+        </button>
         <button
           v-if="isAdmin"
           type="button"
@@ -342,7 +361,17 @@
     </div>
     </div>
 
-    <ExportCustomerModal></ExportCustomerModal>
+    <ExportDataModal
+      v-model="exportFilters"
+      :modal-id="exportModalId"
+      title="Esporta agenzie"
+      description="Scarica l'elenco delle agenzie in formato CSV o Excel."
+      entity-label="agenzie"
+      :fields="agencyExportFields"
+      :loading="exportLoading"
+      date-tooltip="Filtra per data di creazione dell'agenzia."
+      @export="handleExportAgencies"
+    />
     <AddAgencyModal 
       @formAddSubmitted="getItems('')"
       @limitExceeded="handleLimitExceeded"
@@ -364,10 +393,10 @@ import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, computed } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
-import ExportCustomerModal from "@/components/modals/forms/ExportCustomerModal.vue";
+import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
-import { getAgencies, deleteAgency, Agency } from "@/core/data/agencies";
+import { getAgencies, deleteAgency, Agency, exportAgencies, type AgencyExportPayload } from "@/core/data/agencies";
 import { getAgents } from "@/core/data/agents";
 import AddAgencyModal from "@/components/modals/forms/agencies/AddAgencyModal.vue";
 import UpdateAgencyModal from "@/components/modals/forms/agencies/UpdateAgencyModal.vue";
@@ -378,6 +407,8 @@ import { hasAdminRole } from "@/core/helpers/auth";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
 import KTSpinner from "@/components/Spinner.vue";
+import { downloadBlobResponse } from "@/core/helpers/download";
+import type { ExportFieldDefinition } from "@/types/export";
 import '@/assets/css/filters.css';
 import '@/assets/css/table-actions.css';
 import '@/assets/css/lists-common.css';
@@ -386,14 +417,13 @@ export default defineComponent({
   name: "agencies",
   components: {
     Datatable,
-    ExportCustomerModal,
+    ExportDataModal,
     AddAgencyModal,
     UpdateAgencyModal,
     UpgradeRequiredModal,
     KTSpinner,
   },
   setup() {
-    const authStore = useAuthStore();
     
     // Verifica se l'utente è Admin usando helper
     const isAdmin = computed(() => hasAdminRole());
@@ -436,21 +466,49 @@ export default defineComponent({
     const tableData = ref([]);
     const initAgents = ref([]);
     const isSearching = ref(false);
-    
+    const store = useAuthStore();
+
     // Subscription limits state
     const isCheckingLimit = ref(false);
     const showUpgradeModal = ref(false);
     const limitStatus = ref<SubscriptionLimitStatusResponse | null>(null);
+    const exportModalId = "agencies_export_modal";
+    const exportLoading = ref(false);
+    const buildDefaultExportFilters = (): AgencyExportPayload => ({
+      format: "excel",
+      fromDate: null,
+      toDate: null,
+      onlyActive: null,
+      search: "",
+    });
+    const exportFilters = ref<AgencyExportPayload>(buildDefaultExportFilters());
+    const agencyExportFields = computed<ExportFieldDefinition[]>(() => [
+      {
+        key: "onlyActive",
+        label: "Solo attive",
+        type: "checkbox",
+        placeholder: "Includi solo agenzie attive",
+      },
+      {
+        key: "search",
+        label: "Ricerca testuale",
+        type: "text",
+        placeholder: "Nome, email, telefono...",
+      },
+    ]);
     
     async function getItems(filterRequest: string) {
       isSearching.value = true;
       try {
-        const result = await getAgencies(filterRequest);
+        if (store.user.Role == "Admin") {
+          const result = await getAgencies(filterRequest);
         tableData.value = result || [];
         // Aggiorna anche initAgents per mantenere il dataset completo
         if (!filterRequest) {
           initAgents.value.splice(0, initAgents.value.length, ...tableData.value);
         }
+        }
+        
       } catch (error) {
         console.error('Error fetching agencies:', error);
         tableData.value = [];
@@ -582,9 +640,42 @@ export default defineComponent({
       });
 
       if (result.isConfirmed) {
-        await deleteAgency(agency.Id);
-        await getItems("");
-        MenuComponent.reinitialization(); 
+        try {
+          await deleteAgency(agency.Id);
+          
+          // Mostra messaggio di successo
+          Swal.fire({
+            title: "Eliminata!",
+            text: `L'agenzia "${displayName}" è stata eliminata con successo.`,
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+          
+          await getItems("");
+          MenuComponent.reinitialization(); 
+        } catch (error: any) {
+          // Mostra messaggio di errore dettagliato
+          const errorMessage = error?.data?.Message || error?.data?.message || "Si è verificato un errore durante l'eliminazione dell'agenzia.";
+          
+          Swal.fire({
+            title: "Errore",
+            text: errorMessage,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+          
+          console.error("Errore durante l'eliminazione dell'agenzia:", error);
+        }
       }
     }
 
@@ -693,6 +784,76 @@ export default defineComponent({
       }
     };
 
+    const openExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getOrCreateInstance(modalElement).show();
+      }
+    };
+
+    const closeExportModal = () => {
+      const modalElement = document.getElementById(exportModalId);
+      if (modalElement) {
+        Modal.getInstance(modalElement)?.hide();
+      }
+    };
+
+    const resetExportFilters = () => {
+      exportFilters.value = {
+        ...buildDefaultExportFilters(),
+      };
+    };
+
+    const handleExportAgencies = async (payload: AgencyExportPayload) => {
+      exportLoading.value = true;
+      try {
+        const response = await exportAgencies(payload);
+        const fallbackName = payload.format === "csv" ? "agenzie.csv" : "agenzie.xlsx";
+        downloadBlobResponse(response, fallbackName);
+        closeExportModal();
+        Swal.fire({
+          icon: "success",
+          title: "Export completato",
+          text: "Il file è stato scaricato correttamente.",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        resetExportFilters();
+      } catch (error: any) {
+        let message = "Errore durante l'esportazione delle agenzie.";
+        const response = error?.response;
+        if (response?.data instanceof Blob) {
+          const text = await response.data.text();
+          try {
+            const parsed = JSON.parse(text);
+            message = parsed?.Message || parsed?.message || message;
+            if (parsed?.CanProceed === false) {
+              limitStatus.value = parsed;
+              showUpgradeModal.value = true;
+            }
+          } catch {
+            message = text || message;
+          }
+        } else if (response?.data?.Message) {
+          message = response.data.Message;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Export non riuscito",
+          text: message,
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        exportLoading.value = false;
+      }
+    };
     // Gestione click "Nuova Agenzia" con controllo limiti
     const handleNewAgencyClick = async () => {
       try {
@@ -803,7 +964,13 @@ export default defineComponent({
       isCheckingLimit,
       showUpgradeModal,
       limitStatus,
-      openAgencyDetails
+      openAgencyDetails,
+      exportModalId,
+      exportFilters,
+      agencyExportFields,
+      exportLoading,
+      openExportModal,
+      handleExportAgencies
     };
   },
 });

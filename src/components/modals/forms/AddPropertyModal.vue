@@ -1114,8 +1114,8 @@
           </label>
           <!--end::Label-->
           <!--begin::Input-->
-          <el-form-item prop="StornoProvvigione">
-            <el-input v-model="formData.StornoProvvigione" type="number" class="modern-input" placeholder="Percentuale">
+          <el-form-item prop="CommissionReversal">
+            <el-input v-model="formData.CommissionReversal" type="number" class="modern-input" placeholder="Percentuale">
               <template #append>
                 <span>%</span>
               </template>
@@ -1149,7 +1149,7 @@
               <!--end::Modal body-->
             </div>
             <!--begin::Modal footer-->
-            <div class="modal-footer flex-center" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0 0 0.95rem 0.95rem; border-top: 1px solid #dee2e6; padding: 1.5rem 2rem;">
+            <div class="modal-footer flex-center">
               <!--begin::Button-->
               <button
                 type="reset"
@@ -1269,7 +1269,7 @@ export default defineComponent({
       VideoUrl: "",
       AgreedCommission: 0,
       FlatRateCommission: 0,
-      StornoProvvigione: 0,
+      CommissionReversal: 0,
       TypeOfAssignment: "",
     });
     const inserModel = ref<InsertModel>({
@@ -1563,6 +1563,8 @@ export default defineComponent({
       const numericValue = Number(value);
       if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
         callback(new Error("L'anno di costruzione è obbligatorio"));
+      } else if (numericValue < 1000 || numericValue > 3000) {
+        callback(new Error("L'anno di costruzione deve essere compreso tra 1000 e 3000"));
       } else {
         callback();
       }
