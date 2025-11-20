@@ -538,7 +538,7 @@
           <!--end::Modal body-->
 
           <!--begin::Modal footer-->
-          <div class="modal-footer flex-center" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0 0 0.95rem 0.95rem; border-top: 1px solid #dee2e6; padding: 1.5rem 2rem;">
+          <div class="modal-footer flex-center">
             <!--begin::Button-->
             <button 
               type="reset" 

@@ -70,12 +70,13 @@ const getRequests = (userId: string, filterRequest: string): Promise<Array<Reque
     ""
   )
     .then(({ data }) => {
-      const result = data.Data as Partial<Array<Request>>
+      const result = data.Data as Array<Request>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento delle richieste";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -114,8 +115,9 @@ const getRequestsList = (filterRequest: string, userIdOverride?: string): Promis
       } as RequestTabelData));
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento della lista richieste";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
@@ -125,34 +127,36 @@ const getCustomerRequests = (customerId: number): Promise<Array<Request>> => {
     ""
   )
     .then(({ data }) => {
-      const result = data.Data as Partial<Array<Request>>
+      const result = data.Data as Array<Request>
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento delle richieste del cliente";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const getRequest = (id: number): Promise<Request> => {
   return ApiService.get(`Requests/GetById?id=${id}`, "")
     .then(({ data }) => {
-      const result = data as Partial<Request>;
+      const result = data as Request;
       result.Customer = data.Customer as Customer;
       result.RealEstateProperties = data.RealEstateProperties;
       result.RequestNotes = data.RequestNotes;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento della richiesta";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const createRequest = async (formData: Request) => {
   return ApiService.post("Requests/Create", formData)
     .then(({ data }) => {
-      const result = data as Partial<Request>;
+      const result = data as Request;
       return result;
     })
     .catch(async ({ response }) => {
@@ -161,27 +165,29 @@ const createRequest = async (formData: Request) => {
         error.response = response;
         throw error;
       }
-      store.setError(response?.data?.Message, response?.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante la creazione della richiesta";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const updateRequest = async (formData: Request) => {
   return ApiService.post("Requests/Update", formData)
     .then(({ data }) => {
-      const result = data as Partial<Request>;
+      const result = data as Request;
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante l'aggiornamento della richiesta";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 
 const deleteRequest = async (id: number) => {
   return await ApiService.delete(`Requests/Delete?id=${id}`)
     .then(({ data }) => {
-      const result = data as Partial<Request>;
+      const result = data as Request;
       return result;
     })
     .catch(({ response }) => {
@@ -189,6 +195,24 @@ const deleteRequest = async (id: number) => {
       // Re-throw l'errore per permettere al componente di gestirlo
       throw response;
     });
+};
+
+export interface RequestExportPayload {
+  format?: "csv" | "excel";
+  fromDate?: string | null;
+  toDate?: string | null;
+  priceFrom?: number | null;
+  priceTo?: number | null;
+  contract?: string;
+  propertyTypes?: string[];
+  province?: string;
+  city?: string;
+  status?: string;
+  search?: string;
+}
+
+const exportRequests = (payload: RequestExportPayload) => {
+  return ApiService.postBlob("Requests/Export", payload);
 };
 
 const getToInsert = (): Promise<InsertModel> => {
@@ -205,8 +229,9 @@ const getToInsert = (): Promise<InsertModel> => {
       return result;
     })
     .catch(({ response }) => {
-      store.setError(response.data.Message, response.status);
-      return undefined;
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dati per l'inserimento";
+      store.setError(errorMessage, response?.status);
+      throw new Error(errorMessage);
     });
 };
 

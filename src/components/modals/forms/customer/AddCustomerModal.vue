@@ -403,7 +403,7 @@
           <!--end::Modal body-->
 
           <!--begin::Modal footer-->
-          <div class="modal-footer flex-center" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0 0 0.95rem 0.95rem; border-top: 1px solid #dee2e6; padding: 1.5rem 2rem;">
+          <div class="modal-footer flex-center">
             <!--begin::Button-->
             <button
               type="reset"
@@ -492,8 +492,7 @@ export default defineComponent({
       State: "",
       AcquisitionDone: false,
       OngoingAssignment: false,
-      UserId: store.user.Id,
-      AdminId: store.user.Id
+      UserId: store.user.Id
     });
 
     // Watcher per caricare le città quando si seleziona la provincia
@@ -557,7 +556,6 @@ export default defineComponent({
           loading.value = true;
           try {
             formData.value.UserId = formData.value.UserId || store.user.Id;
-            formData.value.AdminId = formData.value.AdminId || store.user.Id;
             await createCustomer(formData.value);
 
             const error = store.errors;

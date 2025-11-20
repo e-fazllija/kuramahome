@@ -10,17 +10,17 @@
 }
 
 .form-check-input:checked {
-  background-color: #3699ff;
-  border-color: #3699ff;
+  background-color: var(--bs-accent-primary);
+  border-color: var(--bs-accent-primary);
 }
 
 .form-check-input:focus {
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+  border-color: var(--bs-accent-primary);
+  box-shadow: 0 0 0 0.2rem var(--kh-focus-ring-soft);
 }
 
 .form-check-input:hover:not(:disabled) {
-  border-color: #3699ff;
+  border-color: var(--bs-accent-primary);
 }
 
 .form-check-input:disabled {
@@ -40,11 +40,11 @@ label {
 }
 
 label:hover {
-  color: #3699ff !important;
+  color: var(--bs-accent-primary) !important;
 }
 
 label .required {
-  color: #f64e60;
+  color: var(--kh-status-danger);
 }
 
 /* Icons in Labels */
@@ -56,61 +56,39 @@ label:hover .ki-duotone {
   transform: scale(1.1);
 }
 
-/* Collapsible Sections */
-.collapsible {
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.collapsible:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%) !important;
-  border-color: #3699ff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.collapsible:hover .ki-duotone {
-  transform: scale(1.1);
-}
-
 /* Form Validation */
 .is-invalid {
-  border-color: #f64e60 !important;
+  border-color: var(--kh-status-danger) !important;
 }
 
 .is-valid {
-  border-color: #0bb7af !important;
+  border-color: var(--kh-status-success) !important;
 }
 
 .invalid-feedback {
-  color: #f64e60;
+  color: var(--kh-status-danger);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 .valid-feedback {
-  color: #0bb7af;
+  color: var(--kh-status-success);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 /* Dark Mode Support */
 [data-bs-theme="dark"] .form-check-input:checked {
-  background-color: #3699ff;
-  border-color: #3699ff;
+  background-color: var(--bs-accent-primary);
+  border-color: var(--bs-accent-primary);
 }
 
 [data-bs-theme="dark"] .form-check-input {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
+  background-color: var(--bs-bg-secondary);
+  border-color: var(--bs-border-color);
 }
 
 [data-bs-theme="dark"] .form-check-label {
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .collapsible:hover {
-  background: linear-gradient(135deg, #25293c 0%, #2d2d3f 100%) !important;
-  border-color: #3699ff !important;
+  color: var(--bs-text-primary);
 }
 

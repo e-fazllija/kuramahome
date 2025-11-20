@@ -140,7 +140,7 @@
               <div class="card-toolbar">
                 <a 
                   :href="currentSectionRoute" 
-                  class="btn btn-sm btn-light-primary fw-bold"
+                  class="btn btn-sm btn-light fw-bold"
                 >
                   <i class="ki-duotone ki-arrow-right fs-4 me-1">
                   <span class="path1"></span>

@@ -9,13 +9,13 @@
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-850px">
       <!--begin::Modal content-->
-      <div class="modal-content card-palette" style="border-radius: 0.95rem; box-shadow: 0 10px 30px var(--bs-shadow-color);">
+      <div class="modal-content card-palette modal-shell">
         <!--begin::Modal header-->
-        <div class="modal-header card-palette-header" id="kt_modal_add_agency_header" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%); border-radius: 0.95rem 0.95rem 0 0;">
+        <div class="modal-header card-palette-header modal-header-accent" id="kt_modal_add_agency_header">
           <!--begin::Modal title-->
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #0077CC 0%, #0077CC 100%); box-shadow: 0 4px 12px rgba(0, 119, 204, 0.3);">
+              <span class="symbol-label symbol-label-accent">
                 <i class="ki-duotone ki-shop fs-2 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -37,7 +37,6 @@
             id="kt_modal_add_agency_close"
             data-bs-dismiss="modal"
             class="btn btn-icon btn-sm btn-active-icon-primary"
-            style="border-radius: 0.5rem; background: var(--bs-bg-primary); border: 1px solid var(--bs-border-color);"
           >
             <KTIcon icon-name="cross" icon-class="fs-1" />
           </div>
@@ -333,13 +332,12 @@
 
               <!--begin::Billing toggle-->
               <div
-                class="fw-bold fs-4 rotate collapsible mb-7 p-4"
+                class="fw-bold fs-4 rotate collapsible surface-tile mb-7 p-4"
                 data-bs-toggle="collapse"
                 href="#kt_modal_add_agency_billing_info"
                 role="button"
                 aria-expanded="false"
-                aria-controls="kt_agent_view_details"
-                style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0.75rem; border: 1px solid #dee2e6; cursor: pointer; transition: all 0.3s ease;">
+                aria-controls="kt_agent_view_details">
                 <i class="ki-duotone ki-information fs-3 me-3 text-primary">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -543,9 +541,8 @@
                       type="text"
                       placeholder="16 caratteri"
                       maxlength="16"
-                      class="modern-input"
+                      class="modern-input input-uppercase"
                       @input="formData.FiscalCode = formData.FiscalCode.toUpperCase()"
-                      style="text-transform: uppercase;"
                     />
                   </el-form-item>
                 </div>
@@ -591,9 +588,8 @@
                           type="text"
                           placeholder="SDI (7 caratteri)"
                           maxlength="7"
-                          class="modern-input"
+                          class="modern-input input-uppercase"
                           @input="formData.SDICode = formData.SDICode.toUpperCase()"
-                          style="text-transform: uppercase;"
                         />
                       </el-form-item>
                     </div>
@@ -609,7 +605,7 @@
           <!--end::Modal body-->
 
           <!--begin::Modal footer-->
-          <div class="modal-footer flex-center" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0 0 0.95rem 0.95rem; border-top: 1px solid #dee2e6; padding: 1.5rem 2rem;">
+          <div class="modal-footer flex-center">
             <!--begin::Button-->
             <button
               type="reset"
