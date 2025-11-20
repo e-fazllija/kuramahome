@@ -129,15 +129,13 @@
                   Agente
                 </label>
                 <el-form-item prop="AgentId">
-                  <select class="form-select modern-select" v-model="formData.AgentId" required>
-                    <option
-                      v-for="(user, index) in inserModel.Users"
-                      :key="index"
-                      :value="user.Id"
-                    >
-                      {{ user.FirstName }} {{ user.LastName }}
-                    </option>
-                  </select>
+                  <input
+                    class="form-control modern-input agent-readonly"
+                    :value="agentName"
+                    type="text"
+                    readonly
+                    disabled
+                  />
                 </el-form-item>
               </div>
 
@@ -853,15 +851,6 @@
           </button> -->
         </div>
         <div class="d-flex align-items-center">
-          <button type="button" class="btn btn-modal-cancel me-3" @click="cancelEdit">
-            <span class="btn-icon">
-              <i class="ki-duotone ki-cross fs-3">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </span>
-            <span class="btn-label">Annulla</span>
-          </button>
           <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
             <span class="btn-icon">
@@ -1030,7 +1019,7 @@
 // import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
 // import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
+import { defineComponent, onMounted, ref, watch, nextTick, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
@@ -1563,103 +1552,56 @@ export default defineComponent({
       router.back();
     };
 
-    const hasRelatedCalendarEvents = async (propertyId: number): Promise<boolean> => {
-      try {
-        const events = await getEvents();
-        if (!Array.isArray(events)) {
-          return false;
-        }
-        return events.some((event: CalendarEvent) => {
-          if (!event) return false;
-          const belongsToProperty = event.RealEstatePropertyId === propertyId;
-          if (!belongsToProperty) return false;
-          // Consideriamo bloccanti solo eventi non cancellati
-          return !event.Cancelled;
-        });
-      } catch (error) {
-        console.warn("Impossibile verificare le associazioni in calendario:", error);
-        return false;
-      }
-    };
-
     async function deleteItem() {
-      loading.value = true;
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const result = await Swal.fire({
+        title: "Elimina immobile",
+        html: "Stai per eliminare definitivamente questo immobile e tutti i dati collegati ad esso. L'operazione è irreversibile e potresti perdere irrimediabilmente i dati associati.",
         icon: "warning",
         showCancelButton: true,
+        focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Sì, elimina",
+        confirmButtonText: "Elimina",
         cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
-          confirmButton: "btn btn-danger me-3",
+          confirmButton: "btn btn-danger",
           cancelButton: "btn btn-light"
         },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            const hasCalendarLinks = await hasRelatedCalendarEvents(id);
-            if (hasCalendarLinks) {
-              loading.value = false;
-              Swal.fire({
-                text: "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova.",
-                icon: "warning",
-                buttonsStyling: false,
-                confirmButtonText: "Ok",
-                heightAuto: false,
-                customClass: {
-                  confirmButton: "btn btn-primary",
-                },
-              });
-              return;
-            }
-
-            await deleteRealEstateProperty(id);
-            loading.value = false;
-            await Swal.fire({
-              text: "Immobile eliminato con successo!",
-              icon: "success",
-              buttonsStyling: false,
-              confirmButtonText: "Continua",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
-            router.push({ name: "properties" });
-          } catch (response: any) {
-            loading.value = false;
-            const backendMessage: string =
-              response?.data?.Message ||
-              response?.data?.Detail ||
-              response?.data?.message ||
-              "";
-            const normalizedMessage = backendMessage.toLowerCase();
-            const isCalendarConflict =
-              normalizedMessage.includes("calendar") ||
-              normalizedMessage.includes("appunt");
-            const message = isCalendarConflict
-              ? "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova."
-              : backendMessage || "Si è verificato un errore durante l'eliminazione dell'immobile.";
-
-            Swal.fire({
-              text: message,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Ok",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
-          }
-        } else {
-          loading.value = false;
-        }
-      }).catch(() => {
-        loading.value = false;
       });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteRealEstateProperty(id);
+        loading.value = false;
+        await Swal.fire({
+          text: "Immobile eliminato con successo!",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Continua",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        router.push({ name: "properties" });
+      } catch (error: any) {
+        loading.value = false;
+        const errorMessage = error?.data?.Message || error?.response?.data?.Message || error?.data?.Detail || error?.data?.message || store.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     }
 
     const submit = () => {
@@ -1886,6 +1828,141 @@ export default defineComponent({
       }
     };
 
+    // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
+    const canModify = computed(() => {
+      if (!formData.value || !formData.value.User) {
+        return false;
+      }
+
+      const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre modificare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può modificare tutta la sua cerchia
+      if (currentUser.Role === 'Admin') {
+        // L'immobile è dell'Admin stesso
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un'Agency dell'Admin
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
+          return true;
+        }
+        // L'immobile è di un Agent diretto dell'Admin
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        // L'immobile è di un Agent di un'Agency dell'Admin
+        // (verificato tramite AgencyId che punta a un'Agency dell'Admin)
+        // Nota: questo richiederebbe caricare le Agency, ma per sicurezza
+        // il backend controllerà comunque, quindi possiamo essere più permissivi qui
+        // e lasciare che il backend faccia il controllo finale
+        return false;
+      }
+
+      // Agency: può modificare proprie + dei propri Agent
+      if (currentUser.Role === 'Agency') {
+        // L'immobile è dell'Agency stessa
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un suo Agent
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agent: può modificare solo proprie
+      if (currentUser.Role === 'Agent') {
+        return formData.value.UserId === currentUser.Id;
+      }
+
+      return false;
+    });
+
+    // Verifica se l'utente può eliminare l'immobile secondo le regole di accesso
+    const canDelete = computed(() => {
+      if (!formData.value || !formData.value.User) {
+        return false;
+      }
+
+      const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre eliminare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può eliminare tutta la sua cerchia
+      if (currentUser.Role === 'Admin') {
+        // L'immobile è dell'Admin stesso
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un'Agency dell'Admin
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
+          return true;
+        }
+        // L'immobile è di un Agent diretto dell'Admin
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agency: può eliminare proprie + dei propri Agent
+      if (currentUser.Role === 'Agency') {
+        // L'immobile è dell'Agency stessa
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un suo Agent
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agent: può eliminare solo proprie
+      if (currentUser.Role === 'Agent') {
+        return formData.value.UserId === currentUser.Id;
+      }
+
+      return false;
+    });
+
+    // Computed per ottenere il nome completo dell'agente
+    const agentName = computed(() => {
+      if (!formData.value.AgentId) {
+        return '';
+      }
+      
+      // Prima cerca nella lista degli agenti disponibili
+      if (inserModel.value.Users && inserModel.value.Users.length > 0) {
+        const agent = inserModel.value.Users.find((u: any) => u.Id === formData.value.AgentId);
+        if (agent) {
+          return `${agent.FirstName} ${agent.LastName}`;
+        }
+      }
+      
+      // Fallback: usa i dati dell'utente che ha creato l'immobile
+      if (formData.value.User && formData.value.User.Id === formData.value.AgentId) {
+        return `${formData.value.User.FirstName} ${formData.value.User.LastName}`;
+      }
+      
+      return '';
+    });
+
     return {
       formData,
       rules,
@@ -1900,7 +1977,6 @@ export default defineComponent({
       setPhotoHighlighted,
       deleteFile,
       deleteItem,
-      hasRelatedCalendarEvents,
       inserModel,
       user,
       checkMove,
@@ -1917,6 +1993,9 @@ export default defineComponent({
       handleImageError,
       handleImageLoad,
       cancelEdit,
+      canModify,
+      canDelete,
+      agentName,
     };
   },
 });
@@ -2159,5 +2238,16 @@ body[data-bs-theme="dark"] .note-card {
 
 .empty-icon {
   opacity: 0.5;
+}
+
+.agent-readonly {
+  background-color: #f0f0f0 !important;
+  cursor: not-allowed !important;
+  color: #333333;
+}
+
+body[data-bs-theme="dark"] .agent-readonly {
+  background-color: #2c2c2c !important;
+  color: #e0e0e0;
 }
 </style>

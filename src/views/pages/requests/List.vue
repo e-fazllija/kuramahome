@@ -649,20 +649,43 @@ export default defineComponent({
     };
 
     async function deleteItem(id: number) {
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const result = await Swal.fire({
+        title: "Elimina richiesta",
+        html: "Stai per eliminare definitivamente questa richiesta e tutti i dati collegati ad essa. L'operazione è irreversibile.",
         icon: "warning",
+        showCancelButton: true,
+        focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
+        confirmButtonText: "Elimina",
+        cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light"
         },
-      }).then(async () => {
-        await deleteRequest(id)
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        await deleteRequest(id);
         await getItems("");
         MenuComponent.reinitialization();
-      });
+      } catch (error: any) {
+        const errorMessage = error?.data?.Message || error?.response?.data?.Message || authStore.errors || "Si è verificato un errore durante l'eliminazione della richiesta.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     }
 
     const sort = (sort: Sort) => {

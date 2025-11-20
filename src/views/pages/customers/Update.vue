@@ -624,31 +624,23 @@ export default defineComponent({
     async function deleteItem() {
       const displayName = `${formData.value.FirstName ?? ""} ${formData.value.LastName ?? ""}`.trim() || formData.value.Email || `Cliente #${id}`;
 
-      const htmlMessage = formData.value.CustomerNotes?.length
-        ? `Stai per eliminare definitivamente <strong>${displayName}</strong>.<br><br>Questo cliente ha richieste collegate: l'operazione non è reversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`
-        : `Stai per eliminare definitivamente <strong>${displayName}</strong>.<br><br>L'operazione è irreversibile. Vuoi continuare?`;
-
-      const requiresTyping = !!formData.value.CustomerNotes?.length;
-
       const result = await Swal.fire({
         title: "Elimina cliente",
-        html: htmlMessage,
+        html: `Stai per eliminare definitivamente questo cliente e tutti i dati collegati ad esso. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`,
         icon: "warning",
-        input: requiresTyping ? "text" : undefined,
-        inputLabel: requiresTyping ? "Conferma eliminazione" : undefined,
-        inputPlaceholder: requiresTyping ? displayName : undefined,
+        input: "text",
+        inputLabel: "Conferma eliminazione",
+        inputPlaceholder: displayName,
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: requiresTyping ? "Elimina definitivamente" : "Elimina",
+        confirmButtonText: "Elimina definitivamente",
         cancelButtonText: "Annulla",
-        inputValidator: requiresTyping
-          ? (value) => {
-              if (value !== displayName) {
-                return "Il nome inserito non corrisponde. Riprova.";
-              }
-              return undefined;
-            }
-          : undefined,
+        inputValidator: (value) => {
+          if (value !== displayName) {
+            return "Il nome inserito non corrisponde. Riprova.";
+          }
+          return undefined;
+        },
         buttonsStyling: false,
         heightAuto: false,
         customClass: {

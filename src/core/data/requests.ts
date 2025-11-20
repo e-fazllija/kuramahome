@@ -178,34 +178,6 @@ const updateRequest = async (formData: Request) => {
     });
 };
 
-export interface RequestDeleteConstraints {
-  CanDelete: boolean;
-  Message: string | null;
-  EventsCount: number;
-  RequestNotesCount: number;
-}
-
-const canDeleteRequest = async (id: number): Promise<RequestDeleteConstraints | null> => {
-  return await ApiService.get(`Requests/CanDelete?id=${id}`, "")
-    .then(({ data }) => {
-      return {
-        CanDelete: data.CanDelete || false,
-        Message: data.Message || null,
-        EventsCount: data.EventsCount || 0,
-        RequestNotesCount: data.RequestNotesCount || 0
-      } as RequestDeleteConstraints;
-    })
-    .catch(({ response }) => {
-      store.setError(response?.data?.Message, response?.status);
-      return {
-        CanDelete: false,
-        Message: response?.data?.Message || "Errore durante la verifica dei constraint.",
-        EventsCount: 0,
-        RequestNotesCount: 0
-      } as RequestDeleteConstraints;
-    });
-};
-
 const deleteRequest = async (id: number) => {
   return await ApiService.delete(`Requests/Delete?id=${id}`)
     .then(({ data }) => {
@@ -238,4 +210,4 @@ const getToInsert = (): Promise<InsertModel> => {
     });
 };
 
-export { getRequests, getRequestsList, getRequest, createRequest, updateRequest, deleteRequest, getToInsert, getCustomerRequests, canDeleteRequest, type RequestDeleteConstraints }
+export { getRequests, getRequestsList, getRequest, createRequest, updateRequest, deleteRequest, getToInsert, getCustomerRequests }

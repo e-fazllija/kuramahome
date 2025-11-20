@@ -563,37 +563,46 @@ export default defineComponent({
 
 
     async function deleteItem(id: Number) {
-      loading.value = true;
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const result = await Swal.fire({
+        title: "Elimina immobile",
+        html: "Stai per eliminare definitivamente questo immobile e tutti i dati collegati ad esso. L'operazione è irreversibile e potresti perdere irrimediabilmente i dati associati.",
         icon: "warning",
+        showCancelButton: true,
+        focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Continua!",
+        confirmButtonText: "Elimina",
+        cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light"
         },
-      }).then(async () => {
-        try {
-          await deleteRealEstateProperty(id);
-          await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
-          MenuComponent.reinitialization();
-        } catch (error: any) {
-          const errorMessage = error?.data?.Message || error?.response?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
-          Swal.fire({
-            text: errorMessage,
-            icon: "error",
-            buttonsStyling: false,
-            confirmButtonText: "Ok",
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn btn-primary",
-            },
-          });
-        } finally {
-          loading.value = false;
-        }
       });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteRealEstateProperty(id);
+        await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
+        MenuComponent.reinitialization();
+      } catch (error: any) {
+        const errorMessage = error?.data?.Message || error?.response?.data?.Message || authStore.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      } finally {
+        loading.value = false;
+      }
     }
 
     const sort = (sort: Sort) => {

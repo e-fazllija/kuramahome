@@ -485,12 +485,21 @@ export default defineComponent({
 
       const result = await Swal.fire({
         title: "Elimina cliente",
-        text: `Sei sicuro di voler eliminare definitivamente ${displayName}? L'operazione non può essere annullata e rimuoverà tutte le informazioni collegate.`,
+        html: `Stai per eliminare definitivamente questo cliente e tutti i dati collegati ad esso. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`,
         icon: "warning",
+        input: "text",
+        inputLabel: "Conferma eliminazione",
+        inputPlaceholder: displayName,
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: "Elimina",
+        confirmButtonText: "Elimina definitivamente",
         cancelButtonText: "Annulla",
+        inputValidator: (value) => {
+          if (value !== displayName) {
+            return "Il nome inserito non corrisponde. Riprova.";
+          }
+          return undefined;
+        },
         buttonsStyling: false,
         heightAuto: false,
         customClass: {

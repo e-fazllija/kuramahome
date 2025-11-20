@@ -541,38 +541,23 @@ export default defineComponent({
     async function deleteItem(agency: Agency){
       const displayName = getAgencyDisplayName(agency);
 
-      let requiresTyping = false;
-      if (agency?.Id) {
-        try {
-          const linkedAgents = await getAgents(agency.Id, "");
-          requiresTyping = !!linkedAgents?.length;
-        } catch (error) {
-          console.error("Errore durante il controllo degli agenti collegati:", error);
-          requiresTyping = true;
-        }
-      }
-
       const result = await Swal.fire({
         title: "Elimina agenzia",
-        html: requiresTyping
-          ? `Stai per eliminare definitivamente l'agenzia <strong>${displayName}</strong> e tutti gli agenti collegati. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`
-          : `Stai per eliminare definitivamente l'agenzia <strong>${displayName}</strong>. Questa azione non può essere annullata.`,
+        html: `Stai per eliminare definitivamente questa agenzia e tutti i dati collegati ad essa. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`,
         icon: "warning",
-        input: requiresTyping ? "text" : undefined,
-        inputLabel: requiresTyping ? "Conferma eliminazione" : undefined,
-        inputPlaceholder: requiresTyping ? displayName : undefined,
+        input: "text",
+        inputLabel: "Conferma eliminazione",
+        inputPlaceholder: displayName,
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: requiresTyping ? "Elimina definitivamente" : "Elimina",
+        confirmButtonText: "Elimina definitivamente",
         cancelButtonText: "Annulla",
-        inputValidator: requiresTyping
-          ? (value) => {
-              if (value !== displayName) {
-                return "Il nome inserito non corrisponde. Riprova.";
-              }
-              return undefined;
-            }
-          : undefined,
+        inputValidator: (value) => {
+          if (value !== displayName) {
+            return "Il nome inserito non corrisponde. Riprova.";
+          }
+          return undefined;
+        },
         buttonsStyling: false,
         heightAuto: false,
         customClass: {
