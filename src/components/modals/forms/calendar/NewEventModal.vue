@@ -1,15 +1,15 @@
 <template>
 <div class="modal fade show" id="kt_modal_add_event" role="dialog" ref="newTargetModalRef" tabindex="-1" aria-hidden="false" aria-modal="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
-      <div class="modal-content" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+      <div class="modal-content card-palette modal-shell">
         <el-form class="form fv-plugins-bootstrap5 fv-plugins-framework" id="kt_modal_add_event_form"
           @submit.prevent="submit()" :model="targetData" :rules="rules" ref="formRef">
           <!--begin::Modal header-->
-          <div class="modal-header" id="kt_modal_add_event_header" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+          <div class="modal-header card-palette-header modal-header-accent" id="kt_modal_add_event_header">
             <!--begin::Modal title-->
             <div class="d-flex align-items-center">
               <div class="symbol symbol-40px me-3">
-                <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+                <span class="symbol-label symbol-label-accent">
                   <i class="ki-duotone ki-calendar fs-2 text-white">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -17,8 +17,8 @@
                 </span>
               </div>
               <div>
-                <h2 class="fw-bold m-0 text-gray-900 fs-3">📅 Aggiungi Evento</h2>
-                <span class="text-muted fs-7 fw-semibold">Inserisci i dati del nuovo evento</span>
+                <h2 class="fw-bold m-0 text-palette-primary fs-3">📅 Aggiungi Evento</h2>
+                <span class="text-palette-secondary fs-7 fw-semibold">Inserisci i dati del nuovo evento</span>
               </div>
             </div>
             <!--end::Modal title-->
@@ -28,7 +28,6 @@
               id="kt_modal_add_event_close"
               data-bs-dismiss="modal"
               class="btn btn-icon btn-sm btn-active-icon-primary"
-              style="border-radius: 0.5rem; background: rgba(255, 255, 255, 0.8); border: 1px solid #e9ecef;"
             >
               <KTIcon icon-name="cross" icon-class="fs-1" />
             </div>
@@ -66,7 +65,7 @@
                     type="text" 
                     name="EventName"
                     placeholder="Inserisci il nome dell'evento"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -89,7 +88,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Color">
-                  <select v-model="targetData.Color" class="form-select modern-select"
+                  <select v-model="targetData.Color" class="form-select form-select-lg"
                          :style="{ backgroundColor: targetData.Color, color: '#fff' }">
                     <option v-for="(color, index) in colorOptions" :key="index" 
                          :value="color.hex" :style="{ backgroundColor: color.hex, color: '#fff' }">
@@ -121,7 +120,7 @@
                     type="text" 
                     placeholder="Descrizione dell'evento" 
                     name="EventDescription"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -146,7 +145,7 @@
                     type="text" 
                     placeholder="Dove si terrà l'evento" 
                     name="EventLocation"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -291,7 +290,7 @@
             <button
               type="reset"
               id="kt_modal_add_event_cancel"
-              class="btn btn-modal-cancel me-3"
+              class="btn btn-secondary me-3"
               data-bs-dismiss="modal"
             >
               <span class="btn-icon">
@@ -307,7 +306,7 @@
             <!--begin::Button-->
             <button
               :data-kt-indicator="loading ? 'on' : null"
-              class="btn btn-modal-primary"
+              class="btn btn-primary"
               type="submit"
               :disabled="loading"
             >
@@ -593,17 +592,5 @@ export default defineComponent({
 });
 </script>
 <style src="@vueform/multiselect/themes/default.css"></style>
-
-<style lang="scss">
-.el-select {
-  width: 100%;
-}
-
-.el-date-editor.el-input,
-.el-date-editor.el-input__inner {
-  width: 100%;
-}
-</style>
-
 
 <!-- Tutti gli stili sono stati spostati in file CSS dedicati -->

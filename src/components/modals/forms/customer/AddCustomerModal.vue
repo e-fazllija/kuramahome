@@ -7,7 +7,7 @@
     aria-hidden="true"
   >
     <!--begin::Modal dialog-->
-    <div class="modal-dialog modal-dialog-centered mw-850px">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
       <!--begin::Modal content-->
       <div class="modal-content">
         <!--begin::Modal header-->
@@ -74,7 +74,7 @@
                 </label>
                 <select 
                   v-model="formData.UserId"
-                  class="form-select modern-select"
+                  class="form-select form-select-lg"
                   name="owner"
                   required
                 >
@@ -113,7 +113,7 @@
                     v-model="formData.FirstName"
                     type="text"
                     placeholder="Inserisci il nome"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -139,7 +139,7 @@
                     v-model="formData.LastName"
                     type="text"
                     placeholder="Inserisci il cognome"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -162,7 +162,7 @@
                   <el-input 
                     v-model="formData.Email"
                     placeholder="esempio@email.com"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -186,7 +186,7 @@
                     v-model="formData.Phone" 
                     type="number"
                     placeholder="3331234567"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -316,7 +316,7 @@
                 
                 <!--begin::Input-->
                 <textarea 
-                  class="form-control modern-textarea" 
+                  class="form-control form-control-lg" 
                   v-model="formData.Description"
                   placeholder="Inserisci eventuali note..."
                   rows="3"
@@ -369,7 +369,7 @@
                     <el-input 
                       v-model="formData.Address"
                       placeholder="Via, numero civico"
-                      class="modern-input"
+                      size="large"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -391,7 +391,7 @@
                   <!--begin::Input-->
                   <select 
                     v-model="formData.State"
-                    class="form-select modern-select"
+                    class="form-select form-select-lg"
                     name="province"
                   >
                     <option value="">🗺️ Seleziona provincia</option>
@@ -416,7 +416,7 @@
                   <!--end::Label-->
 
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.City">
+                  <select class="form-select form-select-lg" v-model="formData.City">
                     <option value="">🏙️ Seleziona comune</option>
                     <option v-for="(city, index) in cities" :key="index" :value="city.Name">
                       {{ city.Name }}
@@ -438,7 +438,7 @@
             <button
               type="reset"
               id="kt_modal_add_customer_cancel"
-              class="btn btn-modal-cancel me-3"
+              class="btn btn-secondary me-3"
               data-bs-dismiss="modal"
             >
               <span class="btn-icon">
@@ -454,7 +454,7 @@
             <!--begin::Button-->
             <button
               :data-kt-indicator="loading ? 'on' : null"
-              class="btn btn-modal-primary"
+              class="btn btn-primary"
               type="submit"
               :disabled="loading"
             >

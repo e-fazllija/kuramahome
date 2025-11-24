@@ -7,7 +7,7 @@
     aria-hidden="true"
   >
     <!--begin::Modal dialog-->
-    <div class="modal-dialog modal-dialog-centered mw-850px">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
       <!--begin::Modal content-->
       <div class="modal-content card-palette modal-shell">
         <!--begin::Modal header-->
@@ -127,7 +127,7 @@
                         v-model="formData.FirstName"
                         type="text"
                         placeholder="Inserisci il nome"
-                        class="modern-input"
+                        size="large"
                       />
                     </el-form-item>
                   </div>
@@ -138,7 +138,7 @@
                         v-model="formData.LastName"
                         type="text"
                         placeholder="Inserisci il cognome"
-                        class="modern-input"
+                        size="large"
                       />
                     </el-form-item>
                   </div>
@@ -157,7 +157,7 @@
                       v-model="formData.CompanyName"
                       type="text"
                       placeholder="Es. Rossi Immobiliare S.r.l."
-                      class="modern-input"
+                      size="large"
                     />
                   </el-form-item>
                 </div>
@@ -183,7 +183,7 @@
                         v-model="formData.FirstName"
                         type="text"
                         placeholder="Nome del referente"
-                        class="modern-input"
+                        size="large"
                       />
                     </el-form-item>
                   </div>
@@ -194,7 +194,7 @@
                         v-model="formData.LastName"
                         type="text"
                         placeholder="Cognome del referente"
-                        class="modern-input"
+                        size="large"
                       />
                     </el-form-item>
                   </div>
@@ -226,7 +226,7 @@
                   <el-input 
                     v-model="formData.Email" 
                     placeholder="esempio@agenzia.com"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -259,7 +259,7 @@
                     v-model="formData.PhoneNumber" 
                     type="tel"
                     placeholder="0123456789"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -292,7 +292,7 @@
                     v-model="formData.MobilePhone" 
                     type="tel"
                     placeholder="3331234567"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -323,7 +323,7 @@
                     v-model="formData.Referent" 
                     type="text" 
                     placeholder="Nome del referente"
-                    class="modern-input"
+                    size="large"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -374,7 +374,7 @@
                     <el-input 
                       v-model="formData.Address" 
                       placeholder="Via, numero civico"
-                      class="modern-input"
+                      size="large"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -398,7 +398,7 @@
                   <!--begin::Input-->
                   <select 
                     v-model="formData.Province"
-                    class="form-select modern-select"
+                    class="form-select form-select-lg"
                     name="province"
                   >
                     <option value="">🗺️ Seleziona provincia</option>
@@ -425,7 +425,7 @@
                   <!--end::Label-->
 
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.City">
+                  <select class="form-select form-select-lg" v-model="formData.City">
                     <option value="">🏙️ Seleziona comune</option>
                     <option v-for="(city, index) in cities" :key="index" :value="city.Name">
                       {{ city.Name }}
@@ -456,7 +456,7 @@
                       <el-input 
                         v-model="formData.ZipCode" 
                         placeholder="Es. 00100"
-                        class="modern-input"
+                        size="large"
                       />
                     </el-form-item>
                     <!--end::Input-->
@@ -541,7 +541,7 @@
                       type="text"
                       placeholder="16 caratteri"
                       maxlength="16"
-                      class="modern-input input-uppercase"
+                      size="large"
                       @input="formData.FiscalCode = formData.FiscalCode.toUpperCase()"
                     />
                   </el-form-item>
@@ -561,7 +561,7 @@
                       type="text"
                       placeholder="11 cifre"
                       maxlength="11"
-                      class="modern-input"
+                      size="large"
                     />
                   </el-form-item>
                 </div>
@@ -577,7 +577,7 @@
                           v-model="formData.PEC"
                           type="email"
                           placeholder="pec@example.com"
-                          class="modern-input"
+                          size="large"
                         />
                       </el-form-item>
                     </div>
@@ -588,7 +588,7 @@
                           type="text"
                           placeholder="SDI (7 caratteri)"
                           maxlength="7"
-                          class="modern-input input-uppercase"
+                          size="large"
                           @input="formData.SDICode = formData.SDICode.toUpperCase()"
                         />
                       </el-form-item>
@@ -610,7 +610,7 @@
             <button
               type="reset"
               id="kt_modal_add_agency_cancel"
-              class="btn btn-modal-cancel me-3"
+              class="btn btn-secondary me-3"
               data-bs-dismiss="modal"
             >
               <span class="btn-icon">
@@ -626,7 +626,7 @@
             <!--begin::Button-->
             <button
               :data-kt-indicator="loading ? 'on' : null"
-              class="btn btn-modal-primary"
+              class="btn btn-primary"
               type="submit"
               :disabled="loading"
             >
@@ -1010,140 +1010,3 @@ export default defineComponent({
 
 <!-- Tutti gli stili sono stati spostati in file CSS dedicati -->
 
-<style scoped>
-/* Color Picker Styles */
-.color-picker-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.color-options {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.75rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 0.75rem;
-  border: 1px solid #dee2e6;
-}
-
-.color-option {
-  width: 50px;
-  height: 50px;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border: 3px solid transparent;
-  position: relative;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.color-option:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  border-color: #ffffff;
-}
-
-.color-option.selected {
-  transform: scale(1.15);
-  border-color: #3699ff;
-  box-shadow: 0 6px 20px rgba(54, 153, 255, 0.4);
-}
-
-.color-option.selected::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 2px solid #3699ff;
-  border-radius: 0.75rem;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(54, 153, 255, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(54, 153, 255, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(54, 153, 255, 0);
-  }
-}
-
-.selected-color-display {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
-  border-radius: 0.75rem;
-  border: 1px solid #0bb7af;
-}
-
-.color-label {
-  font-weight: 600;
-  color: #0bb7af;
-  font-size: 0.9rem;
-}
-
-.current-color {
-  width: 30px;
-  height: 30px;
-  border-radius: 0.5rem;
-  border: 2px solid #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.color-value {
-  font-family: 'Courier New', monospace;
-  font-weight: 600;
-  color: #0bb7af;
-  font-size: 0.85rem;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .color-options {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-  }
-  
-  .color-option {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .selected-color-display {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-}
-
-/* Dark mode support */
-[data-bs-theme="dark"] .color-options {
-  background: linear-gradient(135deg, #1e1e2d 0%, #2d2d3f 100%);
-  border-color: #3c3c4a;
-}
-
-[data-bs-theme="dark"] .selected-color-display {
-  background: linear-gradient(135deg, #1e1e2d 0%, #2d2d3f 100%);
-  border-color: #0bb7af;
-}
-
-[data-bs-theme="dark"] .color-label,
-[data-bs-theme="dark"] .color-value {
-  color: #0bb7af;
-}
-</style>

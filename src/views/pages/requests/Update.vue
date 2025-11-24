@@ -78,7 +78,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.Contract" required>
+            <select class="form-select form-select-lg" v-model="formData.Contract" required>
               <option value="Vendita">💰 Vendita</option>
               <option value="Affitto">🏠 Affitto</option>
             </select>
@@ -100,7 +100,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-             <select class="form-select modern-select" multiple v-model="selectedPropertyTypes" required style="height: auto;">
+             <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" required style="height: auto;">
               <option value="Appartamenti">🏢 Appartamenti</option>
               <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
               <option value="Box">🚗 Box</option>
@@ -130,7 +130,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.Province" required>
+            <select class="form-select form-select-lg" v-model="formData.Province" required>
               <option value="">🗺️ Seleziona provincia</option>
               <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
             </select>
@@ -152,7 +152,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-              <select class="form-select modern-select" multiple v-model="selectedCities" required>
+              <select class="form-select form-select-lg" multiple v-model="selectedCities" required>
                 <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }}</option>
               </select>
           </div>
@@ -173,7 +173,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-              <input class="form-control modern-input" v-model="formData.Location" type="text" placeholder="Inserisci la località (opzionale)" />
+              <input class="form-control form-control-lg" v-model="formData.Location" type="text" placeholder="Inserisci la località (opzionale)" />
           </div>
           <!--end::Col-->
         </div>
@@ -192,7 +192,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
+            <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
           </div>
           <!--end::Col-->
         </div>
@@ -211,7 +211,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
+            <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
           </div>
           <!--end::Col-->
         </div>
@@ -275,7 +275,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.RoomsNumber" type="text" placeholder="Es: 3+1, 4+2, etc." />
+            <input class="form-control form-control-lg" v-model="formData.RoomsNumber" type="text" placeholder="Es: 3+1, 4+2, etc." />
           </div>
           <!--end::Col-->
         </div>
@@ -294,7 +294,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
+            <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -313,7 +313,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
+            <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -332,7 +332,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
+            <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -351,7 +351,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
+            <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
           </div>
           <!--end::Col-->
         </div>
@@ -370,7 +370,7 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.PropertyState">
+            <select class="form-select form-select-lg" v-model="formData.PropertyState">
               <option value="">🏠 Seleziona Stato Immobile</option>
               <option value="0">🔒 Affittato</option>
               <option value="1">🏗️ In corso di costruzione</option>
@@ -397,7 +397,7 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.Heating">
+            <select class="form-select form-select-lg" v-model="formData.Heating">
               <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
               <option value="Autonomo">🏠 Autonomo</option>
               <option value="Centralizzato">🏢 Centralizzato</option>
@@ -421,7 +421,7 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.ParkingSpaces">
+            <select class="form-select form-select-lg" v-model="formData.ParkingSpaces">
               <option value="">🚗 Seleziona Posto Auto</option>
               <option value="Assegnato">🎯 Assegnato</option>
               <option value="Box Auto">🏠 Box Auto</option>
@@ -450,7 +450,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <textarea class="form-control modern-textarea" v-model="formData.Notes" rows="3" placeholder="Inserisci eventuali note..."></textarea>
+            <textarea class="form-control form-control-lg" v-model="formData.Notes" rows="3" placeholder="Inserisci eventuali note..."></textarea>
           </div>
           <!--end::Col-->
         </div>
@@ -483,7 +483,7 @@
       </div>
       <!--begin::Actions-->
       <div class="d-flex justify-content-end py-6 px-9">
-        <button type="button" @click="deleteItem()" class="btn btn-modal-danger me-3">
+        <button type="button" @click="deleteItem()" class="btn btn-danger me-3">
           <span class="btn-icon">
             <i class="ki-duotone ki-trash fs-3">
               <span class="path1"></span>
@@ -496,7 +496,7 @@
           <span class="btn-label">Elimina</span>
         </button>
         <!--begin::Button-->
-        <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
+        <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
           <span v-if="!loading" class="d-flex align-items-center">
             <span class="btn-icon">
               <i class="ki-duotone ki-check fs-3">

@@ -47,7 +47,6 @@
    ======================================== */
 
 .modern-input {
-  padding: 0.75rem 1rem;
   font-weight: 500;
   font-size: 0.95rem;
 }
@@ -135,7 +134,6 @@
    ======================================== */
 
 .modern-select {
-  padding: 0.75rem 1rem;
   min-height: 50px;
   font-weight: 500;
   font-size: 0.95rem;
@@ -173,7 +171,6 @@
 .modern-select option {
   background: var(--bs-bg-primary);
   color: var(--bs-text-primary);
-  padding: 0.75rem 1rem;
   font-weight: 500;
   border-radius: 0.5rem;
   margin: 0.25rem;
@@ -224,7 +221,6 @@
   background: transparent;
   border: none;
   min-height: 50px;
-  padding: 0.75rem 1rem;
   border-radius: var(--kh-tile-radius);
 }
 
@@ -248,7 +244,6 @@
 }
 
 .multiselect-modern .multiselect__option {
-  padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   transition: var(--kh-form-transition);
 }

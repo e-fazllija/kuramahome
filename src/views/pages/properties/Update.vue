@@ -139,7 +139,7 @@
                 </label>
                 <el-form-item prop="AgentId">
                   <input
-                    class="form-control modern-input agent-readonly"
+                    class="form-control form-control-lg agent-readonly"
                     :value="agentName"
                     type="text"
                     readonly
@@ -158,7 +158,7 @@
                 </label>
                 <el-form-item prop="Title">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.Title"
                     type="text"
                     placeholder="Inserisci il titolo dell'immobile"
@@ -177,7 +177,7 @@
                   Categoria
                 </label>
                 <el-form-item prop="Category">
-                  <select class="form-select modern-select" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona una Categoria...</option>
                     <option value="Residenziale">Residenziale</option>
                     <option value="Capannone">Capannone</option>
@@ -200,7 +200,7 @@
                   Tipologia
                 </label>
                 <el-form-item prop="Typology">
-                  <select class="form-select modern-select" v-model="formData.Typology" :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.Typology" :disabled="!canModify && user.Role === 'Agent'">
                     <option
                       v-for="tipologia in typesavailable"
                       :key="tipologia"
@@ -221,7 +221,7 @@
                   Stato vendita o affitto
                 </label>
                 <el-form-item prop="Status">
-                  <select class="form-select modern-select" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Scegli tra vendita e affitto</option>
                     <option value="Vendita">Vendita</option>
                     <option value="Affitto">Affitto</option>
@@ -237,7 +237,7 @@
                   </i>
                   Tipologia incarico
                 </label>
-                <select class="form-select modern-select" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
+                <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="Verbale">Verbale</option>
                   <option value="Esclusivo">Esclusivo</option>
                   <option value="Semi-Verbale">Semi-Verbale</option>
@@ -265,7 +265,7 @@
                 <label class="form-label required">Indirizzo</label>
                 <el-form-item prop="AddressLine">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.AddressLine"
                     type="text"
                     required
@@ -277,7 +277,7 @@
               <div class="form-field">
                 <label class="form-label required">Provincia</label>
                 <el-form-item prop="State">
-                  <select class="form-select modern-select" v-model="formData.State" required :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.State" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">🗺️ Seleziona provincia</option>
                     <option
                       v-for="(province, index) in provinces"
@@ -309,7 +309,7 @@
               <div class="form-field">
                 <label class="form-label">Località</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.Location"
                   type="text"
                   placeholder="Inserisci la località"
@@ -321,7 +321,7 @@
                 <label class="form-label required">Codice Fiscale</label>
                 <el-form-item prop="PostCode">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.PostCode"
                     type="text"
                     placeholder="Inserisci il codice fiscale"
@@ -351,7 +351,7 @@
                 <label class="form-label required">Superficie commerciale (m²)</label>
                 <el-form-item prop="CommercialSurfaceate">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.CommercialSurfaceate"
                     type="number"
                     required
@@ -362,7 +362,7 @@
 
               <div class="form-field">
                 <label class="form-label">Piano</label>
-                <select class="form-select modern-select" v-model="formData.Floor" :disabled="!canModify && user.Role === 'Agent'">
+                <select class="form-select form-select-lg" v-model="formData.Floor" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Scegli</option>
                   <option value="Interrato -2">Interrato -2</option>
                   <option value="Interrato -1">Interrato -1</option>
@@ -385,7 +385,7 @@
               <div class="form-field">
                 <label class="form-label">Totale piani edificio</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.TotalBuildingfloors"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -395,7 +395,7 @@
               <div class="form-field">
                 <label class="form-label">Giardino (mq)</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.MQGarden"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -405,7 +405,7 @@
               <div class="form-field">
                 <label class="form-label">Ascensori</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.Elevators"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -415,7 +415,7 @@
               <div class="form-field">
                 <label class="form-label">Camere da letto</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.Bedrooms"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -425,7 +425,7 @@
               <div class="form-field">
                 <label class="form-label">Locali</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.WarehouseRooms"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -435,7 +435,7 @@
               <div class="form-field">
                 <label class="form-label">Cucine</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.Kitchens"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -445,7 +445,7 @@
               <div class="form-field">
                 <label class="form-label">Bagni</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.Bathrooms"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -454,7 +454,7 @@
 
               <div class="form-field">
                 <label class="form-label">Arredamento</label>
-                <select class="form-select modern-select" v-model="formData.Furniture" :disabled="!canModify && user.Role === 'Agent'">
+                <select class="form-select form-select-lg" v-model="formData.Furniture" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Seleziona il tipo di arredamento</option>
                   <option value="Arredato">Arredato</option>
                   <option value="Non Arredato">Non Arredato</option>
@@ -466,7 +466,7 @@
               <div class="form-field">
                 <label class="form-label">Posti auto</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.ParkingSpaces"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -475,7 +475,7 @@
 
               <div class="form-field">
                 <label class="form-label">Riscaldamento</label>
-                <select class="form-select modern-select" v-model="formData.Heating" :disabled="!canModify && user.Role === 'Agent'">
+                <select class="form-select form-select-lg" v-model="formData.Heating" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="Nessuno">Nessuno</option>
                   <option value="Autonomo">Autonomo</option>
                   <option value="Centralizzato">Centralizzato</option>
@@ -484,7 +484,7 @@
 
               <div class="form-field">
                 <label class="form-label">Esposizione</label>
-                <select class="form-select modern-select" v-model="formData.Exposure" :disabled="!canModify && user.Role === 'Agent'">
+                <select class="form-select form-select-lg" v-model="formData.Exposure" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Selezionare l'esposizione</option>
                   <option value="Nord">Nord</option>
                   <option value="Sud">Sud</option>
@@ -496,7 +496,7 @@
               <div class="form-field">
                 <label class="form-label required">Classe energetica</label>
                 <el-form-item prop="EnergyClass">
-                  <select class="form-select modern-select" v-model="formData.EnergyClass" :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.EnergyClass" :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona il tipo di Classe energetica</option>
                     <option value="Proprietà Esente">Proprietà Esente</option>
                     <option value="Non classificabile">Non classificabile</option>
@@ -519,7 +519,7 @@
               <div class="form-field">
                 <label class="form-label">Tipo di proprietà</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.TypeOfProperty"
                   type="text"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -529,7 +529,7 @@
               <div class="form-field">
                 <label class="form-label required">Stato dell&apos;immobile</label>
                 <el-form-item prop="StateOfTheProperty">
-                  <select class="form-select modern-select" v-model="formData.StateOfTheProperty" :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty" :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona lo Stato dell'immobile</option>
                     <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
                     <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
@@ -543,7 +543,7 @@
                 <label class="form-label required">Anno di costruzione</label>
                 <el-form-item prop="YearOfConstruction">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.YearOfConstruction"
                     type="number"
                     :disabled="!canModify && user.Role === 'Agent'"
@@ -554,7 +554,7 @@
               <div class="form-field full-width">
                 <label class="form-label">Altri dettagli</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.MoreDetails"
                   type="text"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -564,7 +564,7 @@
               <div class="form-field full-width">
                 <label class="form-label">Altre caratteristiche</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.MoreFeatures"
                   type="text"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -610,7 +610,7 @@
                 <label class="form-label required">Prezzo</label>
                 <el-form-item prop="Price">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.Price"
                     type="number"
                     required
@@ -622,7 +622,7 @@
               <div class="form-field">
                 <label class="form-label">Prezzo ribassato</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.PriceReduced"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -632,7 +632,7 @@
               <div class="form-field">
                 <label class="form-label">Spese condominiali</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.CondominiumExpenses"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -641,7 +641,7 @@
 
               <div class="form-field">
                 <label class="form-label required">Disponibilità</label>
-                <select class="form-select modern-select" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
+                <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Seleziona la Disponibilità</option>
                   <option value="Libero">Libero</option>
                   <option value="Occupato">Occupato</option>
@@ -715,7 +715,7 @@
               <div class="form-field">
                 <label class="form-label">Data fine incarico</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.AssignmentEnd"
                   type="date"
                   placeholder="yyyy-MM-dd"
@@ -727,7 +727,7 @@
                 <label class="form-label required">Descrizione</label>
                 <el-form-item prop="Description">
                   <textarea
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.Description"
                     rows="4"
                     :disabled="!canModify && user.Role === 'Agent'"
@@ -852,7 +852,7 @@
                   URL Video
                 </label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.VideoUrl"
                   type="text"
                   placeholder="https://"
@@ -880,7 +880,7 @@
         class="card-footer d-flex justify-content-end py-6 px-9">
         <div class="d-flex align-items-center">
           <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
-            class="btn btn-modal-danger me-2">
+            class="btn btn-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
                 <span class="path1"></span>
@@ -892,7 +892,7 @@
             </span>
             <span class="btn-label">Elimina</span>
           </button>
-          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
             <span v-if="!loading" class="d-flex align-items-center">
               <span class="btn-icon">
                 <i class="ki-duotone ki-check fs-3">
