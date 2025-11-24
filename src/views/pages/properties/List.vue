@@ -721,20 +721,6 @@ export default defineComponent({
       MenuComponent.reinitialization();
     };
 
-    onMounted(async () => {
-      // if (authStore.user.Role == "Admin") {
-        agencyId.value = authStore.user.AdminId;
-        // Chiama getSearchItems solo per Admin e Agency (non per Agent)
-        if (user.Role !== "Agent") {
-          defaultSearchItems.value = await getSearchItems(authStore.user.Id);
-        }
-      // }
-
-      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
-    });
-
-
-
     const deleteFewItems = async () => {
       loading.value = true;
       selectedIds.value.forEach(async (item) => {

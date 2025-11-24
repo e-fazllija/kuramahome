@@ -617,6 +617,17 @@ export default defineComponent({
     // Salva il UserId originale del cliente (non deve essere modificato)
     const originalUserId = ref<string>("");
 
+    // Carica agenzie e agenti per il selettore proprietario (solo Admin)
+    const loadOwnerSearchItems = async () => {
+      if (user?.Role === "Admin") {
+        try {
+          ownerSearchItems.value = await getSearchItems(user.Id);
+        } catch (error) {
+          console.error("Errore nel caricamento di agenzie e agenti:", error);
+        }
+      }
+    };
+
     onMounted(async () => {
       loading.value = true;
       const customerData = await getCustomer(id);
@@ -749,46 +760,47 @@ export default defineComponent({
     });
 
     const submit = async () => {
-<<<<<<< HEAD
-      // Verifica permessi prima di inviare
+      // Verifica permessi prima di inviare (per gli Agent)
       if (!canModifyCustomer.value) {
         Swal.fire({
           text: "Non hai i permessi per modificare questo cliente.",
           icon: "error",
-=======
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
+      }
+
       // Validazione per UserId se Admin
       if (user?.Role === "Admin" && !formData.value.UserId?.trim()) {
         Swal.fire({
           title: "Proprietario Obbligatorio",
           text: "Seleziona un proprietario (agenzia o agente) per associare il cliente.",
           icon: "warning",
->>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
           buttonsStyling: false,
           confirmButtonText: "Ok",
           heightAuto: false,
           customClass: {
-<<<<<<< HEAD
-            confirmButton: "btn btn-primary",
-=======
             confirmButton: "btn fw-semibold btn-light-warning",
->>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
           },
         });
         return;
       }
 
       loading.value = true;
-<<<<<<< HEAD
-      // Preserva il UserId originale - non sovrascriverlo
-      formData.value.UserId = originalUserId.value;
-=======
       
-      // Imposta UserId automaticamente se l'utente non è Admin
+      // Preserva il UserId originale - non sovrascriverlo
+      // Per gli Agent, il UserId deve rimanere quello originale del cliente
+      // Per Admin, può essere modificato tramite il selettore
+      // Per Agency, mantiene il UserId originale (non può essere modificato)
       if (user?.Role !== "Admin") {
-        formData.value.UserId = store.user.Id;
+        formData.value.UserId = originalUserId.value;
       }
       
->>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
       await updateCustomer(formData.value)
         .then(() => {
           loading.value = false;
@@ -878,11 +890,8 @@ export default defineComponent({
       requests,
       provinces,
       cities,
-<<<<<<< HEAD
-      canModifyCustomer
-=======
-      ownerSearchItems
->>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
+      ownerSearchItems,
+      canModifyCustomer,
     };
   },
 });
