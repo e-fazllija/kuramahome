@@ -17,7 +17,10 @@
             </div>
             <div class="flex-grow-1">
               <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Aggiorna Immobile</h3>
-              <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">Modifica i dati dell'immobile</span>
+              <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">
+                <span v-if="user.Role === 'Agent' && !canModify">Visualizzazione in sola lettura</span>
+                <span v-else>Modifica i dati dell'immobile</span>
+              </span>
             </div>
           </div>
         </div>
@@ -75,13 +78,13 @@
             </button>
           </li>
         </ul>
+        <!--begin::Form-->
+        <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
         <div class="tab-content" id="propertyTabsContent">
           <!--begin::Data Tab-->
           <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
-            <!--begin::Form-->
-            <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
               <!--begin::Card body-->
-              <div class="card-body card-palette border-top p-3 p-md-6 p-xl-9 compact-body">
+              <div class="card-body card-palette border-top p-3 p-md-6 p-xl-9 compact-body" :class="{ 'opacity-50': !canModify && user.Role === 'Agent' }">
                 <div class="form-sections">
                   <div class="compact-section mb-8 mb-md-10 mb-xl-12">
                     <div class="section-header">
@@ -121,6 +124,7 @@
                     :clear-on-select="false"
                     placeholder="Seleziona il cliente"
                     class="multiselect-modern w-100"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>
               </div>
@@ -159,6 +163,7 @@
                     type="text"
                     placeholder="Inserisci il titolo dell'immobile"
                     required
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>
               </div>
@@ -172,7 +177,7 @@
                   Categoria
                 </label>
                 <el-form-item prop="Category">
-                  <select class="form-select modern-select" v-model="formData.Category" required>
+                  <select class="form-select modern-select" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona una Categoria...</option>
                     <option value="Residenziale">Residenziale</option>
                     <option value="Capannone">Capannone</option>
@@ -195,7 +200,7 @@
                   Tipologia
                 </label>
                 <el-form-item prop="Typology">
-                  <select class="form-select modern-select" v-model="formData.Typology">
+                  <select class="form-select modern-select" v-model="formData.Typology" :disabled="!canModify && user.Role === 'Agent'">
                     <option
                       v-for="tipologia in typesavailable"
                       :key="tipologia"
@@ -216,7 +221,7 @@
                   Stato vendita o affitto
                 </label>
                 <el-form-item prop="Status">
-                  <select class="form-select modern-select" v-model="formData.Status" required>
+                  <select class="form-select modern-select" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Scegli tra vendita e affitto</option>
                     <option value="Vendita">Vendita</option>
                     <option value="Affitto">Affitto</option>
@@ -232,7 +237,7 @@
                   </i>
                   Tipologia incarico
                 </label>
-                <select class="form-select modern-select" v-model="formData.TypeOfAssignment">
+                <select class="form-select modern-select" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="Verbale">Verbale</option>
                   <option value="Esclusivo">Esclusivo</option>
                   <option value="Semi-Verbale">Semi-Verbale</option>
@@ -264,6 +269,7 @@
                     v-model="formData.AddressLine"
                     type="text"
                     required
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>
               </div>
@@ -271,7 +277,7 @@
               <div class="form-field">
                 <label class="form-label required">Provincia</label>
                 <el-form-item prop="State">
-                  <select class="form-select modern-select" v-model="formData.State" required>
+                  <select class="form-select modern-select" v-model="formData.State" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">🗺️ Seleziona provincia</option>
                     <option
                       v-for="(province, index) in provinces"
@@ -287,7 +293,7 @@
               <div class="form-field">
                 <label class="form-label required">Comune</label>
                 <el-form-item prop="City">
-                  <select class="form-select" v-model="formData.City" required>
+                  <select class="form-select" v-model="formData.City" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona città</option>
                     <option
                       v-for="(city, index) in cities"
@@ -307,6 +313,7 @@
                   v-model="formData.Location"
                   type="text"
                   placeholder="Inserisci la località"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -319,6 +326,7 @@
                     type="text"
                     placeholder="Inserisci il codice fiscale"
                     required
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>
               </div>
@@ -347,13 +355,14 @@
                     v-model="formData.CommercialSurfaceate"
                     type="number"
                     required
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>
               </div>
 
               <div class="form-field">
                 <label class="form-label">Piano</label>
-                <select class="form-select modern-select" v-model="formData.Floor">
+                <select class="form-select modern-select" v-model="formData.Floor" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Scegli</option>
                   <option value="Interrato -2">Interrato -2</option>
                   <option value="Interrato -1">Interrato -1</option>
@@ -379,6 +388,7 @@
                   class="form-control modern-input"
                   v-model="formData.TotalBuildingfloors"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -388,6 +398,7 @@
                   class="form-control modern-input"
                   v-model="formData.MQGarden"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -397,6 +408,7 @@
                   class="form-control modern-input"
                   v-model="formData.Elevators"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -406,6 +418,7 @@
                   class="form-control modern-input"
                   v-model="formData.Bedrooms"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -415,6 +428,7 @@
                   class="form-control modern-input"
                   v-model="formData.WarehouseRooms"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -424,6 +438,7 @@
                   class="form-control modern-input"
                   v-model="formData.Kitchens"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -433,12 +448,13 @@
                   class="form-control modern-input"
                   v-model="formData.Bathrooms"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
               <div class="form-field">
                 <label class="form-label">Arredamento</label>
-                <select class="form-select modern-select" v-model="formData.Furniture">
+                <select class="form-select modern-select" v-model="formData.Furniture" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Seleziona il tipo di arredamento</option>
                   <option value="Arredato">Arredato</option>
                   <option value="Non Arredato">Non Arredato</option>
@@ -453,12 +469,13 @@
                   class="form-control modern-input"
                   v-model="formData.ParkingSpaces"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
               <div class="form-field">
                 <label class="form-label">Riscaldamento</label>
-                <select class="form-select modern-select" v-model="formData.Heating">
+                <select class="form-select modern-select" v-model="formData.Heating" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="Nessuno">Nessuno</option>
                   <option value="Autonomo">Autonomo</option>
                   <option value="Centralizzato">Centralizzato</option>
@@ -467,7 +484,7 @@
 
               <div class="form-field">
                 <label class="form-label">Esposizione</label>
-                <select class="form-select modern-select" v-model="formData.Exposure">
+                <select class="form-select modern-select" v-model="formData.Exposure" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Selezionare l'esposizione</option>
                   <option value="Nord">Nord</option>
                   <option value="Sud">Sud</option>
@@ -479,7 +496,7 @@
               <div class="form-field">
                 <label class="form-label required">Classe energetica</label>
                 <el-form-item prop="EnergyClass">
-                  <select class="form-select modern-select" v-model="formData.EnergyClass">
+                  <select class="form-select modern-select" v-model="formData.EnergyClass" :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona il tipo di Classe energetica</option>
                     <option value="Proprietà Esente">Proprietà Esente</option>
                     <option value="Non classificabile">Non classificabile</option>
@@ -505,13 +522,14 @@
                   class="form-control modern-input"
                   v-model="formData.TypeOfProperty"
                   type="text"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
               <div class="form-field">
                 <label class="form-label required">Stato dell&apos;immobile</label>
                 <el-form-item prop="StateOfTheProperty">
-                  <select class="form-select modern-select" v-model="formData.StateOfTheProperty">
+                  <select class="form-select modern-select" v-model="formData.StateOfTheProperty" :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona lo Stato dell'immobile</option>
                     <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
                     <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
@@ -528,6 +546,7 @@
                     class="form-control modern-input"
                     v-model="formData.YearOfConstruction"
                     type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>
               </div>
@@ -538,6 +557,7 @@
                   class="form-control modern-input"
                   v-model="formData.MoreDetails"
                   type="text"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -547,6 +567,7 @@
                   class="form-control modern-input"
                   v-model="formData.MoreFeatures"
                   type="text"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
             </div>
@@ -574,6 +595,7 @@
                     type="checkbox"
                     id="toggle-private-deal"
                     v-model="isTrattativaRiservata"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-private-deal">
                     Nascondi il prezzo pubblico
@@ -592,6 +614,7 @@
                     v-model="formData.Price"
                     type="number"
                     required
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>
               </div>
@@ -602,6 +625,7 @@
                   class="form-control modern-input"
                   v-model="formData.PriceReduced"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -611,12 +635,13 @@
                   class="form-control modern-input"
                   v-model="formData.CondominiumExpenses"
                   type="number"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
               <div class="form-field">
                 <label class="form-label required">Disponibilità</label>
-                <select class="form-select modern-select" v-model="formData.Availability">
+                <select class="form-select modern-select" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Seleziona la Disponibilità</option>
                   <option value="Libero">Libero</option>
                   <option value="Occupato">Occupato</option>
@@ -630,6 +655,7 @@
                     v-model="formData.AgreedCommission"
                     type="number"
                     placeholder="Inserisci percentuale"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   >
                     <template #append>
                       <span>%</span>
@@ -645,6 +671,7 @@
                     v-model="formData.FlatRateCommission"
                     type="number"
                     placeholder="Inserisci percentuale"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   >
                     <template #append>
                       <span>%</span>
@@ -660,6 +687,7 @@
                     v-model="formData.CommissionReversal"
                     type="number"
                     placeholder="Inserisci percentuale"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   >
                     <template #append>
                       <span>%</span>
@@ -691,6 +719,7 @@
                   v-model="formData.AssignmentEnd"
                   type="date"
                   placeholder="yyyy-MM-dd"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
@@ -701,6 +730,7 @@
                     class="form-control modern-input"
                     v-model="formData.Description"
                     rows="4"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   ></textarea>
                 </el-form-item>
               </div>
@@ -714,6 +744,7 @@
                     type="checkbox"
                     id="toggle-in-home"
                     v-model="formData.InHome"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-in-home">
                     In Home
@@ -728,6 +759,7 @@
                     type="checkbox"
                     id="toggle-highlighted"
                     v-model="formData.Highlighted"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-highlighted">
                     In Evidenza
@@ -742,6 +774,7 @@
                     type="checkbox"
                     id="toggle-auction"
                     v-model="formData.Auction"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-auction">
                     Asta
@@ -756,6 +789,7 @@
                     type="checkbox"
                     id="toggle-negotiation"
                     v-model="formData.Negotiation"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-negotiation">
                     In trattativa
@@ -770,6 +804,7 @@
                     type="checkbox"
                     id="toggle-sold"
                     v-model="formData.Sold"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-sold">
                     Venduto
@@ -784,6 +819,7 @@
                     type="checkbox"
                     id="toggle-archived"
                     v-model="formData.Archived"
+                    :disabled="!canModify && user.Role === 'Agent'"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-archived">
                     Archiviato
@@ -820,6 +856,7 @@
                   v-model="formData.VideoUrl"
                   type="text"
                   placeholder="https://"
+                  :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
             </div>
@@ -835,61 +872,10 @@
               >
                 <div v-html="note.Text"></div>
               </div>
-<<<<<<< HEAD
+            </div>
             </div>
           </div>
         </div>
-      </div>
-      <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-        class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
-        <div>
-          <!-- <AddNewForm /> -->
-          <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
-            data-bs-target="#kt_modal_scheda">
-            <KTIcon icon-name="file" icon-class="fs-2 me-1" />
-            Scheda
-          </button> -->
-          <!-- <AddNewPreventive /> -->
-          <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
-            data-bs-target="#kt_modal_preventivo">
-            <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
-            Preventivo
-          </button> -->
-        </div>
-        <div class="d-flex align-items-center">
-          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
-            class="btn btn-modal-danger me-2">
-            <span class="btn-icon">
-              <i class="ki-duotone ki-trash fs-3">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
-              </i>
-            </span>
-            <span class="btn-label">Elimina</span>
-          </button>
-          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
-            <span v-if="!loading" class="d-flex align-items-center">
-              <span class="btn-icon">
-                <i class="ki-duotone ki-check fs-3">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </span>
-              <span class="btn-label">Salva Modifiche</span>
-            </span>
-            <span v-if="loading" class="d-flex align-items-center">
-              <KTSpinner size="sm" :inline="true" />
-              <span class="btn-label">Attendere...</span>
-            </span>
-          </button>
-        </div>
-      </div>
-      <!--end::Actions-->
-    </el-form>
-    <!--end::Form-->
         </div>
         <!--end::Data Tab-->
 
@@ -918,15 +904,15 @@
 
             <!--begin::Image Gallery-->
             <div v-if="formData.Photos && formData.Photos.length > 0" class="image-gallery">
-              <draggable 
-                :list="formData.Photos" 
-                :disabled="false" 
-                item-key="Id" 
+              <draggable
+                :list="formData.Photos"
+                :disabled="false"
+                item-key="Id"
                 class="list-group"
-                ghost-class="sortable-ghost" 
+                ghost-class="sortable-ghost"
                 chosen-class="sortable-chosen"
-                @start="onDragStart" 
-                @end="onDragEnd" 
+                @start="onDragStart"
+                @end="onDragEnd"
                 :animation="300"
               >
                 <template #item="{ element, index }">
@@ -938,8 +924,8 @@
                         <span class="path3"></span>
                       </i>
                     </div>
-                    <img 
-                      :src="element.Url" 
+                    <img
+                      :src="element.Url"
                       :alt="`Immagine ${index + 1}`"
                       @error="handleImageError($event)"
                       @load="handleImageLoad($event)"
@@ -958,9 +944,9 @@
                     </div>
                     <div class="image-overlay">
                       <div class="btn-group">
-                        <button 
-                          v-if="!element.Highlighted" 
-                          type="button" 
+                        <button
+                          v-if="!element.Highlighted"
+                          type="button"
                           class="btn btn-primary btn-sm"
                           @click="setPhotoHighlighted(element.Id)"
                         >
@@ -970,8 +956,8 @@
                           </i>
                           Principale
                         </button>
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           class="btn btn-danger btn-sm"
                           @click="deleteFile(element.Id)"
                         >
@@ -991,201 +977,84 @@
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-=======
->>>>>>> b1e0edf49df0b9bbb8647f41be7908cf2b4dc0a2
                     </div>
                   </div>
-                </div>
-              </div>
-            </el-form>
-            <!--end::Form-->
-          </div>
-          <!--end::Data Tab-->
-
-          <!--begin::Images Tab-->
-          <div class="tab-pane fade" id="images-pane" role="tabpanel" aria-labelledby="images-tab">
-            <!--begin::Image Management-->
-            <div class="image-management">
-              <!--begin::Upload Section-->
-              <div class="upload-section mb-5">
-                <div class="upload-area" @click="triggerFileUpload" @dragover.prevent @drop.prevent="handleDrop">
-                  <div class="upload-icon">
-                    <i class="ki-duotone ki-cloud-upload fs-1">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                    </i>
-                  </div>
-                  <div class="upload-text">
-                    <h4>Trascina le immagini qui o clicca per selezionare</h4>
-                    <p class="text-muted">Supporta JPG, PNG, GIF (max 5MB per immagine)</p>
-                  </div>
-                </div>
-                <input ref="fileInput" type="file" multiple accept="image/*" @change="onFileChanged" style="display: none;">
-              </div>
-              <!--end::Upload Section-->
-
-              <!--begin::Image Gallery-->
-              <div v-if="formData.Photos && formData.Photos.length > 0" class="image-gallery">
-                <draggable
-                  :list="formData.Photos"
-                  :disabled="false"
-                  item-key="Id"
-                  class="list-group"
-                  ghost-class="sortable-ghost"
-                  chosen-class="sortable-chosen"
-                  @start="onDragStart"
-                  @end="onDragEnd"
-                  :animation="300"
-                >
-                  <template #item="{ element, index }">
-                    <div class="image-card" :class="{ 'highlighted': element.Highlighted }">
-                      <div class="drag-handle">
-                        <i class="ki-duotone ki-menu fs-4 text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                          <span class="path3"></span>
-                        </i>
-                      </div>
-                      <img
-                        :src="element.Url"
-                        :alt="`Immagine ${index + 1}`"
-                        @error="handleImageError($event)"
-                        @load="handleImageLoad($event)"
-                        style="display: block; width: 100%; height: 150px; object-fit: cover;"
-                      />
-                      <div v-if="imageErrors[element.Id]" class="image-error-placeholder">
-                        <i class="ki-duotone ki-picture fs-1 text-muted">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        <p class="text-muted mt-2 mb-1">Immagine non disponibile</p>
-                        <p class="text-danger fs-7 mb-0">Verifica Azure Storage Emulator</p>
-                        <a :href="element.Url" target="_blank" class="btn btn-sm btn-link text-primary mt-2" style="font-size: 0.75rem;">
-                          Prova URL
-                        </a>
-                      </div>
-                      <div class="image-overlay">
-                        <div class="btn-group">
-                          <button
-                            v-if="!element.Highlighted"
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            @click="setPhotoHighlighted(element.Id)"
-                          >
-                            <i class="ki-duotone ki-star fs-6 me-1">
-                              <span class="path1"></span>
-                              <span class="path2"></span>
-                            </i>
-                            Principale
-                          </button>
-                          <button
-                            type="button"
-                            class="btn btn-danger btn-sm"
-                            @click="deleteFile(element.Id)"
-                          >
-                            <i class="ki-duotone ki-trash fs-6 me-1">
-                              <span class="path1"></span>
-                              <span class="path2"></span>
-                              <span class="path3"></span>
-                              <span class="path4"></span>
-                              <span class="path5"></span>
-                            </i>
-                            Elimina
-                          </button>
-                        </div>
-                      </div>
-                      <div v-if="element.Highlighted" class="highlighted-badge">
-                        <i class="ki-duotone ki-star fs-6 text-warning">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                      </div>
-                    </div>
-                  </template>
-                </draggable>
-              </div>
-              <!--end::Image Gallery-->
-
-              <!--begin::Empty State-->
-              <div v-else class="empty-state text-center py-5">
-                <div class="empty-icon mb-3">
-                  <i class="ki-duotone ki-picture fs-1 text-muted">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                </div>
-                <h4 class="text-muted">Nessuna immagine caricata</h4>
-                <p class="text-muted">Aggiungi le prime immagini per questo immobile</p>
-              </div>
-              <!--end::Empty State-->
+                </template>
+              </draggable>
             </div>
-            <!--end::Image Management-->
+            <!--end::Image Gallery-->
+
+            <!--begin::Empty State-->
+            <div v-else class="empty-state text-center py-5">
+              <div class="empty-icon mb-3">
+                <i class="ki-duotone ki-picture fs-1 text-muted">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </div>
+              <h4 class="text-muted">Nessuna immagine caricata</h4>
+              <p class="text-muted">Aggiungi le prime immagini per questo immobile</p>
+            </div>
+            <!--end::Empty State-->
           </div>
-          <!--end::Images Tab-->
+          <!--end::Image Management-->
         </div>
+        <!--end::Images Tab-->
+        </div>
+        </el-form>
       </div>
-    </div>
-    <!--end::Tabs-->
-  </div>
-  <!--end::Content-->
-    <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-      class="card-footer card-palette-header d-flex justify-content-between py-4 py-md-6 px-3 px-md-9">
-      <div>
-        <!-- <AddNewForm /> -->
-        <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
-          data-bs-target="#kt_modal_scheda">
-          <KTIcon icon-name="file" icon-class="fs-2 me-1" />
-          Scheda
-        </button> -->
-        <!-- <AddNewPreventive /> -->
-        <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
-          data-bs-target="#kt_modal_preventivo">
-          <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
-          Preventivo
-        </button> -->
-      </div>
-      <div class="d-flex align-items-center flex-wrap gap-2">
-        <button type="button" class="btn btn-modal-cancel" @click="cancelEdit">
-          <span class="btn-icon">
-            <i class="ki-duotone ki-cross fs-3">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-          </span>
-          <span class="btn-label d-none d-sm-inline">Annulla</span>
-        </button>
-        <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
-          class="btn btn-modal-danger">
-          <span class="btn-icon">
-            <i class="ki-duotone ki-trash fs-3">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-          </span>
-          <span class="btn-label d-none d-sm-inline">Elimina</span>
-        </button>
-        <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
-          <span v-if="!loading" class="d-flex align-items-center">
+      <!--end::Tab Content-->
+      <!--begin::Footer-->
+      <div class="card-footer card-palette-header d-flex justify-content-between py-4 py-md-6 px-3 px-md-9">
+        <div>
+          <!-- <AddNewForm /> -->
+          <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
+            data-bs-target="#kt_modal_scheda">
+            <KTIcon icon-name="file" icon-class="fs-2 me-1" />
+            Scheda
+          </button> -->
+          <!-- <AddNewPreventive /> -->
+          <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
+            data-bs-target="#kt_modal_preventivo">
+            <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
+            Preventivo
+          </button> -->
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+          <button v-if="canDelete" type="button" @click="deleteItem()"
+            class="btn btn-modal-danger">
             <span class="btn-icon">
-              <i class="ki-duotone ki-check fs-3">
+              <i class="ki-duotone ki-trash fs-3">
                 <span class="path1"></span>
                 <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
               </i>
             </span>
-            <span class="btn-label">Salva Modifiche</span>
-          </span>
-          <span v-if="loading" class="d-flex align-items-center">
-            <KTSpinner size="sm" :inline="true" />
-            <span class="btn-label">Attendere...</span>
-          </span>
-        </button>
+            <span class="btn-label d-none d-sm-inline">Elimina</span>
+          </button>
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading || !canModify">
+            <span v-if="!loading" class="d-flex align-items-center">
+              <span class="btn-icon">
+                <i class="ki-duotone ki-check fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <span class="btn-label">Salva Modifiche</span>
+            </span>
+            <span v-if="loading" class="d-flex align-items-center">
+              <KTSpinner size="sm" :inline="true" />
+              <span class="btn-label">Attendere...</span>
+            </span>
+          </button>
+        </div>
       </div>
-    </div>
-    <!--end::Actions-->
+      <!--end::Footer-->
+<    </div>
+  </div>
+  <!--end::Content-->
 </template>
 
 <script lang="ts">
@@ -1522,11 +1391,18 @@ export default defineComponent({
     });
 
 
+    // Salva il UserId originale dell'immobile (non deve essere modificato)
+    const originalUserId = ref<string>("");
+
     onMounted(async () => {
       loading.value = true;
       firtLoad.value = true;
       formData.value = await getRealEstateProperty(id)
       formData.value.AssignmentEnd = formData.value.AssignmentEnd.split('T')[0]
+      
+      // Preserva il UserId originale dell'immobile
+      originalUserId.value = formData.value.UserId || "";
+      
       inserModel.value = await getToInsert();
       if (!formData.value.AgentId && formData.value.UserId) {
         formData.value.AgentId = formData.value.UserId;
@@ -1782,6 +1658,21 @@ export default defineComponent({
         return;
       }
 
+      // Verifica permessi prima di inviare
+      if (!canModify.value) {
+        Swal.fire({
+          text: "Non hai i permessi per modificare questo immobile.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
+      }
+
       const missingFields: string[] = [];
       if (!formData.value.CustomerId) missingFields.push("Cliente");
       if (!formData.value.AgentId) missingFields.push("Agente");
@@ -1830,6 +1721,9 @@ export default defineComponent({
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
           loading.value = true;
+          
+          // Preserva il UserId originale - non sovrascriverlo
+          formData.value.UserId = originalUserId.value;
           
           // Se la checkbox "Trattativa riservata" è selezionata, imposta il prezzo a -1
           if (isTrattativaRiservata.value) {
@@ -2044,9 +1938,8 @@ export default defineComponent({
         if (formData.value.UserId === currentUser.Id) {
           return true;
         }
-        // L'immobile è di un suo Agent
-        const ownerAgencyId = (propertyOwner as any).AgencyId;
-        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+        // L'immobile è di un suo Agent (verifica tramite AdminId)
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
           return true;
         }
         return false;
@@ -2098,9 +1991,8 @@ export default defineComponent({
         if (formData.value.UserId === currentUser.Id) {
           return true;
         }
-        // L'immobile è di un suo Agent
-        const ownerAgencyId = (propertyOwner as any).AgencyId;
-        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+        // L'immobile è di un suo Agent (verifica tramite AdminId)
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
           return true;
         }
         return false;

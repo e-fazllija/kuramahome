@@ -146,7 +146,7 @@
           <!-- Filtro Proprietario -->
           <div v-if="user.Role !== 'Agent'" class="col-12 col-sm-6 col-md">
             <select class="form-select filter-select" v-model="ownerFilter" @change="applyFilters">
-              <option v-if="user.Role === 'Admin'" value="">📋 Tutti i clienti</option>
+              <option value="">📋 Tutti i clienti</option>
               <option :value="user.Id">👤 I miei clienti</option>
               <optgroup v-if="user.Role === 'Admin' && defaultSearchItems.Agencies.length" label="Agenzie">
                 <option v-for="agency in defaultSearchItems.Agencies" :key="agency.Id" :value="agency.Id">
@@ -242,6 +242,7 @@
               </i>
             </router-link>
             <button
+              v-if="canDeleteCustomer(customer)"
               type="button"
               class="btn btn-action btn-action-danger"
               @click.stop="deleteItem(customer.Id)"
@@ -386,7 +387,7 @@ export default defineComponent({
       filter: "",
     });
     const exportFilters = ref<CustomerExportPayload>(buildDefaultExportFilters());
-    const ownerFilter = ref<string>(user.Role === "Admin" ? "" : user.Id);
+    const ownerFilter = ref<string>("");
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
@@ -468,10 +469,12 @@ export default defineComponent({
     const applyFilters = () => {
       let items = [...rawItems.value];
 
-      const filterId = ownerFilter.value || (user.Role === "Agent" ? user.Id : "");
-      if (filterId) {
-        items = items.filter((item) => item.UserId === filterId);
+      // Per Admin e Agency, applica il filtro selezionato
+      if (user.Role !== "Agent" && ownerFilter.value) {
+        items = items.filter((item) => item.UserId === ownerFilter.value);
       }
+      // Per gli Agent, mostra tutti i clienti della cerchia (già filtrati dal backend)
+      // Non applicare filtri aggiuntivi, così vedono anche i clienti dell'agency
 
       if (contract.value) {
         items = items.filter((item) => {
@@ -649,7 +652,7 @@ export default defineComponent({
     const clearAllFilters = () => {
       search.value = "";
       contract.value = "";
-      ownerFilter.value = user.Role === "Admin" ? "" : user.Id;
+      ownerFilter.value = "";
       applyFilters();
     };
 
@@ -727,6 +730,16 @@ export default defineComponent({
       } catch (err) {
         console.error('Errore nella copia:', err);
       }
+    };
+
+    // Funzione per verificare se un cliente può essere eliminato
+    const canDeleteCustomer = (customer: CustomerTabelData): boolean => {
+      // Gli Agent possono eliminare solo i propri clienti
+      if (user.Role === "Agent") {
+        return customer.UserId === user.Id;
+      }
+      // Admin e Agency possono eliminare tutti i clienti della loro cerchia
+      return true;
     };
 
     // Funzione per navigare ai dettagli del cliente
@@ -839,6 +852,7 @@ export default defineComponent({
       applyFilters,
       loading,
       goToClientDetails,
+      canDeleteCustomer,
       exportModalId,
       exportFilters,
       customerExportFields,

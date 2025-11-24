@@ -18,7 +18,10 @@
           </div>
           <div>
             <h3 class="fw-bold m-0 text-gray-900 fs-3"> Aggiorna Cliente</h3>
-            <span class="text-muted fs-7 fw-semibold">Modifica i dati del cliente</span>
+            <span class="text-muted fs-7 fw-semibold">
+              <span v-if="user.Role === 'Agent' && !canModifyCustomer">Visualizzazione in sola lettura</span>
+              <span v-else>Modifica i dati del cliente</span>
+            </span>
           </div>
         </div>
       </div>
@@ -32,7 +35,7 @@
     <!--begin::Form-->
     <form @submit.prevent="submit()">
       <!--begin::Card body-->
-      <div class="card-body border-top p-9">
+      <div class="card-body border-top p-9" :class="{ 'opacity-50': !canModifyCustomer && user.Role === 'Agent' }">
 
         <!--begin::Input group-->
         <div class="row mb-6">
@@ -49,7 +52,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required />
+            <input class="form-control modern-input" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -70,7 +73,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required />
+            <input class="form-control modern-input" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -89,7 +92,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Email" type="email" placeholder="esempio@email.com" />
+            <input class="form-control modern-input" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -108,7 +111,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Phone" type="tel" placeholder="3331234567" required />
+            <input class="form-control modern-input" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -122,7 +125,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Buyer" />
+              <input class="form-check-input" type="checkbox" v-model="formData.Buyer" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
           </div>
           <!--end::Col-->
@@ -137,7 +140,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Seller" />
+              <input class="form-check-input" type="checkbox" v-model="formData.Seller" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
           </div>
           <!--end::Col-->
@@ -152,7 +155,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Builder" />
+              <input class="form-check-input" type="checkbox" v-model="formData.Builder" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
           </div>
           <!--end::Col-->
@@ -167,7 +170,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Other" />
+              <input class="form-check-input" type="checkbox" v-model="formData.Other" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
           </div>
           <!--end::Col-->
@@ -182,7 +185,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.GoldCustomer" />
+              <input class="form-check-input" type="checkbox" v-model="formData.GoldCustomer" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
           </div>
           <!--end::Col-->
@@ -197,7 +200,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.AcquisitionDone" />
+              <input class="form-check-input" type="checkbox" v-model="formData.AcquisitionDone" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
           </div>
           <!--end::Col-->
@@ -212,7 +215,7 @@
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.OngoingAssignment" />
+              <input class="form-check-input" type="checkbox" v-model="formData.OngoingAssignment" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
           </div>
           <!--end::Col-->
@@ -232,7 +235,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Address" type="text" placeholder="Via, numero civico" />
+            <input class="form-control modern-input" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -255,6 +258,7 @@
               v-model="formData.State"
               class="form-select modern-select"
               name="province"
+              :disabled="!canModifyCustomer && user.Role === 'Agent'"
             >
               <option value="">🗺️ Seleziona provincia</option>
               <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
@@ -279,7 +283,7 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.City">
+            <select class="form-select modern-select" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
               <option value="">🏙️ Seleziona comune</option>
               <option v-for="(city, index) in cities" :key="index" :value="city.Name">
                 {{ city.Name }}
@@ -306,7 +310,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <textarea class="form-control modern-textarea" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..."></textarea>
+            <textarea class="form-control modern-textarea" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer && user.Role === 'Agent'"></textarea>
           </div>
           <!--end::Col-->
         </div>
@@ -339,7 +343,12 @@
       </div>
       <!--begin::Actions-->
       <div class="d-flex justify-content-end py-6 px-9">
-        <button type="button" @click="deleteItem()" class="btn btn-modal-danger me-3">
+        <button 
+          v-if="canModifyCustomer" 
+          type="button" 
+          @click="deleteItem()" 
+          class="btn btn-modal-danger me-3"
+        >
           <span class="btn-icon">
             <i class="ki-duotone ki-trash fs-3">
               <span class="path1"></span>
@@ -352,7 +361,12 @@
           <span class="btn-label">Elimina</span>
         </button>
         <!--begin::Button-->
-        <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
+        <button 
+          :data-kt-indicator="loading ? 'on' : null" 
+          class="btn btn-modal-primary" 
+          type="submit" 
+          :disabled="loading || !canModifyCustomer"
+        >
           <span v-if="!loading" class="d-flex align-items-center">
             <span class="btn-icon">
               <i class="ki-duotone ki-check fs-3">
@@ -468,7 +482,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { updateCustomer, Customer, getCustomer, deleteCustomer } from "@/core/data/customers";
 import { Request, getCustomerRequests, RequestTabelData } from "@/core/data/requests";
@@ -557,11 +571,15 @@ export default defineComponent({
         },
       ]);
 
+    // Salva il UserId originale del cliente (non deve essere modificato)
+    const originalUserId = ref<string>("");
+
     onMounted(async () => {
       loading.value = true;
       formData.value = await getCustomer(id)
 
-      formData.value.UserId = formData.value.UserId || store.user.Id;
+      // Preserva il UserId originale del cliente
+      originalUserId.value = formData.value.UserId || "";
 
       // Carica i dati dal JSON se non sono già caricati
       await getProvinceCities();
@@ -671,9 +689,35 @@ export default defineComponent({
       }
     }
 
+    // Verifica se l'utente può modificare questo cliente
+    const canModifyCustomer = computed(() => {
+      // Gli Agent possono modificare solo i propri clienti
+      if (user.Role === "Agent") {
+        return originalUserId.value === user.Id;
+      }
+      // Admin e Agency possono modificare tutti i clienti della loro cerchia
+      return true;
+    });
+
     const submit = async () => {
+      // Verifica permessi prima di inviare
+      if (!canModifyCustomer.value) {
+        Swal.fire({
+          text: "Non hai i permessi per modificare questo cliente.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
+      }
+
       loading.value = true;
-      formData.value.UserId = formData.value.UserId || store.user.Id;
+      // Preserva il UserId originale - non sovrascriverlo
+      formData.value.UserId = originalUserId.value;
       await updateCustomer(formData.value)
         .then(() => {
           loading.value = false;
@@ -762,7 +806,8 @@ export default defineComponent({
       search,
       requests,
       provinces,
-      cities
+      cities,
+      canModifyCustomer
     };
   },
 });
