@@ -1,0 +1,664 @@
+/* ========================================
+   WIDGETS STYLES
+   Stili per componenti widget
+   ======================================== */
+
+/* ========================================
+   WIDGET 10 - Stats Widget
+   ======================================== */
+
+@keyframes numberPop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.progress-bar {
+  transition: width 1.5s ease-in-out;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cursor-pointer:hover {
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   WIDGET 11 - Analytics Dashboard
+   ======================================== */
+
+.hover-elevate-up {
+  transition: all 0.3s ease;
+}
+
+.hover-elevate-up:hover {
+  box-shadow: 0 1rem 2rem 0.5rem rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.symbol-label {
+  border-radius: 0.95rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* Layout adattivo per la sezione info */
+.info-section-container {
+  height: 350px;
+  overflow: visible;
+}
+
+/* Agencies List Container per Widget11 */
+.agencies-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Agency Item Styles per Widget11 */
+.agency-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+}
+
+.agency-item:last-child {
+  border-bottom: none;
+}
+
+.agency-item:hover {
+  background-color: transparent;
+}
+
+/* KPI Cards Layout */
+.row.h-100 {
+  height: 100% !important;
+}
+
+.row.h-100 .col-6 {
+  height: calc(50% - 0.5rem);
+  margin-bottom: 1rem;
+}
+
+.row.h-100 .col-6:last-child,
+.row.h-100 .col-6:nth-last-child(2) {
+  margin-bottom: 0;
+}
+
+/* Stili specifici per le agenzie */
+.agencies-grid {
+  display: grid;
+  gap: 1.5rem;
+  height: 100%;
+  align-content: stretch;
+}
+
+/* Layout adattivo per le agenzie */
+.agencies-grid.single {
+  grid-template-columns: 1fr;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.agencies-grid.single-large {
+  grid-template-columns: 1fr;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.agencies-grid.double {
+  grid-template-columns: 1fr 1fr;
+}
+
+.agencies-grid.triple {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.agencies-grid.triple .agency-card:last-child {
+  grid-column: 1 / -1;
+}
+
+.agencies-grid.multiple {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Classi per le card delle agenzie */
+.agency-card.full-width {
+  width: 100%;
+}
+
+.agency-card.full-width-large {
+  width: 100%;
+  min-height: 500px;
+}
+
+.agency-card.half-width {
+  width: 50%;
+}
+
+.agency-card.third-width {
+  width: 33.333%;
+}
+
+.agency-card.auto-width {
+  width: auto;
+}
+
+/* Stili per le card delle agenzie */
+.agency-card {
+  height: 100%;
+}
+
+.agency-card-inner {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.agency-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3699ff 0%, #0bb7af 100%);
+}
+
+.agency-card-inner:hover {
+  box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Stili specifici per la vista grande dell'agenzia */
+.agencies-grid.single-large .agency-card-inner {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.agencies-grid.single-large .agency-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #3699ff 0%, #0bb7af 50%, #1bc5bd 100%);
+}
+
+.agencies-grid.single-large .agency-card-inner:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Stili per il simbolo più grande */
+.agencies-grid.single-large .symbol-80px {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Stili per i dettagli in layout a griglia */
+.agencies-grid.single-large .row.g-4 > div {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.agencies-grid.single-large .row.g-4 > div:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Stili per distinguere i due gruppi di KPI */
+.static-kpi-card {
+  position: relative;
+}
+
+.static-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 0.75rem;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.filtered-kpi-card {
+  position: relative;
+}
+
+.filtered-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  border-radius: 0.75rem;
+  z-index: -1;
+  opacity: 0.1;
+}
+
+/* Indicatore visivo per i KPI filtrati */
+.filtered-kpi-card .symbol-label::after {
+  content: '📅';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.static-kpi-card .symbol-label::after {
+  content: '🏢';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+/* Responsive per agenzie */
+@media (max-width: 1200px) {
+  .agencies-grid.double,
+  .agencies-grid.triple,
+  .agencies-grid.multiple {
+    grid-template-columns: 1fr;
+  }
+  
+  .agency-card.half-width,
+  .agency-card.third-width {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .agencies-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .agency-card {
+    width: 100% !important;
+  }
+}
+
+/* ========================================
+   WIDGET 13 - Agencies Map Widget
+   ======================================== */
+
+/* Map Widget Container */
+.map-widget-container {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Widget 13 Header */
+.widget-13-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-bg-primary);
+}
+
+/* Filter Item */
+.widget-13-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+  max-width: 250px;
+}
+
+.widget-13-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--bs-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.widget-13-filter-label i {
+  color: var(--bs-accent-primary);
+}
+
+.widget-13-filter-select {
+  background: var(--bs-bg-primary) !important;
+  border: 1px solid var(--bs-border-color) !important;
+  border-radius: 0.5rem !important;
+  color: var(--bs-text-primary) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  padding: 0.625rem 1rem !important;
+  transition: all 0.3s ease !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  box-shadow: 0 2px 4px var(--bs-shadow-color);
+}
+
+.widget-13-filter-select:focus {
+  border-color: var(--bs-accent-primary) !important;
+  box-shadow: 0 0 0 3px var(--bs-focus-color) !important;
+  outline: none !important;
+}
+
+.widget-13-filter-select:hover {
+  border-color: var(--bs-accent-primary) !important;
+  box-shadow: 0 4px 8px var(--bs-shadow-color);
+}
+
+.widget-13-filter-select option {
+  background: var(--bs-bg-primary) !important;
+  color: var(--bs-text-primary) !important;
+  padding: 0.5rem !important;
+}
+
+/* KPI Stats Item */
+.widget-13-kpi-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bs-bg-secondary);
+  border-radius: 0.75rem;
+  border: 1px solid var(--bs-border-color);
+  transition: all 0.3s ease;
+  min-width: 130px;
+  flex: 0 0 auto;
+}
+
+.widget-13-kpi-item:hover {
+  background: var(--bs-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--bs-shadow-color);
+}
+
+.widget-13-kpi-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+/* Map Container */
+.leaflet-map-container {
+  width: 100%;
+  height: 600px;
+  min-height: 500px;
+  border-radius: 0 0 0.75rem 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Leaflet Map Styles */
+.map-widget-container .leaflet-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 0 0 0.75rem 0.75rem;
+  cursor: default !important;
+}
+
+.map-widget-container .leaflet-container .leaflet-interactive {
+  cursor: pointer !important;
+}
+
+.map-widget-container .custom-marker {
+  background: transparent !important;
+  border: none !important;
+  z-index: 1000 !important;
+}
+
+.map-widget-container .leaflet-marker-pane {
+  z-index: 1000 !important;
+}
+
+/* Pulse animation for selected marker */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+.map-widget-container .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.map-widget-container .leaflet-popup-content {
+  margin: 12px;
+  font-family: inherit;
+}
+
+/* Custom Popup Styles for Hover */
+.map-widget-container .custom-popup-hover {
+  z-index: 10000 !important;
+}
+
+.map-widget-container .custom-popup-hover .leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+  border: 3px solid #3699ff !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
+.map-widget-container .custom-popup-hover .leaflet-popup-content {
+  margin: 14px !important;
+  line-height: 1.5 !important;
+  min-width: 200px !important;
+  color: #1e1e2d !important;
+  font-size: 13px !important;
+}
+
+.map-widget-container .custom-popup-hover .leaflet-popup-tip {
+  background: #ffffff !important;
+  border: 3px solid #3699ff !important;
+  border-top: none !important;
+  border-left: none !important;
+}
+
+.map-widget-container .custom-popup-hover .leaflet-popup-close-button {
+  display: none !important;
+}
+
+/* Ensure popup and markers are above everything */
+.map-widget-container .leaflet-popup-pane {
+  z-index: 10000 !important;
+}
+
+.map-widget-container .leaflet-popup {
+  z-index: 10000 !important;
+}
+
+.map-widget-container .leaflet-marker-icon {
+  z-index: 1000 !important;
+}
+
+.map-widget-container .leaflet-shadow-pane {
+  z-index: 999 !important;
+}
+
+/* Dark Mode Styles */
+[data-bs-theme="dark"] .text-gray-600 {
+  color: var(--bs-text-secondary) !important;
+}
+
+/* Responsive adjustments using Bootstrap breakpoints */
+@media (max-width: 991.98px) {
+  .widget-13-header {
+    padding: 1.25rem;
+  }
+  
+  .widget-13-filter-item {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  .widget-13-kpi-item {
+    min-width: 100%;
+    flex: 1;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .widget-13-header {
+    padding: 1rem;
+  }
+  
+  .widget-13-filter-item {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  .widget-13-filter-label {
+    font-size: 0.8125rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .widget-13-filter-select {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .widget-13-kpi-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 0.875rem;
+  }
+  
+  .widget-13-kpi-item .symbol {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto;
+  }
+  
+  .widget-13-kpi-content {
+    align-items: center;
+    text-align: center;
+  }
+  
+  .widget-13-kpi-content .fw-bold {
+    font-size: 1.5rem;
+  }
+  
+  .widget-13-kpi-content .fs-7 {
+    font-size: 0.75rem;
+  }
+  
+  .leaflet-map-container {
+    height: 450px;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .widget-13-header {
+    padding: 0.875rem;
+  }
+  
+  .widget-13-filter-label {
+    font-size: 0.75rem;
+  }
+  
+  .widget-13-filter-select {
+    padding: 0.625rem 0.875rem !important;
+    font-size: 0.8125rem !important;
+  }
+  
+  .widget-13-kpi-item {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  .widget-13-kpi-item .symbol {
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    flex-shrink: 0;
+  }
+  
+  .widget-13-kpi-content {
+    align-items: flex-start;
+    text-align: left;
+    flex: 1;
+  }
+  
+  .widget-13-kpi-content .fw-bold {
+    font-size: 1.25rem;
+  }
+  
+  .widget-13-kpi-content .fs-7 {
+    font-size: 0.6875rem;
+  }
+  
+  .leaflet-map-container {
+    height: 400px;
+    min-height: 350px;
+  }
+}
+

@@ -1,0 +1,448 @@
+/* ==================================
+   STILI COMUNI PER LISTE
+   Supporto per modalità light e dark
+   ================================== */
+
+/* === VARIABILI CSS PER LIGHT/DARK MODE === */
+:root {
+  /* Links */
+  --link-color: #495057;
+  --link-hover-color: #3699ff;
+  
+  /* Avatar */
+  --avatar-shadow: rgba(0, 0, 0, 0.15);
+  --avatar-hover-shadow: rgba(0, 0, 0, 0.25);
+  
+  /* Header Colors */
+  --header-bg: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
+  --header-icon-bg: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  --header-icon-shadow: rgba(54, 153, 255, 0.3);
+  
+  /* Card */
+  --card-border: 1px solid #e9ecef;
+  --card-border-radius: 0.95rem;
+  --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+}
+
+[data-bs-theme="dark"] {
+  /* Links */
+  --link-color: #f5f8fa;
+  --link-hover-color: #3699ff;
+  
+  /* Avatar */
+  --avatar-shadow: rgba(0, 0, 0, 0.5);
+  --avatar-hover-shadow: rgba(0, 0, 0, 0.7);
+  
+  /* Header Colors */
+  --header-bg: linear-gradient(135deg, #1e1e2d 0%, #2b2b40 100%);
+  --header-icon-bg: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  --header-icon-shadow: rgba(54, 153, 255, 0.5);
+  
+  /* Card */
+  --card-border: 1px solid #323248;
+  --card-border-radius: 0.95rem;
+  --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+}
+
+/* === PAGE WRAPPER UNIFICATO === */
+/* La classe .list-page-wrapper è un container semantico senza stili specifici */
+
+/* === CARD PRINCIPALE === */
+.list-page-wrapper .card {
+  border-radius: var(--card-border-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+/* === HEADER CARD === */
+.list-page-wrapper .card-header {
+  background: var(--header-bg);
+  border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
+  border: 0;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+/* Simbolo/Icona nell'header */
+.list-page-wrapper .card-header .symbol-label {
+  background: var(--header-icon-bg);
+  box-shadow: 0 4px 12px var(--header-icon-shadow);
+}
+
+.list-page-wrapper .card-header .card-title h3 {
+  font-weight: 700;
+  margin: 0;
+  color: #181c32;
+  font-size: 1.25rem;
+}
+
+[data-bs-theme="dark"] .list-page-wrapper .card-header .card-title h3 {
+  color: #f5f8fa;
+}
+
+.list-page-wrapper .card-header .card-title .text-muted {
+  font-size: 0.813rem;
+  font-weight: 600;
+}
+
+/* Bottone Primario nell'Header (es. "Nuovo Agente") */
+.list-page-wrapper .card-toolbar .btn-primary {
+  background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.25);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.list-page-wrapper .card-toolbar .btn-primary:hover {
+  background: linear-gradient(135deg, #2b7ce6 0%, #0aa39a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(54, 153, 255, 0.4);
+}
+
+.list-page-wrapper .card-toolbar .btn-success {
+  background: linear-gradient(135deg, #1bc5bd 0%, #0bb783 100%);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(27, 197, 189, 0.25);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.list-page-wrapper .card-toolbar .btn-success:hover {
+  background: linear-gradient(135deg, #0bb783 0%, #0a9d6b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(27, 197, 189, 0.4);
+}
+
+/* === STILI SPECIFICI PER LISTE === */
+/* Gli stili di search, filtri e badge sono gestiti da filters.css */
+
+/* === BUTTON COPY === */
+.btn-copy {
+  opacity: 0;
+  transition: all 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+tbody tr:hover .btn-copy {
+  opacity: 1;
+}
+
+.btn-copy:hover {
+  transform: scale(1.1);
+}
+
+/* === AVATAR === */
+.symbol-label {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 3px 10px var(--avatar-shadow);
+  transition: all 0.3s ease;
+}
+
+tbody tr:hover .symbol-label {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px var(--avatar-hover-shadow);
+}
+
+/* === BADGES === */
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+.badge-light-success {
+  background: linear-gradient(135deg, #e8fff5 0%, #d4f7e8 100%);
+  color: #1bc5bd;
+  border: 1px solid #1bc5bd;
+}
+
+.badge-light-warning {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  color: #ffa800;
+  border: 1px solid #ffa800;
+}
+
+.badge-light-info {
+  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+  color: #3699ff;
+  border: 1px solid #3699ff;
+}
+
+.badge-light-danger {
+  background: linear-gradient(135deg, #ffe2e5 0%, #ffcdd2 100%);
+  color: #f64e60;
+  border: 1px solid #f64e60;
+}
+
+.badge-light-secondary {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  color: #7e8299;
+  border: 1px solid #7e8299;
+}
+
+.badge-light-primary {
+  background: linear-gradient(135deg, #e1f0ff 0%, #b3e5fc 100%);
+  color: #3699ff;
+  border: 1px solid #3699ff;
+}
+
+/* === BUTTONS GENERAL === */
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-sm {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-light {
+  background-color: #f4f6f9;
+  border: 1px solid #e4e6ef;
+  color: #7e8299;
+}
+
+.btn-light:hover {
+  background-color: #e4e6ef;
+  border-color: #d1d3e0;
+  color: #5e6278;
+}
+
+.btn-light-primary {
+  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+  border: 1px solid #0bb7af;
+  color: #0bb7af;
+}
+
+.btn-light-primary:hover {
+  background: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%);
+  border-color: #0bb7af;
+  color: #0aa39a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 183, 175, 0.25);
+}
+
+.btn-light-danger {
+  background: linear-gradient(135deg, #ffe2e5 0%, #ffcdd2 100%);
+  border: 1px solid #f64e60;
+  color: #f64e60;
+}
+
+.btn-light-danger:hover {
+  background: linear-gradient(135deg, #ffcdd2 0%, #ffb3ba 100%);
+  border-color: #f64e60;
+  color: #d63447;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.25);
+}
+
+/* Stili tabella gestiti da datatable.css */
+
+/* === LINKS === */
+:deep(a) {
+  color: var(--link-color) !important;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+:deep(a:hover) {
+  color: var(--link-hover-color) !important;
+  font-weight: 600;
+}
+
+/* Link nelle prime colonne (nome utente, cliente, etc.) */
+:deep(tbody td:nth-child(1) a),
+:deep(tbody td:nth-child(2) a) {
+  color: var(--table-text-dark) !important;
+  text-decoration: none !important;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+:deep(tbody td:nth-child(1) a:hover),
+:deep(tbody td:nth-child(2) a:hover) {
+  color: var(--link-hover-color) !important;
+  text-decoration: none !important;
+  transform: translateY(-1px);
+}
+
+/* Stili comuni per prima colonna (nome, cliente, etc.) */
+.list-page-wrapper :deep(tbody td:nth-child(1)) {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #181c32;
+}
+
+/* === SELECTION TOOLBAR === */
+.list-page-wrapper .selection-toolbar {
+  background: linear-gradient(135deg, #fff3f4 0%, #fffafb 100%);
+  border-left: 4px solid #f64e60 !important;
+  box-shadow: 0 4px 20px rgba(246, 78, 96, 0.15);
+  border-radius: 0.75rem;
+}
+
+[data-bs-theme="dark"] .list-page-wrapper .selection-toolbar {
+  background: linear-gradient(135deg, #2b1d1e 0%, #3d2629 100%);
+  border-left: 4px solid #f64e60 !important;
+  box-shadow: 0 4px 20px rgba(246, 78, 96, 0.25);
+}
+
+.list-page-wrapper .selection-toolbar .symbol-label {
+  background: #f64e60;
+  box-shadow: 0 4px 12px rgba(246, 78, 96, 0.3);
+  border-radius: 0.75rem;
+}
+
+.list-page-wrapper .selection-toolbar .progress-bar {
+  background-color: #f64e60;
+  border-radius: 0.5rem;
+  transition: width 0.5s ease;
+}
+
+.list-page-wrapper .selection-toolbar .progress {
+  height: 6px;
+  background-color: #ffe2e5;
+  border-radius: 0.5rem;
+}
+
+[data-bs-theme="dark"] .list-page-wrapper .selection-toolbar .progress {
+  background-color: rgba(246, 78, 96, 0.2);
+}
+
+/* === UTILITIES === */
+.card-body {
+  padding: 1rem 1.5rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem !important;
+}
+
+/* Separatore */
+.filter-separator {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+  margin: 1.5rem 0;
+}
+
+[data-bs-theme="dark"] .filter-separator {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+
+/* === CLICKABLE ROW === */
+.clickable-row {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-row:hover {
+  text-decoration: underline;
+  color: var(--link-hover-color) !important;
+}
+
+/* === ANIMAZIONI === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+  animation: fadeIn 0.4s ease-out;
+  padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+  animation: float 3s ease-in-out infinite;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state h3 {
+  color: var(--table-text-dark);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state p {
+  color: var(--search-icon-color);
+  margin-bottom: 1.5rem;
+}
+
+[data-bs-theme="dark"] .empty-state h3 {
+  color: #f5f8fa;
+}
+
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .d-flex.align-items-center.gap-3 {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  
+  .search-wrapper {
+    max-width: 100% !important;
+  }
+  
+  .flex-shrink-0 {
+    flex-shrink: 1 !important;
+  }
+  
+  .search-input {
+    font-size: 0.9rem;
+  }
+  
+  .results-badge {
+    padding: 0.65rem 1rem;
+  }
+  
+  .results-number {
+    font-size: 1.25rem;
+  }
+  
+  .btn-search {
+    padding: 0.65rem 1.25rem !important;
+  }
+}
+

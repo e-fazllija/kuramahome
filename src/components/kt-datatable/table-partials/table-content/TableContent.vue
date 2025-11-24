@@ -1,0 +1,155 @@
+<template>
+  <div class="table-responsive">
+    <table
+      :class="[
+        loading && 'kt-table-loading',
+        'table table-hover table-striped align-middle mb-0 kt-custom-table'
+      ]"
+    >
+      <TableHeadRow
+        @onSort="onSort"
+        @onSelect="selectAll"
+        :checkboxEnabledValue="check"
+        :checkboxEnabled="checkboxEnabled"
+        :sort-label="sortLabel"
+        :sort-order="sortOrder"
+        :header="header"
+      />
+      <TableBodyRow
+        v-if="data.length !== 0"
+        @onSelect="itemsSelect"
+        :currentlySelectedItems="selectedItems"
+        :data="data"
+        :header="header"
+        :checkbox-enabled="checkboxEnabled"
+        :checkbox-label="checkboxLabel"
+      >
+        <template v-for="(_, name) in $slots" :key="name" v-slot:[name]="{ row: item }">
+          <slot :name="name" :row="item" />
+        </template>
+      </TableBodyRow>
+      <template v-else>
+        <tbody>
+          <tr class="kt-empty-state-row">
+            <td :colspan="header.length + (checkboxEnabled ? 1 : 0)" class="kt-empty-state-cell">
+              <div class="kt-empty-state-content text-center py-5">
+                <i class="ki-outline ki-information fs-3x text-muted mb-3"></i>
+                <div class="kt-empty-state-title fw-bold fs-5 mb-2">No Data Available</div>
+                <div class="kt-empty-state-subtitle text-muted fs-6">{{ emptyTableText }}</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </template>
+      <Loading v-if="loading" />
+    </table>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, onMounted, ref, watch } from "vue";
+import TableHeadRow from "@/components/kt-datatable/table-partials/table-content/table-head/TableHeadRow.vue";
+import TableBodyRow from "@/components/kt-datatable/table-partials/table-content/table-body/TableBodyRow.vue";
+import Loading from "@/components/kt-datatable/table-partials/Loading.vue";
+import type { Sort } from "@/components/kt-datatable/table-partials/models";
+
+export default defineComponent({
+  name: "table-body",
+  props: {
+    header: { type: Array, required: true },
+    data: { type: Array, required: true },
+    emptyTableText: { type: String, default: "No data found" },
+    sortLabel: { type: String, required: false, default: null },
+    sortOrder: {
+      type: String as () => "asc" | "desc",
+      required: false,
+      default: "asc",
+    },
+    checkboxEnabled: { type: Boolean, required: false, default: false },
+    checkboxLabel: { type: String, required: false, default: "id" },
+    loading: { type: Boolean, required: false, default: false },
+  },
+  emits: ["on-sort", "on-items-select"],
+  components: {
+    TableHeadRow,
+    TableBodyRow,
+    Loading,
+  },
+  setup(props, { emit }) {
+    const selectedItems = ref<Array<unknown>>([]);
+    const allSelectedItems = ref<Array<unknown>>([]);
+    const check = ref<boolean>(false);
+
+    watch(
+      () => props.data,
+      () => {
+        selectedItems.value = [];
+        allSelectedItems.value = [];
+        check.value = false;
+        // eslint-disable-next-line
+        props.data.forEach((item: any) => {
+          if (item[props.checkboxLabel]) {
+            allSelectedItems.value.push(item[props.checkboxLabel]);
+          }
+        });
+      }
+    );
+
+    // eslint-disable-next-line
+    const selectAll = (checked: any) => {
+      check.value = checked;
+      if (checked) {
+        selectedItems.value = [
+          ...new Set([...selectedItems.value, ...allSelectedItems.value]),
+        ];
+      } else {
+        selectedItems.value = [];
+      }
+    };
+
+    //eslint-disable-next-line
+    const itemsSelect = (value: any) => {
+      selectedItems.value = [];
+      //eslint-disable-next-line
+      value.forEach((item:any) => {
+        if (!selectedItems.value.includes(item)) selectedItems.value.push(item);
+      });
+    };
+
+    const onSort = (sort: Sort) => {
+      emit("on-sort", sort);
+    };
+
+    watch(
+      () => [...selectedItems.value],
+      (currentValue) => {
+        if (currentValue) {
+          emit("on-items-select", currentValue);
+        }
+      }
+    );
+
+    onMounted(() => {
+      selectedItems.value = [];
+      allSelectedItems.value = [];
+      check.value = false;
+      // eslint-disable-next-line
+      props.data.forEach((item: any) => {
+        if (item[props.checkboxLabel]) {
+          allSelectedItems.value.push(item[props.checkboxLabel]);
+        }
+      });
+    });
+
+    return {
+      onSort,
+      selectedItems,
+      selectAll,
+      itemsSelect,
+      check,
+    };
+  },
+});
+</script>
+
+<!-- CSS moved to global file: datatable.css -->

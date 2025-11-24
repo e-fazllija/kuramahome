@@ -1,0 +1,94 @@
+/* ========================================
+   FORM CONTROLS STYLES
+   Stili per checkbox, labels e controlli form
+   ======================================== */
+
+/* Checkbox & Switch Styles */
+.form-check-input {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: var(--bs-accent-primary);
+  border-color: var(--bs-accent-primary);
+}
+
+.form-check-input:focus {
+  border-color: var(--bs-accent-primary);
+  box-shadow: 0 0 0 0.2rem var(--kh-focus-ring-soft);
+}
+
+.form-check-input:hover:not(:disabled) {
+  border-color: var(--bs-accent-primary);
+}
+
+.form-check-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-check-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Labels */
+label {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+label:hover {
+  color: var(--bs-accent-primary) !important;
+}
+
+label .required {
+  color: var(--kh-status-danger);
+}
+
+/* Icons in Labels */
+.ki-duotone {
+  transition: all 0.3s ease;
+}
+
+label:hover .ki-duotone {
+  transform: scale(1.1);
+}
+
+/* Form Validation */
+.is-invalid {
+  border-color: var(--kh-status-danger) !important;
+}
+
+.is-valid {
+  border-color: var(--kh-status-success) !important;
+}
+
+.invalid-feedback {
+  color: var(--kh-status-danger);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.valid-feedback {
+  color: var(--kh-status-success);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Dark Mode Support */
+[data-bs-theme="dark"] .form-check-input:checked {
+  background-color: var(--bs-accent-primary);
+  border-color: var(--bs-accent-primary);
+}
+
+[data-bs-theme="dark"] .form-check-input {
+  background-color: var(--bs-bg-secondary);
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme="dark"] .form-check-label {
+  color: var(--bs-text-primary);
+}
+

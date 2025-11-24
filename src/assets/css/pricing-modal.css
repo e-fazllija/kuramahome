@@ -1,0 +1,333 @@
+/* ========================================
+   PRICING MODAL STYLES
+   Stili per la modale dei piani di abbonamento
+   Utilizza la palette colori personalizzata
+   ======================================== */
+
+/* CSS Variables per la palette colori */
+:root {
+  --bs-text-primary: #333333; /* testo_principale light */
+  --bs-text-secondary: #666666; /* testo_secondario light */
+  --bs-bg-primary: #FFFFFF; /* sfondo_principale light */
+  --bs-bg-secondary: #F0F0F0; /* sfondo_secondario light */
+  --bs-accent-primary: #0077CC; /* accent_principale */
+}
+
+[data-bs-theme="dark"] {
+  --bs-text-primary: #E0E0E0; /* testo_principale dark */
+  --bs-text-secondary: #AAAAAA; /* testo_secondario dark */
+  --bs-bg-primary: #1A1A1A; /* sfondo_principale dark */
+  --bs-bg-secondary: #2C2C2C; /* sfondo_secondario dark */
+  --bs-accent-primary: #0077CC; /* accent_principale (stesso per entrambe le modalità) */
+}
+
+/* Modal Backdrop */
+.pricing-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Modal Container */
+.pricing-modal-container {
+  background: var(--bs-bg-primary);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 1400px;
+  max-height: 95vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  animation: modalSlideUp 0.3s ease-out;
+}
+
+/* Quando si mostra il pagamento, riduci la larghezza */
+.pricing-modal-container.payment-mode {
+  max-width: 900px;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Close Button */
+.pricing-modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bs-bg-primary);
+  border: 1px solid var(--bs-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-modal-close:hover {
+  background: #f1416c;
+  border-color: #f1416c;
+  transform: rotate(90deg);
+  box-shadow: 0 6px 16px rgba(241, 65, 108, 0.3);
+}
+
+.pricing-modal-close:hover .ki-duotone {
+  color: white !important;
+}
+
+.pricing-modal-close .ki-duotone {
+  color: var(--bs-text-secondary);
+  transition: color 0.3s ease;
+}
+
+/* Modal Content */
+.pricing-modal-content {
+  padding: 3rem 2rem 2rem;
+  overflow-y: auto;
+  max-height: calc(95vh - 2rem);
+  scrollbar-width: thin;
+  scrollbar-color: #cbd4e1 transparent;
+}
+
+.pricing-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pricing-modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pricing-modal-content::-webkit-scrollbar-thumb {
+  background-color: #cbd4e1;
+  border-radius: 10px;
+  border: 2px solid transparent;
+}
+
+.pricing-modal-content::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* Modal Fade Transition */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-active .pricing-modal-container,
+.modal-fade-leave-active .pricing-modal-container {
+  transition: all 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .pricing-modal-container,
+.modal-fade-leave-to .pricing-modal-container {
+  transform: translateY(30px) scale(0.95);
+  opacity: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1199px) {
+  .pricing-modal-container {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 991px) {
+  .pricing-modal-content {
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+
+  .pricing-modal-close {
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .pricing-modal-container {
+    border-radius: 1rem;
+    max-height: 90vh;
+  }
+
+  .pricing-modal-content {
+    max-height: calc(90vh - 2rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .pricing-modal-backdrop {
+    padding: 0.5rem;
+  }
+
+  .pricing-modal-container {
+    max-width: 100%;
+    max-height: 98vh;
+    border-radius: 0.75rem;
+  }
+
+  .pricing-modal-content {
+    padding: 2rem 1rem 1rem;
+    max-height: calc(98vh - 1rem);
+  }
+
+  .pricing-modal-close {
+    width: 36px;
+    height: 36px;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  /* Ottimizzazioni per mobile */
+  .pricing-modal-container h1 {
+    font-size: 1.75rem !important;
+  }
+
+  .pricing-modal-container .fs-5 {
+    font-size: 0.95rem !important;
+  }
+
+  .pricing-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* ========================================
+   DARK MODE STYLES
+   Utilizza la palette colori dark fornita
+   ======================================== */
+
+[data-bs-theme="dark"] .pricing-modal-backdrop {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-bs-theme="dark"] .pricing-modal-container {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+[data-bs-theme="dark"] .pricing-modal-close {
+  background: var(--bs-bg-primary);
+  border-color: var(--bs-bg-secondary);
+}
+
+[data-bs-theme="dark"] .pricing-modal-close:hover {
+  background: #f1416c;
+  border-color: #f1416c;
+}
+
+[data-bs-theme="dark"] .pricing-modal-close .ki-duotone {
+  color: var(--bs-text-secondary);
+}
+
+[data-bs-theme="dark"] .pricing-modal-content::-webkit-scrollbar-thumb {
+  background-color: var(--bs-bg-secondary);
+}
+
+[data-bs-theme="dark"] .pricing-modal-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--bs-text-secondary);
+}
+
+/* Adjustments for card headers in dark mode */
+[data-bs-theme="dark"] .pricing-modal-container .card-header {
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.15) 0%, rgba(0, 119, 204, 0.1) 100%) !important;
+}
+
+[data-bs-theme="dark"] .pricing-modal-container .payment-summary {
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.15) 0%, rgba(0, 119, 204, 0.1) 100%) !important;
+  border-color: var(--bs-bg-secondary) !important;
+}
+
+[data-bs-theme="dark"] .pricing-modal-container #payment-element-modal {
+  background: var(--bs-bg-primary);
+}
+
+/* Smooth scrolling */
+.pricing-modal-content {
+  scroll-behavior: smooth;
+}
+
+/* Text color classes using palette */
+.pricing-text-primary {
+  color: var(--bs-text-primary);
+}
+
+.pricing-text-secondary {
+  color: var(--bs-text-secondary);
+}
+
+/* Feature Value Styling */
+.pricing-feature-value {
+  color: var(--bs-accent-primary);
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  background: var(--bs-bg-secondary);
+  border-radius: 0.375rem;
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.9em;
+}
+
+/* Feature Text Styling - migliora la leggibilità */
+.pricing-feature .fw-semibold {
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Evidenzia le parole chiave nelle features */
+.pricing-feature .fw-semibold {
+  color: var(--bs-text-primary);
+}
+
+/* Stile per valori numerici nelle features */
+.pricing-feature .fw-semibold:has-text("Fino a") {
+  font-weight: 600;
+}
+
+/* Overlay gradient effect for better visual hierarchy */
+.pricing-modal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: 1.5rem 1.5rem 0 0;
+  z-index: 1;
+}
+
+[data-bs-theme="dark"] .pricing-modal-container::before {
+  background: linear-gradient(180deg, rgba(0, 119, 204, 0.03) 0%, transparent 100%);
+}
+
+

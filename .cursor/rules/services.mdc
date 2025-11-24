@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+
+Utilizza la cartella src/core/data per aggiungere nuovi metodi che richiamano le api.
+Ogni nuovo file deve contenere i metodi di una singola entità (ex. customer.ts), per tanto deve fare riferimento solo ad essa.

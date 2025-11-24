@@ -1,0 +1,426 @@
+/* ========================================
+   DATATABLE RESPONSIVE STYLES
+   Stili per le tabelle KT DataTable
+   Supporto completo per modalità light e dark
+   ======================================== */
+
+/* ===== LIGHT MODE (Default) ===== */
+:root {
+  --kt-table-bg: #FFFFFF;
+  --kt-table-border: #F0F0F0;
+  --kt-table-header-bg: #F0F0F0;
+  --kt-table-header-text: #333333;
+  --kt-table-text: #333333;
+  --kt-table-text-secondary: #666666;
+  --kt-table-hover-bg: rgba(0, 119, 204, 0.05);
+  --kt-table-striped-bg: #FAFAFA;
+  --kt-table-shadow: rgba(0, 0, 0, 0.08);
+}
+
+/* ===== DARK MODE ===== */
+[data-bs-theme="dark"] {
+  --kt-table-bg: #1A1A1A;
+  --kt-table-border: #2C2C2C;
+  --kt-table-header-bg: #2C2C2C;
+  --kt-table-header-text: #E0E0E0;
+  --kt-table-text: #E0E0E0;
+  --kt-table-text-secondary: #AAAAAA;
+  --kt-table-hover-bg: rgba(0, 119, 204, 0.1);
+  --kt-table-striped-bg: #1F1F1F;
+  --kt-table-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== CARD CONTAINER ===== */
+.kt-datatable-card {
+  background-color: var(--kt-table-bg);
+  border-color: var(--kt-table-border) !important;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.kt-datatable-card:hover {
+  box-shadow: 0 4px 12px var(--kt-table-shadow);
+}
+
+/* ===== TABLE STYLES ===== */
+.kt-custom-table {
+  background-color: var(--kt-table-bg);
+  color: var(--kt-table-text);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Header Styling */
+.kt-custom-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.kt-custom-table thead th {
+  background-color: var(--kt-table-header-bg);
+  color: var(--kt-table-header-text);
+  border-bottom: 2px solid var(--kt-table-border);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  vertical-align: middle;
+  transition: background-color 0.2s ease;
+}
+
+.kt-custom-table thead th.sortable {
+  user-select: none;
+  position: relative;
+}
+
+.kt-custom-table thead th.sortable:hover {
+  background-color: var(--kt-table-hover-bg);
+}
+
+.kt-custom-table thead th.sortable:active {
+  transform: scale(0.98);
+}
+
+/* Body Styling */
+.kt-custom-table tbody tr {
+  background-color: var(--kt-table-bg);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  border-bottom: 1px solid var(--kt-table-border);
+}
+
+.kt-custom-table tbody tr:hover {
+  background-color: var(--kt-table-hover-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px var(--kt-table-shadow);
+}
+
+.kt-custom-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.kt-custom-table tbody td {
+  color: var(--kt-table-text);
+  padding: 0.875rem 0.75rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  border-color: var(--kt-table-border);
+}
+
+/* Striped Rows */
+.kt-custom-table.table-striped tbody tr:nth-of-type(odd) {
+  background-color: var(--kt-table-striped-bg);
+}
+
+/* ===== EMPTY STATE ===== */
+.kt-empty-state-row {
+  background-color: var(--kt-table-bg) !important;
+}
+
+.kt-empty-state-cell {
+  padding: 3rem 1rem !important;
+  border: none !important;
+}
+
+.kt-empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.kt-empty-state-title {
+  color: var(--kt-table-text);
+  margin-bottom: 0.5rem;
+}
+
+.kt-empty-state-subtitle {
+  color: var(--kt-table-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* ===== LOADING STATE ===== */
+.kt-table-loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.kt-table-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--kt-table-bg);
+  opacity: 0.5;
+  z-index: 5;
+}
+
+/* ===== RESPONSIVE BEHAVIOR ===== */
+.table-responsive {
+  border-radius: 0;
+  border: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .kt-custom-table {
+    font-size: 0.85rem;
+  }
+
+  .kt-custom-table thead th {
+    font-size: 0.8rem;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .kt-custom-table tbody td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .kt-empty-state-cell {
+    padding: 2rem 0.5rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .kt-custom-table {
+    font-size: 0.8rem;
+  }
+
+  .kt-custom-table thead th {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.4rem;
+    min-width: 80px !important;
+  }
+
+  .kt-custom-table tbody td {
+    padding: 0.6rem 0.4rem;
+  }
+}
+
+/* ===== CHECKBOX STYLES ===== */
+.header-checkbox-cell,
+.checkbox-cell {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+  padding: 0.875rem 0.5rem !important;
+}
+
+.form-check-input {
+  cursor: pointer;
+  border-color: var(--kt-table-border);
+  background-color: var(--kt-table-bg);
+  transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+  background-color: #0077CC;
+  border-color: #0077CC;
+}
+
+.form-check-input:focus {
+  border-color: #0077CC;
+  box-shadow: 0 0 0 0.2rem rgba(0, 119, 204, 0.25);
+}
+
+.form-check-input:hover:not(:disabled):not(:checked) {
+  border-color: #0077CC;
+}
+
+/* ===== FOOTER STYLES ===== */
+.card-footer {
+  background-color: var(--kt-table-header-bg);
+  border-top-color: var(--kt-table-border) !important;
+  color: var(--kt-table-text);
+}
+
+.card-footer .text-muted {
+  color: var(--kt-table-text-secondary) !important;
+}
+
+.card-footer .form-label {
+  color: var(--kt-table-text-secondary) !important;
+}
+
+.card-footer .badge {
+  background-color: var(--kt-table-bg) !important;
+  color: var(--kt-table-text) !important;
+  border: 1px solid var(--kt-table-border);
+}
+
+/* ===== PAGINATION STYLES ===== */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination {
+  margin: 0;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.pagination .page-item {
+  margin: 0;
+}
+
+.pagination .page-link {
+  background-color: var(--kt-table-bg);
+  border-color: var(--kt-table-border);
+  color: var(--kt-table-text);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination .page-link:hover:not(.pe-none) {
+  background-color: var(--kt-table-hover-bg);
+  border-color: #0077CC;
+  color: #0077CC;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px var(--kt-table-shadow);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #0077CC;
+  border-color: #0077CC;
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 119, 204, 0.3);
+}
+
+.pagination .page-item.disabled .page-link {
+  background-color: var(--kt-table-bg);
+  border-color: var(--kt-table-border);
+  color: var(--kt-table-text-secondary);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination .pe-none {
+  pointer-events: none;
+  cursor: default !important;
+}
+
+/* Responsive Pagination */
+@media (max-width: 576px) {
+  .pagination {
+    gap: 0.15rem;
+  }
+
+  .pagination .page-link {
+    padding: 0.4rem 0.6rem;
+    min-width: 35px;
+    font-size: 0.85rem;
+  }
+
+  .page-number {
+    display: none;
+  }
+  
+  .page-number.active {
+    display: list-item;
+  }
+}
+
+/* Form Select Styles for Items Per Page */
+.form-select {
+  background-color: var(--kt-table-bg);
+  border-color: var(--kt-table-border);
+  color: var(--kt-table-text);
+  transition: all 0.2s ease;
+}
+
+.form-select:focus {
+  background-color: var(--kt-table-bg);
+  border-color: #0077CC;
+  color: var(--kt-table-text);
+  box-shadow: 0 0 0 0.2rem rgba(0, 119, 204, 0.25);
+}
+
+.form-select:hover {
+  border-color: #0077CC;
+}
+
+[data-bs-theme="dark"] .form-select option {
+  background-color: #1A1A1A;
+  color: #E0E0E0;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: var(--kt-table-bg);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--kt-table-border);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #0077CC;
+}
+
+/* Firefox Scrollbar */
+.table-responsive {
+  scrollbar-width: thin;
+  scrollbar-color: var(--kt-table-border) var(--kt-table-bg);
+}
+
+/* ===== ACCESSIBILITY ===== */
+.kt-custom-table th[scope="col"] {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kt-custom-table tbody tr,
+  .kt-custom-table thead th,
+  .form-check-input {
+    transition: none;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .kt-datatable-card {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+  }
+
+  .kt-custom-table {
+    font-size: 10pt;
+  }
+
+  .kt-custom-table thead {
+    display: table-header-group;
+  }
+
+  .kt-custom-table tbody tr {
+    page-break-inside: avoid;
+  }
+
+  .card-footer {
+    display: none;
+  }
+}
+

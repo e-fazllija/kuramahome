@@ -1,0 +1,109 @@
+/* ========================================
+   SPINNER COMPONENT
+   ======================================== */
+
+/* Container per spinner centrato (full page) */
+.kt-spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  width: 100%;
+}
+
+.kt-spinner-container.kt-spinner-centered {
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.kt-spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Spinner base */
+.kt-spinner {
+  display: inline-block;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: kt-spinner-rotate 0.75s linear infinite;
+  vertical-align: text-bottom;
+  color: #3699ff;
+}
+
+/* Spinner inline (per bottoni) */
+.kt-spinner-inline {
+  margin-right: 0.5rem;
+}
+
+/* Dimensioni spinner */
+.kt-spinner-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15rem;
+}
+
+.kt-spinner-md {
+  width: 2rem;
+  height: 2rem;
+  border-width: 0.25em;
+}
+
+.kt-spinner-lg {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* Testo spinner */
+.kt-spinner-text {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Visually hidden per accessibilità */
+.kt-spinner-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Animazione */
+@keyframes kt-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   DARK MODE
+   ======================================== */
+[data-bs-theme="dark"] .kt-spinner {
+  color: #3699ff;
+}
+
+[data-bs-theme="dark"] .kt-spinner-text {
+  color: #92929f;
+}
+
+/* ========================================
+   LIGHT MODE (default)
+   ======================================== */
+[data-bs-theme="light"] .kt-spinner {
+  color: #3699ff;
+}
+
+[data-bs-theme="light"] .kt-spinner-text {
+  color: #6c757d;
+}
+

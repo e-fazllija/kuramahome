@@ -1,0 +1,53 @@
+/* ========================================
+   BUTTON STYLES
+   Stili per bottoni light mode
+   ======================================== */
+
+/* Light Primary Button */
+.btn-light-primary {
+  background-color: #f1f3ff;
+  border-color: #3699ff;
+  color: #000;
+}
+
+.btn-light-primary:hover {
+  background-color: #e8f4ff;
+  border-color: #3699ff;
+}
+
+/* Light Success Button */
+.btn-light-success {
+  background-color: #e8fff5;
+  border-color: #1bc5bd;
+  color: #000;
+}
+
+.btn-light-success:hover {
+  background-color: #d4f7e8;
+  border-color: #1bc5bd;
+}
+
+/* Light Warning Button */
+.btn-light-warning {
+  background-color: #fff8e1;
+  border-color: #ffa800;
+  color: #000;
+}
+
+.btn-light-warning:hover {
+  background-color: #fff2cc;
+  border-color: #ffa800;
+}
+
+/* Light Info Button */
+.btn-light-info {
+  background-color: #f8f5ff;
+  border-color: #8e54e9;
+  color: #000;
+}
+
+.btn-light-info:hover {
+  background-color: #f0e8ff;
+  border-color: #8e54e9;
+}
+
