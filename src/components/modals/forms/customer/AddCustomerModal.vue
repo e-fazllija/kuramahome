@@ -9,13 +9,13 @@
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-850px">
       <!--begin::Modal content-->
-      <div class="modal-content" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+      <div class="modal-content">
         <!--begin::Modal header-->
-        <div class="modal-header" id="kt_modal_add_customer_header" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+        <div class="modal-header" id="kt_modal_add_customer_header">
           <!--begin::Modal title-->
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+              <span class="symbol-label">
                 <i class="ki-duotone ki-profile-user fs-2 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -36,7 +36,6 @@
             id="kt_modal_add_customer_close"
             data-bs-dismiss="modal"
             class="btn btn-icon btn-sm btn-active-icon-primary"
-            style="border-radius: 0.5rem; background: rgba(255, 255, 255, 0.8); border: 1px solid #e9ecef;"
           >
             <KTIcon icon-name="cross" icon-class="fs-1" />
           </div>
@@ -63,6 +62,37 @@
               data-kt-scroll-wrappers="#kt_modal_add_customer_scroll"
               data-kt-scroll-offset="300px"
             >
+              <!--begin::Input group - Proprietario (solo Admin)-->
+              <div v-if="user?.Role === 'Admin'" class="fv-row mb-8">
+                <label class="form-label fw-bold text-gray-900 fs-5 mb-4">
+                  <i class="ki-duotone ki-user-tick fs-2 text-primary me-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                  </i>
+                  Proprietario *
+                </label>
+                <select 
+                  v-model="formData.UserId"
+                  class="form-select modern-select"
+                  name="owner"
+                  required
+                >
+                  <option value="">👤 Seleziona proprietario</option>
+                  <optgroup v-if="ownerSearchItems.Agencies.length" label="Agenzie">
+                    <option v-for="agency in ownerSearchItems.Agencies" :key="agency.Id" :value="agency.Id">
+                      🏢 {{ agency.CompanyName || `${agency.FirstName} ${agency.LastName}` }}
+                    </option>
+                  </optgroup>
+                  <optgroup v-if="ownerSearchItems.Agents.length" label="Agenti">
+                    <option v-for="agent in ownerSearchItems.Agents" :key="agent.Id" :value="agent.Id">
+                      👤 {{ agent.FirstName }} {{ agent.LastName }}
+                    </option>
+                  </optgroup>
+                </select>
+              </div>
+              <!--end::Input group-->
+
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
@@ -290,7 +320,7 @@
                   v-model="formData.Description"
                   placeholder="Inserisci eventuali note..."
                   rows="3"
-                  style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border: 1px solid #e8f4ff; border-radius: 0.75rem; padding: 0.75rem 1rem; transition: all 0.3s ease;">
+                  >
                 </textarea>
                 <!--end::Input-->
               </div>
@@ -304,7 +334,7 @@
                 role="button"
                 aria-expanded="false"
                 aria-controls="kt_customer_view_details"
-                style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 0.75rem; border: 1px solid #dee2e6; cursor: pointer; transition: all 0.3s ease;">
+                >
                 <i class="ki-duotone ki-information fs-3 me-3 text-primary">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -462,6 +492,7 @@ import {createCustomer, Customer } from "@/core/data/customers";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
 import { getCAPByCity, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getSearchItems, type SearchModel } from "@/core/data/events";
 
 export default defineComponent({
   name: "add-customer-modal",
@@ -472,10 +503,15 @@ export default defineComponent({
     const addCustomerModalRef = ref<null | HTMLElement>(null);
     const loading = ref<boolean>(false);
     const store = useAuthStore();
+    const user = store.user;
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
     const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const ownerSearchItems = ref<SearchModel>({
+      Agencies: [],
+      Agents: []
+    });
     const formData = ref<Customer>({
       Buyer: false,
       Seller: false,
@@ -492,8 +528,30 @@ export default defineComponent({
       State: "",
       AcquisitionDone: false,
       OngoingAssignment: false,
-      UserId: store.user.Id
+      UserId: user.Id
     });
+
+    // Carica agenzie e agenti se l'utente è Admin
+    const loadOwnerSearchItems = async () => {
+      if (user?.Role === "Admin") {
+        try {
+          ownerSearchItems.value = await getSearchItems(user.Id);
+        } catch (error) {
+          console.error("Errore nel caricamento di agenzie e agenti:", error);
+        }
+      }
+    };
+
+    // Imposta UserId automaticamente se l'utente non è Admin
+    const setDefaultUserId = () => {
+      if (user?.Role !== "Admin" && user?.Id) {
+        formData.value.UserId = user.Id;
+      }
+    };
+
+    // Carica dati e imposta UserId al mount
+    loadOwnerSearchItems();
+    setDefaultUserId();
 
     // Watcher per caricare le città quando si seleziona la provincia
     watch(
@@ -553,9 +611,29 @@ export default defineComponent({
       }
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
+          // Validazione manuale per UserId se Admin
+          if (user?.Role === "Admin" && !formData.value.UserId?.trim()) {
+            Swal.fire({
+              title: "Proprietario Obbligatorio",
+              text: "Seleziona un proprietario (agenzia o agente) per associare il cliente.",
+              icon: "warning",
+              buttonsStyling: false,
+              confirmButtonText: "Ok",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn fw-semibold btn-light-warning",
+              },
+            });
+            return;
+          }
+
           loading.value = true;
           try {
-            formData.value.UserId = formData.value.UserId || store.user.Id;
+            // Imposta UserId automaticamente se l'utente non è Admin
+            if (user?.Role !== "Admin") {
+              formData.value.UserId = user.Id;
+            }
+            
             await createCustomer(formData.value);
 
             const error = store.errors;
@@ -620,6 +698,8 @@ export default defineComponent({
       countries,
       provinces,
       cities,
+      user,
+      ownerSearchItems,
     };
   },
 });

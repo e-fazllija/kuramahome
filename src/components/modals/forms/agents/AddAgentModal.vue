@@ -61,6 +61,31 @@
               data-kt-scroll-wrappers="#kt_modal_add_agent_scroll"
               data-kt-scroll-offset="300px"
             >
+              <!--begin::Input group - Agenzia (solo Admin)-->
+              <div v-if="user.Role === 'Admin'" class="fv-row mb-8">
+                <label class="form-label fw-bold text-gray-900 fs-5 mb-4">
+                  <i class="ki-duotone ki-office-bag fs-2 text-primary me-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Agenzia *
+                </label>
+                <select 
+                  v-model="formData.AgencyId"
+                  class="form-select modern-select"
+                  name="agency"
+                  required
+                >
+                  <option value="">🏢 Seleziona agenzia</option>
+                  <option v-for="agency in agenciesList" :key="agency.Id" :value="agency.Id">
+                    {{ agency.CompanyName || `${agency.FirstName} ${agency.LastName}` }}
+                  </option>
+                </select>
+              </div>
+              <!--end::Input group-->
+
               <!--begin::Input group - Tipo Utente-->
               <div class="fv-row mb-8">
                 <label class="form-label fw-bold text-gray-900 fs-5 mb-4">
@@ -642,6 +667,7 @@ import {createAgent, Agent } from "@/core/data/agents";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
 import { getCAPByCity, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getAgencies, type Agency } from "@/core/data/agencies";
 
 export default defineComponent({
   name: "add-agent-modal",
@@ -651,10 +677,12 @@ export default defineComponent({
     const addAgentModalRef = ref<null | HTMLElement>(null);
     const loading = ref<boolean>(false);
     const store = useAuthStore();
+    const user = store.user;
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
     const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const agenciesList = ref<Array<Agency>>([]);
     const formData = ref<any>({
       FirstName: "",
       LastName: "",
@@ -670,6 +698,7 @@ export default defineComponent({
       Password: "",
       Color: "#00FFFF", // Default: Ciano
       EmailConfirmed: true,
+      AgencyId: "", // Campo per selezionare l'agenzia (solo Admin)
       // Dati Fiscali
       UserType: 1, // Default: Persona Fisica
       CompanyName: "",
@@ -697,6 +726,29 @@ export default defineComponent({
     const selectColor = (color: string) => {
       formData.value.Color = color;
     };
+
+    // Carica le agenzie se l'utente è Admin
+    const loadAgencies = async () => {
+      if (user?.Role === "Admin") {
+        try {
+          const agencies = await getAgencies("");
+          agenciesList.value = agencies;
+        } catch (error) {
+          console.error("Errore nel caricamento delle agenzie:", error);
+        }
+      }
+    };
+
+    // Imposta AgencyId automaticamente se l'utente non è Admin
+    const setDefaultAgencyId = () => {
+      if (user?.Role !== "Admin" && user?.Id) {
+        formData.value.AgencyId = user.Id;
+      }
+    };
+
+    // Carica agenzie e imposta AgencyId al mount
+    loadAgencies();
+    setDefaultAgencyId();
 
     // Watcher per caricare le città quando si seleziona la provincia
     watch(
@@ -881,6 +933,9 @@ export default defineComponent({
       if (!formData.value.ZipCode?.trim()) validationErrors.push("CAP");
       
       // Validazioni condizionali
+      if (user?.Role === "Admin" && !formData.value.AgencyId?.trim()) {
+        validationErrors.push("Agenzia (obbligatoria per Admin)");
+      }
       if (formData.value.UserType === 2 && !formData.value.CompanyName?.trim()) {
         validationErrors.push("Ragione Sociale (obbligatoria per Persona Giuridica)");
       }
@@ -911,6 +966,11 @@ export default defineComponent({
       
       // Se la validazione passa, procedi con il salvataggio
       loading.value = true;
+      
+      // Imposta AgencyId se non è Admin (usa l'ID dell'utente corrente)
+      if (user?.Role !== "Admin") {
+        formData.value.AgencyId = user?.Id || "";
+      }
       
       formData.value.Role = "Agent"
       try {
@@ -982,6 +1042,8 @@ export default defineComponent({
       selectColor,
       provinces,
       cities,
+      user,
+      agenciesList,
     };
   },
 });
