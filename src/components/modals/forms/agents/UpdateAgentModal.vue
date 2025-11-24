@@ -917,40 +917,85 @@ export default defineComponent({
     };
 
      const deleteItem = async () => {
-      
-          loading.value = true;
-          await deleteAgent(formData.value.Id)
-          
-          const error = store.errors;
+      const displayName = `${formData.value.FirstName ?? ""} ${formData.value.LastName ?? ""}`.trim() || formData.value.Email || `Agente #${formData.value.Id}`;
 
-          if (!error) {
-            Swal.fire({
-              text: "Operazione completata!",
-              icon: "success",
-              buttonsStyling: false,
-              confirmButtonText: "Continua!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn fw-semobold btn-light-primary",
-              },
-            }).then(function () {
-              hideModal(updateAgentModalRef.value);
-              emit('formUpdateSubmitted', formData.value);
-              loading.value = false;
-            });
-          } else {
-            loading.value = false;
-            Swal.fire({
-              text: error as string,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Riprova!",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn fw-semobold btn-light-danger",
-              },
-            });
+      const result = await Swal.fire({
+        title: "Elimina agente",
+        html: `Stai per eliminare definitivamente questo agente e tutti i dati collegati ad esso. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`,
+        icon: "warning",
+        input: "text",
+        inputLabel: "Conferma eliminazione",
+        inputPlaceholder: displayName,
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Elimina definitivamente",
+        cancelButtonText: "Annulla",
+        inputValidator: (value) => {
+          if (value !== displayName) {
+            return "Il nome inserito non corrisponde. Riprova.";
           }
+          return undefined;
+        },
+        buttonsStyling: false,
+        heightAuto: false,
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-light",
+        },
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteAgent(formData.value.Id);
+        
+        const error = store.errors;
+
+        if (!error) {
+          Swal.fire({
+            text: "Operazione completata!",
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Continua!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-primary",
+            },
+          }).then(function () {
+            hideModal(updateAgentModalRef.value);
+            emit('formUpdateSubmitted', formData.value);
+            loading.value = false;
+          });
+        } else {
+          loading.value = false;
+          Swal.fire({
+            text: error as string,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Riprova!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-danger",
+            },
+          });
+        }
+      } catch (error: any) {
+        loading.value = false;
+        const errorMessage = error?.data?.Message || error?.response?.data?.Message || store.errors || "Si è verificato un errore durante l'eliminazione dell'agente.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     };
 
     return {

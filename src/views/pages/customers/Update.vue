@@ -1,13 +1,13 @@
 <template>
   <!--begin::Basic info-->
-  <div class="card mb-5 mb-xl-10" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+  <div class="card mb-5 mb-xl-10">
     <!--begin::Card header-->
-    <div class="card-header border-0" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+    <div class="card-header border-0">
       <!--begin::Card title-->
       <div class="card-title m-0">
         <div class="d-flex align-items-center">
           <div class="symbol symbol-45px me-3">
-            <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+            <span class="symbol-label">
               <i class="ki-duotone ki-profile-user fs-2 text-white">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -338,7 +338,7 @@
 
       </div>
       <!--begin::Actions-->
-      <div class="card-footer d-flex justify-content-end py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
+      <div class="d-flex justify-content-end py-6 px-9">
         <button type="button" @click="deleteItem()" class="btn btn-modal-danger me-3">
           <span class="btn-icon">
             <i class="ki-duotone ki-trash fs-3">
@@ -375,14 +375,14 @@
   </div>
   <!--end::Content-->
 
-  <div v-if="!loading" class="card mb-5 mb-xl-10" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+  <div v-if="!loading" class="card mb-5 mb-xl-10">
       <!--begin::Card header-->
-      <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+      <div class="card-header border-0 pt-6 pb-4">
         <!--begin::Card title-->
         <div class="card-title m-0">
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+              <span class="symbol-label">
                 <i class="ki-duotone ki-document fs-2 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -418,7 +418,7 @@
       <!--end::Card header-->
       
       <!--begin::Card body-->
-      <div class="card-body pt-0">
+      <div class="card-body pt-5">
         <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="requests"
           :header="tableHeader" :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id">
           <template v-slot:CustomerName="{ row: request }">
@@ -446,13 +446,11 @@
                 title="Visualizza dettagli richiesta"
               >
                 <span class="btn-icon">
-                  <i class="ki-duotone ki-eye fs-3">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                  </i>
+                  <i class="ki-duotone ki-notepad-edit fs-4">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
                 </span>
-                <span class="btn-label">Dettagli</span>
               </router-link>
             </div>
           </template>
@@ -623,31 +621,23 @@ export default defineComponent({
     async function deleteItem() {
       const displayName = `${formData.value.FirstName ?? ""} ${formData.value.LastName ?? ""}`.trim() || formData.value.Email || `Cliente #${id}`;
 
-      const htmlMessage = formData.value.CustomerNotes?.length
-        ? `Stai per eliminare definitivamente <strong>${displayName}</strong>.<br><br>Questo cliente ha richieste collegate: l'operazione non è reversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`
-        : `Stai per eliminare definitivamente <strong>${displayName}</strong>.<br><br>L'operazione è irreversibile. Vuoi continuare?`;
-
-      const requiresTyping = !!formData.value.CustomerNotes?.length;
-
       const result = await Swal.fire({
         title: "Elimina cliente",
-        html: htmlMessage,
+        html: `Stai per eliminare definitivamente questo cliente e tutti i dati collegati ad esso. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`,
         icon: "warning",
-        input: requiresTyping ? "text" : undefined,
-        inputLabel: requiresTyping ? "Conferma eliminazione" : undefined,
-        inputPlaceholder: requiresTyping ? displayName : undefined,
+        input: "text",
+        inputLabel: "Conferma eliminazione",
+        inputPlaceholder: displayName,
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: requiresTyping ? "Elimina definitivamente" : "Elimina",
+        confirmButtonText: "Elimina definitivamente",
         cancelButtonText: "Annulla",
-        inputValidator: requiresTyping
-          ? (value) => {
-              if (value !== displayName) {
-                return "Il nome inserito non corrisponde. Riprova.";
-              }
-              return undefined;
-            }
-          : undefined,
+        inputValidator: (value) => {
+          if (value !== displayName) {
+            return "Il nome inserito non corrisponde. Riprova.";
+          }
+          return undefined;
+        },
         buttonsStyling: false,
         heightAuto: false,
         customClass: {

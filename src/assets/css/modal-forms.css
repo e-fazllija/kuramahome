@@ -1,123 +1,16 @@
 /* ========================================
-   MODAL FORMS STYLES
-   Stili per input e select moderni
+   MODAL FORMS BASE
    ======================================== */
 
-/* Modern Input Styles with Gradient */
-:deep(.modern-input .el-input__wrapper) {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-}
-
-:deep(.modern-input .el-input__wrapper:hover) {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-:deep(.modern-input .el-input__wrapper.is-focus) {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-}
-
-:deep(.modern-input .el-input__inner) {
-  color: #3f4254;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-:deep(.modern-input .el-input__inner::placeholder) {
-  color: #a1a5b7;
-  font-weight: 400;
-}
-
-/* Dark Mode Input */
-[data-bs-theme="dark"] .modern-input .el-input__wrapper {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .modern-input .el-input__wrapper:hover {
-  border-color: #3699ff;
-  background-color: #25293c;
-}
-
-[data-bs-theme="dark"] .modern-input .el-input__wrapper.is-focus {
-  border-color: #3699ff;
-  background-color: #25293c;
-}
-
-[data-bs-theme="dark"] .modern-input .el-input__inner {
-  color: #f5f8fa;
-}
-
-[data-bs-theme="dark"] .modern-input .el-input__inner::placeholder {
-  color: #6c757d;
-}
-
-/* Modern Select Styles */
-.modern-select .el-select__wrapper {
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.475rem;
-  padding: 0.65rem 1rem;
-  transition: all 0.2s ease;
-}
-
-.modern-select .el-select__wrapper:hover {
-  border-color: #3699ff;
-  background-color: #fff;
-}
-
-.modern-select .el-select__wrapper.is-focus {
-  border-color: #3699ff;
-  box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.1);
-  background-color: #fff;
-}
-
-/* Dark Mode Select */
-[data-bs-theme="dark"] .modern-select .el-select__wrapper {
-  background-color: #1e1e2d;
-  border-color: #2d2d3f;
-}
-
-[data-bs-theme="dark"] .modern-select .el-select__wrapper:hover {
-  border-color: #3699ff;
-  background-color: #25293c;
-}
-
-[data-bs-theme="dark"] .modern-select .el-select__wrapper.is-focus {
-  border-color: #3699ff;
-  background-color: #25293c;
-}
-
-/* Element Plus Select Width */
-.el-select {
-  width: 100%;
-}
-
-/* Element Plus Date Editor Width */
-.el-date-editor--daterange.el-input__inner {
-  width: 100%;
-}
-
-/* Modal Content */
 .modal-content {
-  border-radius: 0.95rem;
+  border-radius: var(--kh-modal-radius);
   border: none;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 40px var(--bs-shadow-color);
+  background-color: var(--bs-bg-primary);
 }
 
 [data-bs-theme="dark"] .modal-content {
-  background-color: #1e1e2d;
-  border: 1px solid #2d2d3f;
+  border: 1px solid var(--bs-border-color);
 }
 
 /* Print Styles */
@@ -125,22 +18,22 @@
   body.modal-open {
     overflow: visible !important;
   }
-  
+
   .modal {
     position: static !important;
     overflow: visible !important;
   }
-  
+
   .modal-dialog {
     max-width: 100% !important;
     margin: 0 !important;
   }
-  
+
   .modal-content {
     border: none !important;
     box-shadow: none !important;
   }
-  
+
   .modal-header,
   .modal-footer {
     display: none !important;
@@ -152,119 +45,34 @@
   z-index: 99999 !important;
 }
 
-/* Margin Bottom Utility */
+/* Utilities */
 .mb-10 {
   margin-bottom: 2.5rem;
 }
 
-/* ========================================
-   TEXTAREA & SELECT MODERN STYLES
-   ======================================== */
-
-/* Modern Textarea */
-.modern-textarea {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-}
-
-.modern-textarea:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%) !important;
-  border-color: #3699ff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15) !important;
-}
-
-.modern-textarea:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-  border-color: #3699ff !important;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2) !important;
-  transform: translateY(-1px);
-  outline: none;
-}
-
-/* Modern Select styles are in select-styles.css */
-
-/* Modern Province Input */
-.modern-input {
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e8f4ff;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(54, 153, 255, 0.1);
-  transition: all 0.3s ease;
-  padding: 0.75rem 1rem;
-  font-weight: 500;
-  color: #3f4254;
-}
-
-.modern-input:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%);
-  border-color: #3699ff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-.modern-input:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-color: #3699ff;
-  box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.15), 0 4px 12px rgba(54, 153, 255, 0.2);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-/* ========================================
-   COLLAPSIBLE SECTIONS
-   ======================================== */
-
-.collapsible:hover {
-  background: linear-gradient(135deg, #e8f4ff 0%, #f1f3ff 100%) !important;
-  border-color: #3699ff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(54, 153, 255, 0.15);
-}
-
-/* ========================================
-   BUTTONS & ICONS
-   ======================================== */
-
-/* Button Hover */
 .btn:hover {
   transform: translateY(-2px);
-  transition: all 0.3s ease;
+  transition: var(--kh-form-transition);
 }
 
-/* Icons Animation */
 .ki-duotone {
-  transition: all 0.3s ease;
+  transition: var(--kh-form-transition);
 }
-
-.collapsible:hover .ki-duotone {
-  transform: scale(1.1);
-}
-
-/* ========================================
-   LABELS & TOOLTIPS
-   ======================================== */
 
 label {
-  transition: all 0.3s ease;
+  transition: var(--kh-form-transition);
 }
 
 label:hover {
-  color: #3699ff !important;
+  color: var(--bs-accent-primary) !important;
 }
 
 .fas.fa-exclamation-circle {
-  transition: all 0.3s ease;
+  transition: var(--kh-form-transition);
 }
 
 .fas.fa-exclamation-circle:hover {
-  color: #ffa800 !important;
+  color: var(--kh-status-warning) !important;
   transform: scale(1.2);
 }
-
-/* Modal buttons styles moved to modal-buttons.css */
 

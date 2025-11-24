@@ -1,99 +1,104 @@
 <template>
   <!--begin::Basic info-->
-  <div class="card mb-5 mb-xl-10" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
-    <!--begin::Card header-->
-    <div class="card-header border-0" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
-      <!--begin::Card title-->
-      <div class="card-title m-0">
-        <div class="d-flex align-items-center">
-          <div class="symbol symbol-45px me-3">
-            <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
-              <i class="ki-duotone ki-home fs-2 text-white">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </span>
-          </div>
-          <div>
-            <h3 class="fw-bold m-0 text-gray-900 fs-3">Aggiorna Immobile</h3>
-            <span class="text-muted fs-7 fw-semibold">Modifica i dati dell'immobile</span>
+  <div class="container-fluid px-0 px-md-3">
+    <div class="card card-palette mb-3 mb-md-5 mb-xl-10">
+      <!--begin::Card header-->
+      <div class="card-header card-palette-header border-0">
+        <!--begin::Card title-->
+        <div class="card-title m-0">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="symbol symbol-40px symbol-sm-45px me-2 me-md-3">
+              <span class="symbol-label bg-primary">
+                <i class="ki-duotone ki-home fs-2 fs-md-1 text-white">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+            </div>
+            <div class="flex-grow-1">
+              <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Aggiorna Immobile</h3>
+              <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">Modifica i dati dell'immobile</span>
+            </div>
           </div>
         </div>
+        <!--end::Card title-->
       </div>
-      <!--end::Card title-->
+      <!--begin::Card header-->
     </div>
-    <!--begin::Card header-->
   </div>
   <KTSpinner v-if="loading" :centered="true" size="md" />
   <!--begin::Content-->
   <div v-else class="collapse show">
     <!--begin::Tabs-->
-    <div class="property-tabs">
-      <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link active" 
-            id="data-tab" 
-            data-bs-toggle="tab" 
-            data-bs-target="#data-pane" 
-            type="button" 
-            role="tab" 
-            aria-controls="data-pane" 
-            aria-selected="true"
-          >
-            <i class="ki-duotone ki-notepad fs-4 me-2">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-            Dati Immobile
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link" 
-            id="images-tab" 
-            data-bs-toggle="tab" 
-            data-bs-target="#images-pane" 
-            type="button" 
-            role="tab" 
-            aria-controls="images-pane" 
-            aria-selected="false"
-          >
-            <i class="ki-duotone ki-picture fs-4 me-2">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Immagini
-          </button>
-        </li>
-      </ul>
-      <div class="tab-content" id="propertyTabsContent">
-        <!--begin::Data Tab-->
-        <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
-          <!--begin::Form-->
-          <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
-      <!--begin::Card body-->
-      <div class="card-body border-top p-9 compact-body">
-        <div class="form-sections">
-          <div class="compact-section mb-12">
-            <div class="section-header">
-              <div class="section-icon">
-                <i class="ki-duotone ki-notepad fs-2 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                  <span class="path4"></span>
-                  <span class="path5"></span>
-                </i>
-              </div>
-              <div>
-                <h4 class="section-title">Dati Principali</h4>
-                <p class="section-subtitle">Informazioni generali sull&apos;immobile.</p>
-              </div>
-            </div>
+    <div class="container-fluid px-0 px-md-3">
+      <div class="property-tabs">
+        <ul class="nav nav-tabs flex-nowrap overflow-auto" id="propertyTabs" role="tablist" style="scrollbar-width: none; -ms-overflow-style: none;">
+          <li class="nav-item flex-shrink-0" role="presentation">
+            <button
+              class="nav-link active"
+              id="data-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#data-pane"
+              type="button"
+              role="tab"
+              aria-controls="data-pane"
+              aria-selected="true"
+            >
+              <i class="ki-duotone ki-notepad fs-5 fs-md-4 me-1 me-md-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+              <span class="d-none d-sm-inline">Dati Immobile</span>
+              <span class="d-inline d-sm-none">Dati</span>
+            </button>
+          </li>
+          <li class="nav-item flex-shrink-0" role="presentation">
+            <button
+              class="nav-link"
+              id="images-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#images-pane"
+              type="button"
+              role="tab"
+              aria-controls="images-pane"
+              aria-selected="false"
+            >
+              <i class="ki-duotone ki-picture fs-5 fs-md-4 me-1 me-md-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              <span class="d-none d-sm-inline">Immagini</span>
+              <span class="d-inline d-sm-none">Foto</span>
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content" id="propertyTabsContent">
+          <!--begin::Data Tab-->
+          <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
+            <!--begin::Form-->
+            <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
+              <!--begin::Card body-->
+              <div class="card-body card-palette border-top p-3 p-md-6 p-xl-9 compact-body">
+                <div class="form-sections">
+                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
+                    <div class="section-header">
+                      <div class="section-icon">
+                        <i class="ki-duotone ki-notepad fs-3 fs-md-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                          <span class="path4"></span>
+                          <span class="path5"></span>
+                        </i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Dati Principali</h4>
+                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Informazioni generali sull'immobile.</p>
+                      </div>
+                    </div>
             <div class="compact-grid">
               <div class="form-field">
                 <label class="form-label required">
@@ -129,15 +134,13 @@
                   Agente
                 </label>
                 <el-form-item prop="AgentId">
-                  <select class="form-select modern-select" v-model="formData.AgentId" required>
-                    <option
-                      v-for="(user, index) in inserModel.Users"
-                      :key="index"
-                      :value="user.Id"
-                    >
-                      {{ user.FirstName }} {{ user.LastName }}
-                    </option>
-                  </select>
+                  <input
+                    class="form-control modern-input agent-readonly"
+                    :value="agentName"
+                    type="text"
+                    readonly
+                    disabled
+                  />
                 </el-form-item>
               </div>
 
@@ -239,19 +242,19 @@
             </div>
           </div>
 
-          <div class="compact-section mb-12">
-            <div class="section-header">
-              <div class="section-icon">
-                <i class="ki-duotone ki-geolocation fs-2 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </div>
-              <div>
-                <h4 class="section-title">Localizzazione</h4>
-                <p class="section-subtitle">Riferimenti geografici e indirizzo completo.</p>
-              </div>
-            </div>
+                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
+                    <div class="section-header">
+                      <div class="section-icon">
+                        <i class="ki-duotone ki-geolocation fs-3 fs-md-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Localizzazione</h4>
+                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Riferimenti geografici e indirizzo completo.</p>
+                      </div>
+                    </div>
             <div class="compact-grid">
               <div class="form-field">
                 <label class="form-label required">Indirizzo</label>
@@ -322,19 +325,19 @@
             </div>
           </div>
 
-          <div class="compact-section mb-12">
-            <div class="section-header">
-              <div class="section-icon">
-                <i class="ki-duotone ki-setting fs-2 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </div>
-              <div>
-                <h4 class="section-title">Caratteristiche Tecniche</h4>
-                <p class="section-subtitle">Dimensioni, dotazioni e finiture dell&apos;immobile.</p>
-              </div>
-            </div>
+                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
+                    <div class="section-header">
+                      <div class="section-icon">
+                        <i class="ki-duotone ki-setting fs-3 fs-md-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Caratteristiche Tecniche</h4>
+                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Dimensioni, dotazioni e finiture dell'immobile.</p>
+                      </div>
+                    </div>
             <div class="compact-grid">
               <div class="form-field">
                 <label class="form-label required">Superficie commerciale (m²)</label>
@@ -549,19 +552,19 @@
             </div>
           </div>
 
-          <div class="compact-section mb-12">
-            <div class="section-header">
-              <div class="section-icon">
-                <i class="ki-duotone ki-wallet fs-2 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </div>
-              <div>
-                <h4 class="section-title">Valori Economici</h4>
-                <p class="section-subtitle">Gestisci prezzi, trattative e provvigioni.</p>
-              </div>
-            </div>
+                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
+                    <div class="section-header">
+                      <div class="section-icon">
+                        <i class="ki-duotone ki-wallet fs-3 fs-md-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Valori Economici</h4>
+                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Gestisci prezzi, trattative e provvigioni.</p>
+                      </div>
+                    </div>
             <div class="compact-grid">
               <div class="form-field">
                 <label class="form-label">Trattativa riservata</label>
@@ -667,19 +670,19 @@
             </div>
           </div>
 
-          <div class="compact-section mb-12">
-            <div class="section-header">
-              <div class="section-icon">
-                <i class="ki-duotone ki-shield-tick fs-2 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </div>
-              <div>
-                <h4 class="section-title">Stato e Impostazioni</h4>
-                <p class="section-subtitle">Controlla disponibilità, scadenze e stati rapidi.</p>
-              </div>
-            </div>
+                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
+                    <div class="section-header">
+                      <div class="section-icon">
+                        <i class="ki-duotone ki-shield-tick fs-3 fs-md-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Stato e Impostazioni</h4>
+                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Controlla disponibilità, scadenze e stati rapidi.</p>
+                      </div>
+                    </div>
             <div class="compact-grid">
               <div class="form-field">
                 <label class="form-label">Data fine incarico</label>
@@ -790,19 +793,19 @@
             </div>
           </div>
 
-          <div class="compact-section">
-            <div class="section-header">
-              <div class="section-icon">
-                <i class="ki-duotone ki-link-square fs-2 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </div>
-              <div>
-                <h4 class="section-title">Media e Note</h4>
-                <p class="section-subtitle">Collega risorse aggiuntive e consulta le note inserite.</p>
-              </div>
-            </div>
+                  <div class="compact-section">
+                    <div class="section-header">
+                      <div class="section-icon">
+                        <i class="ki-duotone ki-link-square fs-3 fs-md-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Media e Note</h4>
+                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Collega risorse aggiuntive e consulta le note inserite.</p>
+                      </div>
+                    </div>
             <div class="compact-grid">
               <div class="form-field">
                 <label class="form-label">
@@ -832,6 +835,7 @@
               >
                 <div v-html="note.Text"></div>
               </div>
+<<<<<<< HEAD
             </div>
           </div>
         </div>
@@ -853,15 +857,6 @@
           </button> -->
         </div>
         <div class="d-flex align-items-center">
-          <button type="button" class="btn btn-modal-cancel me-3" @click="cancelEdit">
-            <span class="btn-icon">
-              <i class="ki-duotone ki-cross fs-3">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </span>
-            <span class="btn-label">Annulla</span>
-          </button>
           <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
             <span class="btn-icon">
@@ -996,41 +991,208 @@
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
+=======
+>>>>>>> b1e0edf49df0b9bbb8647f41be7908cf2b4dc0a2
                     </div>
                   </div>
-                </template>
-              </draggable>
-            </div>
-            <!--end::Image Gallery-->
-
-            <!--begin::Empty State-->
-            <div v-else class="empty-state text-center py-5">
-              <div class="empty-icon mb-3">
-                <i class="ki-duotone ki-picture fs-1 text-muted">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
+                </div>
               </div>
-              <h4 class="text-muted">Nessuna immagine caricata</h4>
-              <p class="text-muted">Aggiungi le prime immagini per questo immobile</p>
-            </div>
-            <!--end::Empty State-->
+            </el-form>
+            <!--end::Form-->
           </div>
-          <!--end::Image Management-->
+          <!--end::Data Tab-->
+
+          <!--begin::Images Tab-->
+          <div class="tab-pane fade" id="images-pane" role="tabpanel" aria-labelledby="images-tab">
+            <!--begin::Image Management-->
+            <div class="image-management">
+              <!--begin::Upload Section-->
+              <div class="upload-section mb-5">
+                <div class="upload-area" @click="triggerFileUpload" @dragover.prevent @drop.prevent="handleDrop">
+                  <div class="upload-icon">
+                    <i class="ki-duotone ki-cloud-upload fs-1">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                    </i>
+                  </div>
+                  <div class="upload-text">
+                    <h4>Trascina le immagini qui o clicca per selezionare</h4>
+                    <p class="text-muted">Supporta JPG, PNG, GIF (max 5MB per immagine)</p>
+                  </div>
+                </div>
+                <input ref="fileInput" type="file" multiple accept="image/*" @change="onFileChanged" style="display: none;">
+              </div>
+              <!--end::Upload Section-->
+
+              <!--begin::Image Gallery-->
+              <div v-if="formData.Photos && formData.Photos.length > 0" class="image-gallery">
+                <draggable
+                  :list="formData.Photos"
+                  :disabled="false"
+                  item-key="Id"
+                  class="list-group"
+                  ghost-class="sortable-ghost"
+                  chosen-class="sortable-chosen"
+                  @start="onDragStart"
+                  @end="onDragEnd"
+                  :animation="300"
+                >
+                  <template #item="{ element, index }">
+                    <div class="image-card" :class="{ 'highlighted': element.Highlighted }">
+                      <div class="drag-handle">
+                        <i class="ki-duotone ki-menu fs-4 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                        </i>
+                      </div>
+                      <img
+                        :src="element.Url"
+                        :alt="`Immagine ${index + 1}`"
+                        @error="handleImageError($event)"
+                        @load="handleImageLoad($event)"
+                        style="display: block; width: 100%; height: 150px; object-fit: cover;"
+                      />
+                      <div v-if="imageErrors[element.Id]" class="image-error-placeholder">
+                        <i class="ki-duotone ki-picture fs-1 text-muted">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <p class="text-muted mt-2 mb-1">Immagine non disponibile</p>
+                        <p class="text-danger fs-7 mb-0">Verifica Azure Storage Emulator</p>
+                        <a :href="element.Url" target="_blank" class="btn btn-sm btn-link text-primary mt-2" style="font-size: 0.75rem;">
+                          Prova URL
+                        </a>
+                      </div>
+                      <div class="image-overlay">
+                        <div class="btn-group">
+                          <button
+                            v-if="!element.Highlighted"
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            @click="setPhotoHighlighted(element.Id)"
+                          >
+                            <i class="ki-duotone ki-star fs-6 me-1">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                            </i>
+                            Principale
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            @click="deleteFile(element.Id)"
+                          >
+                            <i class="ki-duotone ki-trash fs-6 me-1">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                              <span class="path3"></span>
+                              <span class="path4"></span>
+                              <span class="path5"></span>
+                            </i>
+                            Elimina
+                          </button>
+                        </div>
+                      </div>
+                      <div v-if="element.Highlighted" class="highlighted-badge">
+                        <i class="ki-duotone ki-star fs-6 text-warning">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </div>
+                    </div>
+                  </template>
+                </draggable>
+              </div>
+              <!--end::Image Gallery-->
+
+              <!--begin::Empty State-->
+              <div v-else class="empty-state text-center py-5">
+                <div class="empty-icon mb-3">
+                  <i class="ki-duotone ki-picture fs-1 text-muted">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </div>
+                <h4 class="text-muted">Nessuna immagine caricata</h4>
+                <p class="text-muted">Aggiungi le prime immagini per questo immobile</p>
+              </div>
+              <!--end::Empty State-->
+            </div>
+            <!--end::Image Management-->
+          </div>
+          <!--end::Images Tab-->
         </div>
-        <!--end::Images Tab-->
       </div>
     </div>
     <!--end::Tabs-->
   </div>
   <!--end::Content-->
+    <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
+      class="card-footer card-palette-header d-flex justify-content-between py-4 py-md-6 px-3 px-md-9">
+      <div>
+        <!-- <AddNewForm /> -->
+        <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
+          data-bs-target="#kt_modal_scheda">
+          <KTIcon icon-name="file" icon-class="fs-2 me-1" />
+          Scheda
+        </button> -->
+        <!-- <AddNewPreventive /> -->
+        <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
+          data-bs-target="#kt_modal_preventivo">
+          <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
+          Preventivo
+        </button> -->
+      </div>
+      <div class="d-flex align-items-center flex-wrap gap-2">
+        <button type="button" class="btn btn-modal-cancel" @click="cancelEdit">
+          <span class="btn-icon">
+            <i class="ki-duotone ki-cross fs-3">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+          </span>
+          <span class="btn-label d-none d-sm-inline">Annulla</span>
+        </button>
+        <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
+          class="btn btn-modal-danger">
+          <span class="btn-icon">
+            <i class="ki-duotone ki-trash fs-3">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+              <span class="path4"></span>
+              <span class="path5"></span>
+            </i>
+          </span>
+          <span class="btn-label d-none d-sm-inline">Elimina</span>
+        </button>
+        <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
+          <span v-if="!loading" class="d-flex align-items-center">
+            <span class="btn-icon">
+              <i class="ki-duotone ki-check fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </span>
+            <span class="btn-label">Salva Modifiche</span>
+          </span>
+          <span v-if="loading" class="d-flex align-items-center">
+            <KTSpinner size="sm" :inline="true" />
+            <span class="btn-label">Attendere...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <!--end::Actions-->
 </template>
 
 <script lang="ts">
 // import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
 // import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
+import { defineComponent, onMounted, ref, watch, nextTick, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
@@ -1563,103 +1725,56 @@ export default defineComponent({
       router.back();
     };
 
-    const hasRelatedCalendarEvents = async (propertyId: number): Promise<boolean> => {
-      try {
-        const events = await getEvents();
-        if (!Array.isArray(events)) {
-          return false;
-        }
-        return events.some((event: CalendarEvent) => {
-          if (!event) return false;
-          const belongsToProperty = event.RealEstatePropertyId === propertyId;
-          if (!belongsToProperty) return false;
-          // Consideriamo bloccanti solo eventi non cancellati
-          return !event.Cancelled;
-        });
-      } catch (error) {
-        console.warn("Impossibile verificare le associazioni in calendario:", error);
-        return false;
-      }
-    };
-
     async function deleteItem() {
-      loading.value = true;
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const result = await Swal.fire({
+        title: "Elimina immobile",
+        html: "Stai per eliminare definitivamente questo immobile e tutti i dati collegati ad esso. L'operazione è irreversibile e potresti perdere irrimediabilmente i dati associati.",
         icon: "warning",
         showCancelButton: true,
+        focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Sì, elimina",
+        confirmButtonText: "Elimina",
         cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
-          confirmButton: "btn btn-danger me-3",
+          confirmButton: "btn btn-danger",
           cancelButton: "btn btn-light"
         },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            const hasCalendarLinks = await hasRelatedCalendarEvents(id);
-            if (hasCalendarLinks) {
-              loading.value = false;
-              Swal.fire({
-                text: "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova.",
-                icon: "warning",
-                buttonsStyling: false,
-                confirmButtonText: "Ok",
-                heightAuto: false,
-                customClass: {
-                  confirmButton: "btn btn-primary",
-                },
-              });
-              return;
-            }
-
-            await deleteRealEstateProperty(id);
-            loading.value = false;
-            await Swal.fire({
-              text: "Immobile eliminato con successo!",
-              icon: "success",
-              buttonsStyling: false,
-              confirmButtonText: "Continua",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
-            router.push({ name: "properties" });
-          } catch (response: any) {
-            loading.value = false;
-            const backendMessage: string =
-              response?.data?.Message ||
-              response?.data?.Detail ||
-              response?.data?.message ||
-              "";
-            const normalizedMessage = backendMessage.toLowerCase();
-            const isCalendarConflict =
-              normalizedMessage.includes("calendar") ||
-              normalizedMessage.includes("appunt");
-            const message = isCalendarConflict
-              ? "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova."
-              : backendMessage || "Si è verificato un errore durante l'eliminazione dell'immobile.";
-
-            Swal.fire({
-              text: message,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Ok",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
-          }
-        } else {
-          loading.value = false;
-        }
-      }).catch(() => {
-        loading.value = false;
       });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteRealEstateProperty(id);
+        loading.value = false;
+        await Swal.fire({
+          text: "Immobile eliminato con successo!",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Continua",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        router.push({ name: "properties" });
+      } catch (error: any) {
+        loading.value = false;
+        const errorMessage = error?.data?.Message || error?.response?.data?.Message || error?.data?.Detail || error?.data?.message || store.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     }
 
     const submit = () => {
@@ -1886,6 +2001,141 @@ export default defineComponent({
       }
     };
 
+    // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
+    const canModify = computed(() => {
+      if (!formData.value || !formData.value.User) {
+        return false;
+      }
+
+      const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre modificare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può modificare tutta la sua cerchia
+      if (currentUser.Role === 'Admin') {
+        // L'immobile è dell'Admin stesso
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un'Agency dell'Admin
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
+          return true;
+        }
+        // L'immobile è di un Agent diretto dell'Admin
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        // L'immobile è di un Agent di un'Agency dell'Admin
+        // (verificato tramite AgencyId che punta a un'Agency dell'Admin)
+        // Nota: questo richiederebbe caricare le Agency, ma per sicurezza
+        // il backend controllerà comunque, quindi possiamo essere più permissivi qui
+        // e lasciare che il backend faccia il controllo finale
+        return false;
+      }
+
+      // Agency: può modificare proprie + dei propri Agent
+      if (currentUser.Role === 'Agency') {
+        // L'immobile è dell'Agency stessa
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un suo Agent
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agent: può modificare solo proprie
+      if (currentUser.Role === 'Agent') {
+        return formData.value.UserId === currentUser.Id;
+      }
+
+      return false;
+    });
+
+    // Verifica se l'utente può eliminare l'immobile secondo le regole di accesso
+    const canDelete = computed(() => {
+      if (!formData.value || !formData.value.User) {
+        return false;
+      }
+
+      const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre eliminare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può eliminare tutta la sua cerchia
+      if (currentUser.Role === 'Admin') {
+        // L'immobile è dell'Admin stesso
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un'Agency dell'Admin
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
+          return true;
+        }
+        // L'immobile è di un Agent diretto dell'Admin
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agency: può eliminare proprie + dei propri Agent
+      if (currentUser.Role === 'Agency') {
+        // L'immobile è dell'Agency stessa
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un suo Agent
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agent: può eliminare solo proprie
+      if (currentUser.Role === 'Agent') {
+        return formData.value.UserId === currentUser.Id;
+      }
+
+      return false;
+    });
+
+    // Computed per ottenere il nome completo dell'agente
+    const agentName = computed(() => {
+      if (!formData.value.AgentId) {
+        return '';
+      }
+      
+      // Prima cerca nella lista degli agenti disponibili
+      if (inserModel.value.Users && inserModel.value.Users.length > 0) {
+        const agent = inserModel.value.Users.find((u: any) => u.Id === formData.value.AgentId);
+        if (agent) {
+          return `${agent.FirstName} ${agent.LastName}`;
+        }
+      }
+      
+      // Fallback: usa i dati dell'utente che ha creato l'immobile
+      if (formData.value.User && formData.value.User.Id === formData.value.AgentId) {
+        return `${formData.value.User.FirstName} ${formData.value.User.LastName}`;
+      }
+      
+      return '';
+    });
+
     return {
       formData,
       rules,
@@ -1900,7 +2150,6 @@ export default defineComponent({
       setPhotoHighlighted,
       deleteFile,
       deleteItem,
-      hasRelatedCalendarEvents,
       inserModel,
       user,
       checkMove,
@@ -1917,247 +2166,14 @@ export default defineComponent({
       handleImageError,
       handleImageLoad,
       cancelEdit,
+      canModify,
+      canDelete,
+      agentName,
     };
   },
 });
 </script>
 
-<style scoped>
+<style>
 @import '@/assets/css/property-tabs.css';
-
-.compact-body {
-  background: transparent;
-}
-
-.form-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-.compact-section {
-  background: #ffffff;
-  border: 1px solid #e9ecef;
-  border-radius: 0.95rem;
-  padding: 2rem 1.75rem;
-  box-shadow: 0 16px 32px rgba(15, 34, 58, 0.06);
-  transition: transform 0.2s ease;
-}
-
-.compact-section:hover {
-  transform: translateY(-2px);
-}
-
-body[data-bs-theme="dark"] .compact-section {
-  background: #1a1a1a;
-  border-color: #2c2c2c;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.75rem;
-}
-
-.section-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%);
-  border: 1px solid #e9ecef;
-}
-
-body[data-bs-theme="dark"] .section-icon {
-  background: #2c2c2c;
-  border-color: #333333;
-}
-
-.section-title {
-  margin: 0;
-  font-weight: 700;
-  color: #333333;
-}
-
-body[data-bs-theme="dark"] .section-title {
-  color: #e0e0e0;
-}
-
-.section-subtitle {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #666666;
-}
-
-body[data-bs-theme="dark"] .section-subtitle {
-  color: #aaaaaa;
-}
-
-.compact-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem 1.5rem;
-}
-
-.form-field {
-  background: #f9fbfd;
-  border: 1px solid #e9ecef;
-  border-radius: 0.85rem;
-  padding: 1.15rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-field:hover {
-  border-color: #0077cc;
-  box-shadow: 0 12px 24px rgba(0, 119, 204, 0.08);
-}
-
-body[data-bs-theme="dark"] .form-field {
-  background: #2c2c2c;
-  border-color: #333333;
-}
-
-body[data-bs-theme="dark"] .form-field:hover {
-  border-color: #0077cc;
-  box-shadow: 0 12px 28px rgba(0, 119, 204, 0.2);
-}
-
-.form-field.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  font-weight: 600;
-  color: #333333;
-  font-size: 0.95rem;
-}
-
-body[data-bs-theme="dark"] .form-label {
-  color: #e0e0e0;
-}
-
-.form-label.required::after {
-  content: '*';
-  color: #e70f86;
-  font-weight: 600;
-  margin-left: 0.35rem;
-}
-
-.form-field .form-control,
-.form-field .form-select,
-.form-field .multiselect-modern,
-.form-field .el-input,
-.form-field .el-select {
-  width: 100%;
-}
-
-:deep(.form-field .el-form-item) {
-  margin-bottom: 0;
-}
-
-:deep(.form-field .el-input__wrapper),
-:deep(.form-field .el-select .el-input__wrapper) {
-  background: transparent;
-  box-shadow: none;
-}
-
-.toggle-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 1.25rem;
-}
-
-.toggle-card {
-  background: #f0f0f0;
-  border: 1px solid #e9ecef;
-  border-radius: 0.85rem;
-  padding: 0.85rem 1.1rem;
-  display: flex;
-  align-items: center;
-}
-
-body[data-bs-theme="dark"] .toggle-card {
-  background: #2c2c2c;
-  border-color: #333333;
-}
-
-.toggle-card .form-check-input {
-  cursor: pointer;
-}
-
-.toggle-card .form-check-label {
-  color: #333333;
-}
-
-body[data-bs-theme="dark"] .toggle-card .form-check-label {
-  color: #e0e0e0;
-}
-
-.notes-wrapper {
-  display: grid;
-  gap: 1rem;
-}
-
-.note-card {
-  background: #ffffff;
-  border: 1px solid #e9ecef;
-  border-radius: 0.85rem;
-  padding: 1.25rem;
-}
-
-body[data-bs-theme="dark"] .note-card {
-  background: #1a1a1a;
-  border-color: #2c2c2c;
-}
-
-@media (max-width: 991.98px) {
-  .compact-section {
-    padding: 1.5rem;
-  }
-
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-}
-
-.highlighted-badge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.image-card.highlighted {
-  border: 2px solid #ffc107;
-  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
-}
-
-.empty-state {
-  padding: 3rem 1rem;
-}
-
-.empty-icon {
-  opacity: 0.5;
-}
 </style>

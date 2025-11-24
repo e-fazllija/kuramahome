@@ -515,6 +515,8 @@ export default defineComponent({
       const userName = (agent as Record<string, any>)?.UserName as string | undefined;
       const displayName = `${agent.FirstName ?? ""} ${agent.LastName ?? ""}`.trim() || agent.Email || userName || `Agente #${agent.Id}`;
 
+<<<<<<< HEAD
+=======
       let requiresTyping = false;
       if (agent?.Id !== undefined && agent?.Id !== null) {
         try {
@@ -529,27 +531,24 @@ export default defineComponent({
         }
       }
 
+>>>>>>> b1e0edf49df0b9bbb8647f41be7908cf2b4dc0a2
       const result = await Swal.fire({
         title: "Elimina agente",
-        html: requiresTyping
-          ? `Stai per eliminare definitivamente l'agente <strong>${displayName}</strong> e tutti i clienti collegati. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`
-          : `Sei sicuro di voler eliminare definitivamente l'agente <strong>${displayName}</strong>? L'operazione non può essere annullata.`,
+        html: `Stai per eliminare definitivamente questo agente e tutti i dati collegati ad esso. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`,
         icon: "warning",
-        input: requiresTyping ? "text" : undefined,
-        inputLabel: requiresTyping ? "Conferma eliminazione" : undefined,
-        inputPlaceholder: requiresTyping ? displayName : undefined,
+        input: "text",
+        inputLabel: "Conferma eliminazione",
+        inputPlaceholder: displayName,
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: requiresTyping ? "Elimina definitivamente" : "Elimina",
+        confirmButtonText: "Elimina definitivamente",
         cancelButtonText: "Annulla",
-        inputValidator: requiresTyping
-          ? (value) => {
-              if (value !== displayName) {
-                return "Il nome inserito non corrisponde. Riprova.";
-              }
-              return undefined;
-            }
-          : undefined,
+        inputValidator: (value) => {
+          if (value !== displayName) {
+            return "Il nome inserito non corrisponde. Riprova.";
+          }
+          return undefined;
+        },
         buttonsStyling: false,
         heightAuto: false,
         customClass: {

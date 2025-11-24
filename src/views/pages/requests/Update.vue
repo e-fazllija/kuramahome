@@ -1,13 +1,13 @@
 <template>
   <!--begin::Basic info-->
-  <div class="card mb-5 mb-xl-10" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+  <div class="card card-palette mb-5 mb-xl-10">
     <!--begin::Card header-->
-    <div class="card-header border-0" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+    <div class="card-header card-palette-header border-0" >
       <!--begin::Card title-->
       <div class="card-title m-0">
         <div class="d-flex align-items-center">
           <div class="symbol symbol-45px me-3">
-            <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+            <span class="symbol-label">
               <i class="ki-duotone ki-document fs-2 text-white">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -15,8 +15,8 @@
             </span>
           </div>
           <div>
-            <h3 class="fw-bold m-0 text-gray-900 fs-3">📋 Aggiorna Richiesta</h3>
-            <span class="text-muted fs-7 fw-semibold">Modifica i dati della richiesta</span>
+            <h3 class="fw-bold m-0 text-palette-primary fs-3">📋 Aggiorna Richiesta</h3>
+            <span class="text-palette-secondary fs-7 fw-semibold">Modifica i dati della richiesta</span>
           </div>
         </div>
       </div>
@@ -30,12 +30,12 @@
     <!--begin::Form-->
     <form @submit.prevent="submit()">
       <!--begin::Card body-->
-      <div class="card-body border-top p-9">
+      <div class="card-body card-palette border-top p-9">
 
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -68,7 +68,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-document fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -90,7 +90,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -120,7 +120,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-map fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -142,7 +142,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -163,7 +163,7 @@
          <!--begin::Input group-->
          <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-position fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -182,7 +182,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -201,7 +201,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -265,7 +265,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -284,7 +284,7 @@
          <!--begin::Input group-->
          <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -303,7 +303,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -322,7 +322,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -341,7 +341,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -360,7 +360,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -387,7 +387,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-fire fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -411,7 +411,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-car fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -437,7 +437,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -459,7 +459,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -482,7 +482,7 @@
 
       </div>
       <!--begin::Actions-->
-      <div class="card-footer d-flex justify-content-end py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
+      <div class="d-flex justify-content-end py-6 px-9">
         <button type="button" @click="deleteItem()" class="btn btn-modal-danger me-3">
           <span class="btn-icon">
             <i class="ki-duotone ki-trash fs-3">
@@ -518,14 +518,14 @@
     <!--end::Form-->
   </div>
   <!--end::Content-->
-  <div v-if="!loading" class="card mb-5 mb-xl-10" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+  <div v-if="!loading" class="card card-palette mb-5 mb-xl-10">
       <!--begin::Card header-->
-      <div class="card-header border-0 pt-6 pb-4" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+      <div class="card-header card-palette-header border-0 pt-6 pb-4">
         <!--begin::Card title-->
         <div class="card-title m-0">
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+              <span class="symbol-label">
                 <i class="ki-duotone ki-home fs-2 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -533,8 +533,8 @@
               </span>
             </div>
             <div>
-              <h3 class="fw-bold m-0 text-gray-900 fs-3">🏠 Immobili Richiesta</h3>
-              <span class="text-muted fs-7 fw-semibold">Elenco degli immobili associati</span>
+              <h3 class="fw-bold m-0 text-palette-primary fs-3">🏠 Immobili Richiesta</h3>
+              <span class="text-palette-secondary fs-7 fw-semibold">Elenco degli immobili associati</span>
             </div>
           </div>
         </div>
@@ -561,7 +561,7 @@
       <!--end::Card header-->
       
       <!--begin::Card body-->
-      <div class="card-body pt-0">
+      <div class="card-body card-palette pt-5">
           <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="formData.RealEstateProperties"
             :header="tableHeader" :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id">
             <template v-slot:Id="{ row: item }">
@@ -596,7 +596,6 @@
                       <span class="path3"></span>
                     </i>
                   </span>
-                  <span class="btn-label">Dettagli</span>
                 </router-link>
               </div>
             </template>
@@ -617,7 +616,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, watch } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteRequest, canDeleteRequest } from "@/core/data/requests";
+import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteRequest } from "@/core/data/requests";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
@@ -809,44 +808,15 @@ export default defineComponent({
     });
 
     async function deleteItem() {
-      // Verifica preventiva se ci sono dati collegati
-      loading.value = true;
-      const constraintsResult = await canDeleteRequest(id);
-      loading.value = false;
-
-      // Costruisci il messaggio di conferma
-      let confirmText = "Confermi di voler eliminare questa richiesta?";
-      let htmlMessage = null;
-
-      // Se ci sono dati collegati, mostra un avviso dettagliato
-      if (constraintsResult && (constraintsResult.EventsCount > 0 || constraintsResult.RequestNotesCount > 0)) {
-        htmlMessage = "<div style='text-align: left;'>";
-        htmlMessage += "<p style='margin-bottom: 15px;'><strong>⚠️ ATTENZIONE</strong></p>";
-        htmlMessage += "<p style='margin-bottom: 10px;'>Se elimini questa richiesta, verranno eliminati anche i seguenti dati collegati:</p>";
-        htmlMessage += "<ul style='margin-left: 20px; margin-bottom: 15px;'>";
-        
-        if (constraintsResult.EventsCount > 0) {
-          htmlMessage += `<li><strong>${constraintsResult.EventsCount}</strong> appuntamento${constraintsResult.EventsCount > 1 ? 'i' : ''} nel calendario</li>`;
-        }
-        
-        if (constraintsResult.RequestNotesCount > 0) {
-          htmlMessage += `<li><strong>${constraintsResult.RequestNotesCount}</strong> nota${constraintsResult.RequestNotesCount > 1 ? 'e' : ''} collegata${constraintsResult.RequestNotesCount > 1 ? 'e' : ''}</li>`;
-        }
-        
-        htmlMessage += "</ul>";
-        htmlMessage += "<p style='margin-top: 10px; color: #dc3545;'><strong>L'operazione non può essere annullata.</strong></p>";
-        htmlMessage += "</div>";
-      }
-
       // Mostra la dialog di conferma
       const result = await Swal.fire({
-        title: htmlMessage ? "⚠️ ATTENZIONE" : "Elimina richiesta",
-        html: htmlMessage || confirmText,
+        title: "Elimina richiesta",
+        html: "Stai per eliminare definitivamente questa richiesta e tutti i dati collegati ad essa. L'operazione è irreversibile.",
         icon: "warning",
         showCancelButton: true,
         focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Sì, elimina",
+        confirmButtonText: "Elimina",
         cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {

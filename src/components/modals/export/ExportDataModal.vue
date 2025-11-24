@@ -7,9 +7,14 @@
             <h3 class="modal-title fw-bold mb-1">{{ title }}</h3>
             <p class="text-muted mb-0" v-if="description">{{ description }}</p>
           </div>
-          <button type="button" class="btn btn-sm btn-icon" data-bs-dismiss="modal" aria-label="Chiudi">
-            <i class="ki-duotone ki-cross fs-2"></i>
-          </button>
+          <!--begin::Close-->
+          <div
+            data-bs-dismiss="modal"
+            class="btn btn-icon btn-sm btn-active-icon-primary"
+          >
+            <KTIcon icon-name="cross" icon-class="fs-1" />
+          </div>
+          <!--end::Close-->
         </div>
 
         <div class="modal-body">

@@ -473,3 +473,34 @@
   }
 }
 
+.breadcrumb-section {
+  margin: 1.5rem 0;
+}
+
+.symbol-label-folder {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.95), rgba(255, 152, 0, 0.95));
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.35);
+}
+
+.symbol-label-private {
+  background: linear-gradient(135deg, rgba(246, 78, 96, 0.95), rgba(214, 52, 71, 0.95));
+  box-shadow: 0 4px 12px rgba(241, 65, 108, 0.35);
+}
+
+.symbol-label-shared {
+  background: linear-gradient(135deg, rgba(137, 80, 252, 0.95), rgba(102, 16, 242, 0.95));
+  box-shadow: 0 4px 12px rgba(137, 80, 252, 0.35);
+}
+
+.document-owner-badge {
+  background: linear-gradient(135deg, var(--kh-status-success), rgba(11, 183, 131, 0.85));
+  color: #ffffff;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+

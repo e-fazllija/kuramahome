@@ -18,6 +18,20 @@
   --bs-shadow-color: rgba(0, 0, 0, 0.1);
   --bs-hover-bg: rgba(0, 119, 204, 0.05);
   --bs-focus-color: rgba(0, 119, 204, 0.2);
+  --kh-surface-gradient-start: #f5f7ff;
+  --kh-surface-gradient-end: #eaf4ff;
+  --kh-surface-border: #e1e7ef;
+  --kh-surface-shadow: rgba(0, 119, 204, 0.12);
+  --kh-surface-shadow-strong: rgba(0, 119, 204, 0.2);
+  --kh-focus-ring: rgba(0, 119, 204, 0.28);
+  --kh-focus-ring-soft: rgba(0, 119, 204, 0.18);
+  --kh-modal-radius: 0.95rem;
+  --kh-tile-radius: 0.75rem;
+  --kh-input-placeholder: #7a8496;
+  --kh-symbol-shadow: rgba(0, 119, 204, 0.3);
+  --kh-status-success: #28a745;
+  --kh-status-warning: #ffc107;
+  --kh-status-danger: #f1416c;
 }
 
 [data-bs-theme="dark"] {
@@ -33,6 +47,15 @@
   --bs-shadow-color: rgba(0, 0, 0, 0.3);
   --bs-hover-bg: rgba(0, 119, 204, 0.1);
   --bs-focus-color: rgba(0, 119, 204, 0.3);
+  --kh-surface-gradient-start: #1f2535;
+  --kh-surface-gradient-end: #262c3f;
+  --kh-surface-border: #2f3549;
+  --kh-surface-shadow: rgba(0, 0, 0, 0.55);
+  --kh-surface-shadow-strong: rgba(0, 0, 0, 0.7);
+  --kh-focus-ring: rgba(0, 119, 204, 0.45);
+  --kh-focus-ring-soft: rgba(0, 119, 204, 0.25);
+  --kh-input-placeholder: #8f95ac;
+  --kh-symbol-shadow: rgba(0, 119, 204, 0.4);
 }
 
 /* Classi utility per la palette colori */
