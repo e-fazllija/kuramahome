@@ -808,10 +808,12 @@ export default defineComponent({
     });
 
     async function deleteItem() {
+      loading.value = true;
+
       // Mostra la dialog di conferma
       const result = await Swal.fire({
         title: "Elimina richiesta",
-        html: "Stai per eliminare definitivamente questa richiesta e tutti i dati collegati ad essa. L'operazione è irreversibile.",
+        html: "Confermi di voler eliminare questa richiesta?",
         icon: "warning",
         showCancelButton: true,
         focusCancel: true,

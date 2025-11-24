@@ -37,6 +37,43 @@
       <!--begin::Card body-->
       <div class="card-body border-top p-9" :class="{ 'opacity-50': !canModifyCustomer && user.Role === 'Agent' }">
 
+         <!--begin::Input group - Proprietario (solo Admin)-->
+         <div v-if="user?.Role === 'Admin'" class="row mb-6">
+           <!--begin::Label-->
+           <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+             <i class="ki-duotone ki-user-tick fs-5 me-2 text-primary">
+               <span class="path1"></span>
+               <span class="path2"></span>
+               <span class="path3"></span>
+             </i>
+             Proprietario *
+           </label>
+           <!--end::Label-->
+           <!--begin::Col-->
+           <div class="col-lg-8 fv-row">
+             <select 
+               v-model="formData.UserId"
+               class="form-select modern-select"
+               name="owner"
+               required
+             >
+               <option value="">👤 Seleziona proprietario</option>
+               <optgroup v-if="ownerSearchItems.Agencies.length" label="Agenzie">
+                 <option v-for="agency in ownerSearchItems.Agencies" :key="agency.Id" :value="agency.Id">
+                   🏢 {{ agency.CompanyName || `${agency.FirstName} ${agency.LastName}` }}
+                 </option>
+               </optgroup>
+               <optgroup v-if="ownerSearchItems.Agents.length" label="Agenti">
+                 <option v-for="agent in ownerSearchItems.Agents" :key="agent.Id" :value="agent.Id">
+                   👤 {{ agent.FirstName }} {{ agent.LastName }}
+                 </option>
+               </optgroup>
+             </select>
+           </div>
+           <!--end::Col-->
+         </div>
+         <!--end::Input group-->
+
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
@@ -495,6 +532,7 @@ import KTSpinner from "@/components/Spinner.vue";
 import { MenuComponent } from "@/assets/ts/components";
 import { useProvinces } from "@/composables/useProvinces";
 import { getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getSearchItems, type SearchModel } from "@/core/data/events";
 
 export default defineComponent({
   name: "update-customer",
@@ -512,6 +550,10 @@ export default defineComponent({
     // Usa il composable per le province
     const { provinces } = useProvinces();
     const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const ownerSearchItems = ref<SearchModel>({
+      Agencies: [],
+      Agents: []
+    });
     const formData = ref<Customer>({
       Id: 0,
       Buyer: false,
@@ -528,7 +570,8 @@ export default defineComponent({
       City: "",
       State: "",
       AcquisitionDone: false,
-      OngoingAssignment: false
+      OngoingAssignment: false,
+      UserId: ""
     });
     const requests = ref<Array<RequestTabelData>>([]);
 
@@ -576,10 +619,16 @@ export default defineComponent({
 
     onMounted(async () => {
       loading.value = true;
-      formData.value = await getCustomer(id)
+      const customerData = await getCustomer(id);
+      formData.value = customerData;
 
       // Preserva il UserId originale del cliente
       originalUserId.value = formData.value.UserId || "";
+
+      // Carica agenzie e agenti se Admin
+      if (user?.Role === "Admin") {
+        await loadOwnerSearchItems();
+      }
 
       // Carica i dati dal JSON se non sono già caricati
       await getProvinceCities();
@@ -700,24 +749,46 @@ export default defineComponent({
     });
 
     const submit = async () => {
+<<<<<<< HEAD
       // Verifica permessi prima di inviare
       if (!canModifyCustomer.value) {
         Swal.fire({
           text: "Non hai i permessi per modificare questo cliente.",
           icon: "error",
+=======
+      // Validazione per UserId se Admin
+      if (user?.Role === "Admin" && !formData.value.UserId?.trim()) {
+        Swal.fire({
+          title: "Proprietario Obbligatorio",
+          text: "Seleziona un proprietario (agenzia o agente) per associare il cliente.",
+          icon: "warning",
+>>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
           buttonsStyling: false,
           confirmButtonText: "Ok",
           heightAuto: false,
           customClass: {
+<<<<<<< HEAD
             confirmButton: "btn btn-primary",
+=======
+            confirmButton: "btn fw-semibold btn-light-warning",
+>>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
           },
         });
         return;
       }
 
       loading.value = true;
+<<<<<<< HEAD
       // Preserva il UserId originale - non sovrascriverlo
       formData.value.UserId = originalUserId.value;
+=======
+      
+      // Imposta UserId automaticamente se l'utente non è Admin
+      if (user?.Role !== "Admin") {
+        formData.value.UserId = store.user.Id;
+      }
+      
+>>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
       await updateCustomer(formData.value)
         .then(() => {
           loading.value = false;
@@ -807,7 +878,11 @@ export default defineComponent({
       requests,
       provinces,
       cities,
+<<<<<<< HEAD
       canModifyCustomer
+=======
+      ownerSearchItems
+>>>>>>> 6ecbc4267e59119ce6e976408eb0ce899c6f35cf
     };
   },
 });
