@@ -835,27 +835,12 @@
               >
                 <div v-html="note.Text"></div>
               </div>
-<<<<<<< HEAD
             </div>
           </div>
         </div>
       </div>
       <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-        class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
-        <div>
-          <!-- <AddNewForm /> -->
-          <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
-            data-bs-target="#kt_modal_scheda">
-            <KTIcon icon-name="file" icon-class="fs-2 me-1" />
-            Scheda
-          </button> -->
-          <!-- <AddNewPreventive /> -->
-          <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
-            data-bs-target="#kt_modal_preventivo">
-            <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
-            Preventivo
-          </button> -->
-        </div>
+        class="card-footer d-flex justify-content-end py-6 px-9">
         <div class="d-flex align-items-center">
           <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
             class="btn btn-modal-danger me-2">
@@ -991,13 +976,11 @@
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-=======
->>>>>>> b1e0edf49df0b9bbb8647f41be7908cf2b4dc0a2
                     </div>
                   </div>
-                </div>
-              </div>
-            </el-form>
+                </template>
+              </draggable>
+            </div>
             <!--end::Form-->
           </div>
           <!--end::Data Tab-->
@@ -1124,68 +1107,12 @@
           </div>
           <!--end::Images Tab-->
         </div>
+        </div>
       </div>
     </div>
     <!--end::Tabs-->
   </div>
   <!--end::Content-->
-    <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-      class="card-footer card-palette-header d-flex justify-content-between py-4 py-md-6 px-3 px-md-9">
-      <div>
-        <!-- <AddNewForm /> -->
-        <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
-          data-bs-target="#kt_modal_scheda">
-          <KTIcon icon-name="file" icon-class="fs-2 me-1" />
-          Scheda
-        </button> -->
-        <!-- <AddNewPreventive /> -->
-        <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
-          data-bs-target="#kt_modal_preventivo">
-          <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
-          Preventivo
-        </button> -->
-      </div>
-      <div class="d-flex align-items-center flex-wrap gap-2">
-        <button type="button" class="btn btn-modal-cancel" @click="cancelEdit">
-          <span class="btn-icon">
-            <i class="ki-duotone ki-cross fs-3">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-          </span>
-          <span class="btn-label d-none d-sm-inline">Annulla</span>
-        </button>
-        <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
-          class="btn btn-modal-danger">
-          <span class="btn-icon">
-            <i class="ki-duotone ki-trash fs-3">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-          </span>
-          <span class="btn-label d-none d-sm-inline">Elimina</span>
-        </button>
-        <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
-          <span v-if="!loading" class="d-flex align-items-center">
-            <span class="btn-icon">
-              <i class="ki-duotone ki-check fs-3">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </span>
-            <span class="btn-label">Salva Modifiche</span>
-          </span>
-          <span v-if="loading" class="d-flex align-items-center">
-            <KTSpinner size="sm" :inline="true" />
-            <span class="btn-label">Attendere...</span>
-          </span>
-        </button>
-      </div>
-    </div>
-    <!--end::Actions-->
 </template>
 
 <script lang="ts">

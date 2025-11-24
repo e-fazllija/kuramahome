@@ -515,23 +515,6 @@ export default defineComponent({
       const userName = (agent as Record<string, any>)?.UserName as string | undefined;
       const displayName = `${agent.FirstName ?? ""} ${agent.LastName ?? ""}`.trim() || agent.Email || userName || `Agente #${agent.Id}`;
 
-<<<<<<< HEAD
-=======
-      let requiresTyping = false;
-      if (agent?.Id !== undefined && agent?.Id !== null) {
-        try {
-          const customers = await getCustomers("");
-          requiresTyping = !!customers?.some((customer) => {
-            const ownerId = customer.UserId ?? "";
-            return ownerId && ownerId === String(agent.Id);
-          });
-        } catch (error) {
-          console.error("Errore durante il controllo dei clienti collegati all'agente:", error);
-          requiresTyping = true;
-        }
-      }
-
->>>>>>> b1e0edf49df0b9bbb8647f41be7908cf2b4dc0a2
       const result = await Swal.fire({
         title: "Elimina agente",
         html: `Stai per eliminare definitivamente questo agente e tutti i dati collegati ad esso. L'operazione è irreversibile.<br><br>Per confermare digita esattamente <strong>${displayName}</strong>.`,

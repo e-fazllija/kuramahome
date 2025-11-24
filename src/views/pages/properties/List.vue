@@ -679,17 +679,6 @@ export default defineComponent({
       loading.value = false;
     };
 
-    onMounted(async () => {
-      // if (authStore.user.Role == "Admin") {
-        defaultSearchItems.value = await getSearchItems(authStore.user.Id);
-      // }
-      agencyId.value = authStore.user.AdminId;
-
-      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
-    });
-
-
-
     const deleteFewItems = async () => {
       loading.value = true;
       selectedIds.value.forEach(async (item) => {
@@ -751,26 +740,6 @@ export default defineComponent({
           confirmButton: "btn btn-danger",
           cancelButton: "btn btn-light"
         },
-      }).then(async () => {
-        try {
-          await deleteRealEstateProperty(id);
-          await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
-          MenuComponent.reinitialization();
-        } catch (error: any) {
-          const errorMessage = error?.data?.Message || error?.response?.data?.Message || "Si è verificato un errore durante l'eliminazione dell'immobile.";
-          Swal.fire({
-            text: errorMessage,
-            icon: "error",
-            buttonsStyling: false,
-            confirmButtonText: "Ok",
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn btn-primary",
-            },
-          });
-        } finally {
-          loading.value = false;
-        }
       });
 
       if (!result.isConfirmed) {
@@ -782,6 +751,17 @@ export default defineComponent({
         await deleteRealEstateProperty(id);
         await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
         MenuComponent.reinitialization();
+        
+        Swal.fire({
+          text: "Immobile eliminato con successo",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
       } catch (error: any) {
         const errorMessage = error?.data?.Message || error?.response?.data?.Message || authStore.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
         Swal.fire({
