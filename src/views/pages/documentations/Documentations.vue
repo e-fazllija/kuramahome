@@ -715,16 +715,18 @@ export default defineComponent({
 
     async function deleteItem(id: number) {
       const result = await Swal.fire({
-        text: "Confermare l'eliminazione?",
+        title: "Elimina documentazione",
+        html: "Stai per eliminare definitivamente questa documentazione e tutti i dati collegati ad essa. L'operazione è irreversibile.",
         icon: "warning",
         showCancelButton: true,
+        focusCancel: true,
         buttonsStyling: false,
         confirmButtonText: "Elimina",
         cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
           confirmButton: "btn btn-danger",
-          cancelButton: "btn btn-secondary",
+          cancelButton: "btn btn-light",
         },
       });
 

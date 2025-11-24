@@ -808,7 +808,6 @@ export default defineComponent({
     });
 
     async function deleteItem() {
-      // Verifica preventiva se ci sono dati collegati
       loading.value = true;
 
       // Mostra la dialog di conferma
@@ -819,7 +818,7 @@ export default defineComponent({
         showCancelButton: true,
         focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Sì, elimina",
+        confirmButtonText: "Elimina",
         cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {

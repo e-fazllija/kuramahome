@@ -25,6 +25,7 @@ export class Customer{
   CustomerNotes?: Notes[];
   UserId?: string;
   label?: string;
+  AdminId?: string;
 }
 
 export class CustomerTabelData {

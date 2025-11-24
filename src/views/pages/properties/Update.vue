@@ -134,15 +134,13 @@
                   Agente
                 </label>
                 <el-form-item prop="AgentId">
-                  <select class="form-select modern-select" v-model="formData.AgentId" required>
-                    <option
-                      v-for="(user, index) in inserModel.Users"
-                      :key="index"
-                      :value="user.Id"
-                    >
-                      {{ user.FirstName }} {{ user.LastName }}
-                    </option>
-                  </select>
+                  <input
+                    class="form-control modern-input agent-readonly"
+                    :value="agentName"
+                    type="text"
+                    readonly
+                    disabled
+                  />
                 </el-form-item>
               </div>
 
@@ -837,6 +835,164 @@
               >
                 <div v-html="note.Text"></div>
               </div>
+<<<<<<< HEAD
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
+        class="card-footer d-flex justify-content-between py-6 px-9" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-top: 1px solid #dee2e6;">
+        <div>
+          <!-- <AddNewForm /> -->
+          <!-- <button type="button" class="btn btn-info btn-active-light-primary me-2" data-bs-toggle="modal"
+            data-bs-target="#kt_modal_scheda">
+            <KTIcon icon-name="file" icon-class="fs-2 me-1" />
+            Scheda
+          </button> -->
+          <!-- <AddNewPreventive /> -->
+          <!-- <button type="button" class="btn btn-info btn-active-light-primary" data-bs-toggle="modal"
+            data-bs-target="#kt_modal_preventivo">
+            <KTIcon icon-name="calculator" icon-class="fs-2 me-1" />
+            Preventivo
+          </button> -->
+        </div>
+        <div class="d-flex align-items-center">
+          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
+            class="btn btn-modal-danger me-2">
+            <span class="btn-icon">
+              <i class="ki-duotone ki-trash fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </span>
+            <span class="btn-label">Elimina</span>
+          </button>
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
+            <span v-if="!loading" class="d-flex align-items-center">
+              <span class="btn-icon">
+                <i class="ki-duotone ki-check fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <span class="btn-label">Salva Modifiche</span>
+            </span>
+            <span v-if="loading" class="d-flex align-items-center">
+              <KTSpinner size="sm" :inline="true" />
+              <span class="btn-label">Attendere...</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <!--end::Actions-->
+    </el-form>
+    <!--end::Form-->
+        </div>
+        <!--end::Data Tab-->
+
+        <!--begin::Images Tab-->
+        <div class="tab-pane fade" id="images-pane" role="tabpanel" aria-labelledby="images-tab">
+          <!--begin::Image Management-->
+          <div class="image-management">
+            <!--begin::Upload Section-->
+            <div class="upload-section mb-5">
+              <div class="upload-area" @click="triggerFileUpload" @dragover.prevent @drop.prevent="handleDrop">
+                <div class="upload-icon">
+                  <i class="ki-duotone ki-cloud-upload fs-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                  </i>
+                </div>
+                <div class="upload-text">
+                  <h4>Trascina le immagini qui o clicca per selezionare</h4>
+                  <p class="text-muted">Supporta JPG, PNG, GIF (max 5MB per immagine)</p>
+                </div>
+              </div>
+              <input ref="fileInput" type="file" multiple accept="image/*" @change="onFileChanged" style="display: none;">
+            </div>
+            <!--end::Upload Section-->
+
+            <!--begin::Image Gallery-->
+            <div v-if="formData.Photos && formData.Photos.length > 0" class="image-gallery">
+              <draggable 
+                :list="formData.Photos" 
+                :disabled="false" 
+                item-key="Id" 
+                class="list-group"
+                ghost-class="sortable-ghost" 
+                chosen-class="sortable-chosen"
+                @start="onDragStart" 
+                @end="onDragEnd" 
+                :animation="300"
+              >
+                <template #item="{ element, index }">
+                  <div class="image-card" :class="{ 'highlighted': element.Highlighted }">
+                    <div class="drag-handle">
+                      <i class="ki-duotone ki-menu fs-4 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                      </i>
+                    </div>
+                    <img 
+                      :src="element.Url" 
+                      :alt="`Immagine ${index + 1}`"
+                      @error="handleImageError($event)"
+                      @load="handleImageLoad($event)"
+                      style="display: block; width: 100%; height: 150px; object-fit: cover;"
+                    />
+                    <div v-if="imageErrors[element.Id]" class="image-error-placeholder">
+                      <i class="ki-duotone ki-picture fs-1 text-muted">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <p class="text-muted mt-2 mb-1">Immagine non disponibile</p>
+                      <p class="text-danger fs-7 mb-0">Verifica Azure Storage Emulator</p>
+                      <a :href="element.Url" target="_blank" class="btn btn-sm btn-link text-primary mt-2" style="font-size: 0.75rem;">
+                        Prova URL
+                      </a>
+                    </div>
+                    <div class="image-overlay">
+                      <div class="btn-group">
+                        <button 
+                          v-if="!element.Highlighted" 
+                          type="button" 
+                          class="btn btn-primary btn-sm"
+                          @click="setPhotoHighlighted(element.Id)"
+                        >
+                          <i class="ki-duotone ki-star fs-6 me-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                          Principale
+                        </button>
+                        <button 
+                          type="button" 
+                          class="btn btn-danger btn-sm"
+                          @click="deleteFile(element.Id)"
+                        >
+                          <i class="ki-duotone ki-trash fs-6 me-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                          </i>
+                          Elimina
+                        </button>
+                      </div>
+                    </div>
+                    <div v-if="element.Highlighted" class="highlighted-badge">
+                      <i class="ki-duotone ki-star fs-6 text-warning">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+=======
+>>>>>>> b1e0edf49df0b9bbb8647f41be7908cf2b4dc0a2
                     </div>
                   </div>
                 </div>
@@ -1036,7 +1192,7 @@
 // import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
 // import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch, nextTick } from "vue";
+import { defineComponent, onMounted, ref, watch, nextTick, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
@@ -1569,103 +1725,56 @@ export default defineComponent({
       router.back();
     };
 
-    const hasRelatedCalendarEvents = async (propertyId: number): Promise<boolean> => {
-      try {
-        const events = await getEvents();
-        if (!Array.isArray(events)) {
-          return false;
-        }
-        return events.some((event: CalendarEvent) => {
-          if (!event) return false;
-          const belongsToProperty = event.RealEstatePropertyId === propertyId;
-          if (!belongsToProperty) return false;
-          // Consideriamo bloccanti solo eventi non cancellati
-          return !event.Cancelled;
-        });
-      } catch (error) {
-        console.warn("Impossibile verificare le associazioni in calendario:", error);
-        return false;
-      }
-    };
-
     async function deleteItem() {
-      loading.value = true;
-      Swal.fire({
-        text: "Confermare l'eliminazione?",
+      const result = await Swal.fire({
+        title: "Elimina immobile",
+        html: "Stai per eliminare definitivamente questo immobile e tutti i dati collegati ad esso. L'operazione è irreversibile e potresti perdere irrimediabilmente i dati associati.",
         icon: "warning",
         showCancelButton: true,
+        focusCancel: true,
         buttonsStyling: false,
-        confirmButtonText: "Sì, elimina",
+        confirmButtonText: "Elimina",
         cancelButtonText: "Annulla",
         heightAuto: false,
         customClass: {
-          confirmButton: "btn btn-danger me-3",
+          confirmButton: "btn btn-danger",
           cancelButton: "btn btn-light"
         },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            const hasCalendarLinks = await hasRelatedCalendarEvents(id);
-            if (hasCalendarLinks) {
-              loading.value = false;
-              Swal.fire({
-                text: "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova.",
-                icon: "warning",
-                buttonsStyling: false,
-                confirmButtonText: "Ok",
-                heightAuto: false,
-                customClass: {
-                  confirmButton: "btn btn-primary",
-                },
-              });
-              return;
-            }
-
-            await deleteRealEstateProperty(id);
-            loading.value = false;
-            await Swal.fire({
-              text: "Immobile eliminato con successo!",
-              icon: "success",
-              buttonsStyling: false,
-              confirmButtonText: "Continua",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
-            router.push({ name: "properties" });
-          } catch (response: any) {
-            loading.value = false;
-            const backendMessage: string =
-              response?.data?.Message ||
-              response?.data?.Detail ||
-              response?.data?.message ||
-              "";
-            const normalizedMessage = backendMessage.toLowerCase();
-            const isCalendarConflict =
-              normalizedMessage.includes("calendar") ||
-              normalizedMessage.includes("appunt");
-            const message = isCalendarConflict
-              ? "Impossibile eliminare l'immobile: risulta associato ad almeno un appuntamento in calendario. Rimuovi l'appuntamento e riprova."
-              : backendMessage || "Si è verificato un errore durante l'eliminazione dell'immobile.";
-
-            Swal.fire({
-              text: message,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Ok",
-              heightAuto: false,
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
-          }
-        } else {
-          loading.value = false;
-        }
-      }).catch(() => {
-        loading.value = false;
       });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      try {
+        loading.value = true;
+        await deleteRealEstateProperty(id);
+        loading.value = false;
+        await Swal.fire({
+          text: "Immobile eliminato con successo!",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Continua",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        router.push({ name: "properties" });
+      } catch (error: any) {
+        loading.value = false;
+        const errorMessage = error?.data?.Message || error?.response?.data?.Message || error?.data?.Detail || error?.data?.message || store.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
+        Swal.fire({
+          text: errorMessage,
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+      }
     }
 
     const submit = () => {
@@ -1892,6 +2001,141 @@ export default defineComponent({
       }
     };
 
+    // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
+    const canModify = computed(() => {
+      if (!formData.value || !formData.value.User) {
+        return false;
+      }
+
+      const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre modificare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può modificare tutta la sua cerchia
+      if (currentUser.Role === 'Admin') {
+        // L'immobile è dell'Admin stesso
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un'Agency dell'Admin
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
+          return true;
+        }
+        // L'immobile è di un Agent diretto dell'Admin
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        // L'immobile è di un Agent di un'Agency dell'Admin
+        // (verificato tramite AgencyId che punta a un'Agency dell'Admin)
+        // Nota: questo richiederebbe caricare le Agency, ma per sicurezza
+        // il backend controllerà comunque, quindi possiamo essere più permissivi qui
+        // e lasciare che il backend faccia il controllo finale
+        return false;
+      }
+
+      // Agency: può modificare proprie + dei propri Agent
+      if (currentUser.Role === 'Agency') {
+        // L'immobile è dell'Agency stessa
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un suo Agent
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agent: può modificare solo proprie
+      if (currentUser.Role === 'Agent') {
+        return formData.value.UserId === currentUser.Id;
+      }
+
+      return false;
+    });
+
+    // Verifica se l'utente può eliminare l'immobile secondo le regole di accesso
+    const canDelete = computed(() => {
+      if (!formData.value || !formData.value.User) {
+        return false;
+      }
+
+      const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre eliminare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può eliminare tutta la sua cerchia
+      if (currentUser.Role === 'Admin') {
+        // L'immobile è dell'Admin stesso
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un'Agency dell'Admin
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
+          return true;
+        }
+        // L'immobile è di un Agent diretto dell'Admin
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agency: può eliminare proprie + dei propri Agent
+      if (currentUser.Role === 'Agency') {
+        // L'immobile è dell'Agency stessa
+        if (formData.value.UserId === currentUser.Id) {
+          return true;
+        }
+        // L'immobile è di un suo Agent
+        const ownerAgencyId = (propertyOwner as any).AgencyId;
+        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agent') {
+          return true;
+        }
+        return false;
+      }
+
+      // Agent: può eliminare solo proprie
+      if (currentUser.Role === 'Agent') {
+        return formData.value.UserId === currentUser.Id;
+      }
+
+      return false;
+    });
+
+    // Computed per ottenere il nome completo dell'agente
+    const agentName = computed(() => {
+      if (!formData.value.AgentId) {
+        return '';
+      }
+      
+      // Prima cerca nella lista degli agenti disponibili
+      if (inserModel.value.Users && inserModel.value.Users.length > 0) {
+        const agent = inserModel.value.Users.find((u: any) => u.Id === formData.value.AgentId);
+        if (agent) {
+          return `${agent.FirstName} ${agent.LastName}`;
+        }
+      }
+      
+      // Fallback: usa i dati dell'utente che ha creato l'immobile
+      if (formData.value.User && formData.value.User.Id === formData.value.AgentId) {
+        return `${formData.value.User.FirstName} ${formData.value.User.LastName}`;
+      }
+      
+      return '';
+    });
+
     return {
       formData,
       rules,
@@ -1906,7 +2150,6 @@ export default defineComponent({
       setPhotoHighlighted,
       deleteFile,
       deleteItem,
-      hasRelatedCalendarEvents,
       inserModel,
       user,
       checkMove,
@@ -1923,6 +2166,9 @@ export default defineComponent({
       handleImageError,
       handleImageLoad,
       cancelEdit,
+      canModify,
+      canDelete,
+      agentName,
     };
   },
 });
