@@ -243,8 +243,9 @@ const getToInsert = (): Promise<InsertModel> => {
 };
 
 const getSearchItems = (userId: string, agencyId?: string): Promise<SearchModel> => {
+  const agencyIdParam = agencyId ? `&agencyId=${agencyId}` : '';
   return ApiService.get(
-    `Calendar/GetSearchItems?userId=${userId}&agencyId=${agencyId}`,
+    `Calendar/GetSearchItems?userId=${userId}${agencyIdParam}`,
     ""
   )
     .then(({ data }) => {

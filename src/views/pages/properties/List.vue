@@ -241,13 +241,26 @@
             />
           </div>
 
-          <!-- Filtro Agenzia -->
-          <div v-if="user.Role == 'Admin'" class="col-12 col-sm-6 col-md-4 col-lg-auto">
-            <select class="form-select filter-select" v-model="agencyId">
-              <option value="">🏢 Tutte le agenzie</option>
-              <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
-                {{ item.FirstName }} {{ item.LastName }}
-              </option>
+          <!-- Filtro Proprietario -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select class="form-select filter-select" v-model="ownerFilter" @change="applyFilters">
+              <option value="">📋 Tutti gli immobili</option>
+              <option :value="user.Id">👤 I miei immobili</option>
+              <template v-if="user.Role === 'Agent' && user.AdminId">
+                <option :value="user.AdminId">🏢 Immobili dell'Agenzia</option>
+              </template>
+              <template v-else>
+                <optgroup v-if="user.Role === 'Admin' && defaultSearchItems.Agencies && defaultSearchItems.Agencies.length > 0" label="Agenzie">
+                  <option v-for="agency in defaultSearchItems.Agencies" :key="agency.Id" :value="agency.Id">
+                    🏢 {{ agency.FirstName }} {{ agency.LastName }}
+                  </option>
+                </optgroup>
+                <optgroup v-if="defaultSearchItems.Agents && defaultSearchItems.Agents.length > 0" :label="user.Role === 'Admin' ? 'Agenti' : 'Agenti collegati'">
+                  <option v-for="agent in defaultSearchItems.Agents" :key="agent.Id" :value="agent.Id">
+                    👤 {{ agent.FirstName }} {{ agent.LastName }}
+                  </option>
+                </optgroup>
+              </template>
             </select>
           </div>
 
@@ -362,7 +375,8 @@ import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import AddPropertyModal from "@/components/modals/forms/AddPropertyModal.vue";
-import { getRealEstatePropertiesList, deleteRealEstateProperty, RequestTabelData, getSearchItems, SearchModel, exportProperties, type PropertyExportPayload } from "@/core/data/properties";
+import { getRealEstatePropertiesList, deleteRealEstateProperty, RequestTabelData, exportProperties, type PropertyExportPayload } from "@/core/data/properties";
+import { getSearchItems, SearchModel } from "@/core/data/events";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -437,9 +451,11 @@ export default defineComponent({
     const selectedIds = ref<Array<Number>>([]);
     const loading = ref<boolean>(true);
     const tableData = ref<Array<RequestTabelData>>([]);
+    const rawItems = ref<Array<RequestTabelData>>([]);
     const initItems = ref([]);
     const user = authStore.user;
     let agencyId = ref("");
+    const ownerFilter = ref<string>("");
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
@@ -674,10 +690,50 @@ export default defineComponent({
       const validPriceTo = priceTo !== undefined ? priceTo : 0;
 
       const results = await getRealEstatePropertiesList(agencyId, filterRequest, contract, validPriceFrom, validPriceTo, category, typology, town);
-      tableData.value = results || [];
-      initItems.value.splice(0, tableData.value.length, ...tableData.value);
+      rawItems.value = results || [];
+      initItems.value.splice(0, rawItems.value.length, ...rawItems.value);
+      
+      // Applica i filtri frontend
+      applyFilters();
+      
       loading.value = false;
     };
+
+    const applyFilters = () => {
+      let items = [...rawItems.value];
+
+      // Applica il filtro proprietario selezionato
+      if (ownerFilter.value) {
+        // Per tutti i ruoli: filtra per UserId
+        // - "I miei immobili": item.UserId === user.Id
+        // - "Immobili dell'agency" (solo Agent): item.UserId === user.AdminId (l'agency ha creato l'immobile, quindi UserId = agency.Id)
+        // - Per Admin/Agency: item.UserId === ownerFilter.value (ID dell'agenzia/agente selezionato)
+        items = items.filter((item) => {
+          // Assicurati che entrambi i valori siano stringhe per il confronto
+          const itemUserId = String(item.UserId || '');
+          const filterValue = String(ownerFilter.value || '');
+          return itemUserId === filterValue;
+        });
+      }
+      // Se ownerFilter è vuoto, mostra tutti gli immobili della cerchia (già filtrati dal backend)
+
+      tableData.value = items;
+      MenuComponent.reinitialization();
+    };
+
+    onMounted(async () => {
+      // if (authStore.user.Role == "Admin") {
+        agencyId.value = authStore.user.AdminId;
+        // Chiama getSearchItems solo per Admin e Agency (non per Agent)
+        if (user.Role !== "Agent") {
+          defaultSearchItems.value = await getSearchItems(authStore.user.Id);
+        }
+      // }
+
+      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
+    });
+
+
 
     const deleteFewItems = async () => {
       loading.value = true;
@@ -720,8 +776,6 @@ export default defineComponent({
       }
 
       await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, locationFilter);
-
-      MenuComponent.reinitialization();
     };
 
 
@@ -943,13 +997,18 @@ export default defineComponent({
       selectedCity.value = "";
       selectedLocation.value = "";
       filteredCities.value = [];
+      ownerFilter.value = "";
+      searchItems();
     };
 
     onMounted(async () => {
       // if (authStore.user.Role == "Admin") {
-        defaultSearchItems.value = await getSearchItems(authStore.user.Id);
+        agencyId.value = authStore.user.AdminId;
+        // Chiama getSearchItems come in Clients.vue (senza agencyId per vedere tutti gli agenti)
+        if (user.Role !== "Agent") {
+          defaultSearchItems.value = await getSearchItems(authStore.user.Id);
+        }
       // }
-      agencyId.value = authStore.user.AdminId;
 
       // Carica i dati strutturati per i filtri
       await loadStructuredData();
@@ -1003,7 +1062,9 @@ export default defineComponent({
         propertyExportFields,
         exportLoading,
         openExportModal,
-        handleExportProperties
+        handleExportProperties,
+        ownerFilter,
+        applyFilters
       };
   },
   data() {
