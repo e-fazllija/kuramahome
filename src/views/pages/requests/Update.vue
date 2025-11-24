@@ -616,7 +616,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted, ref, watch } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteRequest, canDeleteRequest } from "@/core/data/requests";
+import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteRequest } from "@/core/data/requests";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
@@ -810,37 +810,11 @@ export default defineComponent({
     async function deleteItem() {
       // Verifica preventiva se ci sono dati collegati
       loading.value = true;
-      const constraintsResult = await canDeleteRequest(id);
-      loading.value = false;
-
-      // Costruisci il messaggio di conferma
-      let confirmText = "Confermi di voler eliminare questa richiesta?";
-      let htmlMessage = null;
-
-      // Se ci sono dati collegati, mostra un avviso dettagliato
-      if (constraintsResult && (constraintsResult.EventsCount > 0 || constraintsResult.RequestNotesCount > 0)) {
-        htmlMessage = "<div style='text-align: left;'>";
-        htmlMessage += "<p style='margin-bottom: 15px;'><strong>⚠️ ATTENZIONE</strong></p>";
-        htmlMessage += "<p style='margin-bottom: 10px;'>Se elimini questa richiesta, verranno eliminati anche i seguenti dati collegati:</p>";
-        htmlMessage += "<ul style='margin-left: 20px; margin-bottom: 15px;'>";
-        
-        if (constraintsResult.EventsCount > 0) {
-          htmlMessage += `<li><strong>${constraintsResult.EventsCount}</strong> appuntamento${constraintsResult.EventsCount > 1 ? 'i' : ''} nel calendario</li>`;
-        }
-        
-        if (constraintsResult.RequestNotesCount > 0) {
-          htmlMessage += `<li><strong>${constraintsResult.RequestNotesCount}</strong> nota${constraintsResult.RequestNotesCount > 1 ? 'e' : ''} collegata${constraintsResult.RequestNotesCount > 1 ? 'e' : ''}</li>`;
-        }
-        
-        htmlMessage += "</ul>";
-        htmlMessage += "<p style='margin-top: 10px; color: #dc3545;'><strong>L'operazione non può essere annullata.</strong></p>";
-        htmlMessage += "</div>";
-      }
 
       // Mostra la dialog di conferma
       const result = await Swal.fire({
-        title: htmlMessage ? "⚠️ ATTENZIONE" : "Elimina richiesta",
-        html: htmlMessage || confirmText,
+        title: "Elimina richiesta",
+        html: "Confermi di voler eliminare questa richiesta?",
         icon: "warning",
         showCancelButton: true,
         focusCancel: true,
