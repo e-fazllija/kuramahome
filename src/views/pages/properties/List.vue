@@ -791,6 +791,17 @@ export default defineComponent({
         await deleteRealEstateProperty(id);
         await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
         MenuComponent.reinitialization();
+        
+        Swal.fire({
+          text: "Immobile eliminato con successo",
+          icon: "success",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
       } catch (error: any) {
         const errorMessage = error?.data?.Message || error?.response?.data?.Message || authStore.errors || "Si è verificato un errore durante l'eliminazione dell'immobile.";
         Swal.fire({
