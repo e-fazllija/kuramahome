@@ -92,6 +92,7 @@
     .card-body {
         padding: $card-py $card-px;
         color: var(--#{$prefix}card-color);
+        background-color: var(--#{$prefix}card-bg) !important;
     }
 
     // Footer

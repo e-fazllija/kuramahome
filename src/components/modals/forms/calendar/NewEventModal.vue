@@ -1,15 +1,15 @@
 <template>
 <div class="modal fade show" id="kt_modal_add_event" role="dialog" ref="newTargetModalRef" tabindex="-1" aria-hidden="false" aria-modal="true">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
-      <div class="modal-content" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content card-palette modal-shell">
         <el-form class="form fv-plugins-bootstrap5 fv-plugins-framework" id="kt_modal_add_event_form"
           @submit.prevent="submit()" :model="targetData" :rules="rules" ref="formRef">
           <!--begin::Modal header-->
-          <div class="modal-header" id="kt_modal_add_event_header" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+          <div class="modal-header card-palette-header modal-header-accent" id="kt_modal_add_event_header">
             <!--begin::Modal title-->
             <div class="d-flex align-items-center">
               <div class="symbol symbol-40px me-3">
-                <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+                <span class="symbol-label symbol-label-accent">
                   <i class="ki-duotone ki-calendar fs-2 text-white">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -17,8 +17,8 @@
                 </span>
               </div>
               <div>
-                <h2 class="fw-bold m-0 text-gray-900 fs-3">📅 Aggiungi Evento</h2>
-                <span class="text-muted fs-7 fw-semibold">Inserisci i dati del nuovo evento</span>
+                <h2 class="fw-bold m-0 text-palette-primary fs-3">📅 Aggiungi Evento</h2>
+                <span class="text-palette-secondary fs-7 fw-semibold">Inserisci i dati del nuovo evento</span>
               </div>
             </div>
             <!--end::Modal title-->
@@ -28,7 +28,6 @@
               id="kt_modal_add_event_close"
               data-bs-dismiss="modal"
               class="btn btn-icon btn-sm btn-active-icon-primary"
-              style="border-radius: 0.5rem; background: rgba(255, 255, 255, 0.8); border: 1px solid #e9ecef;"
             >
               <KTIcon icon-name="cross" icon-class="fs-1" />
             </div>
@@ -61,12 +60,12 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="EventName">
-                  <el-input 
+                  <input 
+                    class="form-control form-control-lg" 
                     v-model="targetData.EventName" 
                     type="text" 
                     name="EventName"
                     placeholder="Inserisci il nome dell'evento"
-                    class="modern-input"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -84,12 +83,12 @@
                     <span class="path4"></span>
                     <span class="path5"></span>
                   </i>
-                  <span class="required">Colore</span>
+                  <span>Colore</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Color">
-                  <select v-model="targetData.Color" class="form-select modern-select"
+                  <select v-model="targetData.Color" class="form-select form-select-lg"
                          :style="{ backgroundColor: targetData.Color, color: '#fff' }">
                     <option v-for="(color, index) in colorOptions" :key="index" 
                          :value="color.hex" :style="{ backgroundColor: color.hex, color: '#fff' }">
@@ -116,12 +115,12 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="EventDescription">
-                  <el-input 
+                  <input 
+                    class="form-control form-control-lg"
                     v-model="targetData.EventDescription" 
                     type="text" 
                     placeholder="Descrizione dell'evento" 
                     name="EventDescription"
-                    class="modern-input"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -141,12 +140,12 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="EventLocation">
-                  <el-input 
+                  <input 
+                    class="form-control form-control-lg"
                     v-model="targetData.EventLocation" 
                     type="text" 
                     placeholder="Dove si terrà l'evento" 
                     name="EventLocation"
-                    class="modern-input"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -164,17 +163,19 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <Multiselect
+                <select 
+                  class="form-select form-select-lg" 
                   v-model="targetData.RealEstatePropertyId"
-                  :options="inserModel.RealEstateProperties"
-                  label="label"
-                  valueProp="Id"
-                  :searchable="true"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  placeholder="Seleziona l'immobile"
-                  class="multiselect-modern"
-                />
+                >
+                  <option :value="null">Seleziona l'immobile</option>
+                  <option
+                    v-for="property in inserModel.RealEstateProperties"
+                    :key="property.Id"
+                    :value="property.Id"
+                  >
+                    {{ property.label }}
+                  </option>
+                </select>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
@@ -191,17 +192,19 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <Multiselect
+                <select 
+                  class="form-select form-select-lg" 
                   v-model="targetData.RequestId"
-                  :options="inserModel.Requests"
-                  label="label"
-                  valueProp="Id"
-                  :searchable="true"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  placeholder="Seleziona la richiesta"
-                  class="multiselect-modern"
-                />
+                >
+                  <option :value="null">Seleziona la richiesta</option>
+                  <option
+                    v-for="request in inserModel.Requests"
+                    :key="request.Id"
+                    :value="request.Id"
+                  >
+                    {{ request.label }}
+                  </option>
+                </select>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
@@ -220,24 +223,26 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <Multiselect
+                <select 
+                  class="form-select form-select-lg" 
                   v-model="targetData.CustomerId"
-                  :options="inserModel.Customers"
-                  label="label"
-                  valueProp="Id"
-                  :searchable="true"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  placeholder="Seleziona il cliente"
-                  class="multiselect-modern"
-                />
+                >
+                  <option :value="null">Seleziona il cliente</option>
+                  <option
+                    v-for="customer in inserModel.Customers"
+                    :key="customer.Id"
+                    :value="customer.Id"
+                  >
+                    {{ customer.label }}
+                  </option>
+                </select>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
 
               <!--begin::Input group-->
-              <div class="row g-7 mb-7">
-                <div class="col-md-6">
+              <div class="row g-4 mb-7">
+                <div class="col-12 col-md-6">
                   <div class="fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
@@ -258,7 +263,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                   <div class="fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
@@ -291,7 +296,7 @@
             <button
               type="reset"
               id="kt_modal_add_event_cancel"
-              class="btn btn-modal-cancel me-3"
+              class="btn btn-secondary me-3"
               data-bs-dismiss="modal"
             >
               <span class="btn-icon">
@@ -307,7 +312,7 @@
             <!--begin::Button-->
             <button
               :data-kt-indicator="loading ? 'on' : null"
-              class="btn btn-modal-primary"
+              class="btn btn-primary"
               type="submit"
               :disabled="loading"
             >
@@ -343,12 +348,11 @@ import { hideModal, removeModalBackdrop } from "@/core/helpers/dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import events, { todayDate, getToInsert, createEvent, InsertModel, Event } from "@/core/data/events";
 import { useAuthStore } from "@/stores/auth";
-import Multiselect from '@vueform/multiselect'
 import moment from "moment";
 
 export default defineComponent({
   name: "new-event-modal",
-  components: { Multiselect },
+  components: {},
   props: {
     SelectedDateStart: { type: String, Required: true },
     SelectedDateEnd: { type: String, Required: true },
@@ -592,18 +596,5 @@ export default defineComponent({
   }
 });
 </script>
-<style src="@vueform/multiselect/themes/default.css"></style>
-
-<style lang="scss">
-.el-select {
-  width: 100%;
-}
-
-.el-date-editor.el-input,
-.el-date-editor.el-input__inner {
-  width: 100%;
-}
-</style>
-
 
 <!-- Tutti gli stili sono stati spostati in file CSS dedicati -->

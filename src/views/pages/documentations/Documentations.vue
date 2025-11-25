@@ -354,69 +354,12 @@
     </div>
     
     <!-- Modal Upload File -->
-    <div v-if="showUploadModal" class="modal-overlay" @click.self="showUploadModal = false">
-      <div class="modal-dialog-custom">
-        <div class="modal-content-custom">
-          <div class="modal-header-custom">
-            <h3 class="modal-title">
-              <i class="ki-duotone ki-file-up fs-2 me-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Carica File
-            </h3>
-            <button @click="showUploadModal = false" class="btn-close-custom">
-              <i class="ki-duotone ki-cross fs-1">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </button>
-          </div>
-          <div class="modal-body-custom">
-            <div class="form-group mb-4">
-              <label class="form-label">Seleziona File</label>
-              <input 
-                type="file" 
-                ref="fileInputRef"
-                @change="handleFileSelect"
-                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.xls,.xlsx"
-                class="form-control"
-              />
-            </div>
-            <div class="form-group">
-              <div class="form-check form-switch">
-                <input 
-                  class="form-check-input" 
-                  type="checkbox" 
-                  v-model="isPrivateFile"
-                  id="privateFileSwitch"
-                />
-                <label class="form-check-label" for="privateFileSwitch">
-                  <i class="ki-duotone ki-lock fs-3 me-1">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                  </i>
-                  File Privato (visibile solo a te)
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer-custom">
-            <button @click="showUploadModal = false" class="btn btn-secondary">
-              Annulla
-            </button>
-            <button @click="uploadSelectedFile" class="btn btn-primary" :disabled="!selectedFile">
-              <i class="ki-duotone ki-cloud-upload fs-3 me-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Carica File
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <UploadFileModal
+      v-model="showUploadModal"
+      :loading="loading"
+      @upload="handleUploadFromModal"
+      @close="handleCloseModal"
+    />
   </div>
 </template>
 
@@ -429,6 +372,7 @@ import arraySort from "array-sort";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import { useAuthStore, type User } from "@/stores/auth";
+import UploadFileModal from "@/components/modals/documentations/UploadFileModal.vue";
 import '@/assets/css/documentations.css';
 import '@/assets/css/filters.css';
 import '@/assets/css/table-actions.css';
@@ -436,12 +380,11 @@ import '@/assets/css/lists-common.css';
 
 export default defineComponent({
   name: "DocumentTable",
-  components: { Datatable },
+  components: { Datatable, UploadFileModal },
 
   setup() {
     const store = useAuthStore();
     const selectedIds = ref<Array<number>>([]);
-    const fileInputRef = ref<HTMLInputElement | null>(null);
     let loading = ref<boolean>(true);
     const tableData = ref<Array<Documentation>>([]);
     const initItems = ref<Array<Documentation>>([]);
@@ -454,8 +397,6 @@ export default defineComponent({
     const showCreateFolderModal = ref<boolean>(false);
     const showUploadModal = ref<boolean>(false);
     const newFolderName = ref<string>("");
-    const selectedFile = ref<File | null>(null);
-    const isPrivateFile = ref<boolean>(false);
 
     const tableHeader = ref([
       {
@@ -543,29 +484,17 @@ export default defineComponent({
 
     // Apre il dialog di upload
     const openFileUploadDialog = () => {
-      selectedFile.value = null;
-      isPrivateFile.value = false;
       showUploadModal.value = true;
     };
 
-    // Gestisce la selezione del file
-    const handleFileSelect = (event: Event) => {
-      const input = event.target as HTMLInputElement;
-      if (input?.files && input.files.length > 0) {
-        selectedFile.value = input.files[0];
-      }
-    };
-
-    // Upload del file selezionato
-    const uploadSelectedFile = async () => {
-      if (!selectedFile.value) return;
-
+    // Gestisce l'upload dalla modale
+    const handleUploadFromModal = async (payload: { file: File; isPrivate: boolean }) => {
       try {
         loading.value = true;
         showUploadModal.value = false;
 
         // Passa il path al backend (con agencyId se presente)
-        await uploadFile(selectedFile.value, currentPath.value || undefined, isPrivateFile.value);
+        await uploadFile(payload.file, currentPath.value || undefined, payload.isPrivate);
 
         Swal.fire({
           text: "File caricato con successo!",
@@ -578,8 +507,6 @@ export default defineComponent({
         });
 
         await getItems();
-        selectedFile.value = null;
-        isPrivateFile.value = false;
       } catch (error: any) {
         loading.value = false;
         const errorMessage = error?.message || "Errore durante l'upload del file";
@@ -593,6 +520,11 @@ export default defineComponent({
           },
         });
       }
+    };
+
+    // Gestisce la chiusura della modale
+    const handleCloseModal = () => {
+      showUploadModal.value = false;
     };
 
     // Crea una nuova cartella
@@ -758,16 +690,13 @@ export default defineComponent({
       showCreateFolderModal,
       showUploadModal,
       newFolderName,
-      selectedFile,
-      isPrivateFile,
-      fileInputRef,
       
       // Funzioni
       navigateToFolder,
       getCurrentPath,
       openFileUploadDialog,
-      handleFileSelect,
-      uploadSelectedFile,
+      handleUploadFromModal,
+      handleCloseModal,
       createNewFolder,
       searchItems,
       deleteFewItems,

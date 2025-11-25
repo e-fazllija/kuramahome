@@ -86,7 +86,6 @@ export default defineComponent({
 @import "assets/css/modal-forms.css";
 @import "assets/css/modal-forms-dark.css";
 @import "assets/css/modal-buttons.css";
-@import "assets/css/form-elements.css";
 @import "assets/css/form-datetime.css";
 @import "assets/css/form-controls.css";
 @import "assets/css/widgets.css";

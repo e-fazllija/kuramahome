@@ -34,7 +34,6 @@
   <div v-else class="collapse show">
     <!--begin::Tabs-->
     <div class="container-fluid px-0 px-md-3">
-      <div class="property-tabs">
         <ul class="nav nav-tabs flex-nowrap overflow-auto" id="propertyTabs" role="tablist" style="scrollbar-width: none; -ms-overflow-style: none;">
           <li class="nav-item flex-shrink-0" role="presentation">
             <button
@@ -80,15 +79,14 @@
         </ul>
         <!--begin::Form-->
         <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
-        <div class="tab-content" id="propertyTabsContent">
-          <!--begin::Data Tab-->
-          <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
+          <div class="tab-content" id="propertyTabsContent">
+            <!--begin::Data Tab-->
+            <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
               <!--begin::Card body-->
-              <div class="card-body card-palette border-top p-3 p-md-6 p-xl-9 compact-body" :class="{ 'opacity-50': !canModify && user.Role === 'Agent' }">
-                <div class="form-sections">
-                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
-                    <div class="section-header">
-                      <div class="section-icon">
+              <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModify && user.Role === 'Agent' }">
+                <div class="mb-4 mb-md-5 mb-xl-6">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="me-3">
                         <i class="ki-duotone ki-notepad fs-3 fs-md-2 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
@@ -98,67 +96,22 @@
                         </i>
                       </div>
                       <div class="flex-grow-1">
-                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Dati Principali</h4>
-                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Informazioni generali sull'immobile.</p>
+                        <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Dati Principali</h4>
+                        <p class="text-muted small mb-0">Informazioni generali sull'immobile.</p>
                       </div>
                     </div>
-            <div class="compact-grid">
-              <div class="form-field">
-                <label class="form-label required">
-                  <i class="ki-duotone ki-profile-user fs-5 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                  </i>
-                  Cliente
-                </label>
-                <el-form-item prop="CustomerId">
-                  <Multiselect
-                    v-model="formData.CustomerId"
-                    :options="inserModel.Customers"
-                    label="label"
-                    valueProp="Id"
-                    :searchable="true"
-                    :close-on-select="true"
-                    :clear-on-select="false"
-                    placeholder="Seleziona il cliente"
-                    class="multiselect-modern w-100"
-                    :disabled="!canModify && user.Role === 'Agent'"
-                  />
-                </el-form-item>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label required">
-                  <i class="ki-duotone ki-user fs-5 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  Agente
-                </label>
-                <el-form-item prop="AgentId">
-                  <input
-                    class="form-control modern-input agent-readonly"
-                    :value="agentName"
-                    type="text"
-                    readonly
-                    disabled
-                  />
-                </el-form-item>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label required">
+            <div>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
                   <i class="ki-duotone ki-text fs-5 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
-                  Titolo
+                  Titolo <span class="text-danger">*</span>
                 </label>
                 <el-form-item prop="Title">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.Title"
                     type="text"
                     placeholder="Inserisci il titolo dell'immobile"
@@ -168,16 +121,112 @@
                 </el-form-item>
               </div>
 
-              <div class="form-field">
-                <label class="form-label required">
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label required">
+                    <i class="ki-duotone ki-profile-user fs-5 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                    </i>
+                    Cliente
+                  </label>
+                  <el-form-item prop="CustomerId">
+                    <select 
+                      class="form-select form-select-lg" 
+                      v-model="formData.CustomerId" 
+                      required
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    >
+                      <option value="">Seleziona il cliente</option>
+                      <option
+                        v-for="customer in inserModel.Customers"
+                        :key="customer.Id"
+                        :value="customer.Id"
+                      >
+                        {{ customer.label }}
+                      </option>
+                    </select>
+                  </el-form-item>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                    <i class="ki-duotone ki-user fs-5 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Agente <span class="text-danger">*</span>
+                  </label>
+                  <el-form-item prop="AgentId">
+                    <input
+                      class="form-control form-control-lg agent-readonly"
+                      :value="agentName"
+                      type="text"
+                      readonly
+                      disabled
+                    />
+                  </el-form-item>
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3" v-if="showTipologia">
+                <div class="col-12 col-md-6">
+                  <label class="form-label required">
+                    <i class="ki-duotone ki-category fs-5 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Categoria
+                  </label>
+                  <el-form-item prop="Category">
+                    <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                      <option value="">Seleziona una Categoria...</option>
+                      <option value="Residenziale">Residenziale</option>
+                      <option value="Capannone">Capannone</option>
+                      <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
+                      <option value="Magazzino">Magazzino</option>
+                      <option value="Garage">Garage</option>
+                      <option value="Ufficio">Ufficio</option>
+                      <option value="Terreno">Terreno</option>
+                      <option value="Rustico / Casale">Rustico / Casale</option>
+                    </select>
+                  </el-form-item>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                    <i class="ki-duotone ki-element-plus fs-5 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Tipologia <span class="text-danger">*</span>
+                  </label>
+                  <el-form-item prop="Typology">
+                    <select class="form-select form-select-lg" v-model="formData.Typology" :disabled="!canModify && user.Role === 'Agent'">
+                      <option
+                        v-for="tipologia in typesavailable"
+                        :key="tipologia"
+                        :value="tipologia"
+                      >
+                        {{ tipologia }}
+                      </option>
+                    </select>
+                  </el-form-item>
+                </div>
+              </div>
+
+              <div v-else class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
                   <i class="ki-duotone ki-category fs-5 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
-                  Categoria
+                  Categoria <span class="text-danger">*</span>
                 </label>
                 <el-form-item prop="Category">
-                  <select class="form-select modern-select" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona una Categoria...</option>
                     <option value="Residenziale">Residenziale</option>
                     <option value="Capannone">Capannone</option>
@@ -191,90 +240,62 @@
                 </el-form-item>
               </div>
 
-              <div v-if="showTipologia" class="form-field">
-                <label class="form-label required">
-                  <i class="ki-duotone ki-element-plus fs-5 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  Tipologia
-                </label>
-                <el-form-item prop="Typology">
-                  <select class="form-select modern-select" v-model="formData.Typology" :disabled="!canModify && user.Role === 'Agent'">
-                    <option
-                      v-for="tipologia in typesavailable"
-                      :key="tipologia"
-                      :value="tipologia"
-                    >
-                      {{ tipologia }}
-                    </option>
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label required">
+                    <i class="ki-duotone ki-home fs-5 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Stato vendita o affitto
+                  </label>
+                  <el-form-item prop="Status">
+                    <select class="form-select form-select-lg" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
+                      <option value="">Scegli tra vendita e affitto</option>
+                      <option value="Vendita">Vendita</option>
+                      <option value="Affitto">Affitto</option>
+                    </select>
+                  </el-form-item>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                    <i class="ki-duotone ki-briefcase fs-5 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Tipologia incarico
+                  </label>
+                  <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
+                    <option value="Verbale">Verbale</option>
+                    <option value="Esclusivo">Esclusivo</option>
+                    <option value="Semi-Verbale">Semi-Verbale</option>
+                    <option value="Immobile MLS">Immobile MLS</option>
                   </select>
-                </el-form-item>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label required">
-                  <i class="ki-duotone ki-home fs-5 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  Stato vendita o affitto
-                </label>
-                <el-form-item prop="Status">
-                  <select class="form-select modern-select" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">Scegli tra vendita e affitto</option>
-                    <option value="Vendita">Vendita</option>
-                    <option value="Affitto">Affitto</option>
-                  </select>
-                </el-form-item>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">
-                  <i class="ki-duotone ki-briefcase fs-5 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                  </i>
-                  Tipologia incarico
-                </label>
-                <select class="form-select modern-select" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
-                  <option value="Verbale">Verbale</option>
-                  <option value="Esclusivo">Esclusivo</option>
-                  <option value="Semi-Verbale">Semi-Verbale</option>
-                  <option value="Immobile MLS">Immobile MLS</option>
-                </select>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label required">Disponibilità</label>
-                <select class="form-select modern-select" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
-                  <option value="">Seleziona la Disponibilità</option>
-                  <option value="Libero">Libero</option>
-                  <option value="Occupato">Occupato</option>
-                </select>
+                </div>
               </div>
             </div>
           </div>
 
-                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
-                    <div class="section-header">
-                      <div class="section-icon">
+                  <div class="mb-4 mb-md-5 mb-xl-6">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="me-3">
                         <i class="ki-duotone ki-geolocation fs-3 fs-md-2 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
                       <div class="flex-grow-1">
-                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Localizzazione</h4>
-                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Riferimenti geografici e indirizzo completo.</p>
+                        <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Localizzazione</h4>
+                        <p class="text-muted small mb-0">Riferimenti geografici e indirizzo completo.</p>
                       </div>
                     </div>
-            <div class="compact-grid">
-              <div class="form-field">
+            <div>
+              <div class="mb-3">
                 <label class="form-label required">Indirizzo</label>
                 <el-form-item prop="AddressLine">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.AddressLine"
                     type="text"
                     required
@@ -283,84 +304,88 @@
                 </el-form-item>
               </div>
 
-              <div class="form-field">
-                <label class="form-label required">Provincia</label>
-                <el-form-item prop="State">
-                  <select class="form-select modern-select" v-model="formData.State" required :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">🗺️ Seleziona provincia</option>
-                    <option
-                      v-for="(province, index) in provinces"
-                      :key="index"
-                      :value="province.Id"
-                    >
-                      {{ province.Name }}
-                    </option>
-                  </select>
-                </el-form-item>
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Provincia <span class="text-danger">*</span></label>
+                  <el-form-item prop="State">
+                    <select class="form-select form-select-lg" v-model="formData.State" required :disabled="!canModify && user.Role === 'Agent'">
+                      <option value="">🗺️ Seleziona provincia</option>
+                      <option
+                        v-for="(province, index) in provinces"
+                        :key="index"
+                        :value="province.Id"
+                      >
+                        {{ province.Name }}
+                      </option>
+                    </select>
+                  </el-form-item>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Comune <span class="text-danger">*</span></label>
+                  <el-form-item prop="City">
+                    <select class="form-select form-select-lg" v-model="formData.City" required :disabled="!canModify && user.Role === 'Agent'">
+                      <option value="">Seleziona città</option>
+                      <option
+                        v-for="(city, index) in cities"
+                        :key="index"
+                        :value="city.Name"
+                      >
+                        {{ city.Name }}
+                      </option>
+                    </select>
+                  </el-form-item>
+                </div>
               </div>
 
-              <div class="form-field">
-                <label class="form-label required">Comune</label>
-                <el-form-item prop="City">
-                  <select class="form-select" v-model="formData.City" required :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">Seleziona città</option>
-                    <option
-                      v-for="(city, index) in cities"
-                      :key="index"
-                      :value="city.Name"
-                    >
-                      {{ city.Name }}
-                    </option>
-                  </select>
-                </el-form-item>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Località</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.Location"
-                  type="text"
-                  placeholder="Inserisci la località"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label required">Codice Fiscale</label>
-                <el-form-item prop="PostCode">
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Località</label>
                   <input
-                    class="form-control modern-input"
-                    v-model="formData.PostCode"
+                    class="form-control form-control-lg"
+                    v-model="formData.Location"
                     type="text"
-                    placeholder="Inserisci il codice fiscale"
-                    required
+                    placeholder="Inserisci la località"
                     :disabled="!canModify && user.Role === 'Agent'"
                   />
-                </el-form-item>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Codice Fiscale <span class="text-danger">*</span></label>
+                  <el-form-item prop="PostCode">
+                    <input
+                      class="form-control form-control-lg"
+                      v-model="formData.PostCode"
+                      type="text"
+                      placeholder="Inserisci il codice fiscale"
+                      required
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    />
+                  </el-form-item>
+                </div>
               </div>
             </div>
           </div>
 
-                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
-                    <div class="section-header">
-                      <div class="section-icon">
+                  <div class="mb-4 mb-md-5 mb-xl-6">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="me-3">
                         <i class="ki-duotone ki-setting fs-3 fs-md-2 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
                       <div class="flex-grow-1">
-                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Caratteristiche Tecniche</h4>
-                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Dimensioni, dotazioni e finiture dell'immobile.</p>
+                        <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Caratteristiche Tecniche</h4>
+                        <p class="text-muted small mb-0">Dimensioni, dotazioni e finiture dell'immobile.</p>
                       </div>
                     </div>
-            <div class="compact-grid">
-              <div class="form-field">
-                <label class="form-label required">Superficie commerciale (m²)</label>
+            <div>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Superficie commerciale (m²) <span class="text-danger">*</span></label>
                 <el-form-item prop="CommercialSurfaceate">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.CommercialSurfaceate"
                     type="number"
                     required
@@ -369,101 +394,117 @@
                 </el-form-item>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Piano</label>
-                <select class="form-select modern-select" v-model="formData.Floor" :disabled="!canModify && user.Role === 'Agent'">
-                  <option value="">Scegli</option>
-                  <option value="Interrato -2">Interrato -2</option>
-                  <option value="Interrato -1">Interrato -1</option>
-                  <option value="Seminterrato">Seminterrato</option>
-                  <option value="Piano Terra">Piano Terra</option>
-                  <option value="Piano Rialzato">Piano Rialzato</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Piano</label>
+                  <select class="form-select form-select-lg" v-model="formData.Floor" :disabled="!canModify && user.Role === 'Agent'">
+                    <option value="">Scegli</option>
+                    <option value="Interrato -2">Interrato -2</option>
+                    <option value="Interrato -1">Interrato -1</option>
+                    <option value="Seminterrato">Seminterrato</option>
+                    <option value="Piano Terra">Piano Terra</option>
+                    <option value="Piano Rialzato">Piano Rialzato</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Totale piani edificio</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.TotalBuildingfloors"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Ascensori</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.Elevators"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Totale piani edificio</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.TotalBuildingfloors"
-                  type="number"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Giardino (mq)</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.MQGarden"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Spese condominiali</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.CondominiumExpenses"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Giardino (mq)</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.MQGarden"
-                  type="number"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6 col-lg-3">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Camere da letto</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.Bedrooms"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Locali</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.WarehouseRooms"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Cucine</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.Kitchens"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Bagni</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.Bathrooms"
+                    type="number"
+                    :disabled="!canModify && user.Role === 'Agent'"
+                  />
+                </div>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Ascensori</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.Elevators"
-                  type="number"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Camere da letto</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.Bedrooms"
-                  type="number"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Locali</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.WarehouseRooms"
-                  type="number"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Cucine</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.Kitchens"
-                  type="number"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Bagni</label>
-                <input
-                  class="form-control modern-input"
-                  v-model="formData.Bathrooms"
-                  type="number"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Arredamento</label>
-                <select class="form-select modern-select" v-model="formData.Furniture" :disabled="!canModify && user.Role === 'Agent'">
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Arredamento</label>
+                <select class="form-select form-select-lg" v-model="formData.Furniture" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Seleziona il tipo di arredamento</option>
                   <option value="Arredato">Arredato</option>
                   <option value="Non Arredato">Non Arredato</option>
@@ -472,28 +513,28 @@
                 </select>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Posti auto</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Posti auto</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.ParkingSpaces"
                   type="number"
                   :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Riscaldamento</label>
-                <select class="form-select modern-select" v-model="formData.Heating" :disabled="!canModify && user.Role === 'Agent'">
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Riscaldamento</label>
+                <select class="form-select form-select-lg" v-model="formData.Heating" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="Nessuno">Nessuno</option>
                   <option value="Autonomo">Autonomo</option>
                   <option value="Centralizzato">Centralizzato</option>
                 </select>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Esposizione</label>
-                <select class="form-select modern-select" v-model="formData.Exposure" :disabled="!canModify && user.Role === 'Agent'">
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Esposizione</label>
+                <select class="form-select form-select-lg" v-model="formData.Exposure" :disabled="!canModify && user.Role === 'Agent'">
                   <option value="">Selezionare l'esposizione</option>
                   <option value="Nord">Nord</option>
                   <option value="Sud">Sud</option>
@@ -502,10 +543,10 @@
                 </select>
               </div>
 
-              <div class="form-field">
-                <label class="form-label required">Classe energetica</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Classe energetica <span class="text-danger">*</span></label>
                 <el-form-item prop="EnergyClass">
-                  <select class="form-select modern-select" v-model="formData.EnergyClass" :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.EnergyClass" :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona il tipo di Classe energetica</option>
                     <option value="Proprietà Esente">Proprietà Esente</option>
                     <option value="Non classificabile">Non classificabile</option>
@@ -525,20 +566,20 @@
                 </el-form-item>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Tipo di proprietà</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Tipo di proprietà</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.TypeOfProperty"
                   type="text"
                   :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
-              <div class="form-field">
-                <label class="form-label required">Stato dell&apos;immobile</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Stato dell&apos;immobile <span class="text-danger">*</span></label>
                 <el-form-item prop="StateOfTheProperty">
-                  <select class="form-select modern-select" v-model="formData.StateOfTheProperty" :disabled="!canModify && user.Role === 'Agent'">
+                  <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty" :disabled="!canModify && user.Role === 'Agent'">
                     <option value="">Seleziona lo Stato dell'immobile</option>
                     <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
                     <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
@@ -548,11 +589,11 @@
                 </el-form-item>
               </div>
 
-              <div class="form-field">
-                <label class="form-label required">Anno di costruzione</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Anno di costruzione <span class="text-danger">*</span></label>
                 <el-form-item prop="YearOfConstruction">
                   <input
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.YearOfConstruction"
                     type="number"
                     :disabled="!canModify && user.Role === 'Agent'"
@@ -560,20 +601,20 @@
                 </el-form-item>
               </div>
 
-              <div class="form-field full-width">
-                <label class="form-label">Altri dettagli</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Altri dettagli</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.MoreDetails"
                   type="text"
                   :disabled="!canModify && user.Role === 'Agent'"
                 />
               </div>
 
-              <div class="form-field full-width">
-                <label class="form-label">Altre caratteristiche</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Altre caratteristiche</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.MoreFeatures"
                   type="text"
                   :disabled="!canModify && user.Role === 'Agent'"
@@ -582,22 +623,22 @@
             </div>
           </div>
 
-                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
-                    <div class="section-header">
-                      <div class="section-icon">
+                  <div class="mb-4 mb-md-5 mb-xl-6">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="me-3">
                         <i class="ki-duotone ki-wallet fs-3 fs-md-2 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
                       <div class="flex-grow-1">
-                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Valori Economici</h4>
-                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Gestisci prezzi, trattative e provvigioni.</p>
+                        <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Valori Economici</h4>
+                        <p class="text-muted small mb-0">Gestisci prezzi, trattative e provvigioni.</p>
                       </div>
                     </div>
-            <div class="compact-grid">
-              <div class="form-field">
-                <label class="form-label">Trattativa riservata</label>
+            <div>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Trattativa riservata</label>
                 <div class="form-check form-switch form-check-custom form-check-solid">
                   <input
                     class="form-check-input"
@@ -612,100 +653,90 @@
                 </div>
               </div>
 
-              <div
-                v-if="!isTrattativaRiservata"
-                class="form-field"
-              >
-                <label class="form-label required">Prezzo</label>
-                <el-form-item prop="Price">
-                  <el-input
-                    v-model="formData.Price"
+              <div class="row g-3 mb-3" v-if="!isTrattativaRiservata">
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Prezzo <span class="text-danger">*</span></label>
+                  <el-form-item prop="Price">
+                    <input
+                      class="form-control form-control-lg"
+                      v-model="formData.Price"
+                      type="number"
+                      required
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    />
+                  </el-form-item>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Prezzo ribassato</label>
+                  <input
+                    class="form-control form-control-lg"
+                    v-model="formData.PriceReduced"
                     type="number"
-                    placeholder="Inserisci importo"
-                    required
                     :disabled="!canModify && user.Role === 'Agent'"
-                  >
-                    <template #append>
-                      <span>€</span>
-                    </template>
-                  </el-input>
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
+                <el-form-item prop="Availability">
+                  <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
+                    <option value="">Seleziona la Disponibilità</option>
+                    <option value="Libero">Libero</option>
+                    <option value="Occupato">Occupato</option>
+                  </select>
                 </el-form-item>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Prezzo ribassato</label>
-                <el-input
-                  v-model="formData.PriceReduced"
-                  type="number"
-                  placeholder="Inserisci importo"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                >
-                  <template #append>
-                    <span>€</span>
-                  </template>
-                </el-input>
-              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Provvigione concordata</label>
+                  <el-form-item prop="AgreedCommission">
+                    <el-input
+                      v-model="formData.AgreedCommission"
+                      type="number"
+                      placeholder="Inserisci percentuale"
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    >
+                      <template #append>
+                        <span>%</span>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                </div>
 
-              <div class="form-field">
-                <label class="form-label">Spese condominiali</label>
-                <el-input
-                  v-model="formData.CondominiumExpenses"
-                  type="number"
-                  placeholder="Inserisci importo"
-                  :disabled="!canModify && user.Role === 'Agent'"
-                >
-                  <template #append>
-                    <span>€</span>
-                  </template>
-                </el-input>
-              </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Provvigione forfettaria</label>
+                  <el-form-item prop="FlatRateCommission">
+                    <el-input
+                      v-model="formData.FlatRateCommission"
+                      type="number"
+                      placeholder="Inserisci percentuale"
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    >
+                      <template #append>
+                        <span>%</span>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                </div>
 
-              <div class="form-field">
-                <label class="form-label">Provvigione concordata</label>
-                <el-form-item prop="AgreedCommission">
-                  <el-input
-                    v-model="formData.AgreedCommission"
-                    type="number"
-                    placeholder="Inserisci percentuale"
-                    :disabled="!canModify && user.Role === 'Agent'"
-                  >
-                    <template #append>
-                      <span>%</span>
-                    </template>
-                  </el-input>
-                </el-form-item>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Provvigione forfettaria</label>
-                <el-form-item prop="FlatRateCommission">
-                  <el-input
-                    v-model="formData.FlatRateCommission"
-                    type="number"
-                    placeholder="Inserisci importo"
-                    :disabled="!canModify && user.Role === 'Agent'"
-                  >
-                    <template #append>
-                      <span>€</span>
-                    </template>
-                  </el-input>
-                </el-form-item>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label">Storno provvigione</label>
-                <el-form-item prop="CommissionReversal">
-                  <el-input
-                    v-model="formData.CommissionReversal"
-                    type="number"
-                    placeholder="Inserisci importo"
-                    :disabled="!canModify && user.Role === 'Agent'"
-                  >
-                    <template #append>
-                      <span>€</span>
-                    </template>
-                  </el-input>
-                </el-form-item>
+                <div class="col-12 col-md-6 col-lg-4">
+                  <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Storno provvigione</label>
+                  <el-form-item prop="CommissionReversal">
+                    <el-input
+                      v-model="formData.CommissionReversal"
+                      type="number"
+                      placeholder="Inserisci percentuale"
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    >
+                      <template #append>
+                        <span>%</span>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                </div>
               </div>
 
               <div class="form-field">
@@ -727,24 +758,24 @@
             </div>
           </div>
 
-                  <div class="compact-section mb-8 mb-md-10 mb-xl-12">
-                    <div class="section-header">
-                      <div class="section-icon">
+                  <div class="mb-4 mb-md-5 mb-xl-6">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="me-3">
                         <i class="ki-duotone ki-shield-tick fs-3 fs-md-2 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
                       <div class="flex-grow-1">
-                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Stato e Impostazioni</h4>
-                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Controlla disponibilità, scadenze e stati rapidi.</p>
+                        <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Stato e Impostazioni</h4>
+                        <p class="text-muted small mb-0">Controlla disponibilità, scadenze e stati rapidi.</p>
                       </div>
                     </div>
-            <div class="compact-grid">
-              <div class="form-field">
-                <label class="form-label">Data fine incarico</label>
+            <div>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Data fine incarico</label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.AssignmentEnd"
                   type="date"
                   placeholder="yyyy-MM-dd"
@@ -752,11 +783,11 @@
                 />
               </div>
 
-              <div class="form-field full-width">
-                <label class="form-label required">Descrizione</label>
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Descrizione <span class="text-danger">*</span></label>
                 <el-form-item prop="Description">
                   <textarea
-                    class="form-control modern-input"
+                    class="form-control form-control-lg"
                     v-model="formData.Description"
                     rows="4"
                     :disabled="!canModify && user.Role === 'Agent'"
@@ -765,8 +796,9 @@
               </div>
             </div>
 
-            <div class="toggle-grid">
-              <div class="toggle-card">
+            <div class="row g-3">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                   <input
                     class="form-check-input"
@@ -779,9 +811,11 @@
                     In Home
                   </label>
                 </div>
+                </div>
               </div>
 
-              <div class="toggle-card">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                   <input
                     class="form-check-input"
@@ -794,9 +828,11 @@
                     In Evidenza
                   </label>
                 </div>
+                </div>
               </div>
 
-              <div class="toggle-card">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                   <input
                     class="form-check-input"
@@ -809,9 +845,11 @@
                     Asta
                   </label>
                 </div>
+                </div>
               </div>
 
-              <div class="toggle-card">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                   <input
                     class="form-check-input"
@@ -824,9 +862,11 @@
                     In trattativa
                   </label>
                 </div>
+                </div>
               </div>
 
-              <div class="toggle-card">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                   <input
                     class="form-check-input"
@@ -839,9 +879,11 @@
                     Venduto
                   </label>
                 </div>
+                </div>
               </div>
 
-              <div class="toggle-card">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                   <input
                     class="form-check-input"
@@ -854,25 +896,26 @@
                     Archiviato
                   </label>
                 </div>
+                </div>
               </div>
             </div>
           </div>
 
-                  <div class="compact-section">
-                    <div class="section-header">
-                      <div class="section-icon">
+                  <div class="mb-4 mb-md-5 mb-xl-6">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="me-3">
                         <i class="ki-duotone ki-link-square fs-3 fs-md-2 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
                       <div class="flex-grow-1">
-                        <h4 class="section-title fw-bold text-palette-primary fs-5 fs-md-4">Media e Note</h4>
-                        <p class="section-subtitle text-palette-secondary fs-7 fs-md-6 mb-0">Collega risorse aggiuntive e consulta le note inserite.</p>
+                        <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Media e Note</h4>
+                        <p class="text-muted small mb-0">Collega risorse aggiuntive e consulta le note inserite.</p>
                       </div>
                     </div>
-            <div class="compact-grid">
-              <div class="form-field">
+            <div>
+              <div class="mb-3">
                 <label class="form-label">
                   <i class="ki-duotone ki-camera fs-5 text-primary">
                     <span class="path1"></span>
@@ -881,7 +924,7 @@
                   URL Video
                 </label>
                 <input
-                  class="form-control modern-input"
+                  class="form-control form-control-lg"
                   v-model="formData.VideoUrl"
                   type="text"
                   placeholder="https://"
@@ -892,73 +935,69 @@
 
             <div
               v-if="formData.RealEstatePropertyNotes && formData.RealEstatePropertyNotes.length"
-              class="notes-wrapper mt-4"
+              class="row g-3 mt-4"
             >
               <div
                 v-for="(note, index) in formData.RealEstatePropertyNotes"
                 :key="index"
-                class="note-card"
+                class="col-12"
               >
-                <div v-html="note.Text"></div>
+                <div class="card p-3" v-html="note.Text"></div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-        class="card-footer d-flex justify-content-end py-6 px-9">
-        <div class="d-flex align-items-center">
-          <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
-            class="btn btn-modal-danger me-2">
-            <span class="btn-icon">
-              <i class="ki-duotone ki-trash fs-3">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
-              </i>
-            </span>
-            <span class="btn-label">Elimina</span>
-          </button>
-          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-modal-primary" type="submit" :disabled="loading">
-            <span v-if="!loading" class="d-flex align-items-center">
+          <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id" class="d-flex align-items-end justify-content-end">
+            <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()" class="btn btn-danger me-2">
               <span class="btn-icon">
-                <i class="ki-duotone ki-check fs-3">
+                <i class="ki-duotone ki-trash fs-3">
                   <span class="path1"></span>
                   <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
                 </i>
               </span>
-              <span class="btn-label">Salva Modifiche</span>
-            </span>
-            <span v-if="loading" class="d-flex align-items-center">
-              <KTSpinner size="sm" :inline="true" />
-              <span class="btn-label">Attendere...</span>
-            </span>
-          </button>
+              <span class="btn-label">Elimina</span>
+            </button>
+            <!--begin::Button-->
+            <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
+              <span v-if="!loading" class="d-flex align-items-center">
+                <span class="btn-icon">
+                  <i class="ki-duotone ki-check fs-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </span>
+                <span class="btn-label">Salva Modifiche</span>
+              </span>
+              <span v-if="loading" class="d-flex align-items-center">
+                <KTSpinner size="sm" :inline="true" />
+                <span class="btn-label">Attendere...</span>
+              </span>
+            </button>
+            <!--end::Button-->
+          </div>
         </div>
-      </div>
-      <!--end::Actions-->
-        </div>
-        <!--end::Data Tab-->
+            </div>
+            <!--end::Data Tab-->
 
-        <!--begin::Images Tab-->
-        <div class="tab-pane fade" id="images-pane" role="tabpanel" aria-labelledby="images-tab">
+            <!--begin::Images Tab-->
+            <div class="tab-pane fade" id="images-pane" role="tabpanel" aria-labelledby="images-tab">
           <!--begin::Image Management-->
-          <div class="image-management">
+          <div>
             <!--begin::Upload Section-->
-            <div class="upload-section mb-5">
-              <div class="upload-area" @click="triggerFileUpload" @dragover.prevent @drop.prevent="handleDrop">
-                <div class="upload-icon">
+            <div class="mb-5">
+              <div class="card border border-dashed p-5 text-center" @click="triggerFileUpload" @dragover.prevent @drop.prevent="handleDrop" style="cursor: pointer;">
+                <div class="mb-3">
                   <i class="ki-duotone ki-cloud-upload fs-1">
                     <span class="path1"></span>
                     <span class="path2"></span>
                     <span class="path3"></span>
                   </i>
                 </div>
-                <div class="upload-text">
+                <div>
                   <h4>Trascina le immagini qui o clicca per selezionare</h4>
-                  <p class="text-muted">Supporta JPG, PNG, GIF (max 5MB per immagine)</p>
+                  <p class="text-muted mb-0">Supporta JPG, PNG, GIF (max 5MB per immagine)</p>
                 </div>
               </div>
               <input ref="fileInput" type="file" multiple accept="image/*" @change="onFileChanged" style="display: none;">
@@ -966,7 +1005,7 @@
             <!--end::Upload Section-->
 
             <!--begin::Image Gallery-->
-            <div v-if="formData.Photos && formData.Photos.length > 0" class="image-gallery">
+            <div v-if="formData.Photos && formData.Photos.length > 0" class="row g-3">
               <draggable
                 :list="formData.Photos"
                 :disabled="false"
@@ -979,8 +1018,9 @@
                 :animation="300"
               >
                 <template #item="{ element, index }">
-                  <div class="image-card" :class="{ 'highlighted': element.Highlighted }">
-                    <div class="drag-handle">
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card position-relative" :class="{ 'border-warning border-2': element.Highlighted }">
+                    <div class="position-absolute top-0 start-0 m-2" style="cursor: move; z-index: 10;">
                       <i class="ki-duotone ki-menu fs-4 text-primary">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -992,21 +1032,22 @@
                       :alt="`Immagine ${index + 1}`"
                       @error="handleImageError($event)"
                       @load="handleImageLoad($event)"
-                      style="display: block; width: 100%; height: 150px; object-fit: cover;"
+                      class="card-img-top"
+                      style="height: 150px; object-fit: cover;"
                     />
-                    <div v-if="imageErrors[element.Id]" class="image-error-placeholder">
+                    <div v-if="imageErrors[element.Id]" class="card-body text-center">
                       <i class="ki-duotone ki-picture fs-1 text-muted">
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
                       <p class="text-muted mt-2 mb-1">Immagine non disponibile</p>
-                      <p class="text-danger fs-7 mb-0">Verifica Azure Storage Emulator</p>
-                      <a :href="element.Url" target="_blank" class="btn btn-sm btn-link text-primary mt-2" style="font-size: 0.75rem;">
+                      <p class="text-danger small mb-0">Verifica Azure Storage Emulator</p>
+                      <a :href="element.Url" target="_blank" class="btn btn-sm btn-link text-primary mt-2">
                         Prova URL
                       </a>
                     </div>
-                    <div class="image-overlay">
-                      <div class="btn-group">
+                    <div class="card-body position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 opacity-0 hover-opacity-100 transition-opacity">
+                      <div class="btn-group w-100">
                         <button
                           v-if="!element.Highlighted"
                           type="button"
@@ -1035,11 +1076,14 @@
                         </button>
                       </div>
                     </div>
-                    <div v-if="element.Highlighted" class="highlighted-badge">
-                      <i class="ki-duotone ki-star fs-6 text-warning">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
+                    <div v-if="element.Highlighted" class="position-absolute top-0 end-0 m-2">
+                      <span class="badge bg-warning">
+                        <i class="ki-duotone ki-star fs-6">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </span>
+                    </div>
                     </div>
                   </div>
                 </template>
@@ -1048,8 +1092,8 @@
             <!--end::Image Gallery-->
 
             <!--begin::Empty State-->
-            <div v-else class="empty-state text-center py-5">
-              <div class="empty-icon mb-3">
+            <div v-else class="text-center py-5">
+              <div class="mb-3 opacity-50">
                 <i class="ki-duotone ki-picture fs-1 text-muted">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -1059,15 +1103,15 @@
               <p class="text-muted">Aggiungi le prime immagini per questo immobile</p>
             </div>
             <!--end::Empty State-->
+            </div>
+            <!--end::Image Management-->
+            </div>
+            <!--end::Images Tab-->
           </div>
-          <!--end::Image Management-->
-        </div>
-        <!--end::Images Tab-->
-        </div>
-        <!--end::Tab Content-->
-    </el-form>
-    <!--end::Form-->
-      </div>
+          <!--end::Tab Content-->
+        </el-form>
+        <!--end::Form-->
+      
     </div>
     <!--end::Tabs-->
   </div>
@@ -1075,10 +1119,7 @@
 </template>
 
 <script lang="ts">
-// import AddNewForm from "@/components/modals/forms/AddNewForm.vue";
-// import AddNewPreventive from "@/components/modals/forms/AddNewPreventive.vue";
-import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch, nextTick, computed } from "vue";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
@@ -1095,21 +1136,18 @@ import {
 } from "@/core/data/properties";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { getEvents, type Event as CalendarEvent } from "@/core/data/events";
 import draggable from 'vuedraggable';
-import Multiselect from '@vueform/multiselect'
 
 export default defineComponent({
   name: "update",
-  components: { draggable, Multiselect /*, AddNewForm, AddNewPreventive */ },
+  components: { draggable },
   setup() {
     const store = useAuthStore();
     const user = store.user;
     const route = useRoute();
     const router = useRouter();
     const id = parseInt(route.params.id.toString());
-    const formRef = ref<null | HTMLFormElement>(null);
-    const updateModalRef = ref<null | HTMLElement>(null);
+    const formRef = ref<any>(null); // Element Plus Form component reference
     const typesavailable = ref<string[]>([]);
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
     const cities = ref<Array<{Id: string, Name: string}>>([]);
@@ -1265,77 +1303,12 @@ export default defineComponent({
       Users: []
     });
 
-    const validatePrice = (_rule: any, value: number | string, callback: any) => {
-      if (isTrattativaRiservata.value) {
-        return callback();
-      }
-      const numericValue = Number(value);
-      if (value === null || value === undefined || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
-        callback(new Error("Il prezzo è obbligatorio"));
-      } else {
-        callback();
-      }
-    };
-
-    const validateCommercialSurface = (_rule: any, value: number | string, callback: any) => {
-      const numericValue = Number(value);
-      if (value === null || value === undefined || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
-        callback(new Error("La superficie commerciale è obbligatoria"));
-      } else {
-        callback();
-      }
-    };
-
-    const validateYearOfConstruction = (_rule: any, value: number | string, callback: any) => {
-      const numericValue = Number(value);
-      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
-        callback(new Error("L'anno di costruzione è obbligatorio"));
-      } else if (numericValue < 1000 || numericValue > 3000) {
-        callback(new Error("L'anno di costruzione deve essere compreso tra 1000 e 3000"));
-      } else {
-        callback();
-      }
-    };
-
-    const validateAgreedCommission = (_rule: any, value: number | string, callback: any) => {
-      const numericValue = Number(value);
-      const flatRateValue = Number(formData.value.FlatRateCommission);
-      
-      // Se il valore è vuoto o zero, è valido
-      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
-        return callback();
-      }
-      
-      // Se anche FlatRateCommission ha un valore, mostra errore
-      if (flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0) {
-        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
-      } else {
-        callback();
-      }
-    };
-
-    const validateFlatRateCommission = (_rule: any, value: number | string, callback: any) => {
-      const numericValue = Number(value);
-      const agreedValue = Number(formData.value.AgreedCommission);
-      
-      // Se il valore è vuoto o zero, è valido
-      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
-        return callback();
-      }
-      
-      // Se anche AgreedCommission ha un valore, mostra errore
-      if (agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0) {
-        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
-      } else {
-        callback();
-      }
-    };
-
+    // Regole di validazione
     const rules = ref({
       CustomerId: [
         {
           required: true,
-          message: "Il cliente è obbligatorio",
+          message: "Seleziona un cliente",
           trigger: "change",
         },
       ],
@@ -1348,103 +1321,155 @@ export default defineComponent({
       ],
       Title: [
         {
-          required: true,
-          message: "Il titolo è obbligatorio",
+          validator: (_rule: any, value: string, callback: any) => {
+            if (!value || typeof value !== 'string' || !value.trim()) {
+              return callback(new Error("Inserisci il titolo dell'immobile"));
+            }
+            callback();
+          },
           trigger: "change",
         },
       ],
       Category: [
         {
           required: true,
-          message: "E' obbligatorio",
+          message: "Seleziona una categoria",
           trigger: "change",
         },
       ],
       Typology: [
         {
-          required: true,
-          message: "E' obbligatorio",
+          validator: (_rule: any, value: string, callback: any) => {
+            // Valida solo se showTipologia è true
+            if (!showTipologia.value) {
+              return callback();
+            }
+            if (!value || typeof value !== 'string' || !value.trim()) {
+              return callback(new Error("Seleziona una tipologia"));
+            }
+            callback();
+          },
           trigger: "change",
         },
       ],
       Status: [
         {
           required: true,
-          message: "Lo stato vendita è obbligatorio",
+          message: "Seleziona lo stato (Vendita o Affitto)",
           trigger: "change",
         },
       ],
       AddressLine: [
         {
-          required: true,
-          message: "E' obbligatorio",
+          validator: (_rule: any, value: string, callback: any) => {
+            if (!value || typeof value !== 'string' || !value.trim()) {
+              return callback(new Error("Inserisci l'indirizzo"));
+            }
+            callback();
+          },
           trigger: "change",
         },
       ],
       City: [
         {
           required: true,
-          message: "E' obbligatorio",
+          message: "Seleziona il comune",
           trigger: "change",
         },
       ],
       State: [
         {
           required: true,
-          message: "E' obbligatorio",
+          message: "Seleziona la provincia",
           trigger: "change",
         },
       ],
       PostCode: [
         {
-          required: true,
-          message: "Il codice fiscale è obbligatorio",
+          validator: (_rule: any, value: string, callback: any) => {
+            if (!value || typeof value !== 'string' || !value.trim()) {
+              return callback(new Error("Inserisci il CAP"));
+            }
+            callback();
+          },
           trigger: "change",
         },
       ],
       CommercialSurfaceate: [
-        { validator: validateCommercialSurface, trigger: "change" },
-      ],
-      Floor: [
         {
-          required: false,
-          message: "E' obbligatorio",
+          validator: (_rule: any, value: number | string, callback: any) => {
+            const numericValue = Number(value);
+            if (value === null || value === undefined || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+              return callback(new Error("Inserisci la superficie commerciale (m²)"));
+            }
+            callback();
+          },
           trigger: "change",
         },
       ],
       Price: [
-        { validator: validatePrice, trigger: "change" },
+        {
+          validator: (_rule: any, value: number | string, callback: any) => {
+            // Se la trattativa è riservata, non validare il prezzo
+            if (isTrattativaRiservata.value) {
+              return callback();
+            }
+            const numericValue = Number(value);
+            if (value === null || value === undefined || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+              return callback(new Error("Inserisci il prezzo"));
+            }
+            callback();
+          },
+          trigger: "change",
+        },
       ],
       EnergyClass: [
         {
           required: true,
-          message: "La classe energetica è obbligatoria",
+          message: "Seleziona la classe energetica",
           trigger: "change",
         },
       ],
       StateOfTheProperty: [
         {
           required: true,
-          message: "Lo stato dell'immobile è obbligatorio",
+          message: "Seleziona lo stato dell'immobile",
           trigger: "change",
         },
       ],
       YearOfConstruction: [
-        { validator: validateYearOfConstruction, trigger: "change" },
-      ],
-      Description: [
         {
-          required: true,
-          message: "La descrizione è obbligatoria",
+          validator: (_rule: any, value: number | string, callback: any) => {
+            const numericValue = Number(value);
+            if (value === null || value === undefined || value === "" || Number.isNaN(numericValue)) {
+              return callback(new Error("Inserisci l'anno di costruzione"));
+            }
+            if (numericValue < 1000 || numericValue > 3000) {
+              return callback(new Error("Inserisci l'anno di costruzione (minimo: 1000, massimo: 3000)"));
+            }
+            callback();
+          },
           trigger: "change",
         },
       ],
-      AgreedCommission: [
-        { validator: validateAgreedCommission, trigger: "change" },
+      Description: [
+        {
+          validator: (_rule: any, value: string, callback: any) => {
+            if (!value || typeof value !== 'string' || !value.trim()) {
+              return callback(new Error("Inserisci la descrizione dell'immobile"));
+            }
+            callback();
+          },
+          trigger: "change",
+        },
       ],
-      FlatRateCommission: [
-        { validator: validateFlatRateCommission, trigger: "change" },
-      ],
+      Availability: [
+        {
+          required: true,
+          message: "Seleziona la disponibilità",
+          trigger: "change",
+        },
+      ]
     });
 
 
@@ -1677,10 +1702,6 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const cancelEdit = () => {
-      router.back();
-    };
-
     async function deleteItem() {
       const result = await Swal.fire({
         title: "Elimina immobile",
@@ -1733,7 +1754,7 @@ export default defineComponent({
       }
     }
 
-    const submit = () => {
+    const submit = async () => {
       if (!formRef.value) {
         return;
       }
@@ -1753,122 +1774,58 @@ export default defineComponent({
         return;
       }
 
-      // Verifica che non siano compilate entrambe le provvigioni
-      const agreedValue = Number(formData.value.AgreedCommission);
-      const flatRateValue = Number(formData.value.FlatRateCommission);
-      const hasAgreed = agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0;
-      const hasFlatRate = flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0;
-      
-      if (hasAgreed && hasFlatRate) {
-        Swal.fire({
-          text: "Si puo inserire solo una provvigione: concordata o forfettaria.",
-          icon: "error",
-          buttonsStyling: false,
-          confirmButtonText: "Ok",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn btn-primary",
-          },
-        });
-        return;
-      }
-
-      const missingFields: string[] = [];
-      if (!formData.value.CustomerId) missingFields.push("Cliente");
-      if (!formData.value.AgentId) missingFields.push("Agente");
-      if (!formData.value.Title || !formData.value.Title.trim()) missingFields.push("Titolo");
-      if (!formData.value.Category) missingFields.push("Categoria");
-      if (showTipologia.value && (!formData.value.Typology || !formData.value.Typology.trim())) missingFields.push("Tipologia");
-      if (!formData.value.Status) missingFields.push("Stato vendita");
-      if (!formData.value.AddressLine || !formData.value.AddressLine.trim()) missingFields.push("Indirizzo");
-      if (!formData.value.State) missingFields.push("Provincia");
-      if (!formData.value.City) missingFields.push("Comune");
-      if (!formData.value.PostCode) missingFields.push("Codice fiscale");
-      if (!formData.value.CommercialSurfaceate || formData.value.CommercialSurfaceate <= 0) missingFields.push("Superficie");
-      if (!formData.value.EnergyClass) missingFields.push("Classe energetica");
-      if (!formData.value.StateOfTheProperty) missingFields.push("Stato dell'immobile");
-      if (!formData.value.YearOfConstruction || formData.value.YearOfConstruction <= 0) missingFields.push("Anno costruzione");
-      const priceValue = formData.value.Price;
-      const numericPrice = Number(priceValue);
-      if (
-        !isTrattativaRiservata.value &&
-        (priceValue === null ||
-          priceValue === undefined ||
-          Number.isNaN(numericPrice) ||
-          numericPrice <= 0)
-      ) {
-        missingFields.push("Prezzo");
-      }
-      if (!formData.value.Description || !formData.value.Description.trim()) missingFields.push("Descrizione");
-
-      if (missingFields.length > 0) {
-        Swal.fire({
-          title: "Dati mancanti",
-          icon: "error",
-          html: `<div class="text-start"><p>Completa i seguenti campi obbligatori:</p><ul>${missingFields
-            .map((field) => `<li>${field}</li>`)
-            .join("")}</ul></div>`,
-          buttonsStyling: false,
-          confirmButtonText: "Ok",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn btn-primary",
-          },
-        });
-        return;
-      }
-
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
+          // Se la validazione è passata, procedi con il salvataggio
           loading.value = true;
           
-          // Preserva il UserId originale - non sovrascriverlo
-          formData.value.UserId = originalUserId.value;
-          
-          // Se la checkbox "Trattativa riservata" è selezionata, imposta il prezzo a -1
-          if (isTrattativaRiservata.value) {
-            formData.value.Price = -1;
-          }
-          
-          await updatePhotosOrder(formData.value.Photos)
-          await updateRealEstateProperty(formData.value)
-            .then(() => {
-              loading.value = false;
+          try {
+            // Preserva il UserId originale - non sovrascriverlo
+            formData.value.UserId = originalUserId.value;
+            
+            // Se la checkbox "Trattativa riservata" è selezionata, imposta il prezzo a -1
+            if (isTrattativaRiservata.value) {
+              formData.value.Price = -1;
+            }
+            
+            await updatePhotosOrder(formData.value.Photos);
+            await updateRealEstateProperty(formData.value);
+            
+            loading.value = false;
 
-              Swal.fire({
-                text: "Il modulo è stato inviato con successo!",
-                icon: "success",
-                buttonsStyling: false,
-                confirmButtonText: "Continua!",
-                heightAuto: false,
-                customClass: {
-                  confirmButton: "btn btn-primary",
-                },
-              }).then(() => {
-                // router.push({ name: 'properties' })
-              });
-            })
-            .catch(({ response }) => {
-              console.log(response);
-              loading.value = false;
-              Swal.fire({
-                text: "Attenzione, si è verificato un errore.",
-                icon: "error",
-                buttonsStyling: false,
-                confirmButtonText: "Continua!",
-                heightAuto: false,
-                customClass: {
-                  confirmButton: "btn btn-primary",
-                },
-              });
+            Swal.fire({
+              text: "Il modulo è stato inviato con successo!",
+              icon: "success",
+              buttonsStyling: false,
+              confirmButtonText: "Continua!",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            }).then(() => {
+              // router.push({ name: 'properties' })
             });
-          loading.value = false;
+          } catch ({ response }) {
+            console.log(response);
+            loading.value = false;
+            Swal.fire({
+              text: "Attenzione, si è verificato un errore.",
+              icon: "error",
+              buttonsStyling: false,
+              confirmButtonText: "Continua!",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+          }
         } else {
+          loading.value = false;
           Swal.fire({
             text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
             icon: "error",
             buttonsStyling: false,
-            confirmButtonText: "Ok",
+            confirmButtonText: "Ok, capito!",
             heightAuto: false,
             customClass: {
               confirmButton: "btn btn-primary",
@@ -1879,12 +1836,7 @@ export default defineComponent({
       });
     };
 
-    async function checkMove(log) {
-      // await updatePhotosOrder(formData.value.Photos)
-      // console.log(formData.value.Photos)
-    }
-
-    // Nuove funzioni per la gestione delle immagini
+    // Funzioni per la gestione delle immagini
     const fileInput = ref<HTMLInputElement | null>(null);
 
     const triggerFileUpload = () => {
@@ -2035,46 +1987,6 @@ export default defineComponent({
       return false;
     });
 
-    // Verifica se l'utente può eliminare l'immobile secondo le regole di accesso
-    const canDelete = computed(() => {
-      if (!formData.value || !formData.value.User) {
-        return false;
-      }
-
-      const propertyOwner = formData.value.User;
-      const currentUser = user;
-
-      // Se l'utente è il proprietario, può sempre eliminare
-      if (currentUser.Id === formData.value.UserId) {
-        return true;
-      }
-
-      // Admin: può eliminare tutti gli immobili
-      if (currentUser.Role === 'Admin') {
-        return true;
-      }
-
-      // Agency: può eliminare proprie + dei propri Agent
-      if (currentUser.Role === 'Agency') {
-        // L'immobile è dell'Agency stessa
-        if (formData.value.UserId === currentUser.Id) {
-          return true;
-        }
-        // L'immobile è di un suo Agent (verifica tramite AdminId)
-        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
-          return true;
-        }
-        return false;
-      }
-
-      // Agent: può eliminare solo proprie
-      if (currentUser.Role === 'Agent') {
-        return formData.value.UserId === currentUser.Id;
-      }
-
-      return false;
-    });
-
     // Computed per ottenere il nome completo dell'agente
     const agentName = computed(() => {
       if (!formData.value.AgentId) {
@@ -2135,8 +2047,6 @@ export default defineComponent({
       submit,
       formRef,
       loading,
-      updateModalRef,
-      getAssetPath,
       onFileChanged,
       typesavailable,
       showTipologia,
@@ -2145,7 +2055,6 @@ export default defineComponent({
       deleteItem,
       inserModel,
       user,
-      checkMove,
       provinces,
       cities,
       isTrattativaRiservata,
@@ -2158,28 +2067,10 @@ export default defineComponent({
       imageErrors,
       handleImageError,
       handleImageLoad,
-      cancelEdit,
       canModify,
-      canDelete,
       agentName,
       effectiveCommission,
     };
   },
 });
 </script>
-
-<style>
-@import '@/assets/css/property-tabs.css';
-
-.commission-effective-input :deep(.el-input__inner) {
-  background-color: var(--bs-gray-100);
-  font-weight: 600;
-  color: var(--bs-primary);
-  cursor: default;
-}
-
-[data-bs-theme="dark"] .commission-effective-input :deep(.el-input__inner) {
-  background-color: var(--bs-gray-800);
-  color: var(--bs-primary);
-}
-</style>
