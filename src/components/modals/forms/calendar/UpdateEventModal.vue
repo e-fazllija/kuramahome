@@ -1,6 +1,6 @@
 <template>
   <div class="modal fade show" id="kt_modal_update_event" aria-modal="true" role="dialog" ref="updateTargetModalRef">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
       <div class="modal-content card-palette modal-shell">
         <el-form class="form fv-plugins-bootstrap5 fv-plugins-framework" id="kt_modal_update_event_form"
           @submit.prevent="submit()" :model="targetData" :rules="rules" ref="formRef">
@@ -165,16 +165,19 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <Multiselect
+                <select 
+                  class="form-select form-select-lg" 
                   v-model="targetData.RealEstatePropertyId"
-                  :options="inserModel.RealEstateProperties"
-                  label="label"
-                  valueProp="Id"
-                  :searchable="true"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  placeholder="Seleziona l'immobile"
-                />
+                >
+                  <option :value="null">Seleziona l'immobile</option>
+                  <option
+                    v-for="property in inserModel.RealEstateProperties"
+                    :key="property.Id"
+                    :value="property.Id"
+                  >
+                    {{ property.label }}
+                  </option>
+                </select>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
@@ -191,16 +194,19 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <Multiselect
+                <select 
+                  class="form-select form-select-lg" 
                   v-model="targetData.RequestId"
-                  :options="inserModel.Requests"
-                  label="label"
-                  valueProp="Id"
-                  :searchable="true"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  placeholder="Seleziona la richiesta"
-                />
+                >
+                  <option :value="null">Seleziona la richiesta</option>
+                  <option
+                    v-for="request in inserModel.Requests"
+                    :key="request.Id"
+                    :value="request.Id"
+                  >
+                    {{ request.label }}
+                  </option>
+                </select>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
@@ -219,16 +225,19 @@
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
-                <Multiselect
+                <select 
+                  class="form-select form-select-lg" 
                   v-model="targetData.CustomerId"
-                  :options="inserModel.Customers"
-                  label="label"
-                  valueProp="Id"
-                  :searchable="true"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  placeholder="Seleziona il cliente"
-                />
+                >
+                  <option :value="null">Seleziona il cliente</option>
+                  <option
+                    v-for="customer in inserModel.Customers"
+                    :key="customer.Id"
+                    :value="customer.Id"
+                  >
+                    {{ customer.label }}
+                  </option>
+                </select>
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
@@ -275,8 +284,8 @@
               <!--end::Input group-->
 
               <!--begin::Input group-->
-              <div class="row g-7 mb-7">
-                <div class="col-md-6">
+              <div class="row g-4 mb-7">
+                <div class="col-12 col-md-6">
                   <div class="fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
@@ -297,7 +306,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                   <div class="fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
@@ -404,12 +413,11 @@ import { hideModal } from "@/core/helpers/dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import events, { TODAY, getToInsert, updateEvent, InsertModel, getEvent, Event, deleteEvent } from "@/core/data/events";
 import { useAuthStore } from "@/stores/auth";
-import Multiselect from '@vueform/multiselect'
 import moment from "moment";
 
 export default defineComponent({
   name: "update-event-modal",
-  components: { Multiselect },
+  components: {},
   props: { Id: { type: Number, Required: true } },
   setup(props, { emit }) {
     const formRef = ref<null | HTMLFormElement>(null);
@@ -671,7 +679,5 @@ export default defineComponent({
   },
 });
 </script>
-
-<style src="@vueform/multiselect/themes/default.css"></style>
 
 <!-- Tutti gli stili sono stati spostati in file CSS dedicati -->

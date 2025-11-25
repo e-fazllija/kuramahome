@@ -40,7 +40,7 @@
          <!--begin::Input group - Proprietario (solo Admin)-->
          <div v-if="user?.Role === 'Admin'" class="row mb-6">
            <!--begin::Label-->
-           <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+           <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
              <i class="ki-duotone ki-user-tick fs-5 me-2 text-primary">
                <span class="path1"></span>
                <span class="path2"></span>
@@ -50,7 +50,7 @@
            </label>
            <!--end::Label-->
            <!--begin::Col-->
-           <div class="col-lg-8 fv-row">
+           <div class="col-12 col-md-8 fv-row">
              <select 
                v-model="formData.UserId"
                class="form-select form-select-lg"
@@ -77,7 +77,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-user fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -88,7 +88,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
@@ -98,7 +98,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-user fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -109,7 +109,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
@@ -119,7 +119,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-sms fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -128,7 +128,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
@@ -138,7 +138,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-phone fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -147,7 +147,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
@@ -157,10 +157,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Aquirente</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Aquirente</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.Buyer" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
@@ -172,10 +172,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Venditore</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Venditore</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.Seller" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
@@ -187,10 +187,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Costruttore</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Costruttore</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.Builder" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
@@ -202,10 +202,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Altro</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Altro</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.Other" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
@@ -217,10 +217,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Cliente gold</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Cliente gold</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.GoldCustomer" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
@@ -232,10 +232,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Acquisizione svolta</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Acquisizione svolta</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.AcquisitionDone" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
@@ -247,10 +247,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Incarico in corso</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Incarico in corso</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.OngoingAssignment" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
             </div>
@@ -262,7 +262,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -271,7 +271,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
@@ -281,7 +281,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-map fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -290,7 +290,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <select 
               v-model="formData.State"
               class="form-select form-select-lg"
@@ -310,7 +310,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -319,7 +319,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <select class="form-select form-select-lg" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
               <option value="">🏙️ Seleziona comune</option>
               <option v-for="(city, index) in cities" :key="index" :value="city.Name">
@@ -334,7 +334,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -346,7 +346,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <textarea class="form-control form-control-lg" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer && user.Role === 'Agent'"></textarea>
           </div>
           <!--end::Col-->
@@ -356,7 +356,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-gray-800">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
             <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -368,7 +368,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div v-for="(note, index) in formData.CustomerNotes" :key="index" class="modern-note mb-3">
               <div class="note-content" v-html="note.Text"></div>
             </div>

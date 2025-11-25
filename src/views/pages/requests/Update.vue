@@ -35,7 +35,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -46,18 +46,22 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <!--begin::Input-->
-            <Multiselect
-                v-model="formData.CustomerId"
-                :options="inserModel.Customers"
-                label="label"
-                valueProp="Id"
-                :searchable="true"
-                :close-on-select="true"
-                :clear-on-select="false"
-                placeholder="Seleziona il cliente"
-              />
+            <select 
+              class="form-select form-select-lg" 
+              v-model="formData.CustomerId" 
+              required
+            >
+              <option :value="null">Seleziona il cliente</option>
+              <option
+                v-for="customer in inserModel.Customers"
+                :key="customer.Id"
+                :value="customer.Id"
+              >
+                {{ customer.label }}
+              </option>
+            </select>
             <!--end::Input-->
           </div>
           <!--end::Col-->
@@ -67,7 +71,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-document fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -76,7 +80,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <select class="form-select form-select-lg" v-model="formData.Contract" required>
               <option value="Vendita">💰 Vendita</option>
               <option value="Affitto">🏠 Affitto</option>
@@ -89,7 +93,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -98,7 +102,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
              <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" required style="height: auto;">
               <option value="Appartamenti">🏢 Appartamenti</option>
               <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
@@ -119,7 +123,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-map fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -128,7 +132,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <select class="form-select form-select-lg" v-model="formData.Province" required>
               <option value="">🗺️ Seleziona provincia</option>
               <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
@@ -141,7 +145,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -150,7 +154,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
               <select class="form-select form-select-lg" multiple v-model="selectedCities" required>
                 <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }}</option>
               </select>
@@ -162,7 +166,7 @@
          <!--begin::Input group-->
          <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label required fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-position fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -171,7 +175,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
               <input class="form-control form-control-lg" v-model="formData.Location" type="text" placeholder="Inserisci la località (opzionale)" />
           </div>
           <!--end::Col-->
@@ -181,7 +185,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -190,7 +194,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
           </div>
           <!--end::Col-->
@@ -200,7 +204,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -209,7 +213,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
           </div>
           <!--end::Col-->
@@ -219,10 +223,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Archiviata</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Archiviata</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.Archived" />
             </div>
@@ -234,10 +238,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Evasa</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Evasa</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.Closed" />
             </div>
@@ -249,10 +253,10 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-semobold fs-6">Consulenza mutuo richiesta</label>
+          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Consulenza mutuo richiesta</label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div class="form-check form-switch form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" v-model="formData.MortgageAdviceRequired" />
             </div>
@@ -264,7 +268,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -273,7 +277,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model="formData.RoomsNumber" type="text" placeholder="Es: 3+1, 4+2, etc." />
           </div>
           <!--end::Col-->
@@ -283,7 +287,7 @@
          <!--begin::Input group-->
          <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -292,7 +296,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
           </div>
           <!--end::Col-->
@@ -302,7 +306,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -311,7 +315,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
           </div>
           <!--end::Col-->
@@ -321,7 +325,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -330,7 +334,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
           </div>
           <!--end::Col-->
@@ -340,7 +344,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -349,7 +353,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
           </div>
           <!--end::Col-->
@@ -359,7 +363,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -368,7 +372,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <select class="form-select form-select-lg" v-model="formData.PropertyState">
               <option value="">🏠 Seleziona Stato Immobile</option>
               <option value="0">🔒 Affittato</option>
@@ -386,7 +390,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-fire fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -395,7 +399,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <select class="form-select form-select-lg" v-model="formData.Heating">
               <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
               <option value="Autonomo">🏠 Autonomo</option>
@@ -410,24 +414,17 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-car fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
-            Posto Auto
+            Posti Auto
           </label>
           <!--end::Label-->
           <!--begin::Input-->
-          <div class="col-lg-8 fv-row">
-            <select class="form-select form-select-lg" v-model="formData.ParkingSpaces">
-              <option value="">🚗 Seleziona Posto Auto</option>
-              <option value="Assegnato">🎯 Assegnato</option>
-              <option value="Box Auto">🏠 Box Auto</option>
-              <option value="Condominiale">🏢 Condominiale</option>
-              <option value="Posto auto coperto">🏠 Posto auto coperto</option>
-              <option value="Posto auto scoperto">☀️ Posto auto scoperto</option>
-            </select>
+          <div class="col-12 col-md-8 fv-row">
+            <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" placeholder="Inserisci il numero di posti auto" min="0" />
           </div>
           <!--end::Input-->
         </div>
@@ -436,7 +433,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -448,7 +445,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <textarea class="form-control form-control-lg" v-model="formData.Notes" rows="3" placeholder="Inserisci eventuali note..."></textarea>
           </div>
           <!--end::Col-->
@@ -458,7 +455,7 @@
         <!--begin::Input group-->
         <div class="row mb-6">
           <!--begin::Label-->
-          <label class="col-lg-4 col-form-label fw-bold fs-6 text-palette-primary">
+          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
             <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -470,7 +467,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Col-->
-          <div class="col-lg-8 fv-row">
+          <div class="col-12 col-md-8 fv-row">
             <div v-for="(note, index) in formData.RequestNotes" :key="index" class="modern-note mb-3">
               <div class="note-content" v-html="note.Text"></div>
             </div>
@@ -542,10 +539,6 @@
         <!--begin::Card toolbar-->
         <div class="card-toolbar">
           <div class="search-wrapper-simple">
-            <i class="ki-duotone ki-magnifier fs-3 search-icon-simple">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
             <input 
               type="text" 
               v-model="search" 
@@ -625,11 +618,9 @@ import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import arraySort from "array-sort";
 import type { RealEstateProperty } from "@/core/data/properties";
 import { MenuComponent } from "@/assets/ts/components";
-import Multiselect from '@vueform/multiselect'
-
 export default defineComponent({
   name: "update-request",
-  components: { Datatable, Multiselect, KTSpinner },
+  components: { Datatable, KTSpinner },
   setup() {
     const store = useAuthStore();
     const user = store.user;
@@ -748,13 +739,8 @@ export default defineComponent({
       formData.value = await getRequest(id);
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
       selectedCities.value = formData.value.City.split(",");
-      // Location è già una stringa, non serve split
       inserModel.value = await getToInsert();
       initItems.value.splice(0, formData.value.RealEstateProperties.length, ...formData.value.RealEstateProperties);
-      // if (inserModel.value.Customers.length > 0) {
-      //   formData.value.CustomerId = inserModel.value.Customers[0].Id;
-      // }
-      // Carica le province
       await loadProvinces();
       
       // Se c'è già una provincia selezionata, carica le città
@@ -861,29 +847,18 @@ export default defineComponent({
       }
     }
 
-    const toNumber = (value: unknown): number => {
-      if (value === null || value === undefined) {
-        return 0;
-      }
-      if (typeof value === "number") {
-        return Number.isFinite(value) ? value : 0;
-      }
-      const parsed = Number((value as string).toString().replace(",", "."));
-      return Number.isNaN(parsed) ? 0 : parsed;
-    };
-
     const submit = async () => {
       const payload: Request = {
         ...formData.value,
         City: selectedCities.value.join(","),
         PropertyType: selectedPropertyTypes.value.join(","),
-        PriceFrom: toNumber(formData.value.PriceFrom),
-        PriceTo: toNumber(formData.value.PriceTo),
-        GardenFrom: toNumber(formData.value.GardenFrom),
-        GardenTo: toNumber(formData.value.GardenTo),
-        MQFrom: toNumber(formData.value.MQFrom),
-        MQTo: toNumber(formData.value.MQTo),
-        ParkingSpaces: toNumber(formData.value.ParkingSpaces),
+        PriceFrom: formData.value.PriceFrom ?? 0,
+        PriceTo: formData.value.PriceTo ?? 0,
+        GardenFrom: formData.value.GardenFrom ?? 0,
+        GardenTo: formData.value.GardenTo ?? 0,
+        MQFrom: formData.value.MQFrom ?? 0,
+        MQTo: formData.value.MQTo ?? 0,
+        ParkingSpaces: formData.value.ParkingSpaces ?? 0,
       };
 
       // Mantieni i valori normalizzati anche nel modello locale

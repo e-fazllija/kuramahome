@@ -43,58 +43,60 @@
 
         <!--begin::Modal body-->
         <div class="modal-body py-10 px-lg-17">
-          <!--begin::Input group-->
-          <div class="fv-row mb-7">
-            <!--begin::Label-->
-            <label class="required fs-6 fw-bold mb-3 text-gray-800">
-              <i class="ki-duotone ki-file fs-5 me-2 text-primary">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              Seleziona File
-            </label>
-            <!--end::Label-->
-
-            <!--begin::Input-->
-            <input 
-              type="file" 
-              ref="fileInputRef"
-              @change="handleFileSelect"
-              accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.xls,.xlsx"
-              class="form-control form-control-lg"
-            />
-            <!--end::Input-->
-          </div>
-          <!--end::Input group-->
-
-          <!--begin::Input group-->
-          <div class="fv-row mb-7">
-            <!--begin::Label-->
-            <label class="fs-6 fw-bold mb-3 text-gray-800">
-              <i class="ki-duotone ki-lock fs-5 me-2 text-primary">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-              </i>
-              Visibilità
-            </label>
-            <!--end::Label-->
-
-            <!--begin::Input-->
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input 
-                class="form-check-input" 
-                type="checkbox" 
-                v-model="isPrivateFile"
-                id="privateFileSwitch"
-              />
-              <label class="form-check-label" for="privateFileSwitch">
-                File Privato (visibile solo a te)
+          <div class="row g-4">
+            <!--begin::Input group-->
+            <div class="col-12 fv-row mb-7">
+              <!--begin::Label-->
+              <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                <i class="ki-duotone ki-file fs-5 me-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Seleziona File
               </label>
+              <!--end::Label-->
+
+              <!--begin::Input-->
+              <input 
+                type="file" 
+                ref="fileInputRef"
+                @change="handleFileSelect"
+                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.xls,.xlsx"
+                class="form-control form-control-lg"
+              />
+              <!--end::Input-->
             </div>
-            <!--end::Input-->
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="col-12 fv-row mb-7">
+              <!--begin::Label-->
+              <label class="fs-6 fw-bold mb-3 text-gray-800">
+                <i class="ki-duotone ki-lock fs-5 me-2 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
+                Visibilità
+              </label>
+              <!--end::Label-->
+
+              <!--begin::Input-->
+              <div class="form-check form-switch form-check-custom form-check-solid">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  v-model="isPrivateFile"
+                  id="privateFileSwitch"
+                />
+                <label class="form-check-label" for="privateFileSwitch">
+                  File Privato (visibile solo a te)
+                </label>
+              </div>
+              <!--end::Input-->
+            </div>
+            <!--end::Input group-->
           </div>
-          <!--end::Input group-->
         </div>
         <!--end::Modal body-->
 

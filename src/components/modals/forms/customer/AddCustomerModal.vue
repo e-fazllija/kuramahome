@@ -94,55 +94,55 @@
               <!--end::Input group-->
 
               <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
-                  <i class="ki-duotone ki-user fs-5 me-2 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                  </i>
-                  Nome
-                </label>
-                <!--end::Label-->
+              <div class="row g-4 fv-row mb-7">
+                <div class="col-12 col-md-6">
+                  <!--begin::Label-->
+                  <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                    <i class="ki-duotone ki-user fs-5 me-2 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                    </i>
+                    Nome
+                  </label>
+                  <!--end::Label-->
 
-                <!--begin::Input-->
-                <el-form-item prop="FirstName">
-                  <el-input
-                    v-model="formData.FirstName"
-                    type="text"
-                    placeholder="Inserisci il nome"
-                    size="large"
-                  />
-                </el-form-item>
-                <!--end::Input-->
-              </div>
-              <!--end::Input group-->
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="required fs-6 fw-bold mb-3 text-gray-800">
-                  <i class="ki-duotone ki-user fs-5 me-2 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                  </i>
-                  Cognome
-                </label>
-                <!--end::Label-->
+                  <!--begin::Input-->
+                  <el-form-item prop="FirstName">
+                    <el-input
+                      v-model="formData.FirstName"
+                      type="text"
+                      placeholder="Inserisci il nome"
+                      size="large"
+                    />
+                  </el-form-item>
+                  <!--end::Input-->
+                </div>
+                <div class="col-12 col-md-6">
+                  <!--begin::Label-->
+                  <label class="required fs-6 fw-bold mb-3 text-gray-800">
+                    <i class="ki-duotone ki-user fs-5 me-2 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                    </i>
+                    Cognome
+                  </label>
+                  <!--end::Label-->
 
-                <!--begin::Input-->
-                <el-form-item prop="LastName">
-                  <el-input
-                    v-model="formData.LastName"
-                    type="text"
-                    placeholder="Inserisci il cognome"
-                    size="large"
-                  />
-                </el-form-item>
-                <!--end::Input-->
+                  <!--begin::Input-->
+                  <el-form-item prop="LastName">
+                    <el-input
+                      v-model="formData.LastName"
+                      type="text"
+                      placeholder="Inserisci il cognome"
+                      size="large"
+                    />
+                  </el-form-item>
+                  <!--end::Input-->
+                </div>
               </div>
               <!--end::Input group-->
               <!--begin::Input group-->
@@ -377,52 +377,52 @@
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-                <div class="d-flex flex-column mb-7 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-map fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Provincia
-                  </label>
-                  <!--end::Label-->
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-map fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Provincia
+                    </label>
+                    <!--end::Label-->
 
-                  <!--begin::Input-->
-                  <select 
-                    v-model="formData.State"
-                    class="form-select form-select-lg"
-                    name="province"
-                  >
-                    <option value="">🗺️ Seleziona provincia</option>
-                    <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
-                      {{ province.Name }}
-                    </option>
-                  </select>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                    <!--begin::Input-->
+                    <select 
+                      v-model="formData.State"
+                      class="form-select form-select-lg"
+                      name="province"
+                    >
+                      <option value="">🗺️ Seleziona provincia</option>
+                      <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                        {{ province.Name }}
+                      </option>
+                    </select>
+                    <!--end::Input-->
+                  </div>
 
-                <!--begin::Input group-->
-                <div class="d-flex flex-column mb-7 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Comune
-                  </label>
-                  <!--end::Label-->
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Comune
+                    </label>
+                    <!--end::Label-->
 
-                  <!--begin::Input-->
-                  <select class="form-select form-select-lg" v-model="formData.City">
-                    <option value="">🏙️ Seleziona comune</option>
-                    <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                      {{ city.Name }}
-                    </option>
-                  </select>
-                  <!--end::Input-->
+                    <!--begin::Input-->
+                    <select class="form-select form-select-lg" v-model="formData.City">
+                      <option value="">🏙️ Seleziona comune</option>
+                      <option v-for="(city, index) in cities" :key="index" :value="city.Name">
+                        {{ city.Name }}
+                      </option>
+                    </select>
+                    <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
               </div>

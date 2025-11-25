@@ -144,7 +144,8 @@
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
+                <div class="row g-4 mb-5">
+                  <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
                         <i class="ki-duotone ki-map fs-5 me-2 text-primary">
@@ -152,7 +153,7 @@
                           <span class="path2"></span>
                         </i>
                         <span class="required">Provincia</span>
-                        </label>
+                    </label>
                     <!--end::Label-->
                     <!--begin::Input-->
                     <select class="form-select form-select-lg" v-model="formData.Province">
@@ -160,11 +161,9 @@
                       <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
                     </select>
                     <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  </div>
 
-                <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
+                  <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
                         <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
@@ -172,13 +171,14 @@
                           <span class="path2"></span>
                         </i>
                         <span class="required">Comune</span>
-                        </label>
+                    </label>
                     <!--end::Label-->
                     <!--begin::Input-->
                     <select class="form-select form-select-lg" multiple aria-label="Multiple select example" v-model="formData.City" required>
                         <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }} </option>
                     </select>
                     <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
 
@@ -200,96 +200,94 @@
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Canone - Prezzo: Da</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="PriceFrom">
-                    <el-input v-model="formData.PriceFrom" 
-                    type= "number" 
-                    size="large"
-                    placeholder="Inserisci il prezzo minimo" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Canone - Prezzo: A</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="PriceTo">
-                    <el-input v-model="formData.PriceTo" 
-                    type= "number" 
-                    size="large"
-                    placeholder="Inserisci il prezzo massimo" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-semobold mb-2">
-                    <span>Archiviata</span>
-                  </label>
-                  <!--end::Label-->
-  
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Canone - Prezzo: Da</span>
+                    </label>
+                    <!--end::Label-->
+      
                     <!--begin::Input-->
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="" v-model="formData.Archived" />
-                    </div>
+                    <el-form-item prop="PriceFrom">
+                      <el-input v-model="formData.PriceFrom" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Inserisci il prezzo minimo" />
+                    </el-form-item>
                     <!--end::Input-->
+                  </div>
+
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Canone - Prezzo: A</span>
+                    </label>
+                    <!--end::Label-->
+      
+                    <!--begin::Input-->
+                    <el-form-item prop="PriceTo">
+                      <el-input v-model="formData.PriceTo" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Inserisci il prezzo massimo" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-semobold mb-2">
-                    <span>Evasa</span>
-                  </label>
-                  <!--end::Label-->
-  
-                    <!--begin::Input-->
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="" v-model="formData.Closed" />
-                    </div>
-                    <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-semobold mb-2">
+                      <span>Archiviata</span>
+                    </label>
+                    <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                          <input class="form-check-input" type="checkbox" value="" v-model="formData.Archived" />
+                      </div>
+                      <!--end::Input-->
+                  </div>
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-semobold mb-2">
-                    <span>Consulenza mutuo richiesta</span>
-                  </label>
-                  <!--end::Label-->
-  
-                    <!--begin::Input-->
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="" v-model="formData.MortgageAdviceRequired" />
-                    </div>
-                    <!--end::Input-->
+                  <div class="col-12 col-md-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-semobold mb-2">
+                      <span>Evasa</span>
+                    </label>
+                    <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                          <input class="form-check-input" type="checkbox" value="" v-model="formData.Closed" />
+                      </div>
+                      <!--end::Input-->
+                  </div>
+
+                  <div class="col-12 col-md-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-semobold mb-2">
+                      <span>Consulenza mutuo richiesta</span>
+                    </label>
+                    <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                          <input class="form-check-input" type="checkbox" value="" v-model="formData.MortgageAdviceRequired" />
+                      </div>
+                      <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
 
@@ -317,96 +315,96 @@
                 <!--end::Input group-->
 
                   <!--begin::Input group-->
-                  <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Giardino Da (mq)</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="GardenFrom">
-                    <el-input v-model="formData.GardenFrom" 
-                    type= "number" 
-                    size="large"
-                    placeholder="Metri quadrati minimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  <div class="row g-4 mb-7">
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>Giardino Da (mq)</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="GardenFrom">
+                        <el-input v-model="formData.GardenFrom" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati minimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Giardino A (mq)</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="GardenTo">
-                    <el-input v-model="formData.GardenTo" 
-                    type= "number" 
-                    size="large"
-                    placeholder="Metri quadrati massimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>Giardino A (mq)</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="GardenTo">
+                        <el-input v-model="formData.GardenTo" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati massimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
+                  </div>
+                  <!--end::Input group-->
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>MQ Da</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="MQFrom">
-                    <el-input v-model="formData.MQFrom" 
-                    type= "number" 
-                    size="large"
-                    placeholder="Metri quadrati minimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  <!--begin::Input group-->
+                  <div class="row g-4 mb-7">
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>MQ Da</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="MQFrom">
+                        <el-input v-model="formData.MQFrom" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati minimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>MQ A</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="MQTo">
-                    <el-input v-model="formData.MQTo" 
-                    type= "number" 
-                    size="large"
-                    placeholder="Metri quadrati massimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>MQ A</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="MQTo">
+                        <el-input v-model="formData.MQTo" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati massimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
+                  </div>
+                  <!--end::Input group-->
 
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">

@@ -141,8 +141,8 @@
               <!--begin::Campi PERSONA FISICA-->
               <div v-if="formData.UserType === 1">
                 <!--begin::Input group - Nome e Cognome-->
-                <div class="row fv-row mb-7">
-                  <div class="col-xl-6">
+                <div class="row g-4 fv-row mb-7">
+                  <div class="col-12 col-md-6">
                     <label class="form-label fw-bold text-gray-800 fs-6">Nome *</label>
                     <el-form-item prop="FirstName">
                       <el-input
@@ -153,7 +153,7 @@
                       />
                     </el-form-item>
                   </div>
-                  <div class="col-xl-6">
+                  <div class="col-12 col-md-6">
                     <label class="form-label fw-bold text-gray-800 fs-6">Cognome *</label>
                     <el-form-item prop="LastName">
                       <el-input
@@ -197,8 +197,8 @@
                 <!--end::Separator-->
 
                 <!--begin::Input group - Nome e Cognome Referente-->
-                <div class="row fv-row mb-7">
-                  <div class="col-xl-6">
+                <div class="row g-4 fv-row mb-7">
+                  <div class="col-12 col-md-6">
                     <label class="form-label fw-bold text-gray-800 fs-6">Nome Referente *</label>
                     <el-form-item prop="FirstName">
                       <el-input
@@ -209,7 +209,7 @@
                       />
                     </el-form-item>
                   </div>
-                  <div class="col-xl-6">
+                  <div class="col-12 col-md-6">
                     <label class="form-label fw-bold text-gray-800 fs-6">Cognome Referente *</label>
                     <el-form-item prop="LastName">
                       <el-input
@@ -256,68 +256,67 @@
               <!--end::Input group-->
 
                <!--begin::Input group-->
-               <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                  <i class="ki-duotone ki-phone fs-5 me-2 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                    <span class="path5"></span>
-                  </i>
-                  <span class="required">Telefono</span>
-                  <i
-                    class="fas fa-exclamation-circle ms-1 fs-7 text-warning"
-                    data-bs-toggle="tooltip"
-                    title="numero di telefono non valido"
-                  ></i>
-                </label>
-                <!--end::Label-->
+               <div class="row g-4 fv-row mb-7">
+                <div class="col-12 col-md-6">
+                  <!--begin::Label-->
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                    <i class="ki-duotone ki-phone fs-5 me-2 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                      <span class="path5"></span>
+                    </i>
+                    <span class="required">Telefono</span>
+                    <i
+                      class="fas fa-exclamation-circle ms-1 fs-7 text-warning"
+                      data-bs-toggle="tooltip"
+                      title="numero di telefono non valido"
+                    ></i>
+                  </label>
+                  <!--end::Label-->
 
-                <!--begin::Input-->
-                <el-form-item prop="phone">
-                  <el-input 
-                    v-model="formData.PhoneNumber" 
-                    type="tel"
-                    placeholder="0123456789"
-                    size="large"
-                  />
-                </el-form-item>
-                <!--end::Input-->
-              </div>
-              <!--end::Input group-->
+                  <!--begin::Input-->
+                  <el-form-item prop="phone">
+                    <el-input 
+                      v-model="formData.PhoneNumber" 
+                      type="tel"
+                      placeholder="0123456789"
+                      size="large"
+                    />
+                  </el-form-item>
+                  <!--end::Input-->
+                </div>
+                <div class="col-12 col-md-6">
+                  <!--begin::Label-->
+                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                    <i class="ki-duotone ki-mobile fs-5 me-2 text-primary">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                      <span class="path5"></span>
+                    </i>
+                    <span>Cellulare</span>
+                    <i
+                      class="fas fa-exclamation-circle ms-1 fs-7 text-warning"
+                      data-bs-toggle="tooltip"
+                      title="numero di telefono non valido"
+                    ></i>
+                  </label>
+                  <!--end::Label-->
 
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                  <i class="ki-duotone ki-mobile fs-5 me-2 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                    <span class="path5"></span>
-                  </i>
-                  <span>Cellulare</span>
-                  <i
-                    class="fas fa-exclamation-circle ms-1 fs-7 text-warning"
-                    data-bs-toggle="tooltip"
-                    title="numero di telefono non valido"
-                  ></i>
-                </label>
-                <!--end::Label-->
-
-                <!--begin::Input-->
-                <el-form-item prop="phone">
-                  <el-input 
-                    v-model="formData.MobilePhone" 
-                    type="tel"
-                    placeholder="3331234567"
-                    size="large"
-                  />
-                </el-form-item>
-                <!--end::Input-->
+                  <!--begin::Input-->
+                  <el-form-item prop="phone">
+                    <el-input 
+                      v-model="formData.MobilePhone" 
+                      type="tel"
+                      placeholder="3331234567"
+                      size="large"
+                    />
+                  </el-form-item>
+                  <!--end::Input-->
+                </div>
               </div>
               <!--end::Input group-->
 
@@ -569,8 +568,8 @@
                 <!--begin::Input group - PEC o Codice SDI-->
                 <div class="fv-row mb-7">
                   <label class="form-label fw-bold text-gray-800 fs-6">PEC o Codice Destinatario SDI</label>
-                  <div class="row">
-                    <div class="col-xl-8">
+                  <div class="row g-4">
+                    <div class="col-12 col-md-8">
                       <el-form-item prop="pec">
                         <el-input
                           v-model="formData.PEC"
@@ -580,7 +579,7 @@
                         />
                       </el-form-item>
                     </div>
-                    <div class="col-xl-4">
+                    <div class="col-12 col-md-4">
                       <el-form-item prop="sdiCode">
                         <el-input
                           v-model="formData.SDICode"
