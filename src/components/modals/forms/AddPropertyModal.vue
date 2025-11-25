@@ -168,7 +168,11 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Price">
-                  <el-input v-model="formData.Price" type="number" class="modern-input form-control-palette" placeholder="Inserisci il prezzo" />
+                  <el-input v-model="formData.Price" type="number" class="modern-input form-control-palette" placeholder="Inserisci importo">
+                    <template #append>
+                      <span>€</span>
+                    </template>
+                  </el-input>
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -602,7 +606,11 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="CondominiumExpenses">
-                    <el-input v-model="formData.CondominiumExpenses" type="number" class="modern-input" placeholder="€ Spese mensili" />
+                    <el-input v-model="formData.CondominiumExpenses" type="number" class="modern-input" placeholder="Inserisci importo">
+                      <template #append>
+                        <span>€</span>
+                      </template>
+                    </el-input>
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -1049,7 +1057,7 @@
         <!--end::Input group-->
 
         <!--begin::Col-->
-        <div class="col-md-4 fv-row">
+        <div class="col-md-6 fv-row">
           <!--begin::Label-->
                 <label class="fs-6 fw-bold mb-3 text-palette-primary">
             <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
@@ -1072,7 +1080,7 @@
         <!--end::Col-->
 
         <!--begin::Col-->
-        <div class="col-md-4 fv-row">
+        <div class="col-md-6 fv-row">
           <!--begin::Label-->
                 <label class="fs-6 fw-bold mb-3 text-palette-primary">
             <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
@@ -1084,9 +1092,9 @@
           <!--end::Label-->
           <!--begin::Input-->
           <el-form-item prop="FlatRateCommission">
-            <el-input v-model="formData.FlatRateCommission" type="number" class="modern-input" placeholder="Percentuale">
+            <el-input v-model="formData.FlatRateCommission" type="number" class="modern-input" placeholder="Inserisci importo">
               <template #append>
-                <span>%</span>
+                <span>€</span>
               </template>
             </el-input>
           </el-form-item>
@@ -1095,7 +1103,7 @@
         <!--end::Col-->
 
         <!--begin::Col-->
-        <div class="col-md-4 fv-row">
+        <div class="col-md-6 fv-row">
           <!--begin::Label-->
                 <label class="fs-6 fw-bold mb-3 text-palette-primary">
             <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
@@ -1107,12 +1115,41 @@
           <!--end::Label-->
           <!--begin::Input-->
           <el-form-item prop="CommissionReversal">
-            <el-input v-model="formData.CommissionReversal" type="number" class="modern-input" placeholder="Percentuale">
+            <el-input v-model="formData.CommissionReversal" type="number" class="modern-input" placeholder="Inserisci importo">
               <template #append>
-                <span>%</span>
+                <span>€</span>
               </template>
             </el-input>
           </el-form-item>
+          <!--end::Input-->
+        </div>
+        <!--end::Col-->
+
+        <!--begin::Col-->
+        <div class="col-md-12 fv-row">
+          <!--begin::Label-->
+          <label class="fs-6 fw-bold mb-3 text-palette-primary">
+            <i class="ki-duotone ki-wallet fs-5 me-2 text-primary">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Provvigione effettiva in €
+          </label>
+          <!--end::Label-->
+          <!--begin::Input-->
+          <el-input
+            :model-value="effectiveCommission"
+            type="text"
+            readonly
+            class="modern-input commission-effective-input"
+          >
+            <template #append>
+              <span>€</span>
+            </template>
+          </el-input>
+          <small class="text-palette-secondary d-block mt-1 fs-8">
+            Calcolata automaticamente: provvigione lorda - storno
+          </small>
           <!--end::Input-->
         </div>
         <!--end::Col-->
@@ -1193,7 +1230,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, watch, onMounted, reactive } from "vue";
+import { defineComponent, ref, watch, onMounted, reactive, computed } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -1538,6 +1575,28 @@ export default defineComponent({
       }
     });
 
+    // Watcher per validare l'esclusione mutua tra provvigione concordata e forfettaria
+    watch(
+      () => formData.value.AgreedCommission,
+      () => {
+        if (formRef.value) {
+          // Valida entrambi i campi quando cambia AgreedCommission
+          formRef.value.validateField('AgreedCommission', () => {});
+          formRef.value.validateField('FlatRateCommission', () => {});
+        }
+      }
+    );
+
+    watch(
+      () => formData.value.FlatRateCommission,
+      () => {
+        if (formRef.value) {
+          // Valida entrambi i campi quando cambia FlatRateCommission
+          formRef.value.validateField('AgreedCommission', () => {});
+          formRef.value.validateField('FlatRateCommission', () => {});
+        }
+      }
+    );
 
     const validatePrice = (_rule: any, value: number | string, callback: any) => {
       if (isTrattativaRiservata.value) {
@@ -1557,6 +1616,40 @@ export default defineComponent({
         callback(new Error("L'anno di costruzione è obbligatorio"));
       } else if (numericValue < 1000 || numericValue > 3000) {
         callback(new Error("L'anno di costruzione deve essere compreso tra 1000 e 3000"));
+      } else {
+        callback();
+      }
+    };
+
+    const validateAgreedCommission = (_rule: any, value: number | string, callback: any) => {
+      const numericValue = Number(value);
+      const flatRateValue = Number(formData.value.FlatRateCommission);
+      
+      // Se il valore è vuoto o zero, è valido
+      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        return callback();
+      }
+      
+      // Se anche FlatRateCommission ha un valore, mostra errore
+      if (flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0) {
+        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
+      } else {
+        callback();
+      }
+    };
+
+    const validateFlatRateCommission = (_rule: any, value: number | string, callback: any) => {
+      const numericValue = Number(value);
+      const agreedValue = Number(formData.value.AgreedCommission);
+      
+      // Se il valore è vuoto o zero, è valido
+      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        return callback();
+      }
+      
+      // Se anche AgreedCommission ha un valore, mostra errore
+      if (agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0) {
+        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
       } else {
         callback();
       }
@@ -1669,6 +1762,12 @@ export default defineComponent({
       YearOfConstruction: [
         { validator: validateYearOfConstruction, trigger: "change" },
       ],
+      AgreedCommission: [
+        { validator: validateAgreedCommission, trigger: "change" },
+      ],
+      FlatRateCommission: [
+        { validator: validateFlatRateCommission, trigger: "change" },
+      ],
     });
 
     onMounted(async () => {
@@ -1763,6 +1862,26 @@ export default defineComponent({
       if (!formData.value.Description || !formData.value.Description.trim()) {
         missingFields.push("Descrizione");
         markFieldInvalid("Description");
+      }
+
+      // Verifica che non siano compilate entrambe le provvigioni
+      const agreedValue = Number(formData.value.AgreedCommission);
+      const flatRateValue = Number(formData.value.FlatRateCommission);
+      const hasAgreed = agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0;
+      const hasFlatRate = flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0;
+      
+      if (hasAgreed && hasFlatRate) {
+        Swal.fire({
+          text: "Si puo inserire solo una provvigione: concordata o forfettaria.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
       }
 
       if (missingFields.length > 0) {
@@ -1865,6 +1984,37 @@ export default defineComponent({
       });
     };
 
+    // Computed per calcolare la provvigione effettiva in €
+    const effectiveCommission = computed(() => {
+      let grossCommission = 0;
+      
+      // Calcola la provvigione lorda
+      const agreedCommission = Number(formData.value.AgreedCommission);
+      const flatRateCommission = Number(formData.value.FlatRateCommission);
+      const price = Number(formData.value.Price);
+      const storno = Number(formData.value.CommissionReversal) || 0;
+      
+      // Se c'è provvigione concordata (percentuale)
+      if (agreedCommission && !Number.isNaN(agreedCommission) && agreedCommission > 0 && price > 0) {
+        grossCommission = (price * agreedCommission) / 100;
+      }
+      // Se c'è provvigione forfettaria (euro)
+      else if (flatRateCommission && !Number.isNaN(flatRateCommission) && flatRateCommission > 0) {
+        grossCommission = flatRateCommission;
+      }
+      
+      // Calcola la provvigione netta (lorda - storno)
+      const netCommission = grossCommission - storno;
+      
+      // Il risultato non può essere negativo (minimo 0)
+      const finalCommission = Math.max(0, netCommission);
+      
+      // Formatta il numero con separatore delle migliaia e 2 decimali
+      return finalCommission.toLocaleString('it-IT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    });
 
     return {
       formData,
@@ -1883,7 +2033,8 @@ export default defineComponent({
       loadCitiesByProvince,
       isTrattativaRiservata,
       inserModel,
-      invalidFields
+      invalidFields,
+      effectiveCommission
     };
   },
 });
@@ -1912,5 +2063,17 @@ export default defineComponent({
 
 .required-label--error::after {
   color: #dc3545;
+}
+
+.commission-effective-input :deep(.el-input__inner) {
+  background-color: var(--bs-gray-100);
+  font-weight: 600;
+  color: var(--bs-primary);
+  cursor: default;
+}
+
+[data-bs-theme="dark"] .commission-effective-input :deep(.el-input__inner) {
+  background-color: var(--bs-gray-800);
+  color: var(--bs-primary);
 }
 </style>

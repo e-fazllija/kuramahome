@@ -62,6 +62,7 @@ export class RealEstateProperty {
   AgreedCommission: number;
   FlatRateCommission: number;
   CommissionReversal: number;
+  EffectiveCommission?: number;
 }
 
 export class RequestTabelData {
@@ -81,6 +82,7 @@ export class RequestTabelData {
   Auction:Boolean;
   AdminId?: string;
   UserId?: string;
+  EffectiveCommission?: number;
 }
 
 export class InsertModel {
@@ -166,7 +168,8 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         Photos: item.FirstPhotoUrl || null,
         Auction: item.Auction,
         AdminId: item.AgencyId,
-        UserId: item.AgentId
+        UserId: item.AgentId,
+        EffectiveCommission: item.EffectiveCommission
       } as RequestTabelData));
     })
     .catch(({ response }) => {
@@ -296,7 +299,7 @@ const createRealEstateProperty = async (form: any) => {
   const formData = new FormData();
 
   // Campi da ignorare (non inviati al backend)
-  const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label'];
+  const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label', 'EffectiveCommission'];
 
   for (const key in values) {
     if (ignoreFields.includes(key) || values[key as keyof RealEstateProperty] === undefined) {

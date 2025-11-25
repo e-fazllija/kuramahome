@@ -241,7 +241,16 @@
                   <option value="Verbale">Verbale</option>
                   <option value="Esclusivo">Esclusivo</option>
                   <option value="Semi-Verbale">Semi-Verbale</option>
-                  <option value="Immobile MLS">Immobile MLS</option>
+                  <option value="Immobile MLS">Immobile MLS</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label required">Disponibilità</label>
+                <select class="form-select modern-select" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
+                  <option value="">Seleziona la Disponibilità</option>
+                  <option value="Libero">Libero</option>
+                  <option value="Occupato">Occupato</option>
                 </select>
               </div>
             </div>
@@ -609,43 +618,46 @@
               >
                 <label class="form-label required">Prezzo</label>
                 <el-form-item prop="Price">
-                  <input
-                    class="form-control modern-input"
+                  <el-input
                     v-model="formData.Price"
                     type="number"
+                    placeholder="Inserisci importo"
                     required
                     :disabled="!canModify && user.Role === 'Agent'"
-                  />
+                  >
+                    <template #append>
+                      <span>€</span>
+                    </template>
+                  </el-input>
                 </el-form-item>
               </div>
 
               <div class="form-field">
                 <label class="form-label">Prezzo ribassato</label>
-                <input
-                  class="form-control modern-input"
+                <el-input
                   v-model="formData.PriceReduced"
                   type="number"
+                  placeholder="Inserisci importo"
                   :disabled="!canModify && user.Role === 'Agent'"
-                />
+                >
+                  <template #append>
+                    <span>€</span>
+                  </template>
+                </el-input>
               </div>
 
               <div class="form-field">
                 <label class="form-label">Spese condominiali</label>
-                <input
-                  class="form-control modern-input"
+                <el-input
                   v-model="formData.CondominiumExpenses"
                   type="number"
+                  placeholder="Inserisci importo"
                   :disabled="!canModify && user.Role === 'Agent'"
-                />
-              </div>
-
-              <div class="form-field">
-                <label class="form-label required">Disponibilità</label>
-                <select class="form-select modern-select" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
-                  <option value="">Seleziona la Disponibilità</option>
-                  <option value="Libero">Libero</option>
-                  <option value="Occupato">Occupato</option>
-                </select>
+                >
+                  <template #append>
+                    <span>€</span>
+                  </template>
+                </el-input>
               </div>
 
               <div class="form-field">
@@ -670,11 +682,11 @@
                   <el-input
                     v-model="formData.FlatRateCommission"
                     type="number"
-                    placeholder="Inserisci percentuale"
+                    placeholder="Inserisci importo"
                     :disabled="!canModify && user.Role === 'Agent'"
                   >
                     <template #append>
-                      <span>%</span>
+                      <span>€</span>
                     </template>
                   </el-input>
                 </el-form-item>
@@ -686,14 +698,31 @@
                   <el-input
                     v-model="formData.CommissionReversal"
                     type="number"
-                    placeholder="Inserisci percentuale"
+                    placeholder="Inserisci importo"
                     :disabled="!canModify && user.Role === 'Agent'"
                   >
                     <template #append>
-                      <span>%</span>
+                      <span>€</span>
                     </template>
                   </el-input>
                 </el-form-item>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label fw-bold">Provvigione effettiva in €</label>
+                <el-input
+                  :model-value="effectiveCommission"
+                  type="text"
+                  readonly
+                  class="commission-effective-input"
+                >
+                  <template #append>
+                    <span>€</span>
+                  </template>
+                </el-input>
+                <small class="text-palette-secondary d-block mt-1 fs-8">
+                  Calcolata automaticamente: provvigione lorda - storno
+                </small>
               </div>
             </div>
           </div>
@@ -1268,6 +1297,40 @@ export default defineComponent({
       }
     };
 
+    const validateAgreedCommission = (_rule: any, value: number | string, callback: any) => {
+      const numericValue = Number(value);
+      const flatRateValue = Number(formData.value.FlatRateCommission);
+      
+      // Se il valore è vuoto o zero, è valido
+      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        return callback();
+      }
+      
+      // Se anche FlatRateCommission ha un valore, mostra errore
+      if (flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0) {
+        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
+      } else {
+        callback();
+      }
+    };
+
+    const validateFlatRateCommission = (_rule: any, value: number | string, callback: any) => {
+      const numericValue = Number(value);
+      const agreedValue = Number(formData.value.AgreedCommission);
+      
+      // Se il valore è vuoto o zero, è valido
+      if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+        return callback();
+      }
+      
+      // Se anche AgreedCommission ha un valore, mostra errore
+      if (agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0) {
+        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
+      } else {
+        callback();
+      }
+    };
+
     const rules = ref({
       CustomerId: [
         {
@@ -1376,6 +1439,12 @@ export default defineComponent({
           trigger: "change",
         },
       ],
+      AgreedCommission: [
+        { validator: validateAgreedCommission, trigger: "change" },
+      ],
+      FlatRateCommission: [
+        { validator: validateFlatRateCommission, trigger: "change" },
+      ],
     });
 
 
@@ -1480,6 +1549,29 @@ export default defineComponent({
             showTipologia.value = false;
             formData.value.Typology = "";
           }
+        }
+      }
+    );
+
+    // Watcher per validare l'esclusione mutua tra provvigione concordata e forfettaria
+    watch(
+      () => formData.value.AgreedCommission,
+      () => {
+        if (!firtLoad.value && formRef.value) {
+          // Valida entrambi i campi quando cambia AgreedCommission
+          formRef.value.validateField('AgreedCommission', () => {});
+          formRef.value.validateField('FlatRateCommission', () => {});
+        }
+      }
+    );
+
+    watch(
+      () => formData.value.FlatRateCommission,
+      () => {
+        if (!firtLoad.value && formRef.value) {
+          // Valida entrambi i campi quando cambia FlatRateCommission
+          formRef.value.validateField('AgreedCommission', () => {});
+          formRef.value.validateField('FlatRateCommission', () => {});
         }
       }
     );
@@ -1650,6 +1742,26 @@ export default defineComponent({
       if (!canModify.value) {
         Swal.fire({
           text: "Non hai i permessi per modificare questo immobile.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        return;
+      }
+
+      // Verifica che non siano compilate entrambe le provvigioni
+      const agreedValue = Number(formData.value.AgreedCommission);
+      const flatRateValue = Number(formData.value.FlatRateCommission);
+      const hasAgreed = agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0;
+      const hasFlatRate = flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0;
+      
+      if (hasAgreed && hasFlatRate) {
+        Swal.fire({
+          text: "Si puo inserire solo una provvigione: concordata o forfettaria.",
           icon: "error",
           buttonsStyling: false,
           confirmButtonText: "Ok",
@@ -1897,27 +2009,9 @@ export default defineComponent({
         return true;
       }
 
-      // Admin: può modificare tutta la sua cerchia
+      // Admin: può modificare tutti gli immobili
       if (currentUser.Role === 'Admin') {
-        // L'immobile è dell'Admin stesso
-        if (formData.value.UserId === currentUser.Id) {
-          return true;
-        }
-        // L'immobile è di un'Agency dell'Admin
-        const ownerAgencyId = (propertyOwner as any).AgencyId;
-        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
-          return true;
-        }
-        // L'immobile è di un Agent diretto dell'Admin
-        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
-          return true;
-        }
-        // L'immobile è di un Agent di un'Agency dell'Admin
-        // (verificato tramite AgencyId che punta a un'Agency dell'Admin)
-        // Nota: questo richiederebbe caricare le Agency, ma per sicurezza
-        // il backend controllerà comunque, quindi possiamo essere più permissivi qui
-        // e lasciare che il backend faccia il controllo finale
-        return false;
+        return true;
       }
 
       // Agency: può modificare proprie + dei propri Agent
@@ -1955,22 +2049,9 @@ export default defineComponent({
         return true;
       }
 
-      // Admin: può eliminare tutta la sua cerchia
+      // Admin: può eliminare tutti gli immobili
       if (currentUser.Role === 'Admin') {
-        // L'immobile è dell'Admin stesso
-        if (formData.value.UserId === currentUser.Id) {
-          return true;
-        }
-        // L'immobile è di un'Agency dell'Admin
-        const ownerAgencyId = (propertyOwner as any).AgencyId;
-        if (ownerAgencyId === currentUser.Id && propertyOwner.Role === 'Agency') {
-          return true;
-        }
-        // L'immobile è di un Agent diretto dell'Admin
-        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
-          return true;
-        }
-        return false;
+        return true;
       }
 
       // Agency: può eliminare proprie + dei propri Agent
@@ -2016,6 +2097,38 @@ export default defineComponent({
       return '';
     });
 
+    // Computed per calcolare la provvigione effettiva in €
+    const effectiveCommission = computed(() => {
+      let grossCommission = 0;
+      
+      // Calcola la provvigione lorda
+      const agreedCommission = Number(formData.value.AgreedCommission);
+      const flatRateCommission = Number(formData.value.FlatRateCommission);
+      const price = Number(formData.value.Price);
+      const storno = Number(formData.value.CommissionReversal) || 0;
+      
+      // Se c'è provvigione concordata (percentuale)
+      if (agreedCommission && !Number.isNaN(agreedCommission) && agreedCommission > 0 && price > 0) {
+        grossCommission = (price * agreedCommission) / 100;
+      }
+      // Se c'è provvigione forfettaria (euro)
+      else if (flatRateCommission && !Number.isNaN(flatRateCommission) && flatRateCommission > 0) {
+        grossCommission = flatRateCommission;
+      }
+      
+      // Calcola la provvigione netta (lorda - storno)
+      const netCommission = grossCommission - storno;
+      
+      // Il risultato non può essere negativo (minimo 0)
+      const finalCommission = Math.max(0, netCommission);
+      
+      // Formatta il numero con separatore delle migliaia e 2 decimali
+      return finalCommission.toLocaleString('it-IT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    });
+
     return {
       formData,
       rules,
@@ -2049,6 +2162,7 @@ export default defineComponent({
       canModify,
       canDelete,
       agentName,
+      effectiveCommission,
     };
   },
 });
@@ -2056,4 +2170,16 @@ export default defineComponent({
 
 <style>
 @import '@/assets/css/property-tabs.css';
+
+.commission-effective-input :deep(.el-input__inner) {
+  background-color: var(--bs-gray-100);
+  font-weight: 600;
+  color: var(--bs-primary);
+  cursor: default;
+}
+
+[data-bs-theme="dark"] .commission-effective-input :deep(.el-input__inner) {
+  background-color: var(--bs-gray-800);
+  color: var(--bs-primary);
+}
 </style>
