@@ -1,448 +1,479 @@
 <template>
   <!--begin::Basic info-->
-  <div class="card mb-5 mb-xl-10">
-    <!--begin::Card header-->
-    <div class="card-header border-0">
-      <!--begin::Card title-->
-      <div class="card-title m-0">
-        <div class="d-flex align-items-center">
-          <div class="symbol symbol-45px me-3">
-            <span class="symbol-label">
-              <i class="ki-duotone ki-profile-user fs-2 text-white">
+  <div class="container-fluid px-0 px-md-3">
+    <div class="card card-palette mb-3 mb-md-5 mb-xl-10">
+      <!--begin::Card header-->
+      <div class="card-header card-palette-header border-0">
+        <!--begin::Card title-->
+        <div class="card-title m-0">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="symbol symbol-40px symbol-sm-45px me-2 me-md-3">
+              <span class="symbol-label bg-primary">
+                <i class="ki-duotone ki-profile-user fs-2 fs-md-1 text-white">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                </i>
+              </span>
+            </div>
+            <div class="flex-grow-1">
+              <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Aggiorna Cliente</h3>
+              <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">
+                <span v-if="user.Role === 'Agent' && !canModifyCustomer">Visualizzazione in sola lettura</span>
+                <span v-else>Modifica i dati del cliente</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!--end::Card title-->
+      </div>
+      <!--begin::Card header-->
+    </div>
+  </div>
+  <KTSpinner v-if="loading" :centered="true" size="md" />
+  <!--begin::Content-->
+  <div v-else class="collapse show">
+    <div class="container-fluid px-0 px-md-3">
+    <!--begin::Form-->
+    <form @submit.prevent="submit()">
+      <!--begin::Card body-->
+      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModifyCustomer && user.Role === 'Agent' }">
+
+        <!--begin::Dati Principali-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-profile-user fs-3 fs-md-2 text-primary">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
                 <span class="path4"></span>
               </i>
-            </span>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Dati Principali</h4>
+              <p class="text-muted small mb-0">Informazioni generali del cliente.</p>
+            </div>
           </div>
           <div>
-            <h3 class="fw-bold m-0 text-gray-900 fs-3"> Aggiorna Cliente</h3>
-            <span class="text-muted fs-7 fw-semibold">
-              <span v-if="user.Role === 'Agent' && !canModifyCustomer">Visualizzazione in sola lettura</span>
-              <span v-else>Modifica i dati del cliente</span>
-            </span>
+            <!--begin::Input group - Proprietario (solo Admin)-->
+            <div v-if="user?.Role === 'Admin'" class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-user-tick fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
+                Proprietario <span class="text-danger">*</span>
+              </label>
+              <select 
+                v-model="formData.UserId"
+                class="form-select form-select-lg"
+                name="owner"
+                required
+              >
+                <option value="">👤 Seleziona proprietario</option>
+                <optgroup v-if="ownerSearchItems.Agencies.length" label="Agenzie">
+                  <option v-for="agency in ownerSearchItems.Agencies" :key="agency.Id" :value="agency.Id">
+                    🏢 {{ agency.CompanyName || `${agency.FirstName} ${agency.LastName}` }}
+                  </option>
+                </optgroup>
+                <optgroup v-if="ownerSearchItems.Agents.length" label="Agenti">
+                  <option v-for="agent in ownerSearchItems.Agents" :key="agent.Id" :value="agent.Id">
+                    👤 {{ agent.FirstName }} {{ agent.LastName }}
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-user fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Nome <span class="text-danger">*</span>
+                </label>
+                <input class="form-control form-control-lg" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-user fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Cognome <span class="text-danger">*</span>
+                </label>
+                <input class="form-control form-control-lg" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-sms fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Email
+                </label>
+                <input class="form-control form-control-lg" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-phone fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Telefono <span class="text-danger">*</span>
+                </label>
+                <input class="form-control form-control-lg" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+              </div>
+            </div>
+            <!--end::Input group-->
           </div>
         </div>
-      </div>
-      <!--end::Card title-->
-    </div>
-    <!--begin::Card header-->
-  </div>
-  <KTSpinner v-if="loading" :centered="true" size="md" />
-  <!--begin::Content-->
-  <div v-else class="collapse show">
-    <!--begin::Form-->
-    <form @submit.prevent="submit()">
-      <!--begin::Card body-->
-      <div class="card-body border-top p-9" :class="{ 'opacity-50': !canModifyCustomer && user.Role === 'Agent' }">
+        <!--end::Dati Principali-->
 
-         <!--begin::Input group - Proprietario (solo Admin)-->
-         <div v-if="user?.Role === 'Admin'" class="row mb-6">
-           <!--begin::Label-->
-           <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
-             <i class="ki-duotone ki-user-tick fs-5 me-2 text-primary">
-               <span class="path1"></span>
-               <span class="path2"></span>
-               <span class="path3"></span>
-             </i>
-             Proprietario *
-           </label>
-           <!--end::Label-->
-           <!--begin::Col-->
-           <div class="col-12 col-md-8 fv-row">
-             <select 
-               v-model="formData.UserId"
-               class="form-select form-select-lg"
-               name="owner"
-               required
-             >
-               <option value="">👤 Seleziona proprietario</option>
-               <optgroup v-if="ownerSearchItems.Agencies.length" label="Agenzie">
-                 <option v-for="agency in ownerSearchItems.Agencies" :key="agency.Id" :value="agency.Id">
-                   🏢 {{ agency.CompanyName || `${agency.FirstName} ${agency.LastName}` }}
-                 </option>
-               </optgroup>
-               <optgroup v-if="ownerSearchItems.Agents.length" label="Agenti">
-                 <option v-for="agent in ownerSearchItems.Agents" :key="agent.Id" :value="agent.Id">
-                   👤 {{ agent.FirstName }} {{ agent.LastName }}
-                 </option>
-               </optgroup>
-             </select>
-           </div>
-           <!--end::Col-->
-         </div>
-         <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-user fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-            </i>
-            Nome
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-user fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-            </i>
-            Cognome
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-sms fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Email
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-phone fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Telefono
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Aquirente</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Buyer" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+        <!--begin::Ruoli e Stato-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-badge fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Ruoli e Stato</h4>
+              <p class="text-muted small mb-0">Definisci il ruolo e lo stato del cliente.</p>
             </div>
           </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
+          <div>
+            <div class="row g-3">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-buyer"
+                      v-model="formData.Buyer"
+                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-buyer">
+                      Acquirente
+                    </label>
+                  </div>
+                </div>
+              </div>
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Venditore</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Seller" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-seller"
+                      v-model="formData.Seller"
+                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-seller">
+                      Venditore
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-builder"
+                      v-model="formData.Builder"
+                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-builder">
+                      Costruttore
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-other"
+                      v-model="formData.Other"
+                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-other">
+                      Altro
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-gold"
+                      v-model="formData.GoldCustomer"
+                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-gold">
+                      Cliente Gold
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-acquisition"
+                      v-model="formData.AcquisitionDone"
+                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-acquisition">
+                      Acquisizione svolta
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-ongoing"
+                      v-model="formData.OngoingAssignment"
+                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-ongoing">
+                      Incarico in corso
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <!--end::Col-->
         </div>
-        <!--end::Input group-->
+        <!--end::Ruoli e Stato-->
 
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Costruttore</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Builder" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Altro</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Other" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Cliente gold</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.GoldCustomer" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Acquisizione svolta</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.AcquisitionDone" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-        
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Incarico in corso</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.OngoingAssignment" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Indirizzo
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-map fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Provincia
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-12 col-md-8 fv-row">
-            <select 
-              v-model="formData.State"
-              class="form-select form-select-lg"
-              name="province"
-              :disabled="!canModifyCustomer && user.Role === 'Agent'"
-            >
-              <option value="">🗺️ Seleziona provincia</option>
-              <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
-                {{ province.Name }}
-              </option>
-            </select>
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Comune
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-12 col-md-8 fv-row">
-            <select class="form-select form-select-lg" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
-              <option value="">🏙️ Seleziona comune</option>
-              <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                {{ city.Name }}
-              </option>
-            </select>
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-            Note
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <textarea class="form-control form-control-lg" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer && user.Role === 'Agent'"></textarea>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-gray-800">
-            <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-            Riepilogo Note
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div v-for="(note, index) in formData.CustomerNotes" :key="index" class="modern-note mb-3">
-              <div class="note-content" v-html="note.Text"></div>
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-      </div>
-      <!--begin::Actions-->
-      <div class="d-flex justify-content-end py-6 px-9">
-        <button 
-          v-if="canModifyCustomer" 
-          type="button" 
-          @click="deleteItem()" 
-          class="btn btn-modal-danger me-3"
-        >
-          <span class="btn-icon">
-            <i class="ki-duotone ki-trash fs-3">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-          </span>
-          <span class="btn-label">Elimina</span>
-        </button>
-        <!--begin::Button-->
-        <button 
-          :data-kt-indicator="loading ? 'on' : null" 
-          class="btn btn-modal-primary" 
-          type="submit" 
-          :disabled="loading || !canModifyCustomer"
-        >
-          <span v-if="!loading" class="d-flex align-items-center">
-            <span class="btn-icon">
-              <i class="ki-duotone ki-check fs-3">
+        <!--begin::Localizzazione-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-geolocation fs-3 fs-md-2 text-primary">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Localizzazione</h4>
+              <p class="text-muted small mb-0">Riferimenti geografici e indirizzo completo.</p>
+            </div>
+          </div>
+          <div>
+            <!--begin::Input group-->
+            <div class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-geolocation fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Indirizzo
+              </label>
+              <input class="form-control form-control-lg" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-map fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Provincia
+                </label>
+                <select 
+                  v-model="formData.State"
+                  class="form-select form-select-lg"
+                  name="province"
+                  :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                >
+                  <option value="">🗺️ Seleziona provincia</option>
+                  <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
+                    {{ province.Name }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-geo fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Comune
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
+                  <option value="">🏙️ Seleziona comune</option>
+                  <option v-for="(city, index) in cities" :key="index" :value="city.Name">
+                    {{ city.Name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <!--end::Input group-->
+          </div>
+        </div>
+        <!--end::Localizzazione-->
+
+        <!--begin::Media e Note-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-notepad fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Note</h4>
+              <p class="text-muted small mb-0">Inserisci e consulta le note del cliente.</p>
+            </div>
+          </div>
+          <div>
+            <!--begin::Input group-->
+            <div class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-notepad fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                Note
+              </label>
+              <textarea class="form-control form-control-lg" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer && user.Role === 'Agent'"></textarea>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Riepilogo Note-->
+            <div v-if="formData.CustomerNotes && formData.CustomerNotes.length" class="mt-4">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-3">
+                <i class="ki-duotone ki-notepad fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                Riepilogo Note
+              </label>
+              <div class="row g-3">
+                <div
+                  v-for="(note, index) in formData.CustomerNotes"
+                  :key="index"
+                  class="col-12"
+                >
+                  <div class="card p-3" v-html="note.Text"></div>
+                </div>
+              </div>
+            </div>
+            <!--end::Riepilogo Note-->
+          </div>
+        </div>
+        <!--end::Media e Note-->
+        <div v-if="canModifyCustomer" class="d-flex align-items-end justify-content-end">
+          <button type="button" @click="deleteItem()" class="btn btn-danger me-2">
+            <span class="btn-icon">
+              <i class="ki-duotone ki-trash fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
             </span>
-            <span class="btn-label">Salva Modifiche</span>
-          </span>
-          <span v-if="loading" class="d-flex align-items-center">
-            <KTSpinner size="sm" :inline="true" />
-            <span class="btn-label">Attendere...</span>
-          </span>
-        </button>
-        <!--end::Button-->
+            <span class="btn-label">Elimina</span>
+          </button>
+          <!--begin::Button-->
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
+            <span v-if="!loading" class="d-flex align-items-center">
+              <span class="btn-icon">
+                <i class="ki-duotone ki-check fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <span class="btn-label">Salva Modifiche</span>
+            </span>
+            <span v-if="loading" class="d-flex align-items-center">
+              <KTSpinner size="sm" :inline="true" />
+              <span class="btn-label">Attendere...</span>
+            </span>
+          </button>
+          <!--end::Button-->
+        </div>
       </div>
-      <!--end::Actions-->
     </form>
     <!--end::Form-->
+    </div>
   </div>
   <!--end::Content-->
 
-  <div v-if="!loading" class="card mb-5 mb-xl-10">
+  <div v-if="!loading" class="container-fluid px-0 px-md-3 mt-5 mt-md-7 mt-xl-10">
+    <div class="card card-palette mb-3 mb-md-5 mb-xl-10">
       <!--begin::Card header-->
-      <div class="card-header border-0 pt-6 pb-4">
+      <div class="card-header card-palette-header border-0 pt-6 pb-4">
         <!--begin::Card title-->
         <div class="card-title m-0">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-40px me-3">
-              <span class="symbol-label">
-                <i class="ki-duotone ki-document fs-2 text-white">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="symbol symbol-40px symbol-sm-45px me-2 me-md-3">
+              <span class="symbol-label bg-primary">
+                <i class="ki-duotone ki-document fs-2 fs-md-1 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </span>
             </div>
-            <div>
-              <h3 class="fw-bold m-0 text-gray-900 fs-3">Richieste Cliente</h3>
-              <span class="text-muted fs-7 fw-semibold">Elenco delle richieste associate</span>
+            <div class="flex-grow-1">
+              <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Richieste Cliente</h3>
+              <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">Elenco delle richieste associate</span>
             </div>
           </div>
         </div>
@@ -515,6 +546,8 @@
       </div>
       <!--end::Card body-->
     </div>
+    <!--end::Card-->
+  </div>
 </template>
 
 <script lang="ts">

@@ -62,6 +62,12 @@
     --#{$prefix}border-color: #{$border-color};
     --#{$prefix}border-dashed-color: #{$border-dashed-color};
 
+    // Card
+    --#{$prefix}card-bg: #{$card-bg};
+    --#{$prefix}card-cap-color: #{$card-cap-color};
+    --#{$prefix}card-cap-bg: #{$card-cap-bg};
+    --#{$prefix}card-border-color: #{$card-border-color};
+
     --#{$prefix}component-active-color: #{$component-active-color};
     --#{$prefix}component-active-bg: #{$component-active-bg};
     --#{$prefix}component-hover-color: #{$component-hover-color};
@@ -208,6 +214,12 @@
     // Components
     --#{$prefix}border-color: #{$border-color-dark};
     --#{$prefix}border-dashed-color: #{$border-dashed-color-dark};
+
+    // Card
+    --#{$prefix}card-bg: #{$card-bg-dark};
+    --#{$prefix}card-cap-color: #{$card-cap-color-dark};
+    --#{$prefix}card-cap-bg: #{$card-cap-bg-dark};
+    --#{$prefix}card-border-color: #{$card-border-color-dark};
 
     --#{$prefix}component-active-color: #{$component-active-color-dark};
     --#{$prefix}component-active-bg: #{$component-active-bg-dark};

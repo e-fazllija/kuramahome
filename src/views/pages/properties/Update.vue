@@ -34,7 +34,6 @@
   <div v-else class="collapse show">
     <!--begin::Tabs-->
     <div class="container-fluid px-0 px-md-3">
-      <div>
         <ul class="nav nav-tabs flex-nowrap overflow-auto" id="propertyTabs" role="tablist" style="scrollbar-width: none; -ms-overflow-style: none;">
           <li class="nav-item flex-shrink-0" role="presentation">
             <button
@@ -84,7 +83,7 @@
             <!--begin::Data Tab-->
             <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
               <!--begin::Card body-->
-              <div class="card-body card-palette border-top p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModify && user.Role === 'Agent' }">
+              <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModify && user.Role === 'Agent' }">
                 <div class="mb-4 mb-md-5 mb-xl-6">
                     <div class="d-flex align-items-center mb-3">
                       <div class="me-3">
@@ -930,12 +929,8 @@
               </div>
             </div>
           </div>
-        </div>
-        <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-          class="card-footer d-flex justify-content-end py-6 px-9">
-          <div class="d-flex align-items-center">
-            <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()"
-              class="btn btn-danger me-2">
+          <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id" class="d-flex align-items-end justify-content-end">
+            <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()" class="btn btn-danger me-2">
               <span class="btn-icon">
                 <i class="ki-duotone ki-trash fs-3">
                   <span class="path1"></span>
@@ -947,6 +942,7 @@
               </span>
               <span class="btn-label">Elimina</span>
             </button>
+            <!--begin::Button-->
             <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
               <span v-if="!loading" class="d-flex align-items-center">
                 <span class="btn-icon">
@@ -962,6 +958,7 @@
                 <span class="btn-label">Attendere...</span>
               </span>
             </button>
+            <!--end::Button-->
           </div>
         </div>
             </div>
@@ -1097,7 +1094,7 @@
           <!--end::Tab Content-->
         </el-form>
         <!--end::Form-->
-      </div>
+      
     </div>
     <!--end::Tabs-->
   </div>

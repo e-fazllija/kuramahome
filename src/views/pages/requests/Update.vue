@@ -1,536 +1,544 @@
 <template>
   <!--begin::Basic info-->
-  <div class="card card-palette mb-5 mb-xl-10">
-    <!--begin::Card header-->
-    <div class="card-header card-palette-header border-0" >
-      <!--begin::Card title-->
-      <div class="card-title m-0">
-        <div class="d-flex align-items-center">
-          <div class="symbol symbol-45px me-3">
-            <span class="symbol-label">
-              <i class="ki-duotone ki-document fs-2 text-white">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </span>
-          </div>
-          <div>
-            <h3 class="fw-bold m-0 text-palette-primary fs-3">📋 Aggiorna Richiesta</h3>
-            <span class="text-palette-secondary fs-7 fw-semibold">Modifica i dati della richiesta</span>
-          </div>
-        </div>
-      </div>
-      <!--end::Card title-->
-    </div>
-    <!--begin::Card header-->
-  </div>
-  <KTSpinner v-if="loading" :centered="true" size="md" />
-  <!--begin::Content-->
-  <div v-else>
-    <!--begin::Form-->
-    <form @submit.prevent="submit()">
-      <!--begin::Card body-->
-      <div class="card-body card-palette border-top p-9">
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-            </i>
-            Cliente
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <!--begin::Input-->
-            <select 
-              class="form-select form-select-lg" 
-              v-model="formData.CustomerId" 
-              required
-            >
-              <option :value="null">Seleziona il cliente</option>
-              <option
-                v-for="customer in inserModel.Customers"
-                :key="customer.Id"
-                :value="customer.Id"
-              >
-                {{ customer.label }}
-              </option>
-            </select>
-            <!--end::Input-->
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-document fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Contratto
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <select class="form-select form-select-lg" v-model="formData.Contract" required>
-              <option value="Vendita">💰 Vendita</option>
-              <option value="Affitto">🏠 Affitto</option>
-            </select>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Tipologia Immobiliare:
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-             <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" required style="height: auto;">
-              <option value="Appartamenti">🏢 Appartamenti</option>
-              <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
-              <option value="Box">🚗 Box</option>
-              <option value="CapannoniLocArtigianali">🏭 Capannoni, Loc. Artigianali</option>
-              <option value="CasaliRuderi">🏚️ Casali e Ruderi</option>
-              <option value="CaseSemindipendenti">🏘️ Case Semindipendenti</option>
-              <option value="LocaliCommerciali">🏬 Locali Commerciali</option>
-              <option value="NuoveCostruzioni">🏗️ Nuove Costruzioni</option>
-              <option value="Terreni">🌾 Terreni</option>
-              <option value="VilleCaseIndipendenti">🏰 Ville e Case Indipendenti</option>
-            </select>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-map fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Provincia
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <select class="form-select form-select-lg" v-model="formData.Province" required>
-              <option value="">🗺️ Seleziona provincia</option>
-              <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
-            </select>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Comune
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-              <select class="form-select form-select-lg" multiple v-model="selectedCities" required>
-                <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }}</option>
-              </select>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-         <!--begin::Input group-->
-         <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label required fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-position fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            LocalitÃ 
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-              <input class="form-control form-control-lg" v-model="formData.Location" type="text" placeholder="Inserisci la località (opzionale)" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Canone - Prezzo: Da
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Canone - Prezzo: A
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Archiviata</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Archived" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Evasa</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.Closed" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-semobold fs-6">Consulenza mutuo richiesta</label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div class="form-check form-switch form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" v-model="formData.MortgageAdviceRequired" />
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Numero Locali
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model="formData.RoomsNumber" type="text" placeholder="Es: 3+1, 4+2, etc." />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-         <!--begin::Input group-->
-         <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Giardino Da (mq)
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Giardino A (mq)
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            MQ Da
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            MQ A
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Stato dell'immobile
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-12 col-md-8 fv-row">
-            <select class="form-select form-select-lg" v-model="formData.PropertyState">
-              <option value="">🏠 Seleziona Stato Immobile</option>
-              <option value="0">🔒 Affittato</option>
-              <option value="1">🏗️ In corso di costruzione</option>
-              <option value="2">✅ Libero</option>
-              <option value="3">📋 Libero al Rogito</option>
-              <option value="4">🏛️ Nuda Proprietà</option>
-              <option value="5">👥 Occupato</option>
-            </select>
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-fire fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Riscaldamento
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-12 col-md-8 fv-row">
-            <select class="form-select form-select-lg" v-model="formData.Heating">
-              <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
-              <option value="Autonomo">🏠 Autonomo</option>
-              <option value="Centralizzato">🏢 Centralizzato</option>
-              <option value="Inesistente">❌ Inesistente</option>
-            </select>
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-car fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Posti Auto
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <div class="col-12 col-md-8 fv-row">
-            <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" placeholder="Inserisci il numero di posti auto" min="0" />
-          </div>
-          <!--end::Input-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-            Nota principale
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <textarea class="form-control form-control-lg" v-model="formData.Notes" rows="3" placeholder="Inserisci eventuali note..."></textarea>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-        <!--begin::Input group-->
-        <div class="row mb-6">
-          <!--begin::Label-->
-          <label class="col-12 col-md-4 col-form-label fw-bold fs-6 text-palette-primary">
-            <i class="ki-duotone ki-notepad fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-            Riepilogo Note
-          </label>
-          <!--end::Label-->
-          <!--begin::Col-->
-          <div class="col-12 col-md-8 fv-row">
-            <div v-for="(note, index) in formData.RequestNotes" :key="index" class="modern-note mb-3">
-              <div class="note-content" v-html="note.Text"></div>
-            </div>
-          </div>
-          <!--end::Col-->
-        </div>
-        <!--end::Input group-->
-
-      </div>
-      <!--begin::Actions-->
-      <div class="d-flex justify-content-end py-6 px-9">
-        <button type="button" @click="deleteItem()" class="btn btn-danger me-3">
-          <span class="btn-icon">
-            <i class="ki-duotone ki-trash fs-3">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-              <span class="path4"></span>
-              <span class="path5"></span>
-            </i>
-          </span>
-          <span class="btn-label">Elimina</span>
-        </button>
-        <!--begin::Button-->
-        <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
-          <span v-if="!loading" class="d-flex align-items-center">
-            <span class="btn-icon">
-              <i class="ki-duotone ki-check fs-3">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-            </span>
-            <span class="btn-label">Salva Modifiche</span>
-          </span>
-          <span v-if="loading" class="d-flex align-items-center">
-            <KTSpinner size="sm" :inline="true" />
-            <span class="btn-label">Attendere...</span>
-          </span>
-        </button>
-        <!--end::Button-->
-      </div>
-      <!--end::Actions-->
-    </form>
-    <!--end::Form-->
-  </div>
-  <!--end::Content-->
-  <div v-if="!loading" class="card card-palette mb-5 mb-xl-10">
+  <div class="container-fluid px-0 px-md-3">
+    <div class="card card-palette mb-3 mb-md-5 mb-xl-10">
       <!--begin::Card header-->
-      <div class="card-header card-palette-header border-0 pt-6 pb-4">
+      <div class="card-header card-palette-header border-0">
         <!--begin::Card title-->
         <div class="card-title m-0">
-          <div class="d-flex align-items-center">
-            <div class="symbol symbol-40px me-3">
-              <span class="symbol-label">
-                <i class="ki-duotone ki-home fs-2 text-white">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="symbol symbol-40px symbol-sm-45px me-2 me-md-3">
+              <span class="symbol-label bg-primary">
+                <i class="ki-duotone ki-document fs-2 fs-md-1 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </span>
             </div>
-            <div>
-              <h3 class="fw-bold m-0 text-palette-primary fs-3">🏠 Immobili Richiesta</h3>
-              <span class="text-palette-secondary fs-7 fw-semibold">Elenco degli immobili associati</span>
+            <div class="flex-grow-1">
+              <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Aggiorna Richiesta</h3>
+              <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">Modifica i dati della richiesta</span>
+            </div>
+          </div>
+        </div>
+        <!--end::Card title-->
+      </div>
+      <!--begin::Card header-->
+    </div>
+  </div>
+  <KTSpinner v-if="loading" :centered="true" size="md" />
+  <!--begin::Content-->
+  <div v-else class="collapse show">
+    <div class="container-fluid px-0 px-md-3">
+    <!--begin::Form-->
+    <form @submit.prevent="submit()">
+      <!--begin::Card body-->
+      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9">
+
+        <!--begin::Dati Principali-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-document fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Dati Principali</h4>
+              <p class="text-muted small mb-0">Informazioni generali della richiesta.</p>
+            </div>
+          </div>
+          <div>
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-profile-user fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Cliente <span class="text-danger">*</span>
+                </label>
+                <select 
+                  class="form-select form-select-lg" 
+                  v-model="formData.CustomerId" 
+                  required
+                >
+                  <option :value="null">Seleziona il cliente</option>
+                  <option
+                    v-for="customer in inserModel.Customers"
+                    :key="customer.Id"
+                    :value="customer.Id"
+                  >
+                    {{ customer.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-document fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Contratto <span class="text-danger">*</span>
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.Contract" required>
+                  <option value="">Seleziona tipo contratto</option>
+                  <option value="Vendita">💰 Vendita</option>
+                  <option value="Affitto">🏠 Affitto</option>
+                </select>
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Tipologia Immobiliare <span class="text-danger">*</span>
+              </label>
+              <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" required style="height: auto;">
+                <option value="Appartamenti">🏢 Appartamenti</option>
+                <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
+                <option value="Box">🚗 Box</option>
+                <option value="CapannoniLocArtigianali">🏭 Capannoni, Loc. Artigianali</option>
+                <option value="CasaliRuderi">🏚️ Casali e Ruderi</option>
+                <option value="CaseSemindipendenti">🏘️ Case Semindipendenti</option>
+                <option value="LocaliCommerciali">🏬 Locali Commerciali</option>
+                <option value="NuoveCostruzioni">🏗️ Nuove Costruzioni</option>
+                <option value="Terreni">🌾 Terreni</option>
+                <option value="VilleCaseIndipendenti">🏰 Ville e Case Indipendenti</option>
+              </select>
+            </div>
+            <!--end::Input group-->
+          </div>
+        </div>
+        <!--end::Dati Principali-->
+
+        <!--begin::Localizzazione-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-geolocation fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Localizzazione</h4>
+              <p class="text-muted small mb-0">Riferimenti geografici e zona di ricerca.</p>
+            </div>
+          </div>
+          <div>
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-map fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Provincia <span class="text-danger">*</span>
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.Province" required>
+                  <option value="">🗺️ Seleziona provincia</option>
+                  <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-geolocation fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Comune <span class="text-danger">*</span>
+                </label>
+                <select class="form-select form-select-lg" multiple v-model="selectedCities" required>
+                  <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }}</option>
+                </select>
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-position fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Località
+              </label>
+              <input class="form-control form-control-lg" v-model="formData.Location" type="text" placeholder="Inserisci la località (opzionale)" />
+            </div>
+            <!--end::Input group-->
+          </div>
+        </div>
+        <!--end::Localizzazione-->
+
+        <!--begin::Valori Economici-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-wallet fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Valori Economici</h4>
+              <p class="text-muted small mb-0">Range di prezzo o canone desiderato.</p>
+            </div>
+          </div>
+          <div>
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-dollar fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Canone - Prezzo: Da
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-dollar fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Canone - Prezzo: A
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
+              </div>
+            </div>
+            <!--end::Input group-->
+          </div>
+        </div>
+        <!--end::Valori Economici-->
+
+        <!--begin::Stato e Impostazioni-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-shield-tick fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Stato e Impostazioni</h4>
+              <p class="text-muted small mb-0">Controlla stato e flag della richiesta.</p>
+            </div>
+          </div>
+          <div>
+            <div class="row g-3">
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-archived"
+                      v-model="formData.Archived"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-archived">
+                      Archiviata
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-closed"
+                      v-model="formData.Closed"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-closed">
+                      Evasa
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card p-3">
+                  <div class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="toggle-mortgage"
+                      v-model="formData.MortgageAdviceRequired"
+                    />
+                    <label class="form-check-label ms-3 fw-semibold" for="toggle-mortgage">
+                      Consulenza mutuo richiesta
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::Stato e Impostazioni-->
+
+        <!--begin::Caratteristiche Tecniche-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-setting fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Caratteristiche Tecniche</h4>
+              <p class="text-muted small mb-0">Dimensioni, dotazioni e caratteristiche desiderate.</p>
+            </div>
+          </div>
+          <div>
+            <!--begin::Input group-->
+            <div class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Numero Locali
+              </label>
+              <input class="form-control form-control-lg" v-model="formData.RoomsNumber" type="text" placeholder="Es: 3+1, 4+2, etc." />
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  MQ Da
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  MQ A
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-garden fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Giardino Da (mq)
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-garden fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Giardino A (mq)
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Stato dell'immobile
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.PropertyState">
+                  <option value="">🏠 Seleziona Stato Immobile</option>
+                  <option value="0">🔒 Affittato</option>
+                  <option value="1">🏗️ In corso di costruzione</option>
+                  <option value="2">✅ Libero</option>
+                  <option value="3">📋 Libero al Rogito</option>
+                  <option value="4">🏛️ Nuda Proprietà</option>
+                  <option value="5">👥 Occupato</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-fire fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Riscaldamento
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.Heating">
+                  <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
+                  <option value="Autonomo">🏠 Autonomo</option>
+                  <option value="Centralizzato">🏢 Centralizzato</option>
+                  <option value="Inesistente">❌ Inesistente</option>
+                </select>
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-car fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Posti Auto
+              </label>
+              <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" placeholder="Inserisci il numero di posti auto" min="0" />
+            </div>
+            <!--end::Input group-->
+          </div>
+        </div>
+        <!--end::Caratteristiche Tecniche-->
+
+        <!--begin::Media e Note-->
+        <div class="mb-4 mb-md-5 mb-xl-6">
+          <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+              <i class="ki-duotone ki-notepad fs-3 fs-md-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </div>
+            <div class="flex-grow-1">
+              <h4 class="h5 h4-md fw-bold text-palette-primary mb-1">Note</h4>
+              <p class="text-muted small mb-0">Inserisci e consulta le note della richiesta.</p>
+            </div>
+          </div>
+          <div>
+            <!--begin::Input group-->
+            <div class="mb-3">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                <i class="ki-duotone ki-notepad fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                Nota principale
+              </label>
+              <textarea class="form-control form-control-lg" v-model="formData.Notes" rows="3" placeholder="Inserisci eventuali note..."></textarea>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Riepilogo Note-->
+            <div v-if="formData.RequestNotes && formData.RequestNotes.length" class="mt-4">
+              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-3">
+                <i class="ki-duotone ki-notepad fs-5 text-primary">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                Riepilogo Note
+              </label>
+              <div class="row g-3">
+                <div
+                  v-for="(note, index) in formData.RequestNotes"
+                  :key="index"
+                  class="col-12"
+                >
+                  <div class="card p-3" v-html="note.Text"></div>
+                </div>
+              </div>
+            </div>
+            <!--end::Riepilogo Note-->
+          </div>
+        </div>
+        <!--end::Media e Note-->
+        <div class="d-flex align-items-end justify-content-end">
+          <button type="button" @click="deleteItem()" class="btn btn-danger me-2">
+            <span class="btn-icon">
+              <i class="ki-duotone ki-trash fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </span>
+            <span class="btn-label">Elimina</span>
+          </button>
+          <!--begin::Button-->
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
+            <span v-if="!loading" class="d-flex align-items-center">
+              <span class="btn-icon">
+                <i class="ki-duotone ki-check fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+              <span class="btn-label">Salva Modifiche</span>
+            </span>
+            <span v-if="loading" class="d-flex align-items-center">
+              <KTSpinner size="sm" :inline="true" />
+              <span class="btn-label">Attendere...</span>
+            </span>
+          </button>
+          <!--end::Button-->
+        </div>
+      </div>
+    </form>
+    <!--end::Form-->
+    </div>
+
+    <div v-if="!loading" class="container-fluid px-0 px-md-3 mt-5 mt-md-7 mt-xl-10">
+      <div class="card card-palette mb-3 mb-md-5 mb-xl-10">
+      <!--begin::Card header-->
+      <div class="card-header card-palette-header border-0 pt-6 pb-4">
+        <!--begin::Card title-->
+        <div class="card-title m-0">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="symbol symbol-40px symbol-sm-45px me-2 me-md-3">
+              <span class="symbol-label bg-primary">
+                <i class="ki-duotone ki-home fs-2 fs-md-1 text-white">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+            </div>
+            <div class="flex-grow-1">
+              <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Immobili Richiesta</h3>
+              <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">Elenco degli immobili associati</span>
             </div>
           </div>
         </div>
@@ -539,6 +547,10 @@
         <!--begin::Card toolbar-->
         <div class="card-toolbar">
           <div class="search-wrapper-simple">
+            <i class="ki-duotone ki-magnifier fs-3 search-icon-simple">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
             <input 
               type="text" 
               v-model="search" 
@@ -553,7 +565,7 @@
       <!--end::Card header-->
       
       <!--begin::Card body-->
-      <div class="card-body card-palette pt-5">
+      <div class="card-body pt-5">
           <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="formData.RealEstateProperties"
             :header="tableHeader" :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id">
             <template v-slot:Id="{ row: item }">
@@ -602,6 +614,9 @@
         <!--end::Card body-->
       </div>
       <!--end::Card-->
+    </div>
+  </div>
+  <!--end::Content-->
 </template>
 
 <script lang="ts">
