@@ -157,7 +157,11 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Price">
-                  <el-input v-model="formData.Price" type="number" size="large" class="form-control-palette" placeholder="Inserisci il prezzo" />
+                  <el-input v-model="formData.Price" type="number" size="large" class="form-control-palette" placeholder="Inserisci il prezzo">
+                    <template #append>
+                      <span>€</span>
+                    </template>
+                  </el-input>
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -178,6 +182,26 @@
                 <el-form-item prop="AssignmentEnd">
                   <el-input v-model="formData.AssignmentEnd" type="date" size="large" class="form-control-palette" />
                 </el-form-item>
+                <!--end::Input-->
+              </div>
+              <!--end::Col-->
+
+              <!--begin::Col-->
+              <div class="d-flex flex-column mb-2 fv-row">
+                <!--begin::Label-->
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <i class="ki-duotone ki-check-circle fs-5 me-2 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  <span class="">Disponibilità</span>
+                </label>
+                <!--end::Label-->
+                <!--begin::Input-->
+                <select class="form-select form-select-lg" v-model="formData.Availability">
+                  <option value="Libero">✅ Libero</option>
+                  <option value="Occupato">🔒 Occupato</option>
+                </select>
                 <!--end::Input-->
               </div>
               <!--end::Col-->
@@ -977,25 +1001,6 @@
                   <!--end::Input-->
                 </div>
                 <!--end::Col-->
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-check-circle fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span class="">Disponibilità</span>
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <select class="form-select form-select-lg" v-model="formData.Availability">
-                    <option value="Libero">✅ Libero</option>
-                    <option value="Occupato">🔒 Occupato</option>
-                  </select>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
 
                         <!--begin::Input group-->
         <div class="d-flex flex-column mb-7 fv-row">
@@ -1054,9 +1059,9 @@
             <!--end::Label-->
             <!--begin::Input-->
             <el-form-item prop="FlatRateCommission">
-              <el-input v-model="formData.FlatRateCommission" type="number" size="large" placeholder="Percentuale">
+              <el-input v-model="formData.FlatRateCommission" type="number" size="large" placeholder="Inserisci importo">
                 <template #append>
-                  <span>%</span>
+                  <span>€</span>
                 </template>
               </el-input>
             </el-form-item>
@@ -1075,9 +1080,9 @@
             <!--end::Label-->
             <!--begin::Input-->
             <el-form-item prop="CommissionReversal">
-              <el-input v-model="formData.CommissionReversal" type="number" size="large" placeholder="Percentuale">
+              <el-input v-model="formData.CommissionReversal" type="number" size="large" placeholder="Inserisci importo">
                 <template #append>
-                  <span>%</span>
+                  <span>€</span>
                 </template>
               </el-input>
             </el-form-item>
@@ -1593,7 +1598,7 @@ export default defineComponent({
       
       // Se anche FlatRateCommission ha un valore, mostra errore
       if (flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0) {
-        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
+        callback(new Error("Non è possibile inserire sia la provvigione concordata che quella forfettaria. Scegli una sola opzione."));
       } else {
         callback();
       }
@@ -1610,7 +1615,7 @@ export default defineComponent({
       
       // Se anche AgreedCommission ha un valore, mostra errore
       if (agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0) {
-        callback(new Error("Si puo inserire solo una provvigione: concordata o forfettaria."));
+        callback(new Error("Non è possibile inserire sia la provvigione concordata che quella forfettaria. Scegli una sola opzione."));
       } else {
         callback();
       }
@@ -1833,15 +1838,18 @@ export default defineComponent({
       
       if (hasAgreed && hasFlatRate) {
         Swal.fire({
-          text: "Si puo inserire solo una provvigione: concordata o forfettaria.",
+          title: "Errore di validazione",
+          text: "Non è possibile inserire sia la provvigione concordata che quella forfettaria. Devi scegliere una sola opzione. Rimuovi uno dei due valori per continuare.",
           icon: "error",
           buttonsStyling: false,
-          confirmButtonText: "Ok",
+          confirmButtonText: "Ok, capito",
           heightAuto: false,
           customClass: {
             confirmButton: "btn btn-primary",
           },
         });
+        markFieldInvalid("AgreedCommission");
+        markFieldInvalid("FlatRateCommission");
         return;
       }
 

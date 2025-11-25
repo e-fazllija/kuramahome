@@ -274,6 +274,17 @@
                   </select>
                 </div>
               </div>
+
+              <div class="mb-3">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
+                <el-form-item prop="Availability">
+                  <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
+                    <option value="">Seleziona la Disponibilità</option>
+                    <option value="Libero">Libero</option>
+                    <option value="Occupato">Occupato</option>
+                  </select>
+                </el-form-item>
+              </div>
             </div>
           </div>
 
@@ -657,36 +668,33 @@
                 <div class="col-12 col-md-6">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Prezzo <span class="text-danger">*</span></label>
                   <el-form-item prop="Price">
-                    <input
-                      class="form-control form-control-lg"
+                    <el-input
                       v-model="formData.Price"
                       type="number"
+                      placeholder="Inserisci il prezzo"
                       required
                       :disabled="!canModify && user.Role === 'Agent'"
-                    />
+                    >
+                      <template #append>
+                        <span>€</span>
+                      </template>
+                    </el-input>
                   </el-form-item>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Prezzo ribassato</label>
-                  <input
-                    class="form-control form-control-lg"
+                  <el-input
                     v-model="formData.PriceReduced"
                     type="number"
+                    placeholder="Inserisci il prezzo ribassato"
                     :disabled="!canModify && user.Role === 'Agent'"
-                  />
+                  >
+                    <template #append>
+                      <span>€</span>
+                    </template>
+                  </el-input>
                 </div>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
-                <el-form-item prop="Availability">
-                  <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">Seleziona la Disponibilità</option>
-                    <option value="Libero">Libero</option>
-                    <option value="Occupato">Occupato</option>
-                  </select>
-                </el-form-item>
               </div>
 
               <div class="row g-3 mb-3">
@@ -712,11 +720,11 @@
                     <el-input
                       v-model="formData.FlatRateCommission"
                       type="number"
-                      placeholder="Inserisci percentuale"
+                      placeholder="Inserisci importo"
                       :disabled="!canModify && user.Role === 'Agent'"
                     >
                       <template #append>
-                        <span>%</span>
+                        <span>€</span>
                       </template>
                     </el-input>
                   </el-form-item>
@@ -728,11 +736,11 @@
                     <el-input
                       v-model="formData.CommissionReversal"
                       type="number"
-                      placeholder="Inserisci percentuale"
+                      placeholder="Inserisci importo"
                       :disabled="!canModify && user.Role === 'Agent'"
                     >
                       <template #append>
-                        <span>%</span>
+                        <span>€</span>
                       </template>
                     </el-input>
                   </el-form-item>
@@ -1469,7 +1477,49 @@ export default defineComponent({
           message: "Seleziona la disponibilità",
           trigger: "change",
         },
-      ]
+      ],
+      AgreedCommission: [
+        {
+          validator: (_rule: any, value: number | string, callback: any) => {
+            const numericValue = Number(value);
+            const flatRateValue = Number(formData.value.FlatRateCommission);
+            
+            // Se il valore è vuoto o zero, è valido
+            if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+              return callback();
+            }
+            
+            // Se anche FlatRateCommission ha un valore, mostra errore
+            if (flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0) {
+              callback(new Error("Non è possibile inserire sia la provvigione concordata che quella forfettaria. Scegli una sola opzione."));
+            } else {
+              callback();
+            }
+          },
+          trigger: "change",
+        },
+      ],
+      FlatRateCommission: [
+        {
+          validator: (_rule: any, value: number | string, callback: any) => {
+            const numericValue = Number(value);
+            const agreedValue = Number(formData.value.AgreedCommission);
+            
+            // Se il valore è vuoto o zero, è valido
+            if (!value || value === "" || Number.isNaN(numericValue) || numericValue <= 0) {
+              return callback();
+            }
+            
+            // Se anche AgreedCommission ha un valore, mostra errore
+            if (agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0) {
+              callback(new Error("Non è possibile inserire sia la provvigione concordata che quella forfettaria. Scegli una sola opzione."));
+            } else {
+              callback();
+            }
+          },
+          trigger: "change",
+        },
+      ],
     });
 
 
@@ -1771,6 +1821,32 @@ export default defineComponent({
             confirmButton: "btn btn-primary",
           },
         });
+        return;
+      }
+
+      // Verifica che non siano compilate entrambe le provvigioni prima della validazione
+      const agreedValue = Number(formData.value.AgreedCommission);
+      const flatRateValue = Number(formData.value.FlatRateCommission);
+      const hasAgreed = agreedValue && !Number.isNaN(agreedValue) && agreedValue > 0;
+      const hasFlatRate = flatRateValue && !Number.isNaN(flatRateValue) && flatRateValue > 0;
+      
+      if (hasAgreed && hasFlatRate) {
+        Swal.fire({
+          title: "Errore di validazione",
+          text: "Non è possibile inserire sia la provvigione concordata che quella forfettaria. Devi scegliere una sola opzione. Rimuovi uno dei due valori per continuare.",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok, capito",
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
+        // Forza la validazione dei campi per mostrare gli errori
+        if (formRef.value) {
+          formRef.value.validateField('AgreedCommission', () => {});
+          formRef.value.validateField('FlatRateCommission', () => {});
+        }
         return;
       }
 
