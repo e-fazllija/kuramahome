@@ -57,7 +57,6 @@
                 :close-on-select="true"
                 :clear-on-select="false"
                 placeholder="Seleziona il cliente"
-                class="multiselect-modern"
               />
             <!--end::Input-->
           </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="modal fade" id="kt_modal_add_property" ref="addPropertyModalRef" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
-    <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
       <!--begin::Modal content-->
       <div class="modal-content card-palette modal-shell">
         <!--begin::Modal header-->
@@ -71,29 +71,18 @@
               <div class="d-flex flex-column mb-5 fv-row">
                 <!--begin::Label-->
                 <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.CustomerId }]">
-                  <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
+                  <i class="ki-duotone ki-user fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                    <span class="path5"></span>
                   </i>
                   <span>Cliente</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="CustomerId">
-                  <Multiselect
-                    v-model="formData.CustomerId"
-                    :options="inserModel.Customers"
-                    label="label"
-                    valueProp="Id"
-                    :searchable="true"
-                    :close-on-select="true"
-                    :clear-on-select="false"
-                    placeholder="Seleziona il cliente"
-                    class="multiselect-modern form-control-palette w-100"
-                  />
+                  <select class="form-select form-select-lg form-control-palette" v-model="formData.CustomerId">
+                    <option v-for="(user, index) in inserModel.Customers" :key="index" :value="user.Id">👤 {{ user.FirstName }} {{ user.LastName }}</option>
+                  </select>
                 </el-form-item>
                 <!--end::Input-->
               </div>

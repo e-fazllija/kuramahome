@@ -123,7 +123,6 @@
                     :close-on-select="true"
                     :clear-on-select="false"
                     placeholder="Seleziona il cliente"
-                    class="multiselect-modern w-100"
                     :disabled="!canModify && user.Role === 'Agent'"
                   />
                 </el-form-item>

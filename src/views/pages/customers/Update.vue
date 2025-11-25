@@ -53,7 +53,7 @@
            <div class="col-lg-8 fv-row">
              <select 
                v-model="formData.UserId"
-               class="form-select modern-select"
+               class="form-select form-select-lg"
                name="owner"
                required
              >
@@ -89,7 +89,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+            <input class="form-control form-control-lg" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -110,7 +110,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+            <input class="form-control form-control-lg" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -129,7 +129,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+            <input class="form-control form-control-lg" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -148,7 +148,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+            <input class="form-control form-control-lg" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -272,7 +272,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <input class="form-control modern-input" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+            <input class="form-control form-control-lg" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
           </div>
           <!--end::Col-->
         </div>
@@ -293,7 +293,7 @@
           <div class="col-lg-8 fv-row">
             <select 
               v-model="formData.State"
-              class="form-select modern-select"
+              class="form-select form-select-lg"
               name="province"
               :disabled="!canModifyCustomer && user.Role === 'Agent'"
             >
@@ -320,7 +320,7 @@
           <!--end::Label-->
           <!--begin::Input-->
           <div class="col-lg-8 fv-row">
-            <select class="form-select modern-select" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
+            <select class="form-select form-select-lg" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
               <option value="">🏙️ Seleziona comune</option>
               <option v-for="(city, index) in cities" :key="index" :value="city.Name">
                 {{ city.Name }}
@@ -347,7 +347,7 @@
           <!--end::Label-->
           <!--begin::Col-->
           <div class="col-lg-8 fv-row">
-            <textarea class="form-control modern-textarea" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer && user.Role === 'Agent'"></textarea>
+            <textarea class="form-control form-control-lg" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer && user.Role === 'Agent'"></textarea>
           </div>
           <!--end::Col-->
         </div>

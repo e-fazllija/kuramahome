@@ -174,7 +174,6 @@
                   :close-on-select="true"
                   :clear-on-select="false"
                   placeholder="Seleziona l'immobile"
-                  class="multiselect-modern"
                 />
                 <!--end::Input-->
               </div>
@@ -201,7 +200,6 @@
                   :close-on-select="true"
                   :clear-on-select="false"
                   placeholder="Seleziona la richiesta"
-                  class="multiselect-modern"
                 />
                 <!--end::Input-->
               </div>
@@ -230,7 +228,6 @@
                   :close-on-select="true"
                   :clear-on-select="false"
                   placeholder="Seleziona il cliente"
-                  class="multiselect-modern"
                 />
                 <!--end::Input-->
               </div>

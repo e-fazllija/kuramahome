@@ -9,9 +9,9 @@
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered modal-xl">
       <!--begin::Modal content-->
-      <div class="modal-content">
+      <div class="modal-content card-palette modal-shell">
         <!--begin::Modal header-->
-        <div class="modal-header" id="kt_modal_add_customer_header">
+        <div class="modal-header card-palette-header modal-header-accent" id="kt_modal_add_customer_header">
           <!--begin::Modal title-->
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">

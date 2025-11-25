@@ -6,7 +6,7 @@
       tabindex="-1"
     >
       <!--begin::Modal dialog-->
-      <div class="modal-dialog modal-dialog-centered mw-650px">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
         <!--begin::Modal content-->
         <div class="modal-content card-palette modal-shell">
         <!--begin::Modal header-->
@@ -88,7 +88,6 @@
                 :close-on-select="true"
                 :clear-on-select="false"
                 placeholder="Seleziona il cliente"
-                class="multiselect-modern"
               />
                     <!--end::Input-->
                 </div>
