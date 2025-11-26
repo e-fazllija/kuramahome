@@ -2,6 +2,31 @@ import ApiService from "@/core/services/ApiService";
 import { useAuthStore, type User } from "@/stores/auth";
 const store = useAuthStore();
 
+/**
+ * Pulisce i campi numerici convertendo valori vuoti/undefined/null in 0
+ * per evitare errori di deserializzazione nel backend C#
+ */
+const cleanNumericFields = (data: any): any => {
+  const cleaned = { ...data };
+  
+  // Lista dei campi numerici da pulire
+  const numericFields = [
+    'Phone'
+  ];
+
+  numericFields.forEach(field => {
+    if (cleaned[field] === undefined || cleaned[field] === null || cleaned[field] === '' || Number.isNaN(Number(cleaned[field]))) {
+      cleaned[field] = 0;
+    } else {
+      // Assicurati che il valore sia un numero valido
+      const numValue = Number(cleaned[field]);
+      cleaned[field] = Number.isNaN(numValue) ? 0 : numValue;
+    }
+  });
+
+  return cleaned;
+};
+
 export class Customer{
   Id?: number;
   Buyer: boolean;
@@ -84,7 +109,9 @@ const getCustomer = (id: number) : Promise<Customer> => {
 };
 
 const createCustomer = async (formData:Customer) => {
-  return ApiService.post("Customers/Create", formData)
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedData = cleanNumericFields(formData);
+  return ApiService.post("Customers/Create", cleanedData)
     .then(({ data }) => {
       const result = data as Customer;
       return result;
@@ -102,7 +129,9 @@ const createCustomer = async (formData:Customer) => {
 };
 
 const updateCustomer = async (formData:Customer) => {
-  return ApiService.post("Customers/Update", formData)
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedData = cleanNumericFields(formData);
+  return ApiService.post("Customers/Update", cleanedData)
     .then(({ data }) => {
       const result = data as Customer;
       return result;

@@ -287,6 +287,47 @@ const uploadFiles = async (files: FileList, id: number) => {
     });
 };
 
+/**
+ * Pulisce i campi numerici convertendo valori vuoti/undefined/null in 0
+ * per evitare errori di deserializzazione nel backend C#
+ */
+const cleanNumericFields = (data: any): any => {
+  const cleaned = { ...data };
+  
+  // Lista dei campi numerici da pulire
+  const numericFields = [
+    'CommercialSurfaceate',
+    'TotalBuildingfloors',
+    'Elevators',
+    'Bedrooms',
+    'WarehouseRooms',
+    'Kitchens',
+    'Bathrooms',
+    'ParkingSpaces',
+    'YearOfConstruction',
+    'Price',
+    'PriceReduced',
+    'MQGarden',
+    'CondominiumExpenses',
+    'AgreedCommission',
+    'FlatRateCommission',
+    'CommissionReversal',
+    'CustomerId'
+  ];
+
+  numericFields.forEach(field => {
+    if (cleaned[field] === undefined || cleaned[field] === null || cleaned[field] === '' || Number.isNaN(Number(cleaned[field]))) {
+      cleaned[field] = 0;
+    } else {
+      // Assicurati che il valore sia un numero valido
+      const numValue = Number(cleaned[field]);
+      cleaned[field] = Number.isNaN(numValue) ? 0 : numValue;
+    }
+  });
+
+  return cleaned;
+};
+
 const createRealEstateProperty = async (form: any) => {
   const values = form as RealEstateProperty;
   const currentUser = store.user;
@@ -296,17 +337,21 @@ const createRealEstateProperty = async (form: any) => {
   if (!values.UserId && values.AgentId) {
     values.UserId = values.AgentId;
   }
+  
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedValues = cleanNumericFields(values);
+  
   const formData = new FormData();
 
   // Campi da ignorare (non inviati al backend)
   const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label', 'EffectiveCommission'];
 
-  for (const key in values) {
-    if (ignoreFields.includes(key) || values[key as keyof RealEstateProperty] === undefined) {
+  for (const key in cleanedValues) {
+    if (ignoreFields.includes(key) || cleanedValues[key as keyof RealEstateProperty] === undefined) {
       continue;
     }
 
-    const value = values[key as keyof RealEstateProperty];
+    const value = cleanedValues[key as keyof RealEstateProperty];
     
     // Salta valori null o undefined
     if (value === null || value === undefined) {
@@ -386,7 +431,11 @@ const updateRealEstateProperty = async (formData: any) => {
   if (!values.UserId && values.AgentId) {
     values.UserId = values.AgentId;
   }
-  return await ApiService.post("RealEstateProperty/Update", values)
+  
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedValues = cleanNumericFields(values);
+  
+  return await ApiService.post("RealEstateProperty/Update", cleanedValues)
     .then(({ data }) => {
       const result = data as RealEstateProperty;
       return result;
