@@ -160,13 +160,21 @@
                     Agente <span class="text-danger">*</span>
                   </label>
                   <el-form-item prop="AgentId">
-                    <input
-                      class="form-control form-control-lg agent-readonly"
-                      :value="agentName"
-                      type="text"
-                      readonly
-                      disabled
-                    />
+                    <select 
+                      class="form-select form-select-lg" 
+                      v-model="formData.AgentId" 
+                      required
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    >
+                      <option value="">Seleziona l'agente</option>
+                      <option
+                        v-for="agent in inserModel.Users"
+                        :key="agent.Id"
+                        :value="agent.Id"
+                      >
+                        {{ agent.FirstName }} {{ agent.LastName }}
+                      </option>
+                    </select>
                   </el-form-item>
                 </div>
               </div>
@@ -182,7 +190,6 @@
                   </label>
                   <el-form-item prop="Category">
                     <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
-                      <option value="">Seleziona una Categoria...</option>
                       <option value="Residenziale">Residenziale</option>
                       <option value="Capannone">Capannone</option>
                       <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
@@ -227,7 +234,6 @@
                 </label>
                 <el-form-item prop="Category">
                   <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">Seleziona una Categoria...</option>
                     <option value="Residenziale">Residenziale</option>
                     <option value="Capannone">Capannone</option>
                     <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
@@ -251,7 +257,6 @@
                   </label>
                   <el-form-item prop="Status">
                     <select class="form-select form-select-lg" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
-                      <option value="">Scegli tra vendita e affitto</option>
                       <option value="Vendita">Vendita</option>
                       <option value="Affitto">Affitto</option>
                     </select>
@@ -279,7 +284,6 @@
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
                 <el-form-item prop="Availability">
                   <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">Seleziona la Disponibilità</option>
                     <option value="Libero">Libero</option>
                     <option value="Occupato">Occupato</option>
                   </select>
@@ -516,7 +520,6 @@
               <div class="mb-3">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Arredamento</label>
                 <select class="form-select form-select-lg" v-model="formData.Furniture" :disabled="!canModify && user.Role === 'Agent'">
-                  <option value="">Seleziona il tipo di arredamento</option>
                   <option value="Arredato">Arredato</option>
                   <option value="Non Arredato">Non Arredato</option>
                   <option value="Parzialmente Arredato">Parzialmente Arredato</option>
@@ -591,7 +594,6 @@
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Stato dell&apos;immobile <span class="text-danger">*</span></label>
                 <el-form-item prop="StateOfTheProperty">
                   <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty" :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">Seleziona lo Stato dell'immobile</option>
                     <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
                     <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
                     <option value="Buono / Abitabile">Buono / Abitabile</option>
@@ -953,8 +955,8 @@
               </div>
             </div>
           </div>
-          <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id" class="d-flex align-items-end justify-content-end">
-            <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()" class="btn btn-danger me-2">
+          <div v-if="user.Id === formData.UserId || (user.Role && (user.Role === 'Admin' || user.Role.toLowerCase() === 'admin')) || (formData.User && formData.User.AdminId === user.Id)" class="d-flex align-items-end justify-content-end">
+            <button v-if="(user.Role && (user.Role === 'Admin' || user.Role.toLowerCase() === 'admin')) || (user.Role === 'Agency' && formData.User && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()" class="btn btn-danger me-2">
               <span class="btn-icon">
                 <i class="ki-duotone ki-trash fs-3">
                   <span class="path1"></span>
@@ -1255,7 +1257,7 @@ export default defineComponent({
 
     const formData = ref<RealEstateProperty>({
       Title: "",
-      Category: "",
+      Category: "Residenziale",
       Typology: "",
       InHome: false,
       Highlighted: false,
@@ -1263,7 +1265,7 @@ export default defineComponent({
       Negotiation: false,
       Sold: false,
       Archived: false,
-      Status: "",
+      Status: "Vendita",
       AddressLine: "",
       City: "",
       State: "",
@@ -1278,20 +1280,20 @@ export default defineComponent({
       WarehouseRooms: 0,
       Kitchens: 0,
       Bathrooms: 0,
-      Furniture: "",
+      Furniture: "Arredato",
       OtherFeatures: "",
       ParkingSpaces: 0,
       Heating: "",
       Exposure: "",
       EnergyClass: "",
       TypeOfProperty: "",
-      StateOfTheProperty: "",
+      StateOfTheProperty: "Nuovo / In Costruzione",
       YearOfConstruction: 0,
       Price: 0,
       PriceReduced: 0,
       MQGarden: 0,
       CondominiumExpenses: 0,
-      Availability: "",
+      Availability: "Libero",
       Description: "",
       CustomerId: null,
       UserId: "",
@@ -1302,7 +1304,7 @@ export default defineComponent({
       AgreedCommission: 0,
       FlatRateCommission: 0,
       CommissionReversal: 0,
-      TypeOfAssignment: "",
+      TypeOfAssignment: "Verbale",
     });
 
     const inserModel = ref<InsertModel>({
@@ -1878,8 +1880,7 @@ export default defineComponent({
             }).then(() => {
               // router.push({ name: 'properties' })
             });
-          } catch ({ response }) {
-            console.log(response);
+          } catch (error: any) {
             loading.value = false;
             Swal.fire({
               text: "Attenzione, si è verificato un errore.",
@@ -2022,38 +2023,52 @@ export default defineComponent({
 
     // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
     const canModify = computed(() => {
-      if (!formData.value || !formData.value.User) {
+      if (!formData.value) {
+        return false;
+      }
+
+      const currentUser = user;
+      
+      if (!currentUser || !currentUser.Role) {
+        return false;
+      }
+
+      const userRole = currentUser.Role.trim();
+
+      // Se l'utente è il proprietario, può sempre modificare
+      if (formData.value.UserId && currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può modificare tutti gli immobili (anche se User non è presente)
+      // Controllo case-insensitive per sicurezza
+      if (userRole === 'Admin' || userRole.toLowerCase() === 'admin') {
+        return true;
+      }
+
+      // Per Agency e Agent, serve che User sia presente
+      if (!formData.value.User) {
         return false;
       }
 
       const propertyOwner = formData.value.User;
-      const currentUser = user;
-
-      // Se l'utente è il proprietario, può sempre modificare
-      if (currentUser.Id === formData.value.UserId) {
-        return true;
-      }
-
-      // Admin: può modificare tutti gli immobili
-      if (currentUser.Role === 'Admin') {
-        return true;
-      }
 
       // Agency: può modificare proprie + dei propri Agent
-      if (currentUser.Role === 'Agency') {
+      if (userRole === 'Agency' || userRole.toLowerCase() === 'agency') {
         // L'immobile è dell'Agency stessa
         if (formData.value.UserId === currentUser.Id) {
           return true;
         }
         // L'immobile è di un suo Agent (verifica tramite AdminId)
-        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+        // Se AdminId corrisponde, significa che è un Agent dell'Agency (anche se Role non è presente)
+        if (propertyOwner.AdminId === currentUser.Id) {
           return true;
         }
         return false;
       }
 
       // Agent: può modificare solo proprie
-      if (currentUser.Role === 'Agent') {
+      if (userRole === 'Agent' || userRole.toLowerCase() === 'agent') {
         return formData.value.UserId === currentUser.Id;
       }
 
