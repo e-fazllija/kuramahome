@@ -668,32 +668,32 @@
                 <div class="col-12 col-md-6">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Prezzo <span class="text-danger">*</span></label>
                   <el-form-item prop="Price">
-                    <el-input
-                      v-model="formData.Price"
-                      type="number"
-                      placeholder="Inserisci il prezzo"
-                      required
-                      :disabled="!canModify && user.Role === 'Agent'"
-                    >
-                      <template #append>
-                        <span>€</span>
-                      </template>
-                    </el-input>
+                    <div class="input-group">
+                      <input
+                        class="form-control form-control-lg"
+                        v-model="formData.Price"
+                        type="number"
+                        placeholder="Inserisci il prezzo"
+                        required
+                        :disabled="!canModify && user.Role === 'Agent'"
+                      />
+                      <span class="input-group-text">€</span>
+                    </div>
                   </el-form-item>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Prezzo ribassato</label>
-                  <el-input
-                    v-model="formData.PriceReduced"
-                    type="number"
-                    placeholder="Inserisci il prezzo ribassato"
-                    :disabled="!canModify && user.Role === 'Agent'"
-                  >
-                    <template #append>
-                      <span>€</span>
-                    </template>
-                  </el-input>
+                  <div class="input-group">
+                    <input
+                      class="form-control form-control-lg"
+                      v-model="formData.PriceReduced"
+                      type="number"
+                      placeholder="Inserisci il prezzo ribassato"
+                      :disabled="!canModify && user.Role === 'Agent'"
+                    />
+                    <span class="input-group-text">€</span>
+                  </div>
                 </div>
               </div>
 
@@ -701,64 +701,63 @@
                 <div class="col-12 col-md-6 col-lg-4">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Provvigione concordata</label>
                   <el-form-item prop="AgreedCommission">
-                    <el-input
-                      v-model="formData.AgreedCommission"
-                      type="number"
-                      placeholder="Inserisci percentuale"
-                      :disabled="!canModify && user.Role === 'Agent'"
-                    >
-                      <template #append>
-                        <span>%</span>
-                      </template>
-                    </el-input>
+                    <div class="input-group">
+                      <input
+                        class="form-control form-control-lg"
+                        v-model="formData.AgreedCommission"
+                        type="number"
+                        placeholder="Inserisci percentuale"
+                        :disabled="!canModify && user.Role === 'Agent'"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
                   </el-form-item>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-4">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Provvigione forfettaria</label>
                   <el-form-item prop="FlatRateCommission">
-                    <el-input
-                      v-model="formData.FlatRateCommission"
-                      type="number"
-                      placeholder="Inserisci importo"
-                      :disabled="!canModify && user.Role === 'Agent'"
-                    >
-                      <template #append>
-                        <span>€</span>
-                      </template>
-                    </el-input>
+                    <div class="input-group">
+                      <input
+                        class="form-control form-control-lg"
+                        v-model.number="formData.FlatRateCommission"
+                        type="number"
+                        placeholder="Inserisci importo"
+                        :disabled="!canModify && user.Role === 'Agent'"
+                      />
+                      <span class="input-group-text">€</span>
+                    </div>
                   </el-form-item>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-4">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Storno provvigione</label>
                   <el-form-item prop="CommissionReversal">
-                    <el-input
-                      v-model="formData.CommissionReversal"
-                      type="number"
-                      placeholder="Inserisci importo"
-                      :disabled="!canModify && user.Role === 'Agent'"
-                    >
-                      <template #append>
-                        <span>€</span>
-                      </template>
-                    </el-input>
+                    <div class="input-group">
+                      <input
+                        class="form-control form-control-lg"
+                        v-model.number="formData.CommissionReversal"
+                        type="number"
+                        placeholder="Inserisci importo"
+                        :disabled="!canModify && user.Role === 'Agent'"
+                      />
+                      <span class="input-group-text">€</span>
+                    </div>
                   </el-form-item>
                 </div>
               </div>
 
               <div class="form-field">
                 <label class="form-label fw-bold">Provvigione effettiva in €</label>
-                <el-input
-                  :model-value="effectiveCommission"
-                  type="text"
-                  readonly
-                  class="commission-effective-input"
-                >
-                  <template #append>
-                    <span>€</span>
-                  </template>
-                </el-input>
+                <div class="input-group">
+                  <input
+                    class="form-control form-control-lg commission-effective-input"
+                    :value="effectiveCommission"
+                    type="text"
+                    readonly
+                  />
+                  <span class="input-group-text">€</span>
+                </div>
                 <small class="text-palette-secondary d-block mt-1 fs-8">
                   Calcolata automaticamente: provvigione lorda - storno
                 </small>
@@ -1823,7 +1822,6 @@ export default defineComponent({
         });
         return;
       }
-
       // Verifica che non siano compilate entrambe le provvigioni prima della validazione
       const agreedValue = Number(formData.value.AgreedCommission);
       const flatRateValue = Number(formData.value.FlatRateCommission);
@@ -1849,7 +1847,7 @@ export default defineComponent({
         }
         return;
       }
-
+ 
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
           // Se la validazione è passata, procedi con il salvataggio

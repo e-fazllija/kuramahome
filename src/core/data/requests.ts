@@ -4,6 +4,38 @@ import type { Customer } from "@/core/data/customers";
 import type { RealEstateProperty } from "@/core/data/properties";
 const store = useAuthStore();
 
+/**
+ * Pulisce i campi numerici convertendo valori vuoti/undefined/null in 0
+ * per evitare errori di deserializzazione nel backend C#
+ */
+const cleanNumericFields = (data: any): any => {
+  const cleaned = { ...data };
+  
+  // Lista dei campi numerici da pulire
+  const numericFields = [
+    'CustomerId',
+    'PriceTo',
+    'PriceFrom',
+    'GardenFrom',
+    'GardenTo',
+    'MQFrom',
+    'MQTo',
+    'ParkingSpaces'
+  ];
+
+  numericFields.forEach(field => {
+    if (cleaned[field] === undefined || cleaned[field] === null || cleaned[field] === '' || Number.isNaN(Number(cleaned[field]))) {
+      cleaned[field] = 0;
+    } else {
+      // Assicurati che il valore sia un numero valido
+      const numValue = Number(cleaned[field]);
+      cleaned[field] = Number.isNaN(numValue) ? 0 : numValue;
+    }
+  });
+
+  return cleaned;
+};
+
 export class Request {
   Id?: number;
   CustomerId: number;
@@ -154,7 +186,9 @@ const getRequest = (id: number): Promise<Request> => {
 };
 
 const createRequest = async (formData: Request) => {
-  return ApiService.post("Requests/Create", formData)
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedData = cleanNumericFields(formData);
+  return ApiService.post("Requests/Create", cleanedData)
     .then(({ data }) => {
       const result = data as Request;
       return result;
@@ -172,7 +206,9 @@ const createRequest = async (formData: Request) => {
 };
 
 const updateRequest = async (formData: Request) => {
-  return ApiService.post("Requests/Update", formData)
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedData = cleanNumericFields(formData);
+  return ApiService.post("Requests/Update", cleanedData)
     .then(({ data }) => {
       const result = data as Request;
       return result;
