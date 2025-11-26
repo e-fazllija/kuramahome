@@ -45,6 +45,20 @@
       <!--end::Header wrapper-->
       <!--begin::Right side-->
       <div class="d-flex align-items-center ms-auto gap-2">
+          <!--begin::Theme toggle-->
+          <button 
+            class="btn btn-icon btn-active-color-primary theme-toggle-btn"
+            @click="toggleTheme"
+            type="button"
+            :aria-label="currentThemeMode === 'dark' ? 'Passa a modalità light' : 'Passa a modalità dark'"
+            :title="currentThemeMode === 'dark' ? 'Passa a modalità light' : 'Passa a modalità dark'"
+          >
+            <KTIcon 
+              :icon-name="currentThemeMode === 'dark' ? 'night-day' : 'moon'" 
+              icon-class="fs-2" 
+            />
+          </button>
+          <!--end::Theme toggle-->
           <KTHeaderNavbar />
           <!--begin::Mobile menu toggle-->
           <button 
@@ -145,6 +159,9 @@ import {
 import { useAuthStore } from "@/stores/auth";
 import MainMenuConfig from "@/core/config/MainMenuConfig";
 import { useI18n } from "vue-i18n";
+import { useThemeStore } from "@/stores/theme";
+import { useConfigStore } from "@/stores/config";
+import { ThemeModeComponent } from "@/assets/ts/layout";
 
 export default defineComponent({
   name: "layout-header",
@@ -156,6 +173,8 @@ export default defineComponent({
     const authStore = useAuthStore();
     const { t, te } = useI18n();
     const isMobileMenuOpen = ref(false);
+    const storeTheme = useThemeStore();
+    const storeConfig = useConfigStore();
     
     const userFullName = computed(() => {
       const user = authStore.user;
@@ -198,6 +217,31 @@ export default defineComponent({
       document.body.style.overflow = '';
     };
 
+    // Theme mode management
+    const currentThemeMode = computed(() => {
+      if (storeTheme.mode === "system") {
+        return ThemeModeComponent.getSystemMode();
+      }
+      return storeTheme.mode;
+    });
+
+    const toggleTheme = () => {
+      const currentMode = storeTheme.mode;
+      let newMode: "light" | "dark" | "system";
+      
+      if (currentMode === "system") {
+        // Se è system, determina il tema corrente e passa all'opposto
+        const systemMode = ThemeModeComponent.getSystemMode();
+        newMode = systemMode === "dark" ? "light" : "dark";
+      } else {
+        // Se è light o dark, passa all'opposto
+        newMode = currentMode === "dark" ? "light" : "dark";
+      }
+      
+      storeConfig.setLayoutConfigProperty("general.mode", newMode);
+      storeTheme.setThemeMode(newMode);
+    };
+
     return {
       layout,
       headerWidthFluid,
@@ -212,6 +256,8 @@ export default defineComponent({
       translate,
       toggleMobileMenu,
       closeMobileMenu,
+      currentThemeMode,
+      toggleTheme,
     };
   },
 });

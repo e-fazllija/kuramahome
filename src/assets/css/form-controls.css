@@ -43,10 +43,6 @@ label:hover {
   color: var(--bs-accent-primary) !important;
 }
 
-label .required {
-  color: var(--kh-status-danger);
-}
-
 /* Icons in Labels */
 .ki-duotone {
   transition: all 0.3s ease;

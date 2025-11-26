@@ -15,7 +15,7 @@
 }
 
 [data-bs-theme="dark"] .card-body {
-  background-color: #1e1e2d;
+  background-color: var(--bs-card-bg) !important;
 }
 
 [data-bs-theme="dark"] .card-title,

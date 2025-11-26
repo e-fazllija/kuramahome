@@ -235,4 +235,4 @@ const getToInsert = (): Promise<InsertModel> => {
     });
 };
 
-export { getRequests, getRequestsList, getRequest, createRequest, updateRequest, deleteRequest, getToInsert, getCustomerRequests }
+export { getRequests, getRequestsList, getRequest, createRequest, updateRequest, deleteRequest, getToInsert, getCustomerRequests, exportRequests }

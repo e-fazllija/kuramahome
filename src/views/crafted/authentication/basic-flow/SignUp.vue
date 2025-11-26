@@ -367,7 +367,7 @@
           <Field
             v-model="formData.province"
             as="select"
-            class="form-select modern-select"
+            class="form-select form-select-lg"
             name="province"
           >
             <option value="">🗺️ Seleziona provincia</option>
@@ -390,7 +390,7 @@
             <Field
               v-model="formData.city"
               as="select"
-              class="form-select modern-select"
+              class="form-select form-select-lg"
               name="city"
             >
               <option value="">🏙️ Seleziona comune</option>

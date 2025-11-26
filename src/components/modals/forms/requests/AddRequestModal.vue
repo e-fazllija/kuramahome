@@ -6,15 +6,15 @@
       tabindex="-1"
     >
       <!--begin::Modal dialog-->
-      <div class="modal-dialog modal-dialog-centered mw-650px">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
         <!--begin::Modal content-->
-        <div class="modal-content" style="border-radius: 0.95rem; border: 1px solid #e9ecef; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+        <div class="modal-content card-palette modal-shell">
         <!--begin::Modal header-->
-        <div class="modal-header" id="kt_modal_add_request_header" style="background: linear-gradient(135deg, #f1f3ff 0%, #e8f4ff 100%); border-radius: 0.95rem 0.95rem 0 0; border-bottom: 1px solid #e9ecef;">
+        <div class="modal-header card-palette-header modal-header-accent" id="kt_modal_add_request_header">
           <!--begin::Modal title-->
           <div class="d-flex align-items-center">
             <div class="symbol symbol-40px me-3">
-              <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0bb7af 100%); box-shadow: 0 4px 12px rgba(54, 153, 255, 0.3);">
+              <span class="symbol-label symbol-label-accent">
                 <i class="ki-duotone ki-document fs-2 text-white">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -22,8 +22,8 @@
               </span>
             </div>
             <div>
-              <h2 class="fw-bold m-0 text-gray-900 fs-3">📋 Aggiungi Richiesta</h2>
-              <span class="text-muted fs-7 fw-semibold">Inserisci i dati della nuova richiesta</span>
+              <h2 class="fw-bold m-0 text-palette-primary fs-3">📋 Aggiungi Richiesta</h2>
+              <span class="text-palette-secondary fs-7 fw-semibold">Inserisci i dati della nuova richiesta</span>
             </div>
           </div>
           <!--end::Modal title-->
@@ -33,7 +33,6 @@
             id="kt_modal_add_request_close"
             data-bs-dismiss="modal"
             class="btn btn-icon btn-sm btn-active-icon-primary"
-            style="border-radius: 0.5rem; background: rgba(255, 255, 255, 0.8); border: 1px solid #e9ecef;"
           >
             <KTIcon icon-name="cross" icon-class="fs-1" />
           </div>
@@ -89,7 +88,6 @@
                 :close-on-select="true"
                 :clear-on-select="false"
                 placeholder="Seleziona il cliente"
-                class="multiselect-modern"
               />
                     <!--end::Input-->
                 </div>
@@ -108,7 +106,7 @@
                     <!--end::Label-->
   
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.Contract">
+                  <select class="form-select form-select-lg" v-model="formData.Contract">
                         <option value="Vendita">💰 Vendita</option>
                         <option value="Affitto">🏠 Affitto</option>
                     </select>
@@ -129,7 +127,7 @@
                         </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                  <select class="form-select modern-select" multiple v-model="formData.PropertyType" style="height: auto;">
+                    <select class="form-select form-select-lg" multiple v-model="formData.PropertyType">
                        <option value="Appartamenti">🏢 Appartamenti</option>
                         <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
                         <option value="Box">🚗 Box</option>
@@ -146,7 +144,8 @@
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
+                <div class="row g-4 mb-5">
+                  <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
                         <i class="ki-duotone ki-map fs-5 me-2 text-primary">
@@ -154,19 +153,17 @@
                           <span class="path2"></span>
                         </i>
                         <span class="required">Provincia</span>
-                        </label>
+                    </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <select class="form-select modern-select" v-model="formData.Province">
+                    <select class="form-select form-select-lg" v-model="formData.Province">
                       <option value="">🗺️ Seleziona provincia</option>
                       <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
                     </select>
                     <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  </div>
 
-                <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
+                  <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-gray-800">
                         <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
@@ -174,13 +171,14 @@
                           <span class="path2"></span>
                         </i>
                         <span class="required">Comune</span>
-                        </label>
+                    </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <select class="form-select modern-select" multiple aria-label="Multiple select example" v-model="formData.City" required>
+                    <select class="form-select form-select-lg" multiple aria-label="Multiple select example" v-model="formData.City" required>
                         <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }} </option>
                     </select>
                     <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
 
@@ -196,102 +194,100 @@
                         </label>
                     <!--end::Label-->
                     <!--begin::Input (input di testo perché le località sono stringhe libere nel database) -->
-                    <el-input v-model="formData.Location" type="text" class="modern-input" placeholder="Inserisci la località (opzionale)" />
+                    <el-input v-model="formData.Location" type="text" size="large" placeholder="Inserisci la località (opzionale)" />
                     <!--end::Input-->
                 </div>
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Canone - Prezzo: Da</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="PriceFrom">
-                    <el-input v-model="formData.PriceFrom" 
-                    type= "number" 
-                    class="modern-input"
-                    placeholder="Inserisci il prezzo minimo" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Canone - Prezzo: A</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="PriceTo">
-                    <el-input v-model="formData.PriceTo" 
-                    type= "number" 
-                    class="modern-input"
-                    placeholder="Inserisci il prezzo massimo" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-semobold mb-2">
-                    <span>Archiviata</span>
-                  </label>
-                  <!--end::Label-->
-  
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Canone - Prezzo: Da</span>
+                    </label>
+                    <!--end::Label-->
+      
                     <!--begin::Input-->
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="" v-model="formData.Archived" />
-                    </div>
+                    <el-form-item prop="PriceFrom">
+                      <el-input v-model="formData.PriceFrom" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Inserisci il prezzo minimo" />
+                    </el-form-item>
                     <!--end::Input-->
+                  </div>
+
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Canone - Prezzo: A</span>
+                    </label>
+                    <!--end::Label-->
+      
+                    <!--begin::Input-->
+                    <el-form-item prop="PriceTo">
+                      <el-input v-model="formData.PriceTo" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Inserisci il prezzo massimo" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-semobold mb-2">
-                    <span>Evasa</span>
-                  </label>
-                  <!--end::Label-->
-  
-                    <!--begin::Input-->
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="" v-model="formData.Closed" />
-                    </div>
-                    <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-semobold mb-2">
+                      <span>Archiviata</span>
+                    </label>
+                    <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                          <input class="form-check-input" type="checkbox" value="" v-model="formData.Archived" />
+                      </div>
+                      <!--end::Input-->
+                  </div>
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-semobold mb-2">
-                    <span>Consulenza mutuo richiesta</span>
-                  </label>
-                  <!--end::Label-->
-  
-                    <!--begin::Input-->
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="" v-model="formData.MortgageAdviceRequired" />
-                    </div>
-                    <!--end::Input-->
+                  <div class="col-12 col-md-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-semobold mb-2">
+                      <span>Evasa</span>
+                    </label>
+                    <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                          <input class="form-check-input" type="checkbox" value="" v-model="formData.Closed" />
+                      </div>
+                      <!--end::Input-->
+                  </div>
+
+                  <div class="col-12 col-md-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-semobold mb-2">
+                      <span>Consulenza mutuo richiesta</span>
+                    </label>
+                    <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                          <input class="form-check-input" type="checkbox" value="" v-model="formData.MortgageAdviceRequired" />
+                      </div>
+                      <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
 
@@ -311,7 +307,7 @@
                   <el-form-item prop="RoomsNumber">
                     <el-input v-model="formData.RoomsNumber" 
                     type= "text" 
-                    class="modern-input"
+                    size="large"
                     placeholder="Es: 3+1, 4+2, etc." />
                   </el-form-item>
                   <!--end::Input-->
@@ -319,96 +315,96 @@
                 <!--end::Input group-->
 
                   <!--begin::Input group-->
-                  <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Giardino Da (mq)</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="GardenFrom">
-                    <el-input v-model="formData.GardenFrom" 
-                    type= "number" 
-                    class="modern-input"
-                    placeholder="Metri quadrati minimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  <div class="row g-4 mb-7">
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>Giardino Da (mq)</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="GardenFrom">
+                        <el-input v-model="formData.GardenFrom" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati minimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Giardino A (mq)</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="GardenTo">
-                    <el-input v-model="formData.GardenTo" 
-                    type= "number" 
-                    class="modern-input"
-                    placeholder="Metri quadrati massimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>Giardino A (mq)</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="GardenTo">
+                        <el-input v-model="formData.GardenTo" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati massimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
+                  </div>
+                  <!--end::Input group-->
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>MQ Da</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="MQFrom">
-                    <el-input v-model="formData.MQFrom" 
-                    type= "number" 
-                    class="modern-input"
-                    placeholder="Metri quadrati minimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  <!--begin::Input group-->
+                  <div class="row g-4 mb-7">
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>MQ Da</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="MQFrom">
+                        <el-input v-model="formData.MQFrom" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati minimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
 
-                <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>MQ A</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="MQTo">
-                    <el-input v-model="formData.MQTo" 
-                    type= "number" 
-                    class="modern-input"
-                    placeholder="Metri quadrati massimi" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-gray-800">
+                        <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <span>MQ A</span>
+                      </label>
+                      <!--end::Label-->
+      
+                      <!--begin::Input-->
+                      <el-form-item prop="MQTo">
+                        <el-input v-model="formData.MQTo" 
+                        type= "number" 
+                        size="large"
+                        placeholder="Metri quadrati massimi" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
+                  </div>
+                  <!--end::Input group-->
 
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
@@ -421,7 +417,7 @@
                     <span>Stato dell'immobile</span>
                   </label>
                   <!--end::Label-->
-                    <select class="form-select modern-select" v-model="formData.PropertyState">
+                    <select class="form-select form-select-lg" v-model="formData.PropertyState">
                         <option value="">🏠 Seleziona Stato Immobile</option>
                         <option value="0">🔒 Affittato</option>
                         <option value="1">🏗️ In corso di costruzione</option>
@@ -444,7 +440,7 @@
                     <span>Riscaldamento</span>
                   </label>
                   <!--end::Label-->
-                    <select class="form-select modern-select" v-model="formData.Heating">
+                    <select class="form-select form-select-lg" v-model="formData.Heating">
                         <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
                         <option value="Autonomo">🏠 Autonomo</option>
                         <option value="Centralizzato">🏢 Centralizzato</option>
@@ -465,7 +461,7 @@
                     <span>Posto Auto</span>
                   </label>
                   <!--end::Label-->
-                    <select class="form-select modern-select" v-model="formData.ParkingSpaces">
+                    <select class="form-select form-select-lg" v-model="formData.ParkingSpaces">
                         <option value="">🚗 Seleziona Posto Auto</option>
                         <option value="Assegnato">🎯 Assegnato</option>
                         <option value="Box Auto">🏠 Box Auto</option>
@@ -492,7 +488,7 @@
                   </label>
                   <!--end::Label-->
                   <textarea 
-                    class="form-control modern-textarea" 
+                    class="form-control form-control-lg" 
                     v-model="formData.Notes"
                     placeholder="Inserisci eventuali note aggiuntive sulla richiesta..."
                     rows="4"></textarea>
@@ -510,7 +506,7 @@
               <button
                 type="reset"
                 id="kt_modal_add_request_cancel"
-                class="btn btn-modal-cancel me-3"
+                class="btn btn-secondary me-3"
                 data-bs-dismiss="modal"
               >
                 <span class="btn-icon">
@@ -526,7 +522,7 @@
               <!--begin::Button-->
               <button
                 :data-kt-indicator="loading ? 'on' : null"
-                class="btn btn-modal-primary"
+                class="btn btn-primary"
                 type="submit"
                 :disabled="loading"
               >
@@ -855,16 +851,6 @@ export default defineComponent({
   });
   </script>
   <style src="@vueform/multiselect/themes/default.css"></style>
-  <style lang="scss">
-.el-select {
-  width: 100%;
-}
-
-.el-date-editor.el-input,
-.el-date-editor.el-input__inner {
-  width: 100%;
-}
-</style>
 
 <!-- Tutti gli stili sono stati spostati in file CSS dedicati -->
 

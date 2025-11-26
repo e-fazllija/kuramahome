@@ -1,7 +1,7 @@
 <template>
   <div class="modal fade" id="kt_modal_add_property" ref="addPropertyModalRef" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
-    <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
       <!--begin::Modal content-->
       <div class="modal-content card-palette modal-shell">
         <!--begin::Modal header-->
@@ -59,7 +59,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="AgentId">
-                  <select class="form-select modern-select form-control-palette" v-model="formData.AgentId">
+                  <select class="form-select form-select-lg form-control-palette" v-model="formData.AgentId">
                     <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.FirstName }} {{ user.LastName }}</option>
                   </select>
                 </el-form-item>
@@ -71,29 +71,18 @@
               <div class="d-flex flex-column mb-5 fv-row">
                 <!--begin::Label-->
                 <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.CustomerId }]">
-                  <i class="ki-duotone ki-profile-user fs-5 me-2 text-primary">
+                  <i class="ki-duotone ki-user fs-5 me-2 text-primary">
                     <span class="path1"></span>
                     <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                    <span class="path5"></span>
                   </i>
                   <span>Cliente</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="CustomerId">
-                  <Multiselect
-                    v-model="formData.CustomerId"
-                    :options="inserModel.Customers"
-                    label="label"
-                    valueProp="Id"
-                    :searchable="true"
-                    :close-on-select="true"
-                    :clear-on-select="false"
-                    placeholder="Seleziona il cliente"
-                    class="multiselect-modern form-control-palette w-100"
-                  />
+                  <select class="form-select form-select-lg form-control-palette" v-model="formData.CustomerId">
+                    <option v-for="(user, index) in inserModel.Customers" :key="index" :value="user.Id">👤 {{ user.FirstName }} {{ user.LastName }}</option>
+                  </select>
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -112,7 +101,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Title">
-                  <el-input v-model="formData.Title" type="text" class="modern-input form-control-palette" placeholder="Inserisci il titolo dell'immobile" />
+                  <el-input v-model="formData.Title" type="text" size="large" class="form-control-palette" placeholder="Inserisci il titolo dell'immobile" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -134,7 +123,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Description">
-                  <textarea class="form-control modern-textarea form-control-palette" v-model="formData.Description" rows="3" placeholder="Descrivi le caratteristiche dell'immobile..."></textarea>
+                  <textarea class="form-control form-control-lg form-control-palette" v-model="formData.Description" rows="3" placeholder="Descrivi le caratteristiche dell'immobile..."></textarea>
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -168,7 +157,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Price">
-                  <el-input v-model="formData.Price" type="number" class="modern-input form-control-palette" placeholder="Inserisci il prezzo" />
+                  <el-input v-model="formData.Price" type="number" size="large" class="form-control-palette" placeholder="Inserisci il prezzo" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -187,7 +176,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="AssignmentEnd">
-                  <el-input v-model="formData.AssignmentEnd" type="date" class="modern-input form-control-palette" />
+                  <el-input v-model="formData.AssignmentEnd" type="date" size="large" class="form-control-palette" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -361,7 +350,7 @@
                   <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Category">
-                  <select class="form-select modern-select" v-model="formData.Category">
+                  <select class="form-select form-select-lg" v-model="formData.Category">
                     <option value="Residenziale">🏠 Residenziale</option>
                     <option value="Capannone">🏭 Capannone</option>
                     <option value="Negozi-Locale Commerciale">🏬 Negozi/Locale Commerciale</option>
@@ -386,7 +375,7 @@
                     <span>Tipologia</span>
                   </label>
                   <el-form-item prop="Typology">
-                    <select class="form-select modern-select" v-model="formData.Typology">
+                    <select class="form-select form-select-lg" v-model="formData.Typology">
                       <option v-for="tipologia in typesavailable" :key="tipologia" :value="tipologia">
                         {{ tipologia }}
                       </option>
@@ -408,7 +397,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="Status">
-                    <select class="form-select modern-select" v-model="formData.Status">
+                    <select class="form-select form-select-lg" v-model="formData.Status">
                       <option value="Vendita">💰 Vendita</option>
                       <option value="Affitto">🏠 Affitto</option>
                     </select>
@@ -455,14 +444,15 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="AddressLine">
-                    <el-input v-model="formData.AddressLine" type="text" class="modern-input" placeholder="Via, numero civico" />
+                    <el-input v-model="formData.AddressLine" type="text" size="large" placeholder="Via, numero civico" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
+                <div class="row g-4 mb-5">
+                  <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
                     <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.State }]">
                       <i class="ki-duotone ki-map fs-5 me-2 text-primary">
@@ -474,17 +464,15 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <el-form-item prop="State">
-                      <select class="form-select modern-select" v-model="formData.State">
+                      <select class="form-select form-select-lg" v-model="formData.State">
                         <option value="">🗺️ Seleziona provincia</option>
                         <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
                       </select>
                     </el-form-item>
                     <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  </div>
 
-                <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
+                  <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
                     <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.City }]">
                       <i class="ki-duotone ki-geolocation fs-5 me-2 text-primary">
@@ -496,20 +484,19 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <el-form-item prop="City">
-                      <select class="form-select modern-select" aria-label="Single select example" v-model="formData.City" required>
+                      <select class="form-select form-select-lg" aria-label="Single select example" v-model="formData.City" required>
                           <option value="">🏙️ Seleziona comune</option>
                           <option v-for="(city, index) in cities" :key="index" :value="city.Id">{{ city.Name }}</option>
                       </select>
                     </el-form-item>
                     <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
               
                 <!--begin::Input group-->
-                <div class="row g-9 mb-7">
-
-                <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-position fs-5 me-2 text-primary">
@@ -520,30 +507,26 @@
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <el-input v-model="formData.Location" type="text" class="modern-input" placeholder="Inserisci la località" />
+                    <el-input v-model="formData.Location" type="text" size="large" placeholder="Inserisci la località" />
                     <!--end::Input-->
-                </div>
-                <!--end::Input group-->
+                  </div>
 
-                <!--begin::Col-->
-                  <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.PostCode }]">
-                    <i class="ki-duotone ki-code fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Codice Fiscale
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <el-form-item prop="PostCode">
-                    <el-input v-model="formData.PostCode" type="text" class="modern-input" placeholder="Inserisci il codice fiscale" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
-
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label :class="['required-label', 'fs-6', 'fw-bold', 'mb-3', 'text-palette-primary', { 'required-label--error': invalidFields.PostCode }]">
+                      <i class="ki-duotone ki-code fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Codice Fiscale
+                    </label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <el-form-item prop="PostCode">
+                      <el-input v-model="formData.PostCode" type="text" size="large" placeholder="Inserisci il codice fiscale" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
               </div>
@@ -571,42 +554,42 @@
               <div id="kt_modal_add_property_billing_info3" class="collapse show">
 
                   <!--begin::Col-->
-                  <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Giardino (mq)
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <el-form-item prop="MQGarden">
-                    <el-input v-model="formData.MQGarden" type="number" class="modern-input" placeholder="Metri quadrati" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
+                  <div class="row g-4 mb-7">
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                        <i class="ki-duotone ki-garden fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Giardino (mq)
+                      </label>
+                      <!--end::Label-->
+                      <!--begin::Input-->
+                      <el-form-item prop="MQGarden">
+                        <el-input v-model="formData.MQGarden" type="number" size="large" placeholder="Metri quadrati" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
 
-                <!--begin::Col-->
-                <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Spese condominiali
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <el-form-item prop="CondominiumExpenses">
-                    <el-input v-model="formData.CondominiumExpenses" type="number" class="modern-input" placeholder="€ Spese mensili" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
+                    <div class="col-12 col-md-6 fv-row">
+                      <!--begin::Label-->
+                      <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                        <i class="ki-duotone ki-dollar fs-5 me-2 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Spese condominiali
+                      </label>
+                      <!--end::Label-->
+                      <!--begin::Input-->
+                      <el-form-item prop="CondominiumExpenses">
+                        <el-input v-model="formData.CondominiumExpenses" type="number" size="large" placeholder="€ Spese mensili" />
+                      </el-form-item>
+                      <!--end::Input-->
+                    </div>
+                  </div>
+                  <!--end::Col-->
 
                 <!--begin::Input group-->
                 <div class="row g-9 mb-7">
@@ -623,7 +606,7 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <el-form-item prop="CommercialSurfaceate">
-                      <el-input v-model="formData.CommercialSurfaceate" type="number" class="modern-input" placeholder="Metri quadrati" />
+                      <el-input v-model="formData.CommercialSurfaceate" type="number" size="large" placeholder="Metri quadrati" />
                     </el-form-item>
                     <!--end::Input-->
                   </div>
@@ -631,72 +614,70 @@
                 </div>
 
                 <!--begin::Col-->
-                <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-arrow-up fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Piano
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.Floor">
-                    <option value>Scegli</option>
-                    <option value="Interrato -2">Interrato -2</option>
-                    <option value="Interrato -1">Interrato -1</option>
-                    <option value="Seminterrato">Seminterrato</option>
-                    <option value="Piano Terra">Piano Terra</option>
-                    <option value="Piano Rialzato">Piano Rialzato</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </select>
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 col-lg-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                      <i class="ki-duotone ki-arrow-up fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Piano
+                    </label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <select class="form-select form-select-lg" v-model="formData.Floor">
+                      <option value>Scegli</option>
+                      <option value="Interrato -2">Interrato -2</option>
+                      <option value="Interrato -1">Interrato -1</option>
+                      <option value="Seminterrato">Seminterrato</option>
+                      <option value="Piano Terra">Piano Terra</option>
+                      <option value="Piano Rialzato">Piano Rialzato</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </select>
+                    <!--end::Input-->
+                  </div>
 
-                <!--begin::Col-->
-                <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Totale piani edificio
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <el-input v-model="formData.TotalBuildingfloors" type="number" class="modern-input" placeholder="Numero piani" />
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
+                  <div class="col-12 col-md-6 col-lg-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Totale piani edificio
+                    </label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <el-input v-model="formData.TotalBuildingfloors" type="number" size="large" placeholder="Numero piani" />
+                    <!--end::Input-->
+                  </div>
 
-                <!--begin::Col-->
-                <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-arrow-up fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Ascensori
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <el-form-item prop="Elevators">
-                    <el-input v-model="formData.Elevators" type="number" class="modern-input" placeholder="Numero ascensori" />
-                  </el-form-item>
-                  <!--end::Input-->
+                  <div class="col-12 col-md-6 col-lg-4 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                      <i class="ki-duotone ki-arrow-up fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Ascensori
+                    </label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <el-form-item prop="Elevators">
+                      <el-input v-model="formData.Elevators" type="number" size="large" placeholder="Numero ascensori" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Col-->
 
@@ -716,16 +697,15 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="MoreDetails">
-                    <el-input v-model="formData.MoreDetails" type="text" class="modern-input" placeholder="Inserisci dettagli aggiuntivi" />
+                    <el-input v-model="formData.MoreDetails" type="text" size="large" placeholder="Inserisci dettagli aggiuntivi" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
                 <!--end::Col-->
 
                 <!--begin::Input group-->
-                <div class="row g-9 mb-7">
-                  <!--begin::Col-->
-                  <div class="col-md-6 fv-row">
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 col-lg-3 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
@@ -737,36 +717,29 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <el-form-item prop="Bedrooms">
-                      <el-input v-model="formData.Bedrooms" type="number" class="modern-input" placeholder="Numero camere" />
+                      <el-input v-model="formData.Bedrooms" type="number" size="large" placeholder="Numero camere" />
                     </el-form-item>
                     <!--end::Input-->
                   </div>
-                  <!--end::Col-->
-                </div>
 
-                <!--begin::Col-->
-                <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Locali
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <el-form-item prop="WarehouseRooms">
-                    <el-input v-model="formData.WarehouseRooms" type="number" class="modern-input" placeholder="Numero locali" />
-                  </el-form-item>
-                  <!--end::Input-->
-                </div>
-                <!--end::Col-->
+                  <div class="col-12 col-md-6 col-lg-3 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Locali
+                    </label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <el-form-item prop="WarehouseRooms">
+                      <el-input v-model="formData.WarehouseRooms" type="number" size="large" placeholder="Numero locali" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
 
-                <!--begin::Input group-->
-                <div class="row g-9 mb-7">
-                  <!--begin::Col-->
-                  <div class="col-md-6 fv-row">
+                  <div class="col-12 col-md-6 col-lg-3 fv-row">
                     <!--begin::Label-->
                     <label class="fs-6 fw-bold mb-3 text-palette-primary">
                       <i class="ki-duotone ki-coffee fs-5 me-2 text-primary">
@@ -778,31 +751,29 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <el-form-item prop="Kitchens">
-                      <el-input v-model="formData.Kitchens" type="number" class="modern-input" placeholder="Numero cucine" />
+                      <el-input v-model="formData.Kitchens" type="number" size="large" placeholder="Numero cucine" />
                     </el-form-item>
                     <!--end::Input-->
                   </div>
-                  <!--end::Col-->
-                </div>
 
-                <!--begin::Col-->
-                <div class="col-md-6 fv-row">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-palette-primary">
-                    <i class="ki-duotone ki-water fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    Bagni
-                  </label>
-                  <!--end::Label-->
-                  <!--begin::Input-->
-                  <el-form-item prop="Bathrooms">
-                    <el-input v-model="formData.Bathrooms" type="number" class="modern-input" placeholder="Numero bagni" />
-                  </el-form-item>
-                  <!--end::Input-->
+                  <div class="col-12 col-md-6 col-lg-3 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                      <i class="ki-duotone ki-water fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Bagni
+                    </label>
+                    <!--end::Label-->
+                    <!--begin::Input-->
+                    <el-form-item prop="Bathrooms">
+                      <el-input v-model="formData.Bathrooms" type="number" size="large" placeholder="Numero bagni" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
                 </div>
-                <!--end::Col-->
+                <!--end::Input group-->
 
                 <!--begin::Input group-->
                 <div class="fv-row mb-7">
@@ -816,7 +787,7 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.Furniture">
+                  <select class="form-select form-select-lg" v-model="formData.Furniture">
                     <option value="">🏠 Seleziona il tipo di arredamento</option>
                     <option value="Arredato">✅ Arredato</option>
                     <option value="Non Arredato">❌ Non Arredato</option>
@@ -841,7 +812,7 @@
                   </label>
                   <!--begin::Input-->
                   <el-form-item prop="MoreFeatures">
-                    <el-input v-model="formData.MoreFeatures" type="text" class="modern-input" placeholder="Es: Balcone, Terrazzo, etc." />
+                    <el-input v-model="formData.MoreFeatures" type="text" size="large" placeholder="Es: Balcone, Terrazzo, etc." />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -860,7 +831,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="ParkingSpaces">
-                    <el-input v-model="formData.ParkingSpaces" type="number" class="modern-input" placeholder="Numero posti auto" />
+                    <el-input v-model="formData.ParkingSpaces" type="number" size="large" placeholder="Numero posti auto" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -878,7 +849,7 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.Heating">
+                  <select class="form-select form-select-lg" v-model="formData.Heating">
                     <option value="Nessuno">❌ Nessuno</option>
                     <option value="Autonomo">🏠 Autonomo</option>
                     <option value="Centralizzato">🏢 Centralizzato</option>
@@ -899,7 +870,7 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select modern-select h-auto" v-model="formData.Exposure" multiple>
+                  <select class="form-select form-select-lg h-auto" v-model="formData.Exposure" multiple>
                     <option value="Nord">🧭 Nord</option>
                     <option value="Sud">☀️ Sud</option>
                     <option value="Est">🌅 Est</option>
@@ -922,7 +893,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="EnergyClass">
-                    <select class="form-select modern-select" v-model="formData.EnergyClass">
+                    <select class="form-select form-select-lg" v-model="formData.EnergyClass">
                       <option value="">Seleziona il tipo di Classe energetica</option>
                       <option value="Proprietà Esente">Proprietà Esente</option>
                       <option value="Non classificabile">Non classificabile</option>
@@ -957,7 +928,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="TypeOfProperty">
-                    <el-input v-model="formData.TypeOfProperty" type="text" class="modern-input" placeholder="Es: Intera proprietà, Nuda proprietà, etc." />
+                    <el-input v-model="formData.TypeOfProperty" type="text" size="large" placeholder="Es: Intera proprietà, Nuda proprietà, etc." />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -976,7 +947,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="StateOfTheProperty">
-                    <select class="form-select modern-select" v-model="formData.StateOfTheProperty">
+                    <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty">
                       <option value="">🏠 Seleziona lo Stato dell'immobile</option>
                       <option value="Nuovo / In Costruzione">🏗️ Nuovo / In Costruzione</option>
                       <option value="Ottimo / Ristrutturato">⭐ Ottimo / Ristrutturato</option>
@@ -1001,7 +972,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="YearOfConstruction">
-                    <el-input v-model="formData.YearOfConstruction" type="number" class="modern-input" placeholder="Es: 2020" />
+                    <el-input v-model="formData.YearOfConstruction" type="number" size="large" placeholder="Es: 2020" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -1018,7 +989,7 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select modern-select" v-model="formData.Availability">
+                  <select class="form-select form-select-lg" v-model="formData.Availability">
                     <option value="Libero">✅ Libero</option>
                     <option value="Occupato">🔒 Occupato</option>
                   </select>
@@ -1038,7 +1009,7 @@
           </label>
           <!--end::Label-->
           <!--begin::Input-->
-          <select class="form-select modern-select" v-model="formData.TypeOfAssignment">
+          <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment">
             <option value="Verbale">📝 Verbale</option>
             <option value="Esclusivo">⭐ Esclusivo</option>
             <option value="Semi-Verbale">📋 Semi-Verbale</option>
@@ -1049,71 +1020,69 @@
         <!--end::Input group-->
 
         <!--begin::Col-->
-        <div class="col-md-4 fv-row">
-          <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-palette-primary">
-            <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Provvigione Concordata
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <el-form-item prop="AgreedCommission">
-            <el-input v-model="formData.AgreedCommission" type="number" class="modern-input" placeholder="Percentuale">
-              <template #append>
-                <span>%</span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <!--end::Input-->
-        </div>
-        <!--end::Col-->
+        <div class="row g-4 mb-7">
+          <div class="col-12 col-md-6 col-lg-4 fv-row">
+            <!--begin::Label-->
+            <label class="fs-6 fw-bold mb-3 text-palette-primary">
+              <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Provvigione Concordata
+            </label>
+            <!--end::Label-->
+            <!--begin::Input-->
+            <el-form-item prop="AgreedCommission">
+              <el-input v-model="formData.AgreedCommission" type="number" size="large" placeholder="Percentuale">
+                <template #append>
+                  <span>%</span>
+                </template>
+              </el-input>
+            </el-form-item>
+            <!--end::Input-->
+          </div>
 
-        <!--begin::Col-->
-        <div class="col-md-4 fv-row">
-          <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-palette-primary">
-            <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Provvigione Forfettaria
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <el-form-item prop="FlatRateCommission">
-            <el-input v-model="formData.FlatRateCommission" type="number" class="modern-input" placeholder="Percentuale">
-              <template #append>
-                <span>%</span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <!--end::Input-->
-        </div>
-        <!--end::Col-->
+          <div class="col-12 col-md-6 col-lg-4 fv-row">
+            <!--begin::Label-->
+            <label class="fs-6 fw-bold mb-3 text-palette-primary">
+              <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Provvigione Forfettaria
+            </label>
+            <!--end::Label-->
+            <!--begin::Input-->
+            <el-form-item prop="FlatRateCommission">
+              <el-input v-model="formData.FlatRateCommission" type="number" size="large" placeholder="Percentuale">
+                <template #append>
+                  <span>%</span>
+                </template>
+              </el-input>
+            </el-form-item>
+            <!--end::Input-->
+          </div>
 
-        <!--begin::Col-->
-        <div class="col-md-4 fv-row">
-          <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-palette-primary">
-            <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
-            Storno Provvigione
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <el-form-item prop="CommissionReversal">
-            <el-input v-model="formData.CommissionReversal" type="number" class="modern-input" placeholder="Percentuale">
-              <template #append>
-                <span>%</span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <!--end::Input-->
+          <div class="col-12 col-md-6 col-lg-4 fv-row">
+            <!--begin::Label-->
+            <label class="fs-6 fw-bold mb-3 text-palette-primary">
+              <i class="ki-duotone ki-percentage fs-5 me-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Storno Provvigione
+            </label>
+            <!--end::Label-->
+            <!--begin::Input-->
+            <el-form-item prop="CommissionReversal">
+              <el-input v-model="formData.CommissionReversal" type="number" size="large" placeholder="Percentuale">
+                <template #append>
+                  <span>%</span>
+                </template>
+              </el-input>
+            </el-form-item>
+            <!--end::Input-->
+          </div>
         </div>
         <!--end::Col-->
 
@@ -1130,7 +1099,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="VideoUrl">
-                    <el-input v-model="formData.VideoUrl" type="text" class="modern-input" placeholder="https://youtube.com/..." />
+                    <el-input v-model="formData.VideoUrl" type="text" size="large" placeholder="https://youtube.com/..." />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -1146,7 +1115,7 @@
               <button
                 type="reset"
                 id="kt_modal_add_property_cancel"
-                class="btn btn-modal-cancel me-3"
+                class="btn btn-secondary me-3"
                 data-bs-dismiss="modal"
               >
                 <span class="btn-icon">
@@ -1162,7 +1131,7 @@
               <!--begin::Button-->
               <button
                 :data-kt-indicator="loading ? 'on' : null"
-                class="btn btn-modal-primary"
+                class="btn btn-primary"
                 type="submit"
                 :disabled="loading"
               >
@@ -1889,28 +1858,3 @@ export default defineComponent({
 });
 </script>
 <style src="@vueform/multiselect/themes/default.css"></style>
-<style lang="scss">
-.el-select {
-  width: 100%;
-}
-
-.el-date-editor.el-input,
-.el-date-editor.el-input__inner {
-  width: 100%;
-}
-
-.required-label::after {
-  content: " *";
-  color: currentColor;
-  font-weight: 600;
-  margin-left: 0.125rem;
-}
-
-.required-label--error {
-  color: #dc3545 !important;
-}
-
-.required-label--error::after {
-  color: #dc3545;
-}
-</style>

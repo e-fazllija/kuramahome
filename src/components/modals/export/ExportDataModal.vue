@@ -1,11 +1,11 @@
 <template>
   <div class="modal fade" :id="modalId" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
-      <form class="modal-content export-modal card-palette" @submit.prevent="handleSubmit">
-        <div class="modal-header card-palette-header">
+      <form class="modal-content export-modal card-palette modal-shell" @submit.prevent="handleSubmit">
+        <div class="modal-header card-palette-header modal-header-accent">
           <div>
-            <h3 class="modal-title fw-bold mb-1">{{ title }}</h3>
-            <p class="text-muted mb-0" v-if="description">{{ description }}</p>
+            <h3 class="modal-title fw-bold mb-1 text-palette-primary">{{ title }}</h3>
+            <p class="text-palette-secondary mb-0" v-if="description">{{ description }}</p>
           </div>
           <!--begin::Close-->
           <div
@@ -33,7 +33,7 @@
               </label>
               <input
                 type="date"
-                class="form-control"
+                class="form-control form-control-lg"
                 :value="state.fromDate ?? ''"
                 @input="updateField('fromDate', ($event.target as HTMLInputElement).value || null)"
               />
@@ -43,7 +43,7 @@
               <label class="form-label">A data</label>
               <input
                 type="date"
-                class="form-control"
+                class="form-control form-control-lg"
                 :value="state.toDate ?? ''"
                 @input="updateField('toDate', ($event.target as HTMLInputElement).value || null)"
               />
@@ -52,7 +52,7 @@
             <div class="col-12 col-md-4">
               <label class="form-label">Formato file</label>
               <select
-                class="form-select"
+                class="form-select form-select-lg"
                 :value="state.format || 'excel'"
                 @change="updateField('format', ($event.target as HTMLSelectElement).value)"
               >
@@ -82,7 +82,7 @@
               <template v-if="field.type === 'text' && field.key">
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control form-control-lg"
                   :placeholder="field.placeholder"
                   :value="state[field.key] ?? ''"
                   @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
@@ -92,7 +92,7 @@
               <template v-else-if="field.type === 'number' && field.key">
                 <input
                   type="number"
-                  class="form-control"
+                  class="form-control form-control-lg"
                   :placeholder="field.placeholder"
                   :value="state[field.key] ?? ''"
                   @input="updateNumberField(field.key, ($event.target as HTMLInputElement).value)"
@@ -116,7 +116,7 @@
 
               <template v-else-if="field.type === 'select' && field.key">
                 <select
-                  class="form-select"
+                  class="form-select form-select-lg"
                   :value="state[field.key] ?? ''"
                   @change="updateField(field.key, ($event.target as HTMLSelectElement).value || '')"
                 >
@@ -146,7 +146,7 @@
                   <div class="col">
                     <input
                       type="number"
-                      class="form-control"
+                      class="form-control form-control-lg"
                       :placeholder="field.minPlaceholder || 'Da'"
                       :value="state[field.minKey] ?? ''"
                       @input="updateNumberField(field.minKey!, ($event.target as HTMLInputElement).value)"
@@ -155,7 +155,7 @@
                   <div class="col">
                     <input
                       type="number"
-                      class="form-control"
+                      class="form-control form-control-lg"
                       :placeholder="field.maxPlaceholder || 'A'"
                       :value="state[field.maxKey] ?? ''"
                       @input="updateNumberField(field.maxKey!, ($event.target as HTMLInputElement).value)"

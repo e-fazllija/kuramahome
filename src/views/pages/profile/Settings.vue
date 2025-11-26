@@ -165,7 +165,7 @@
                 <div class="col-lg-3 fv-row">
                   <select 
                     name="Province" 
-                    class="form-select modern-select"
+                    class="form-select form-select-lg"
                     v-model="profileDetails.Province"
                   >
                     <option value="">🗺️ Seleziona provincia</option>
@@ -185,7 +185,7 @@
                 <div class="col-lg-3 fv-row">
                   <select 
                     name="City" 
-                    class="form-select modern-select"
+                    class="form-select form-select-lg"
                     v-model="profileDetails.City"
                   >
                     <option value="">🏙️ Seleziona comune</option>

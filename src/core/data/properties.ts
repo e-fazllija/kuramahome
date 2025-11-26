@@ -79,6 +79,8 @@ export class RequestTabelData {
   State?: string;
   Photos?: string | null;
   Auction:Boolean;
+  AdminId?: string;
+  UserId?: string;
 }
 
 export class InsertModel {
@@ -162,7 +164,9 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         City: item.City,
         State: item.State,
         Photos: item.FirstPhotoUrl || null,
-        Auction: item.Auction
+        Auction: item.Auction,
+        AdminId: item.AgencyId,
+        UserId: item.AgentId
       } as RequestTabelData));
     })
     .catch(({ response }) => {

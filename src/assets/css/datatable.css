@@ -105,7 +105,7 @@
   padding: 0.875rem 0.75rem;
   vertical-align: middle;
   font-size: 0.9rem;
-  border-color: var(--kt-table-border);
+  /* border-color: var(--kt-table-border); */
 }
 
 /* Striped Rows */
@@ -215,7 +215,7 @@
 
 .form-check-input {
   cursor: pointer;
-  border-color: var(--kt-table-border);
+  /* border-color: var(--kt-table-border); */
   background-color: var(--kt-table-bg);
   transition: all 0.2s ease;
 }
@@ -274,7 +274,7 @@
 
 .pagination .page-link {
   background-color: var(--kt-table-bg);
-  border-color: var(--kt-table-border);
+  /* border-color: var(--kt-table-border); */
   color: var(--kt-table-text);
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
@@ -305,7 +305,7 @@
 
 .pagination .page-item.disabled .page-link {
   background-color: var(--kt-table-bg);
-  border-color: var(--kt-table-border);
+  /* border-color: var(--kt-table-border); */
   color: var(--kt-table-text-secondary);
   opacity: 0.5;
   cursor: not-allowed;
@@ -340,7 +340,7 @@
 /* Form Select Styles for Items Per Page */
 .form-select {
   background-color: var(--kt-table-bg);
-  border-color: var(--kt-table-border);
+  /* border-color: var(--kt-table-border); */
   color: var(--kt-table-text);
   transition: all 0.2s ease;
 }
