@@ -1849,7 +1849,13 @@ export default defineComponent({
         }
         return;
       }
-
+      const payload = { ...formData.value };
+ 
+ for (const key in payload) {
+   if (payload[key] === "" || payload[key] === undefined) {
+     payload[key] = 0;
+   }
+ }
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
           // Se la validazione è passata, procedi con il salvataggio
@@ -2093,11 +2099,15 @@ export default defineComponent({
       const agreedCommission = Number(formData.value.AgreedCommission);
       const flatRateCommission = Number(formData.value.FlatRateCommission);
       const price = Number(formData.value.Price);
+      const priceReduced = Number(formData.value.PriceReduced);
       const storno = Number(formData.value.CommissionReversal) || 0;
       
+      // Determina quale prezzo usare: se presente il prezzo ribassato, usa quello, altrimenti il prezzo normale
+      const priceToUse = (priceReduced && !Number.isNaN(priceReduced) && priceReduced > 0) ? priceReduced : price;
+      
       // Se c'è provvigione concordata (percentuale)
-      if (agreedCommission && !Number.isNaN(agreedCommission) && agreedCommission > 0 && price > 0) {
-        grossCommission = (price * agreedCommission) / 100;
+      if (agreedCommission && !Number.isNaN(agreedCommission) && agreedCommission > 0 && priceToUse > 0) {
+        grossCommission = (priceToUse * agreedCommission) / 100;
       }
       // Se c'è provvigione forfettaria (euro)
       else if (flatRateCommission && !Number.isNaN(flatRateCommission) && flatRateCommission > 0) {
