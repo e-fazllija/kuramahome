@@ -456,6 +456,136 @@
               <!--begin::Separator-->
               <div class="separator separator-content my-8">
                 <span class="w-250px fw-bold text-gray-700 fs-6">
+                  <i class="ki-duotone ki-key fs-2 text-primary me-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Configurazione Idealista
+                </span>
+              </div>
+              <!--end::Separator-->
+
+              <!--begin::Notice-->
+              <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-8 p-6">
+                <i class="ki-duotone ki-information-5 fs-2tx text-warning me-4">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                </i>
+                <div class="d-flex flex-column">
+                  <h5 class="fw-bold text-gray-900 mb-2">Informazioni Chiavi Idealista</h5>
+                  <span class="text-gray-700 fs-6">
+                    I dati sono reperibili unicamente da Idealista. Sono obbligatorie entrambe le informazioni (Client ID e Client Secret) per poter procedere con la sincronizzazione degli immobili.
+                  </span>
+                </div>
+              </div>
+              <!--end::Notice-->
+
+              <!--begin::Configurazione Idealista-->
+              <div>
+                <!--begin::Input group - Client ID-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">Client ID</label>
+                  <el-form-item prop="clientId">
+                    <div class="d-flex align-items-center">
+                      <el-input
+                        v-model="formData.ClientId"
+                        :type="showClientId ? 'text' : 'password'"
+                        placeholder="Client ID"
+                        size="large"
+                        class="me-3"
+                      />
+                      <button 
+                        type="button" 
+                        class="btn btn-icon btn-light btn-sm flex-shrink-0"
+                        @click="showClientId = !showClientId"
+                      >
+                        <i v-if="showClientId" class="ki-duotone ki-eye-slash fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                          <span class="path4"></span>
+                        </i>
+                        <i v-else class="ki-duotone ki-eye fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                        </i>
+                      </button>
+                    </div>
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Input group - Client Secret-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">Client Secret</label>
+                  <el-form-item prop="clientSecret">
+                    <div class="d-flex align-items-center">
+                      <el-input
+                        v-model="formData.ClientSecret"
+                        :type="showClientSecret ? 'text' : 'password'"
+                        placeholder="Client Secret"
+                        size="large"
+                        class="me-3"
+                      />
+                      <button 
+                        type="button" 
+                        class="btn btn-icon btn-light btn-sm flex-shrink-0"
+                        @click="showClientSecret = !showClientSecret"
+                      >
+                        <i v-if="showClientSecret" class="ki-duotone ki-eye-slash fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                          <span class="path4"></span>
+                        </i>
+                        <i v-else class="ki-duotone ki-eye fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                        </i>
+                      </button>
+                    </div>
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Input group - Sincronizzazione Idealista-->
+                <div class="fv-row mb-7">
+                  <label class="form-label fw-bold text-gray-800 fs-6">
+                    Sincronizzazione Idealista
+                    <i 
+                      class="fas fa-exclamation-circle ms-1 fs-7 text-primary" 
+                      data-bs-toggle="tooltip" 
+                      data-bs-placement="top"
+                      title="Tutte le azioni apportate sugli immobili verranno apportate anche su Idealista"
+                    ></i>
+                  </label>
+                  <el-form-item prop="syncToIdealista">
+                    <div class="form-check form-switch form-check-custom form-check-solid">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="sync-to-idealista-update"
+                        v-model="formData.SyncToIdealista"
+                        @change="handleSyncChange"
+                      />
+                      <label class="form-check-label ms-3 fw-semibold" for="sync-to-idealista-update">
+                        Attiva sincronizzazione con Idealista
+                      </label>
+                    </div>
+                  </el-form-item>
+                </div>
+                <!--end::Input group-->
+              </div>
+              <!--end::Configurazione Idealista-->
+
+              <!--begin::Separator-->
+              <div class="separator separator-content my-8">
+                <span class="w-250px fw-bold text-gray-700 fs-6">
                   <i class="ki-duotone ki-bill fs-2 text-info me-2">
                     <span class="path1"></span>
                     <span class="path2"></span>
@@ -629,9 +759,10 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, nextTick } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { Tooltip } from "bootstrap";
 import { updateAgent, getAgent, deleteAgent } from "@/core/data/agents";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
@@ -659,6 +790,8 @@ export default defineComponent({
     const { provinces } = useProvinces();
     const cities = ref<Array<{Id: string, Name: string}>>([]);
     const agenciesList = ref<Array<Agency>>([]);
+    const showClientId = ref(false);
+    const showClientSecret = ref(false);
     const formData = ref<any>({
       Id: "",
       UserName: "",
@@ -683,7 +816,11 @@ export default defineComponent({
       FiscalCode: "",
       VATNumber: "",
       PEC: "",
-      SDICode: ""
+      SDICode: "",
+      // Configurazione Idealista
+      ClientId: "",
+      ClientSecret: "",
+      SyncToIdealista: false
     });
 
     // Opzioni colori predefinite
@@ -1057,6 +1194,44 @@ export default defineComponent({
       }
     };
 
+    // Handler per il cambio del checkbox di sincronizzazione
+    const handleSyncChange = () => {
+      nextTick(() => {
+        if (formData.value.SyncToIdealista) {
+          const clientIdEmpty = !formData.value.ClientId || !formData.value.ClientId.trim();
+          const clientSecretEmpty = !formData.value.ClientSecret || !formData.value.ClientSecret.trim();
+          
+          if (clientIdEmpty || clientSecretEmpty) {
+            formData.value.SyncToIdealista = false;
+            
+            Swal.fire({
+              text: "Per attivare la sincronizzazione con Idealista è necessario compilare entrambi i campi: Client ID e Client Secret",
+              icon: "warning",
+              buttonsStyling: false,
+              confirmButtonText: "Ok",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+          }
+        }
+      });
+    };
+
+    // Inizializza i tooltip quando il modal viene aperto
+    watch(() => props.Id, async () => {
+      if (props.Id) {
+        await nextTick();
+        const tooltipTriggerList = Array.from(
+          document.querySelectorAll("[data-bs-toggle='tooltip']")
+        ) as HTMLElement[];
+        tooltipTriggerList.forEach((tooltipTriggerEl) => {
+          new Tooltip(tooltipTriggerEl);
+        });
+      }
+    });
+
     return {
       formData,
       rules,
@@ -1072,6 +1247,9 @@ export default defineComponent({
       provinces,
       cities,
       agenciesList,
+      showClientId,
+      showClientSecret,
+      handleSyncChange
     };
   },
 });

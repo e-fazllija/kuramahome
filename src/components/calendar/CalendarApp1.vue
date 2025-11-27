@@ -476,7 +476,10 @@ export default defineComponent({
       loading.value = false;
     });
 
-    watch(() => agencyId.value, async (first, second) => {
+    watch(() => agencyId.value, async (newVal, oldVal) => {
+      // Evita chiamate duplicate se il valore non è cambiato realmente
+      if (newVal === oldVal) return;
+      
       if (store.user.Role == "Admin") {
         searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
       }

@@ -311,6 +311,12 @@
             € {{ item.Price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}
           </template>
         </template>
+        <template v-slot:EffectiveCommission="{ row: item }">
+          <span v-if="item.EffectiveCommission !== undefined && item.EffectiveCommission !== null">
+            € {{ formatNumber(item.EffectiveCommission) }}
+          </span>
+          <span v-else class="text-muted">-</span>
+        </template>
         <template v-slot:Photos="{ row: item }">
           <img v-if="item.Photos && item.Photos !== 'null'" :src="item.Photos" style="height: 100px; width: 200px; object-fit: cover;" />
           <div v-else style="height: 100px; width: 200px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #999;">
@@ -434,6 +440,12 @@ export default defineComponent({
         columnLabel: "Price",
         sortEnabled: true,
         columnWidth: 150,
+      },
+      {
+        columnName: "Provvigione effettiva",
+        columnLabel: "EffectiveCommission",
+        sortEnabled: true,
+        columnWidth: 180,
       },
       {
         columnName: "Immagine",
@@ -721,20 +733,6 @@ export default defineComponent({
       MenuComponent.reinitialization();
     };
 
-    onMounted(async () => {
-      // if (authStore.user.Role == "Admin") {
-        agencyId.value = authStore.user.AdminId;
-        // Chiama getSearchItems solo per Admin e Agency (non per Agent)
-        if (user.Role !== "Agent") {
-          defaultSearchItems.value = await getSearchItems(authStore.user.Id);
-        }
-      // }
-
-      await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
-    });
-
-
-
     const deleteFewItems = async () => {
       loading.value = true;
       selectedIds.value.forEach(async (item) => {
@@ -1020,6 +1018,17 @@ export default defineComponent({
       router.push({ name: "update-property", params: { id: propertyId } });
     };
 
+    // Funzione per formattare i numeri con separatore delle migliaia e 2 decimali
+    const formatNumber = (value: number | undefined | null): string => {
+      if (value === undefined || value === null || isNaN(value)) {
+        return '0,00';
+      }
+      return value.toLocaleString('it-IT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    };
+
           return {
         tableData,
         tableHeader,
@@ -1064,7 +1073,8 @@ export default defineComponent({
         openExportModal,
         handleExportProperties,
         ownerFilter,
-        applyFilters
+        applyFilters,
+        formatNumber
       };
   },
   data() {
