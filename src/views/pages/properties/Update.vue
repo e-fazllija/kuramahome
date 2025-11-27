@@ -62,6 +62,7 @@
           </button>
         </li>
       </ul>
+    </div>
       <!--begin::Form-->
       <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
         <div class="tab-content" id="propertyTabsContent">
@@ -133,11 +134,137 @@
                         Agente <span class="text-danger">*</span>
                       </label>
                       <el-form-item prop="AgentId">
-                        <input class="form-control form-control-lg agent-readonly" :value="agentName" type="text"
-                          readonly disabled />
+                        <select 
+                          class="form-select form-select-lg" 
+                          v-model="formData.AgentId" 
+                          required
+                          :disabled="!canModify && user.Role === 'Agent'"
+                        >
+                          <option value="">Seleziona l'agente</option>
+                          <option
+                            v-for="agent in inserModel.Users"
+                            :key="agent.Id"
+                            :value="agent.Id"
+                          >
+                            {{ agent.FirstName }} {{ agent.LastName }}
+                          </option>
+                        </select>
                       </el-form-item>
                     </div>
                   </div>
+
+                  <div class="row g-3 mb-3" v-if="showTipologia">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label required">
+                        <i class="ki-duotone ki-category fs-5 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Categoria
+                      </label>
+                      <el-form-item prop="Category">
+                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                          <option value="Residenziale">Residenziale</option>
+                          <option value="Capannone">Capannone</option>
+                          <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
+                          <option value="Magazzino">Magazzino</option>
+                          <option value="Garage">Garage</option>
+                          <option value="Ufficio">Ufficio</option>
+                          <option value="Terreno">Terreno</option>
+                          <option value="Rustico / Casale">Rustico / Casale</option>
+                        </select>
+                      </el-form-item>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                        <i class="ki-duotone ki-element-plus fs-5 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Tipologia <span class="text-danger">*</span>
+                      </label>
+                      <el-form-item prop="Typology">
+                        <select class="form-select form-select-lg" v-model="formData.Typology" :disabled="!canModify && user.Role === 'Agent'">
+                          <option
+                            v-for="tipologia in typesavailable"
+                            :key="tipologia"
+                            :value="tipologia"
+                          >
+                            {{ tipologia }}
+                          </option>
+                        </select>
+                      </el-form-item>
+                    </div>
+                  </div>
+
+                  <div v-else class="mb-3">
+                    <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                      <i class="ki-duotone ki-category fs-5 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      Categoria <span class="text-danger">*</span>
+                    </label>
+                    <el-form-item prop="Category">
+                      <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                        <option value="Residenziale">Residenziale</option>
+                        <option value="Capannone">Capannone</option>
+                        <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
+                        <option value="Magazzino">Magazzino</option>
+                        <option value="Garage">Garage</option>
+                        <option value="Ufficio">Ufficio</option>
+                        <option value="Terreno">Terreno</option>
+                        <option value="Rustico / Casale">Rustico / Casale</option>
+                      </select>
+                    </el-form-item>
+                  </div>
+
+                  <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label required">
+                        <i class="ki-duotone ki-home fs-5 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Stato vendita o affitto
+                      </label>
+                      <el-form-item prop="Status">
+                        <select class="form-select form-select-lg" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
+                          <option value="Vendita">Vendita</option>
+                          <option value="Affitto">Affitto</option>
+                        </select>
+                      </el-form-item>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                        <i class="ki-duotone ki-briefcase fs-5 text-primary">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Tipologia incarico
+                      </label>
+                      <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
+                        <option value="Verbale">Verbale</option>
+                        <option value="Esclusivo">Esclusivo</option>
+                        <option value="Semi-Verbale">Semi-Verbale</option>
+                        <option value="Immobile MLS">Immobile MLS</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
+                    <el-form-item prop="Availability">
+                      <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
+                        <option value="Libero">Libero</option>
+                        <option value="Occupato">Occupato</option>
+                      </select>
+                    </el-form-item>
+                  </div>
+                </div>
+              </div>
 
                   <div class="row g-3 mb-3" v-if="showTipologia">
                     <div class="col-12 col-md-6">
@@ -256,8 +383,8 @@
                       </select>
                     </el-form-item>
                   </div>
-                </div>
-              </div>
+                
+              
 
               <div class="mb-4 mb-md-5 mb-xl-6">
                 <div class="d-flex align-items-center mb-3">
@@ -788,8 +915,10 @@
                   </div>
                 </div>
               </div>
-              <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-                class="d-flex align-items-end justify-content-end">
+            
+            <!--end::Card body-->
+            <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
+              class="d-flex align-items-end justify-content-end">
                 <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId)"
                   type="button" @click="deleteItem()" class="btn btn-danger me-2">
                   <span class="btn-icon">
@@ -822,6 +951,8 @@
                 </button>
                 <!--end::Button-->
               </div>
+
+            </div>
             </div>
           </div>
           <!--end::Data Tab-->
@@ -933,15 +1064,12 @@
             </div>
             <!--end::Image Management-->
           </div>
-          <!--end::Images Tab-->
-        </div>
         <!--end::Tab Content-->
       </el-form>
       <!--end::Form-->
 
     </div>
     <!--end::Tabs-->
-  </div>
   <!--end::Content-->
 </template>
 
@@ -1075,7 +1203,7 @@ export default defineComponent({
 
     const formData = ref<RealEstateProperty>({
       Title: "",
-      Category: "",
+      Category: "Residenziale",
       Typology: "",
       InHome: false,
       Highlighted: false,
@@ -1083,7 +1211,7 @@ export default defineComponent({
       Negotiation: false,
       Sold: false,
       Archived: false,
-      Status: "",
+      Status: "Vendita",
       AddressLine: "",
       City: "",
       State: "",
@@ -1098,20 +1226,20 @@ export default defineComponent({
       WarehouseRooms: 0,
       Kitchens: 0,
       Bathrooms: 0,
-      Furniture: "",
+      Furniture: "Arredato",
       OtherFeatures: "",
       ParkingSpaces: 0,
       Heating: "",
       Exposure: "",
       EnergyClass: "",
       TypeOfProperty: "",
-      StateOfTheProperty: "",
+      StateOfTheProperty: "Nuovo / In Costruzione",
       YearOfConstruction: 0,
       Price: 0,
       PriceReduced: 0,
       MQGarden: 0,
       CondominiumExpenses: 0,
-      Availability: "",
+      Availability: "Libero",
       Description: "",
       CustomerId: null,
       UserId: "",
@@ -1122,7 +1250,7 @@ export default defineComponent({
       AgreedCommission: 0,
       FlatRateCommission: 0,
       CommissionReversal: 0,
-      TypeOfAssignment: "",
+      TypeOfAssignment: "Verbale",
     });
 
     const inserModel = ref<InsertModel>({
@@ -1698,8 +1826,7 @@ export default defineComponent({
             }).then(() => {
               // router.push({ name: 'properties' })
             });
-          } catch ({ response }) {
-            console.log(response);
+          } catch (error: any) {
             loading.value = false;
             Swal.fire({
               text: "Attenzione, si è verificato un errore.",
@@ -1842,38 +1969,52 @@ export default defineComponent({
 
     // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
     const canModify = computed(() => {
-      if (!formData.value || !formData.value.User) {
+      if (!formData.value) {
+        return false;
+      }
+
+      const currentUser = user;
+      
+      if (!currentUser || !currentUser.Role) {
+        return false;
+      }
+
+      const userRole = currentUser.Role.trim();
+
+      // Se l'utente è il proprietario, può sempre modificare
+      if (formData.value.UserId && currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può modificare tutti gli immobili (anche se User non è presente)
+      // Controllo case-insensitive per sicurezza
+      if (userRole === 'Admin' || userRole.toLowerCase() === 'admin') {
+        return true;
+      }
+
+      // Per Agency e Agent, serve che User sia presente
+      if (!formData.value.User) {
         return false;
       }
 
       const propertyOwner = formData.value.User;
-      const currentUser = user;
-
-      // Se l'utente è il proprietario, può sempre modificare
-      if (currentUser.Id === formData.value.UserId) {
-        return true;
-      }
-
-      // Admin: può modificare tutti gli immobili
-      if (currentUser.Role === 'Admin') {
-        return true;
-      }
 
       // Agency: può modificare proprie + dei propri Agent
-      if (currentUser.Role === 'Agency') {
+      if (userRole === 'Agency' || userRole.toLowerCase() === 'agency') {
         // L'immobile è dell'Agency stessa
         if (formData.value.UserId === currentUser.Id) {
           return true;
         }
         // L'immobile è di un suo Agent (verifica tramite AdminId)
-        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+        // Se AdminId corrisponde, significa che è un Agent dell'Agency (anche se Role non è presente)
+        if (propertyOwner.AdminId === currentUser.Id) {
           return true;
         }
         return false;
       }
 
       // Agent: può modificare solo proprie
-      if (currentUser.Role === 'Agent') {
+      if (userRole === 'Agent' || userRole.toLowerCase() === 'agent') {
         return formData.value.UserId === currentUser.Id;
       }
 

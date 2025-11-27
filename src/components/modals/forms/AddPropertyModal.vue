@@ -651,7 +651,6 @@
                     <!--end::Label-->
                     <!--begin::Input-->
                     <select class="form-select form-select-lg" v-model="formData.Floor">
-                      <option value>Scegli</option>
                       <option value="Interrato -2">Interrato -2</option>
                       <option value="Interrato -1">Interrato -1</option>
                       <option value="Seminterrato">Seminterrato</option>
@@ -812,7 +811,6 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <select class="form-select form-select-lg" v-model="formData.Furniture">
-                    <option value="">🏠 Seleziona il tipo di arredamento</option>
                     <option value="Arredato">✅ Arredato</option>
                     <option value="Non Arredato">❌ Non Arredato</option>
                     <option value="Parzialmente Arredato">🔄 Parzialmente Arredato</option>
@@ -972,7 +970,6 @@
                   <!--begin::Input-->
                   <el-form-item prop="StateOfTheProperty">
                     <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty">
-                      <option value="">🏠 Seleziona lo Stato dell'immobile</option>
                       <option value="Nuovo / In Costruzione">🏗️ Nuovo / In Costruzione</option>
                       <option value="Ottimo / Ristrutturato">⭐ Ottimo / Ristrutturato</option>
                       <option value="Buono / Abitabile">✅ Buono / Abitabile</option>
@@ -1242,20 +1239,20 @@ export default defineComponent({
       WarehouseRooms: 0,
       Kitchens: 0,
       Bathrooms: 0,
-      Furniture: "",
+      Furniture: "Arredato",
       OtherFeatures: "",
       ParkingSpaces: 0,
-      Heating: "",
+      Heating: "Nessuno",
       Exposure: "",
       EnergyClass: "",
       TypeOfProperty: "",
-      StateOfTheProperty: "",
+      StateOfTheProperty: "Nuovo / In Costruzione",
       YearOfConstruction: 0,
       Price: 0,
       PriceReduced: 0,
       MQGarden:0,
       CondominiumExpenses: 0,
-      Availability: "",
+      Availability: "Libero",
       Description: "Descrizione dell'immobile",
       CustomerId: null,
       UserId: "",
