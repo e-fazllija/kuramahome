@@ -168,11 +168,11 @@
                     >
                       <option value="">Seleziona l'agente</option>
                       <option
-                        v-for="agent in inserModel.Users"
-                        :key="agent.Id"
-                        :value="agent.Id"
+                        v-for="user in inserModel.Users"
+                        :key="user.Id"
+                        :value="user.Id"
                       >
-                        {{ agent.FirstName }} {{ agent.LastName }}
+                        {{ user.FirstName }} {{ user.LastName }}
                       </option>
                     </select>
                   </el-form-item>
@@ -413,7 +413,6 @@
                 <div class="col-12 col-md-6 col-lg-4">
                   <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Piano</label>
                   <select class="form-select form-select-lg" v-model="formData.Floor" :disabled="!canModify && user.Role === 'Agent'">
-                    <option value="">Scegli</option>
                     <option value="Interrato -2">Interrato -2</option>
                     <option value="Interrato -1">Interrato -1</option>
                     <option value="Seminterrato">Seminterrato</option>
@@ -955,8 +954,8 @@
               </div>
             </div>
           </div>
-          <div v-if="user.Id === formData.UserId || (user.Role && (user.Role === 'Admin' || user.Role.toLowerCase() === 'admin')) || (formData.User && formData.User.AdminId === user.Id)" class="d-flex align-items-end justify-content-end">
-            <button v-if="(user.Role && (user.Role === 'Admin' || user.Role.toLowerCase() === 'admin')) || (user.Role === 'Agency' && formData.User && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()" class="btn btn-danger me-2">
+          <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id" class="d-flex align-items-end justify-content-end">
+            <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId )" type="button" @click="deleteItem()" class="btn btn-danger me-2">
               <span class="btn-icon">
                 <i class="ki-duotone ki-trash fs-3">
                   <span class="path1"></span>
@@ -986,6 +985,25 @@
             </button>
             <!--end::Button-->
           </div>
+          
+          <!--begin::Flyer Button-->
+          <div class="d-flex justify-content-center mt-4">
+            <router-link
+              :to="{ name: 'property-flyer', params: { id: id } }"
+              target="_blank"
+              class="btn btn-lg btn-light-primary"
+              :disabled="loading"
+            >
+              <i class="ki-duotone ki-file-down fs-2 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+              </i>
+              Locandina Immobile
+            </router-link>
+          </div>
+          <!--end::Flyer Button-->
         </div>
             </div>
             <!--end::Data Tab-->
@@ -1130,6 +1148,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { Modal } from "bootstrap";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
   updateRealEstateProperty,
@@ -1880,7 +1899,8 @@ export default defineComponent({
             }).then(() => {
               // router.push({ name: 'properties' })
             });
-          } catch (error: any) {
+          } catch ({ response }) {
+            console.log(response);
             loading.value = false;
             Swal.fire({
               text: "Attenzione, si è verificato un errore.",
@@ -2023,52 +2043,38 @@ export default defineComponent({
 
     // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
     const canModify = computed(() => {
-      if (!formData.value) {
-        return false;
-      }
-
-      const currentUser = user;
-      
-      if (!currentUser || !currentUser.Role) {
-        return false;
-      }
-
-      const userRole = currentUser.Role.trim();
-
-      // Se l'utente è il proprietario, può sempre modificare
-      if (formData.value.UserId && currentUser.Id === formData.value.UserId) {
-        return true;
-      }
-
-      // Admin: può modificare tutti gli immobili (anche se User non è presente)
-      // Controllo case-insensitive per sicurezza
-      if (userRole === 'Admin' || userRole.toLowerCase() === 'admin') {
-        return true;
-      }
-
-      // Per Agency e Agent, serve che User sia presente
-      if (!formData.value.User) {
+      if (!formData.value || !formData.value.User) {
         return false;
       }
 
       const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre modificare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può modificare tutti gli immobili
+      if (currentUser.Role === 'Admin') {
+        return true;
+      }
 
       // Agency: può modificare proprie + dei propri Agent
-      if (userRole === 'Agency' || userRole.toLowerCase() === 'agency') {
+      if (currentUser.Role === 'Agency') {
         // L'immobile è dell'Agency stessa
         if (formData.value.UserId === currentUser.Id) {
           return true;
         }
         // L'immobile è di un suo Agent (verifica tramite AdminId)
-        // Se AdminId corrisponde, significa che è un Agent dell'Agency (anche se Role non è presente)
-        if (propertyOwner.AdminId === currentUser.Id) {
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
           return true;
         }
         return false;
       }
 
       // Agent: può modificare solo proprie
-      if (userRole === 'Agent' || userRole.toLowerCase() === 'agent') {
+      if (currentUser.Role === 'Agent') {
         return formData.value.UserId === currentUser.Id;
       }
 
@@ -2162,6 +2168,7 @@ export default defineComponent({
       canModify,
       agentName,
       effectiveCommission,
+      id,
     };
   },
 });

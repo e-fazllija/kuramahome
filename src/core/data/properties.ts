@@ -95,6 +95,7 @@ export class RealEstatePropertyPhotos {
   Url: string;
   FileName: string;
   Highlighted: boolean;
+  Position: number;
   CreationDate?: Date;
   UpdateDate?: Date;
 }

@@ -18,9 +18,19 @@
 	font-size: $font-size-sm;
 }
 
+// Legend
+.apexcharts-legend {
+	&.apexcharts-align-left {
+		left: 0 !important;
+		right: auto !important;
+	}
+}
+
 // Dropdown
 .apexcharts-toolbar{
 	text-align: left !important;
+	right: 8px !important;
+	left: auto !important;
 }
 
 .apexcharts-menu {

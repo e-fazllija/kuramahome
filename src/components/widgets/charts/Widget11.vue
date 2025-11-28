@@ -401,10 +401,10 @@ export default defineComponent({
     // Section route based on selected KPI
     const currentSectionRoute = computed(() => {
       const routes = {
-        requests: '#/requests',
-        properties: '#/properties',
-        customers: '#/clients',
-        appointments: '#/calendar'
+        requests: 'dashboard/requests',
+        properties: 'dashboard/properties',
+        customers: 'dashboard/clients',
+        appointments: 'dashboard/calendar'
       };
       return routes[selectedKPI.value];
     });
@@ -496,7 +496,7 @@ export default defineComponent({
         legend: {
           show: true,
           position: "top",
-          horizontalAlign: "right",
+          horizontalAlign: "left",
           fontSize: "14px",
           fontWeight: 600
         },

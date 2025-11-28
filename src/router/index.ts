@@ -76,6 +76,15 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: "property/:id/flyer",
+        name: "property-flyer",
+        component: () => import("@/views/pages/properties/Flyer.vue"),
+        meta: {
+          pageTitle: "Locandina Immobile",
+          breadcrumbs: ["Immobili", "Locandina"],
+        },
+      },
+      {
         path: "clients",
         name: "clients",
         component: () => import("@/views/pages/customers/Clients.vue"),
