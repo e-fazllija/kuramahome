@@ -59,7 +59,7 @@
 
 .kt-custom-table thead th {
   background-color: var(--kt-table-header-bg);
-  color: var(--kt-table-header-text);
+  color: var(--kt-table-header-text) !important;
   border-bottom: 2px solid var(--kt-table-border);
   font-weight: 600;
   font-size: 0.875rem;
@@ -68,6 +68,17 @@
   white-space: nowrap;
   vertical-align: middle;
   transition: background-color 0.2s ease;
+}
+
+/* Assicura che i titoli delle colonne siano chiari in modalità dark */
+.kt-custom-table thead th span.fw-semibold {
+  color: var(--kt-table-header-text) !important;
+}
+
+/* Override per la classe table-light in dark mode */
+[data-bs-theme="dark"] .kt-custom-table thead.table-light th,
+[data-bs-theme="dark"] .kt-custom-table thead.table-light th span {
+  color: #E0E0E0 !important;
 }
 
 .kt-custom-table thead th.sortable {

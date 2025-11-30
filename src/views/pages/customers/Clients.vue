@@ -136,7 +136,7 @@
           <div class="col-12 col-sm-6 col-md-auto">
             <select class="form-select filter-select" v-model="contract" @change="applyFilters">
               <option value="">📋 Tutte le tipologie</option>
-              <option value="Compratore">🏠 Compratore</option>
+              <option value="Acquirente">🏠 Acquirente</option>
               <option value="Venditore">💰 Venditore</option>
               <option value="Costruttore">🏗️ Costruttore</option>
               <option value="Cliente gold">⭐ Cliente gold</option>
@@ -420,7 +420,7 @@ export default defineComponent({
           type: "select",
           placeholder: "Tutte le tipologie",
           options: [
-            { label: "Compratore", value: "Compratore" },
+            { label: "Acquirente", value: "Acquirente" },
             { label: "Venditore", value: "Venditore" },
             { label: "Costruttore", value: "Costruttore" },
             { label: "Cliente gold", value: "Cliente gold" },
@@ -502,7 +502,7 @@ export default defineComponent({
         if (results && Array.isArray(results)) {
           results.forEach((customer) => {
             const types: string[] = [];
-            if (customer.Buyer) types.push("Compratore");
+            if (customer.Buyer) types.push("Acquirente");
             if (customer.Seller) types.push("Venditore");
             if (customer.Builder) types.push("Costruttore");
             if (customer.GoldCustomer) types.push("Cliente gold");
@@ -701,7 +701,7 @@ export default defineComponent({
     // Funzione per ottenere la classe del badge in base al tipo
     const getTypeClass = (type: string): string => {
       switch(type) {
-        case "Compratore":
+        case "Acquirente":
           return "badge-light-success";
         case "Venditore":
           return "badge-light-warning";

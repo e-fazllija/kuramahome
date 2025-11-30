@@ -62,7 +62,6 @@
           </button>
         </li>
       </ul>
-    </div>
       <!--begin::Form-->
       <el-form @submit.prevent="submit()" :model="formData" :rules="rules" ref="formRef" enctype="multipart/form-data">
         <div class="tab-content" id="propertyTabsContent">
@@ -105,27 +104,6 @@
 
                   <div class="row g-3 mb-3">
                     <div class="col-12 col-md-6">
-                      <label class="form-label required">
-                        <i class="ki-duotone ki-profile-user fs-5 text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                          <span class="path3"></span>
-                          <span class="path4"></span>
-                        </i>
-                        Cliente
-                      </label>
-                      <el-form-item prop="CustomerId">
-                        <select class="form-select form-select-lg" v-model="formData.CustomerId" required
-                          :disabled="!canModify && user.Role === 'Agent'">
-                          <option value="">Seleziona il cliente</option>
-                          <option v-for="customer in inserModel.Customers" :key="customer.Id" :value="customer.Id">
-                            {{ customer.label }}
-                          </option>
-                        </select>
-                      </el-form-item>
-                    </div>
-
-                    <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
                         <i class="ki-duotone ki-user fs-5 text-primary">
                           <span class="path1"></span>
@@ -142,142 +120,45 @@
                         >
                           <option value="">Seleziona l'agente</option>
                           <option
-                            v-for="agent in inserModel.Users"
-                            :key="agent.Id"
-                            :value="agent.Id"
+                            v-for="user in inserModel.Users"
+                            :key="user.Id"
+                            :value="user.Id"
                           >
-                            {{ agent.FirstName }} {{ agent.LastName }}
+                            {{ user.FirstName }} {{ user.LastName }}
                           </option>
-                        </select>
-                      </el-form-item>
-                    </div>
-                  </div>
-
-                  <div class="row g-3 mb-3" v-if="showTipologia">
-                    <div class="col-12 col-md-6">
-                      <label class="form-label required">
-                        <i class="ki-duotone ki-category fs-5 text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        Categoria
-                      </label>
-                      <el-form-item prop="Category">
-                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
-                          <option value="Residenziale">Residenziale</option>
-                          <option value="Capannone">Capannone</option>
-                          <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
-                          <option value="Magazzino">Magazzino</option>
-                          <option value="Garage">Garage</option>
-                          <option value="Ufficio">Ufficio</option>
-                          <option value="Terreno">Terreno</option>
-                          <option value="Rustico / Casale">Rustico / Casale</option>
                         </select>
                       </el-form-item>
                     </div>
 
                     <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
-                        <i class="ki-duotone ki-element-plus fs-5 text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        Tipologia <span class="text-danger">*</span>
-                      </label>
-                      <el-form-item prop="Typology">
-                        <select class="form-select form-select-lg" v-model="formData.Typology" :disabled="!canModify && user.Role === 'Agent'">
-                          <option
-                            v-for="tipologia in typesavailable"
-                            :key="tipologia"
-                            :value="tipologia"
-                          >
-                            {{ tipologia }}
-                          </option>
-                        </select>
-                      </el-form-item>
-                    </div>
-                  </div>
-
-                  <div v-else class="mb-3">
-                    <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
-                      <i class="ki-duotone ki-category fs-5 text-primary">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      Categoria <span class="text-danger">*</span>
-                    </label>
-                    <el-form-item prop="Category">
-                      <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="Residenziale">Residenziale</option>
-                        <option value="Capannone">Capannone</option>
-                        <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
-                        <option value="Magazzino">Magazzino</option>
-                        <option value="Garage">Garage</option>
-                        <option value="Ufficio">Ufficio</option>
-                        <option value="Terreno">Terreno</option>
-                        <option value="Rustico / Casale">Rustico / Casale</option>
-                      </select>
-                    </el-form-item>
-                  </div>
-
-                  <div class="row g-3 mb-3">
-                    <div class="col-12 col-md-6">
-                      <label class="form-label required">
                         <i class="ki-duotone ki-home fs-5 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        Stato vendita o affitto
+                        Stato vendita o affitto <span class="text-danger">*</span>
                       </label>
                       <el-form-item prop="Status">
                         <select class="form-select form-select-lg" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
+                          <option value="">Scegli tra vendita e affitto</option>
                           <option value="Vendita">Vendita</option>
                           <option value="Affitto">Affitto</option>
                         </select>
                       </el-form-item>
                     </div>
-
-                    <div class="col-12 col-md-6">
-                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
-                        <i class="ki-duotone ki-briefcase fs-5 text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        Tipologia incarico
-                      </label>
-                      <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="Verbale">Verbale</option>
-                        <option value="Esclusivo">Esclusivo</option>
-                        <option value="Semi-Verbale">Semi-Verbale</option>
-                        <option value="Immobile MLS">Immobile MLS</option>
-                      </select>
-                    </div>
                   </div>
-
-                  <div class="mb-3">
-                    <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
-                    <el-form-item prop="Availability">
-                      <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="Libero">Libero</option>
-                        <option value="Occupato">Occupato</option>
-                      </select>
-                    </el-form-item>
-                  </div>
-                </div>
-              </div>
 
                   <div class="row g-3 mb-3" v-if="showTipologia">
                     <div class="col-12 col-md-6">
-                      <label class="form-label required">
+                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
                         <i class="ki-duotone ki-category fs-5 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        Categoria
+                        Categoria <span class="text-danger">*</span>
                       </label>
                       <el-form-item prop="Category">
-                        <select class="form-select form-select-lg" v-model="formData.Category" required
-                          :disabled="!canModify && user.Role === 'Agent'">
+                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
                           <option value="">Seleziona una Categoria...</option>
                           <option value="Residenziale">Residenziale</option>
                           <option value="Capannone">Capannone</option>
@@ -310,49 +191,31 @@
                     </div>
                   </div>
 
-                  <div v-else class="mb-3">
-                    <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
-                      <i class="ki-duotone ki-category fs-5 text-primary">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      Categoria <span class="text-danger">*</span>
-                    </label>
-                    <el-form-item prop="Category">
-                      <select class="form-select form-select-lg" v-model="formData.Category" required
-                        :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="">Seleziona una Categoria...</option>
-                        <option value="Residenziale">Residenziale</option>
-                        <option value="Capannone">Capannone</option>
-                        <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
-                        <option value="Magazzino">Magazzino</option>
-                        <option value="Garage">Garage</option>
-                        <option value="Ufficio">Ufficio</option>
-                        <option value="Terreno">Terreno</option>
-                        <option value="Rustico / Casale">Rustico / Casale</option>
-                      </select>
-                    </el-form-item>
-                  </div>
-
-                  <div class="row g-3 mb-3">
+                  <div v-else class="row g-3 mb-3">
                     <div class="col-12 col-md-6">
-                      <label class="form-label required">
-                        <i class="ki-duotone ki-home fs-5 text-primary">
+                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                        <i class="ki-duotone ki-category fs-5 text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        Stato vendita o affitto
+                        Categoria <span class="text-danger">*</span>
                       </label>
-                      <el-form-item prop="Status">
-                        <select class="form-select form-select-lg" v-model="formData.Status" required
-                          :disabled="!canModify && user.Role === 'Agent'">
-                          <option value="">Scegli tra vendita e affitto</option>
-                          <option value="Vendita">Vendita</option>
-                          <option value="Affitto">Affitto</option>
+                      <el-form-item prop="Category">
+                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                          <option value="Residenziale">Residenziale</option>
+                          <option value="Capannone">Capannone</option>
+                          <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
+                          <option value="Magazzino">Magazzino</option>
+                          <option value="Garage">Garage</option>
+                          <option value="Ufficio">Ufficio</option>
+                          <option value="Terreno">Terreno</option>
+                          <option value="Rustico / Casale">Rustico / Casale</option>
                         </select>
                       </el-form-item>
                     </div>
+                  </div>
 
+                  <div class="row g-3 mb-3">
                     <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
                         <i class="ki-duotone ki-briefcase fs-5 text-primary">
@@ -361,30 +224,28 @@
                         </i>
                         Tipologia incarico
                       </label>
-                      <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment"
-                        :disabled="!canModify && user.Role === 'Agent'">
+                      <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
                         <option value="Verbale">Verbale</option>
                         <option value="Esclusivo">Esclusivo</option>
                         <option value="Semi-Verbale">Semi-Verbale</option>
                         <option value="Immobile MLS">Immobile MLS</option>
                       </select>
                     </div>
+
+                    <div class="col-12 col-md-6">
+                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
+                      <el-form-item prop="Availability">
+                        <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
+                          <option value="">Seleziona la Disponibilità</option>
+                          <option value="Libero">Libero</option>
+                          <option value="Occupato">Occupato</option>
+                        </select>
+                      </el-form-item>
+                    </div>
                   </div>
 
-                  <div class="mb-3">
-                    <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span
-                        class="text-danger">*</span></label>
-                    <el-form-item prop="Availability">
-                      <select class="form-select form-select-lg" v-model="formData.Availability"
-                        :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="">Seleziona la Disponibilità</option>
-                        <option value="Libero">Libero</option>
-                        <option value="Occupato">Occupato</option>
-                      </select>
-                    </el-form-item>
-                  </div>
-                
-              
+                </div>
+              </div>
 
               <div class="mb-4 mb-md-5 mb-xl-6">
                 <div class="d-flex align-items-center mb-3">
@@ -918,41 +779,60 @@
             
             <!--end::Card body-->
             <div v-if="user.Id === formData.UserId || user.Role === 'Admin' || formData.User.AdminId === user.Id"
-              class="d-flex align-items-end justify-content-end">
-                <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId)"
-                  type="button" @click="deleteItem()" class="btn btn-danger me-2">
-                  <span class="btn-icon">
-                    <i class="ki-duotone ki-trash fs-3">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                      <span class="path4"></span>
-                      <span class="path5"></span>
-                    </i>
-                  </span>
-                  <span class="btn-label">Elimina</span>
-                </button>
-                <!--begin::Button-->
-                <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit"
-                  :disabled="loading">
-                  <span v-if="!loading" class="d-flex align-items-center">
+              class="d-flex align-items-end justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <router-link
+                    :to="{ name: 'property-flyer', params: { id: id } }"
+                    target="_blank"
+                    class="btn btn-light-primary"
+                    :disabled="loading"
+                  >
                     <span class="btn-icon">
-                      <i class="ki-duotone ki-check fs-3">
+                      <i class="ki-duotone ki-file-down fs-3">
                         <span class="path1"></span>
                         <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
                       </i>
                     </span>
-                    <span class="btn-label">Salva Modifiche</span>
-                  </span>
-                  <span v-if="loading" class="d-flex align-items-center">
-                    <KTSpinner size="sm" :inline="true" />
-                    <span class="btn-label">Attendere...</span>
-                  </span>
-                </button>
-                <!--end::Button-->
+                    <span class="btn-label">Stampa Locandina</span>
+                  </router-link>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId)"
+                    type="button" @click="deleteItem()" class="btn btn-danger">
+                    <span class="btn-icon">
+                      <i class="ki-duotone ki-trash fs-3">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                        <span class="path5"></span>
+                      </i>
+                    </span>
+                    <span class="btn-label">Elimina</span>
+                  </button>
+                  <!--begin::Button-->
+                  <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit"
+                    :disabled="loading">
+                    <span v-if="!loading" class="d-flex align-items-center">
+                      <span class="btn-icon">
+                        <i class="ki-duotone ki-check fs-3">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </span>
+                      <span class="btn-label">Salva Modifiche</span>
+                    </span>
+                    <span v-if="loading" class="d-flex align-items-center">
+                      <KTSpinner size="sm" :inline="true" />
+                      <span class="btn-label">Attendere...</span>
+                    </span>
+                  </button>
+                  <!--end::Button-->
+                </div>
               </div>
 
-            </div>
             </div>
           </div>
           <!--end::Data Tab-->
@@ -1064,18 +944,23 @@
             </div>
             <!--end::Image Management-->
           </div>
+          <!--end::Images Tab-->
+        </div>
         <!--end::Tab Content-->
       </el-form>
       <!--end::Form-->
-
     </div>
+
     <!--end::Tabs-->
+  </div>
+
   <!--end::Content-->
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { Modal } from "bootstrap";
 import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
 import {
   updateRealEstateProperty,
@@ -1826,7 +1711,8 @@ export default defineComponent({
             }).then(() => {
               // router.push({ name: 'properties' })
             });
-          } catch (error: any) {
+          } catch ({ response }) {
+            console.log(response);
             loading.value = false;
             Swal.fire({
               text: "Attenzione, si è verificato un errore.",
@@ -1969,52 +1855,38 @@ export default defineComponent({
 
     // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
     const canModify = computed(() => {
-      if (!formData.value) {
-        return false;
-      }
-
-      const currentUser = user;
-      
-      if (!currentUser || !currentUser.Role) {
-        return false;
-      }
-
-      const userRole = currentUser.Role.trim();
-
-      // Se l'utente è il proprietario, può sempre modificare
-      if (formData.value.UserId && currentUser.Id === formData.value.UserId) {
-        return true;
-      }
-
-      // Admin: può modificare tutti gli immobili (anche se User non è presente)
-      // Controllo case-insensitive per sicurezza
-      if (userRole === 'Admin' || userRole.toLowerCase() === 'admin') {
-        return true;
-      }
-
-      // Per Agency e Agent, serve che User sia presente
-      if (!formData.value.User) {
+      if (!formData.value || !formData.value.User) {
         return false;
       }
 
       const propertyOwner = formData.value.User;
+      const currentUser = user;
+
+      // Se l'utente è il proprietario, può sempre modificare
+      if (currentUser.Id === formData.value.UserId) {
+        return true;
+      }
+
+      // Admin: può modificare tutti gli immobili
+      if (currentUser.Role === 'Admin') {
+        return true;
+      }
 
       // Agency: può modificare proprie + dei propri Agent
-      if (userRole === 'Agency' || userRole.toLowerCase() === 'agency') {
+      if (currentUser.Role === 'Agency') {
         // L'immobile è dell'Agency stessa
         if (formData.value.UserId === currentUser.Id) {
           return true;
         }
         // L'immobile è di un suo Agent (verifica tramite AdminId)
-        // Se AdminId corrisponde, significa che è un Agent dell'Agency (anche se Role non è presente)
-        if (propertyOwner.AdminId === currentUser.Id) {
+        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
           return true;
         }
         return false;
       }
 
       // Agent: può modificare solo proprie
-      if (userRole === 'Agent' || userRole.toLowerCase() === 'agent') {
+      if (currentUser.Role === 'Agent') {
         return formData.value.UserId === currentUser.Id;
       }
 
@@ -2108,6 +1980,7 @@ export default defineComponent({
       canModify,
       agentName,
       effectiveCommission,
+      id,
     };
   },
 });
