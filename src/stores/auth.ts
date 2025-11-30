@@ -33,6 +33,10 @@ export interface User {
   VATNumber?: string;
   PEC?: string;
   SDICode?: string;
+  // Configurazione Idealista
+  ClientId?: string;
+  ClientSecret?: string;
+  SyncToIdealista?: boolean;
 }
 
 export const useAuthStore = defineStore("auth", () => {

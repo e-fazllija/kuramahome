@@ -1,73 +1,7 @@
 <template>
   <div class="landing-page">
     <!--begin::Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" :class="{ 'navbar-scrolled': isScrolled }">
-      <div class="container">
-        <router-link class="navbar-brand" to="/">
-          <div class="navbar-brand-wrapper">
-            <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="KuramaHome" class="navbar-logo" />
-            <span class="navbar-brand-text">KuramaHome</span>
-          </div>
-        </router-link>
-        
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto align-items-center">
-            <li class="nav-item">
-              <a class="nav-link" href="#features">
-                <span class="nav-link-text">Funzionalità</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#pricing">
-                <span class="nav-link-text">Piani</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#how-it-works">
-                <span class="nav-link-text">Come Funziona</span>
-              </a>
-            </li>
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="#testimonials">
-                <span class="nav-link-text">Recensioni</span>
-              </a>
-            </li> -->
-            <li class="nav-item">
-              <a class="nav-link" href="#faq">
-                <span class="nav-link-text">FAQ</span>
-              </a>
-            </li>
-            <li class="nav-item nav-divider"></li>
-            <li class="nav-item">
-              <router-link class="nav-link nav-link-login" to="/sign-in">
-                <span class="nav-link-text">Accedi</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="btn btn-primary btn-navbar-cta" to="/sign-up">
-                <i class="ki-duotone ki-rocket me-1">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                <span>Inizia Gratis</span>
-              </router-link>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <LandingNavbar />
     <!--end::Navigation-->
 
     <!--begin::Hero Section-->
@@ -121,6 +55,35 @@
       </div>
     </section>
     <!--end::Hero Section-->
+
+    <!--begin::Property Search Section-->
+    <section id="find-your-property" class="property-search-section">
+      <div class="container">
+        <div class="property-search-card">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-4">
+              <div class="property-search-copy">
+                <span class="badge badge-light-primary text-uppercase mb-3">Ricerca Immobili</span>
+                <h2 class="property-search-title">Consulta gli immobili disponibili in tempo reale</h2>
+                <p class="property-search-text">
+                  Filtra per provincia, comune, prezzo e tipologia per trovare rapidamente la soluzione più adatta alle esigenze dei tuoi clienti.
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <PublicPropertySearchForm
+                :initial-filters="landingSearchDefaults"
+                :show-heading="false"
+                :compact="true"
+                submit-label="Cerca immobili"
+                @submit="handleLandingSearch"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--end::Property Search Section-->
 
     <!--begin::Features Section-->
     <section id="features" class="features-section">
@@ -520,37 +483,30 @@
     <!--end::CTA Section-->
 
     <!--begin::Footer-->
-    <footer class="footer">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-md-6">
-            <div class="footer-brand">
-              <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="KuramaHome" height="30" />
-              <span class="ms-2 text-muted">© 2024 KuramaHome. Tutti i diritti riservati.</span>
-            </div>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <div class="footer-links">
-              <router-link to="/sign-in" class="text-muted me-3">Accedi</router-link>
-              <router-link to="/sign-up" class="text-muted">Registrati</router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <LandingFooter />
     <!--end::Footer-->
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { defineComponent, onMounted, ref, reactive } from "vue";
 import { getAssetPath } from "@/core/helpers/assets";
 import { getActivePlans, type SubscriptionPlan } from "@/core/data/subscription-plans";
+import PublicPropertySearchForm from "@/components/property/PublicPropertySearchForm.vue";
+import LandingNavbar from "@/components/landing/LandingNavbar.vue";
+import LandingFooter from "@/components/landing/LandingFooter.vue";
+import type { PublicPropertySearchFilters } from "@/core/data/properties";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "landing-page",
+  components: {
+    PublicPropertySearchForm,
+    LandingNavbar,
+    LandingFooter,
+  },
   setup() {
-    const isScrolled = ref(false);
+    const router = useRouter();
     const pricingPlans = ref([
       {
         id: 1,
@@ -685,33 +641,32 @@ export default defineComponent({
       }
     ]);
 
-    const handleScroll = () => {
-      isScrolled.value = window.scrollY > 50;
+    const landingSearchDefaults = reactive<Partial<PublicPropertySearchFilters>>({
+      status: "Disponibile",
+    });
+
+    const buildQueryParams = (filters: PublicPropertySearchFilters) => {
+      const query: Record<string, string> = {};
+      if (filters.keyword) query.keyword = filters.keyword;
+      if (filters.province) query.province = filters.province;
+      if (filters.city) query.city = filters.city;
+      if (filters.category) query.category = filters.category;
+      if (filters.typology) query.typology = filters.typology;
+      if (filters.status) query.status = filters.status;
+      if (filters.priceMin) query.priceMin = filters.priceMin.toString();
+      if (filters.priceMax) query.priceMax = filters.priceMax.toString();
+      query.page = "1";
+      return query;
+    };
+
+    const handleLandingSearch = (filters: PublicPropertySearchFilters) => {
+      router.push({
+        name: "public-properties",
+        query: buildQueryParams(filters),
+      });
     };
 
     onMounted(async () => {
-      // Scroll effect for navbar
-      window.addEventListener('scroll', handleScroll);
-      handleScroll(); // Check initial state
-
-      // Smooth scrolling for anchor links
-      const anchorLinks = document.querySelectorAll('a[href^="#"]');
-      anchorLinks.forEach(link => {
-        link.addEventListener('click', function(e: Event) {
-          e.preventDefault();
-          const targetId = (e.target as HTMLAnchorElement).getAttribute('href');
-          if (targetId) {
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-              targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-              });
-            }
-          }
-        });
-      });
-
       // Try to load real plans from API, fallback to static data
       try {
         const activePlans = await getActivePlans();
@@ -735,17 +690,13 @@ export default defineComponent({
       }
     });
 
-    onUnmounted(() => {
-      window.removeEventListener('scroll', handleScroll);
-    });
-
     return {
-      getAssetPath,
       pricingPlans,
       howItWorksSteps,
       testimonials,
       faqs,
-      isScrolled,
+      landingSearchDefaults,
+      handleLandingSearch,
     };
   },
 });

@@ -62,6 +62,7 @@ export class RealEstateProperty {
   AgreedCommission: number;
   FlatRateCommission: number;
   CommissionReversal: number;
+  EffectiveCommission?: number;
 }
 
 export class RequestTabelData {
@@ -81,6 +82,7 @@ export class RequestTabelData {
   Auction:Boolean;
   AdminId?: string;
   UserId?: string;
+  EffectiveCommission?: number;
 }
 
 export class InsertModel {
@@ -93,6 +95,7 @@ export class RealEstatePropertyPhotos {
   Url: string;
   FileName: string;
   Highlighted: boolean;
+  Position: number;
   CreationDate?: Date;
   UpdateDate?: Date;
 }
@@ -106,6 +109,41 @@ export class Notes {
 export class SearchModel {
   Agencies: User[];
   Agents: User[];
+}
+
+export interface PublicPropertySearchFilters {
+  keyword?: string;
+  province?: string;
+  city?: string;
+  category?: string;
+  typology?: string;
+  status?: string;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PublicPropertyCard {
+  Id: number;
+  Title: string;
+  Category: string;
+  Typology?: string;
+  City: string;
+  State: string;
+  Price: number;
+  CommercialSurfaceate: number;
+  Bedrooms: number;
+  Bathrooms: number;
+  Highlighted: boolean;
+  Auction: boolean;
+  Status: string;
+  MainPhotoUrl?: string | null;
+}
+
+export interface PublicPropertySearchResponse {
+  Data: PublicPropertyCard[];
+  Total: number;
 }
 
 export interface PropertyExportPayload {
@@ -166,7 +204,8 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         Photos: item.FirstPhotoUrl || null,
         Auction: item.Auction,
         AdminId: item.AgencyId,
-        UserId: item.AgentId
+        UserId: item.AgentId,
+        EffectiveCommission: item.EffectiveCommission
       } as RequestTabelData));
     })
     .catch(({ response }) => {
@@ -284,6 +323,56 @@ const uploadFiles = async (files: FileList, id: number) => {
     });
 };
 
+/**
+ * Pulisce i campi numerici convertendo valori vuoti/undefined/null in 0
+ * per evitare errori di deserializzazione nel backend C#
+ */
+const cleanNumericFields = (data: any): any => {
+  const cleaned = { ...data };
+  
+  // Lista dei campi numerici da pulire
+  const numericFields = [
+    'CommercialSurfaceate',
+    'TotalBuildingfloors',
+    'Elevators',
+    'Bedrooms',
+    'WarehouseRooms',
+    'Kitchens',
+    'Bathrooms',
+    'ParkingSpaces',
+    'YearOfConstruction',
+    'Price',
+    'PriceReduced',
+    'MQGarden',
+    'CondominiumExpenses',
+    'AgreedCommission',
+    'FlatRateCommission',
+    'CommissionReversal',
+    'CustomerId'
+  ];
+
+  numericFields.forEach(field => {
+    if (cleaned[field] === undefined || cleaned[field] === null || cleaned[field] === '' || Number.isNaN(Number(cleaned[field]))) {
+      cleaned[field] = 0;
+    } else {
+      // Assicurati che il valore sia un numero valido
+      const numValue = Number(cleaned[field]);
+      cleaned[field] = Number.isNaN(numValue) ? 0 : numValue;
+    }
+  });
+
+  return cleaned;
+};
+
+const searchPublicProperties = (filters: PublicPropertySearchFilters): Promise<PublicPropertySearchResponse> => {
+  return ApiService.post("public/properties/search", filters)
+    .then(({ data }) => data as PublicPropertySearchResponse)
+    .catch(({ response }) => {
+      const errorMessage = response?.data?.Message || "Errore durante la ricerca degli immobili";
+      throw new Error(errorMessage);
+    });
+};
+
 const createRealEstateProperty = async (form: any) => {
   const values = form as RealEstateProperty;
   const currentUser = store.user;
@@ -293,17 +382,21 @@ const createRealEstateProperty = async (form: any) => {
   if (!values.UserId && values.AgentId) {
     values.UserId = values.AgentId;
   }
+  
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedValues = cleanNumericFields(values);
+  
   const formData = new FormData();
 
   // Campi da ignorare (non inviati al backend)
-  const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label'];
+  const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label', 'EffectiveCommission'];
 
-  for (const key in values) {
-    if (ignoreFields.includes(key) || values[key as keyof RealEstateProperty] === undefined) {
+  for (const key in cleanedValues) {
+    if (ignoreFields.includes(key) || cleanedValues[key as keyof RealEstateProperty] === undefined) {
       continue;
     }
 
-    const value = values[key as keyof RealEstateProperty];
+    const value = cleanedValues[key as keyof RealEstateProperty];
     
     // Salta valori null o undefined
     if (value === null || value === undefined) {
@@ -383,7 +476,11 @@ const updateRealEstateProperty = async (formData: any) => {
   if (!values.UserId && values.AgentId) {
     values.UserId = values.AgentId;
   }
-  return await ApiService.post("RealEstateProperty/Update", values)
+  
+  // Pulisce i campi numerici prima dell'invio
+  const cleanedValues = cleanNumericFields(values);
+  
+  return await ApiService.post("RealEstateProperty/Update", cleanedValues)
     .then(({ data }) => {
       const result = data as RealEstateProperty;
       return result;
@@ -459,6 +556,79 @@ const exportProperties = (payload: PropertyExportPayload) => {
   return ApiService.postBlob("RealEstateProperty/Export", payload);
 };
 
+// Public Property Detail Interface
+export interface PublicPropertyDetail {
+  Id: number;
+  Title: string;
+  Category: string;
+  Typology?: string;
+  Status: string;
+  AddressLine: string;
+  City: string;
+  Location?: string;
+  State: string;
+  PostCode: string;
+  CommercialSurfaceate: number;
+  Floor?: string;
+  TotalBuildingfloors: number;
+  Elevators: number;
+  MoreDetails?: string;
+  MoreFeatures?: string;
+  Bedrooms: number;
+  WarehouseRooms: number;
+  Kitchens: number;
+  Bathrooms: number;
+  Furniture?: string;
+  OtherFeatures?: string;
+  ParkingSpaces: number;
+  Heating?: string;
+  Exposure?: string;
+  EnergyClass?: string;
+  TypeOfProperty?: string;
+  StateOfTheProperty?: string;
+  YearOfConstruction: number;
+  Price: number;
+  PriceReduced: number;
+  MQGarden: number;
+  CondominiumExpenses: number;
+  Availability?: string;
+  Description: string;
+  VideoUrl?: string;
+  Highlighted: boolean;
+  Auction: boolean;
+  CreationDate: string;
+  Photos: Array<{ Url: string; Position: number }>;
+  Agency?: {
+    Id: string;
+    Name: string;
+    CompanyName?: string;
+    Email?: string;
+    PhoneNumber?: string;
+    MobilePhone?: string;
+    Address?: string;
+    City?: string;
+    Province?: string;
+    ZipCode?: string;
+  };
+  Agent?: {
+    Id: string;
+    FirstName: string;
+    LastName: string;
+    Email?: string;
+    PhoneNumber?: string;
+    MobilePhone?: string;
+  };
+}
+
+const getPublicPropertyDetail = (id: number): Promise<PublicPropertyDetail> => {
+  return ApiService.get(`public/properties/${id}`, "")
+    .then(({ data }) => data as PublicPropertyDetail)
+    .catch(({ response }) => {
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dettagli dell'immobile";
+      throw new Error(errorMessage);
+    });
+};
+
 export { 
   getRealEstateProperties, 
   getRealEstatePropertiesList,
@@ -472,4 +642,6 @@ export {
   uploadFiles,
   updatePhotosOrder,
   getSearchItems,
-  exportProperties }
+  exportProperties,
+  searchPublicProperties,
+  getPublicPropertyDetail }

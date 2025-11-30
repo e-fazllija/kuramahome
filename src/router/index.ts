@@ -19,6 +19,22 @@ const routes: Array<RouteRecordRaw> = [
           pageTitle: "KuramaHome - Gestione Immobiliare",
         },
       },
+      {
+        path: "immobili",
+        name: "public-properties",
+        component: () => import("@/views/PropertySearchResults.vue"),
+        meta: {
+          pageTitle: "Ricerca Immobili",
+        },
+      },
+      {
+        path: "immobili/:id",
+        name: "public-property-detail",
+        component: () => import("@/views/PropertyDetail.vue"),
+        meta: {
+          pageTitle: "Dettaglio Immobile",
+        },
+      },
     ],
   },
   {
@@ -73,6 +89,15 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Immobile",
           breadcrumbs: ["Immobili"],
+        },
+      },
+      {
+        path: "property/:id/flyer",
+        name: "property-flyer",
+        component: () => import("@/views/pages/properties/Flyer.vue"),
+        meta: {
+          pageTitle: "Locandina Immobile",
+          breadcrumbs: ["Immobili", "Locandina"],
         },
       },
       {

@@ -240,6 +240,161 @@
           <!--begin::Separator-->
           <div class="separator separator-content my-10">
             <span class="w-250px fw-bold text-gray-700 fs-5">
+              <i class="ki-duotone ki-key fs-2 text-primary me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+              </i>
+              Configurazione Idealista
+            </span>
+          </div>
+          <!--end::Separator-->
+
+          <!--begin::Notice-->
+          <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-8 p-6">
+            <i class="ki-duotone ki-information-5 fs-2tx text-warning me-4">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+            </i>
+            <div class="d-flex flex-column">
+              <h5 class="fw-bold text-gray-900 mb-2">Informazioni Chiavi Idealista</h5>
+              <span class="text-gray-700 fs-6">
+                I dati sono reperibili unicamente da Idealista. Sono obbligatorie entrambe le informazioni (Client ID e Client Secret) per poter procedere con la sincronizzazione degli immobili.
+              </span>
+            </div>
+          </div>
+          <!--end::Notice-->
+
+          <!--begin::Configurazione Idealista-->
+          <div>
+            <!--begin::Input group-->
+            <div class="row mb-6">
+              <!--begin::Label-->
+              <label class="col-lg-4 col-form-label fw-semobold fs-6">Client ID</label>
+              <!--end::Label-->
+
+              <!--begin::Col-->
+              <div class="col-lg-8 fv-row">
+                <div class="d-flex align-items-center">
+                  <Field 
+                    :type="showClientId ? 'text' : 'password'" 
+                    name="ClientId" 
+                    class="form-control form-control-lg form-control-solid me-3"
+                    placeholder="Client ID" 
+                    v-model="profileDetails.ClientId" 
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-icon btn-light btn-sm flex-shrink-0"
+                    @click="showClientId = !showClientId"
+                  >
+                    <i v-if="showClientId" class="ki-duotone ki-eye-slash fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                    </i>
+                    <i v-else class="ki-duotone ki-eye fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                    </i>
+                  </button>
+                </div>
+                <div class="fv-plugins-message-container">
+                  <div class="fv-help-block">
+                    <ErrorMessage name="ClientId" />
+                  </div>
+                </div>
+              </div>
+              <!--end::Col-->
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row mb-6">
+              <!--begin::Label-->
+              <label class="col-lg-4 col-form-label fw-semobold fs-6">Client Secret</label>
+              <!--end::Label-->
+
+              <!--begin::Col-->
+              <div class="col-lg-8 fv-row">
+                <div class="d-flex align-items-center">
+                  <Field 
+                    :type="showClientSecret ? 'text' : 'password'" 
+                    name="ClientSecret" 
+                    class="form-control form-control-lg form-control-solid me-3"
+                    placeholder="Client Secret" 
+                    v-model="profileDetails.ClientSecret" 
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-icon btn-light btn-sm flex-shrink-0"
+                    @click="showClientSecret = !showClientSecret"
+                  >
+                    <i v-if="showClientSecret" class="ki-duotone ki-eye-slash fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      <span class="path4"></span>
+                    </i>
+                    <i v-else class="ki-duotone ki-eye fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                    </i>
+                  </button>
+                </div>
+                <div class="fv-plugins-message-container">
+                  <div class="fv-help-block">
+                    <ErrorMessage name="ClientSecret" />
+                  </div>
+                </div>
+              </div>
+              <!--end::Col-->
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row mb-6">
+              <!--begin::Label-->
+              <label class="col-lg-4 col-form-label fw-semobold fs-6">
+                Sincronizzazione Idealista
+                <i 
+                  class="fas fa-exclamation-circle ms-1 fs-7 text-primary" 
+                  data-bs-toggle="tooltip" 
+                  data-bs-placement="top"
+                  title="Tutte le azioni apportate sugli immobili verranno apportate anche su Idealista"
+                ></i>
+              </label>
+              <!--end::Label-->
+
+              <!--begin::Col-->
+              <div class="col-lg-8 fv-row">
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="sync-to-idealista"
+                    v-model="profileDetails.SyncToIdealista"
+                    @change="handleSyncChange"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="sync-to-idealista">
+                    Attiva sincronizzazione con Idealista
+                  </label>
+                </div>
+              </div>
+              <!--end::Col-->
+            </div>
+            <!--end::Input group-->
+          </div>
+          <!--end::Configurazione Idealista-->
+
+          <!--begin::Separator-->
+          <div class="separator separator-content my-10">
+            <span class="w-250px fw-bold text-gray-700 fs-5">
               <i class="ki-duotone ki-bill fs-2 text-info me-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -725,10 +880,11 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, onMounted, watch, computed } from "vue";
-import { ErrorMessage, Field, Form as VForm } from "vee-validate";
+import { defineComponent, ref, onMounted, watch, computed, nextTick } from "vue";
+import { ErrorMessage, Field, Form as VForm, useForm } from "vee-validate";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as Yup from "yup";
+import { Tooltip } from "bootstrap";
 import { Agent, updateAgent } from "@/core/data/agents"
 import { useAuthStore, type User } from "@/stores/auth";
 import { useThemeStore } from "@/stores/theme";
@@ -757,6 +913,7 @@ export default defineComponent({
     const store = useAuthStore();
     const storeTheme = useThemeStore();
     const storeConfig = useConfigStore();
+    const { setFieldError } = useForm();
     const submitButton1 = ref<HTMLElement | null>(null);
     const submitButton2 = ref<HTMLElement | null>(null);
     const submitButton3 = ref<HTMLElement | null>(null);
@@ -769,6 +926,8 @@ export default defineComponent({
     const passwordFormDisplay = ref(false);
     const resetPasswordToken = ref<string>();
     const newPassword = ref<string>();
+    const showClientId = ref(false);
+    const showClientSecret = ref(false);
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
     const cities = ref<Array<{Id: string, Name: string}>>([]);
     const profileDetailsValidator = Yup.object().shape({
@@ -782,6 +941,9 @@ export default defineComponent({
       ZipCode: Yup.string().label("ZipCode"),
       Province: Yup.string().label("Province"),
       Color: Yup.string().label("Color"),
+      ClientId: Yup.string().label("Client ID"),
+      ClientSecret: Yup.string().label("Client Secret"),
+      SyncToIdealista: Yup.boolean().label("Sincronizzazione Idealista"),
     });
 
     const changeEmail = Yup.object().shape({
@@ -975,7 +1137,7 @@ export default defineComponent({
     );
 
     // Carica le province al mount
-    onMounted(() => {
+    onMounted(async () => {
       loadProvinces();
       // Se c'è già una provincia selezionata, carica le città
       if (profileDetails.Province) {
@@ -985,6 +1147,15 @@ export default defineComponent({
           Name: city.Name
         }));
       }
+      
+      // Inizializza i tooltip
+      await nextTick();
+      const tooltipTriggerList = Array.from(
+        document.querySelectorAll("[data-bs-toggle='tooltip']")
+      ) as HTMLElement[];
+      tooltipTriggerList.forEach((tooltipTriggerEl) => {
+        new Tooltip(tooltipTriggerEl);
+      });
     });
 
     // Theme mode
@@ -996,6 +1167,47 @@ export default defineComponent({
       let configMode = mode;
       storeConfig.setLayoutConfigProperty("general.mode", configMode);
       storeTheme.setThemeMode(configMode);
+    };
+
+    // Handler per il cambio del checkbox di sincronizzazione
+    const handleSyncChange = () => {
+      // Usa nextTick per permettere al checkbox di cambiare stato prima del controllo
+      nextTick(() => {
+        if (profileDetails.SyncToIdealista) {
+          // Verifica se entrambi i campi sono compilati
+          const clientIdEmpty = !profileDetails.ClientId || !profileDetails.ClientId.trim();
+          const clientSecretEmpty = !profileDetails.ClientSecret || !profileDetails.ClientSecret.trim();
+          
+          if (clientIdEmpty || clientSecretEmpty) {
+            // Disattiva il checkbox
+            profileDetails.SyncToIdealista = false;
+            
+            // Mostra errori sui campi mancanti
+            if (clientIdEmpty) {
+              setFieldError("ClientId", "Il campo Client ID è obbligatorio per attivare la sincronizzazione");
+            }
+            if (clientSecretEmpty) {
+              setFieldError("ClientSecret", "Il campo Client Secret è obbligatorio per attivare la sincronizzazione");
+            }
+            
+            // Mostra un messaggio di errore
+            Swal.fire({
+              text: "Per attivare la sincronizzazione con Idealista è necessario compilare entrambi i campi: Client ID e Client Secret",
+              icon: "warning",
+              buttonsStyling: false,
+              confirmButtonText: "Ok",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+          } else {
+            // Se entrambi i campi sono compilati, rimuovi eventuali errori precedenti
+            setFieldError("ClientId", undefined);
+            setFieldError("ClientSecret", undefined);
+          }
+        }
+      });
     };
 
     return {
@@ -1022,7 +1234,10 @@ export default defineComponent({
       provinces,
       cities,
       themeMode,
-      setThemeMode
+      setThemeMode,
+      showClientId,
+      showClientSecret,
+      handleSyncChange
     };
   },
 });
