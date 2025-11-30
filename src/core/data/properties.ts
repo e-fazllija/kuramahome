@@ -111,6 +111,41 @@ export class SearchModel {
   Agents: User[];
 }
 
+export interface PublicPropertySearchFilters {
+  keyword?: string;
+  province?: string;
+  city?: string;
+  category?: string;
+  typology?: string;
+  status?: string;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PublicPropertyCard {
+  Id: number;
+  Title: string;
+  Category: string;
+  Typology?: string;
+  City: string;
+  State: string;
+  Price: number;
+  CommercialSurfaceate: number;
+  Bedrooms: number;
+  Bathrooms: number;
+  Highlighted: boolean;
+  Auction: boolean;
+  Status: string;
+  MainPhotoUrl?: string | null;
+}
+
+export interface PublicPropertySearchResponse {
+  Data: PublicPropertyCard[];
+  Total: number;
+}
+
 export interface PropertyExportPayload {
   format?: "csv" | "excel";
   fromDate?: string | null;
@@ -329,6 +364,15 @@ const cleanNumericFields = (data: any): any => {
   return cleaned;
 };
 
+const searchPublicProperties = (filters: PublicPropertySearchFilters): Promise<PublicPropertySearchResponse> => {
+  return ApiService.post("public/properties/search", filters)
+    .then(({ data }) => data as PublicPropertySearchResponse)
+    .catch(({ response }) => {
+      const errorMessage = response?.data?.Message || "Errore durante la ricerca degli immobili";
+      throw new Error(errorMessage);
+    });
+};
+
 const createRealEstateProperty = async (form: any) => {
   const values = form as RealEstateProperty;
   const currentUser = store.user;
@@ -512,6 +556,79 @@ const exportProperties = (payload: PropertyExportPayload) => {
   return ApiService.postBlob("RealEstateProperty/Export", payload);
 };
 
+// Public Property Detail Interface
+export interface PublicPropertyDetail {
+  Id: number;
+  Title: string;
+  Category: string;
+  Typology?: string;
+  Status: string;
+  AddressLine: string;
+  City: string;
+  Location?: string;
+  State: string;
+  PostCode: string;
+  CommercialSurfaceate: number;
+  Floor?: string;
+  TotalBuildingfloors: number;
+  Elevators: number;
+  MoreDetails?: string;
+  MoreFeatures?: string;
+  Bedrooms: number;
+  WarehouseRooms: number;
+  Kitchens: number;
+  Bathrooms: number;
+  Furniture?: string;
+  OtherFeatures?: string;
+  ParkingSpaces: number;
+  Heating?: string;
+  Exposure?: string;
+  EnergyClass?: string;
+  TypeOfProperty?: string;
+  StateOfTheProperty?: string;
+  YearOfConstruction: number;
+  Price: number;
+  PriceReduced: number;
+  MQGarden: number;
+  CondominiumExpenses: number;
+  Availability?: string;
+  Description: string;
+  VideoUrl?: string;
+  Highlighted: boolean;
+  Auction: boolean;
+  CreationDate: string;
+  Photos: Array<{ Url: string; Position: number }>;
+  Agency?: {
+    Id: string;
+    Name: string;
+    CompanyName?: string;
+    Email?: string;
+    PhoneNumber?: string;
+    MobilePhone?: string;
+    Address?: string;
+    City?: string;
+    Province?: string;
+    ZipCode?: string;
+  };
+  Agent?: {
+    Id: string;
+    FirstName: string;
+    LastName: string;
+    Email?: string;
+    PhoneNumber?: string;
+    MobilePhone?: string;
+  };
+}
+
+const getPublicPropertyDetail = (id: number): Promise<PublicPropertyDetail> => {
+  return ApiService.get(`public/properties/${id}`, "")
+    .then(({ data }) => data as PublicPropertyDetail)
+    .catch(({ response }) => {
+      const errorMessage = response?.data?.Message || "Errore durante il caricamento dei dettagli dell'immobile";
+      throw new Error(errorMessage);
+    });
+};
+
 export { 
   getRealEstateProperties, 
   getRealEstatePropertiesList,
@@ -525,4 +642,6 @@ export {
   uploadFiles,
   updatePhotosOrder,
   getSearchItems,
-  exportProperties }
+  exportProperties,
+  searchPublicProperties,
+  getPublicPropertyDetail }

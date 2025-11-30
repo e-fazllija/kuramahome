@@ -93,6 +93,7 @@ export default defineComponent({
 @import "assets/css/landing-page.css";
 @import "assets/css/faq.css";
 @import "assets/css/spinner.css";
+@import "assets/css/property-search.css";
 
 #app {
   display: contents;

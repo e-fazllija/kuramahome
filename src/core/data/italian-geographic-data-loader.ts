@@ -24,6 +24,8 @@ export interface CityWithCAP {
 let provinceCitiesCache: Record<string, CityWithCAP[]> | null = null;
 let isLoading = false;
 let loadPromise: Promise<Record<string, CityWithCAP[]>> | null = null;
+const provinceCodeMap: Record<string, string> = {};
+const provinceNameMap: Record<string, string> = {};
 
 // Estrae i dati dal JSON e li converte nel formato atteso
 function parseProvinceCities(data: { regioni: RegioneData[] }): Record<string, CityWithCAP[]> {
@@ -33,6 +35,12 @@ function parseProvinceCities(data: { regioni: RegioneData[] }): Record<string, C
   data.regioni.forEach((regione) => {
     // Itera su tutte le province di ogni regione
     regione.province.forEach((provincia) => {
+      const provinceName = provincia.nome.trim();
+      const provinceCode = provincia.sigla.trim().toUpperCase();
+
+      provinceCodeMap[provinceName.toLowerCase()] = provinceCode;
+      provinceNameMap[provinceCode] = provinceName;
+
       const cities: CityWithCAP[] = provincia.comuni.map((comune) => ({
         Id: comune.nome,
         Name: comune.nome,
@@ -143,5 +151,27 @@ export function getAllProvinceNames(): string[] {
   // Usa la cache se disponibile, altrimenti usa i dati sincroni
   const data = provinceCitiesCache || provinceCities;
   return Object.keys(data).sort();
+}
+
+/**
+ * Restituisce il codice (sigla) dato un nome di provincia
+ */
+export function getProvinceCodeByName(provinceName: string): string | undefined {
+  if (!provinceName) {
+    return undefined;
+  }
+
+  return provinceCodeMap[provinceName.trim().toLowerCase()];
+}
+
+/**
+ * Restituisce il nome della provincia dato il codice (sigla)
+ */
+export function getProvinceNameByCode(provinceCode: string): string | undefined {
+  if (!provinceCode) {
+    return undefined;
+  }
+
+  return provinceNameMap[provinceCode.trim().toUpperCase()];
 }
 

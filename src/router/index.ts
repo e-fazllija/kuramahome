@@ -19,6 +19,22 @@ const routes: Array<RouteRecordRaw> = [
           pageTitle: "KuramaHome - Gestione Immobiliare",
         },
       },
+      {
+        path: "immobili",
+        name: "public-properties",
+        component: () => import("@/views/PropertySearchResults.vue"),
+        meta: {
+          pageTitle: "Ricerca Immobili",
+        },
+      },
+      {
+        path: "immobili/:id",
+        name: "public-property-detail",
+        component: () => import("@/views/PropertyDetail.vue"),
+        meta: {
+          pageTitle: "Dettaglio Immobile",
+        },
+      },
     ],
   },
   {
