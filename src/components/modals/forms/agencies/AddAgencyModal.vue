@@ -480,28 +480,49 @@
 
                     <!--begin::Input-->
                     <el-form-item prop="color">
-                      <div class="color-picker-container">
-                        <div class="color-options">
+                      <div class="mb-3">
+                        <!--begin::Griglia colori-->
+                        <div class="row g-2 mb-3">
                           <div 
                             v-for="color in colorOptions" 
                             :key="color.value"
-                            class="color-option"
-                            :class="{ 'selected': formData.Color === color.value }"
-                            :style="{ backgroundColor: color.value }"
-                            @click="selectColor(color.value)"
-                            :title="color.name"
+                            class="col-3 col-sm-2 col-md-2"
                           >
-                            <i v-if="formData.Color === color.value" class="ki-duotone ki-check fs-4 text-white">
-                              <span class="path1"></span>
-                              <span class="path2"></span>
-                            </i>
+                            <div
+                              class="position-relative d-flex align-items-center justify-content-center rounded border border-2 cursor-pointer"
+                              :class="formData.Color === color.value ? 'border-primary shadow-sm' : 'border-gray-300'"
+                              :style="{ 
+                                backgroundColor: color.value,
+                                minHeight: '50px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                              }"
+                              @click="selectColor(color.value)"
+                              :title="color.name"
+                            >
+                              <i v-if="formData.Color === color.value" class="ki-duotone ki-check fs-2 text-white position-absolute">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                              </i>
+                            </div>
                           </div>
                         </div>
-                        <div class="selected-color-display">
-                          <span class="color-label">Colore selezionato:</span>
-                          <div class="current-color" :style="{ backgroundColor: formData.Color }"></div>
-                          <span class="color-value">{{ formData.Color }}</span>
+                        <!--end::Griglia colori-->
+                        
+                        <!--begin::Display colore selezionato-->
+                        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded border">
+                          <span class="fw-semibold text-gray-700">Colore selezionato:</span>
+                          <div 
+                            class="rounded border border-2 border-gray-300"
+                            :style="{ 
+                              width: '40px', 
+                              height: '40px', 
+                              backgroundColor: formData.Color 
+                            }"
+                          ></div>
+                          <span class="badge badge-light-primary fs-7">{{ formData.Color }}</span>
                         </div>
+                        <!--end::Display colore selezionato-->
                       </div>
                     </el-form-item>
                     <!--end::Input-->
