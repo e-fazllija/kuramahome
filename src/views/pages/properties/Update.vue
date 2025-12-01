@@ -292,7 +292,7 @@
                           :disabled="!canModify && user.Role === 'Agent'">
                           <option value="">Seleziona città</option>
                           <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                            {{ city.Name }}
+                            {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                           </option>
                         </select>
                       </el-form-item>
@@ -307,11 +307,11 @@
                     </div>
 
                     <div class="col-12 col-md-6">
-                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Codice Fiscale <span
+                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">CAP <span
                           class="text-danger">*</span></label>
                       <el-form-item prop="PostCode">
                         <input class="form-control form-control-lg" v-model="formData.PostCode" type="text"
-                          placeholder="Inserisci il codice fiscale" required
+                          placeholder="Inserisci il CAP" required
                           :disabled="!canModify && user.Role === 'Agent'" />
                       </el-form-item>
                     </div>
@@ -347,7 +347,6 @@
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Piano</label>
                       <select class="form-select form-select-lg" v-model="formData.Floor"
                         :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="">Scegli</option>
                         <option value="Interrato -2">Interrato -2</option>
                         <option value="Interrato -1">Interrato -1</option>
                         <option value="Seminterrato">Seminterrato</option>
@@ -390,8 +389,11 @@
                     <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Spese
                         condominiali</label>
-                      <input class="form-control form-control-lg" v-model="formData.CondominiumExpenses" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                      <div class="input-group">
+                        <input class="form-control form-control-lg" v-model="formData.CondominiumExpenses" type="number"
+                          placeholder="Inserisci importo" :disabled="!canModify && user.Role === 'Agent'" />
+                        <span class="input-group-text">€</span>
+                      </div>
                     </div>
                   </div>
 
@@ -451,14 +453,17 @@
 
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Esposizione</label>
-                    <select class="form-select form-select-lg" v-model="formData.Exposure"
-                      :disabled="!canModify && user.Role === 'Agent'">
-                      <option value="">Selezionare l'esposizione</option>
+                    <select class="form-select form-select-lg" v-model="selectedExposures" multiple
+                      :disabled="!canModify && user.Role === 'Agent'"
+                      style="min-height: 100px;">
                       <option value="Nord">Nord</option>
                       <option value="Sud">Sud</option>
                       <option value="Est">Est</option>
                       <option value="Ovest">Ovest</option>
                     </select>
+                    <small class="text-palette-secondary d-block mt-1 fs-8">
+                      Tieni premuto Ctrl (o Cmd su Mac) per selezionare più esposizioni
+                    </small>
                   </div>
 
                   <div class="mb-3">
@@ -961,7 +966,7 @@
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Modal } from "bootstrap";
-import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getCityByCAP } from "@/core/data/italian-geographic-data-loader";
 import {
   updateRealEstateProperty,
   RealEstateProperty,
@@ -990,12 +995,13 @@ export default defineComponent({
     const formRef = ref<any>(null); // Element Plus Form component reference
     const typesavailable = ref<string[]>([]);
     const provinces = ref<Array<{ Id: string, Name: string }>>([]);
-    const cities = ref<Array<{ Id: string, Name: string }>>([]);
+    const cities = ref<Array<{ Id: string, Name: string, CAP?: string }>>([]);
     const showTipologia = ref(false);
     const loading = ref<boolean>(true);
     const firtLoad = ref(false);
     const isTrattativaRiservata = ref(false);
     const imageErrors = ref<Record<number, boolean>>({});
+    const selectedExposures = ref<string[]>([]);
 
     // Funzioni per caricare i dati dal JSON
     const loadProvinces = async () => {
@@ -1017,7 +1023,8 @@ export default defineComponent({
           const citiesData = getCitiesByProvince(provinceName);
           cities.value = citiesData.map(city => ({
             Id: city.Name,
-            Name: city.Name
+            Name: city.Name,
+            CAP: city.CAP
           }));
         } else {
           cities.value = [];
@@ -1104,6 +1111,7 @@ export default defineComponent({
       PostCode: "",
       CommercialSurfaceate: 0,
       TotalBuildingfloors: 0,
+      Floor: "Piano Terra",
       Elevators: 0,
       MoreDetails: "",
       MoreFeatures: "",
@@ -1378,6 +1386,14 @@ export default defineComponent({
       // Inizializza la checkbox "Trattativa riservata" in base al prezzo
       isTrattativaRiservata.value = formData.value.Price === -1;
 
+      // Converti la stringa Exposure in array per la selezione multipla
+      if (formData.value.Exposure) {
+        // Gestisce sia separatori "-" che "," per retrocompatibilità
+        selectedExposures.value = formData.value.Exposure.split(/[-,\s]+/).filter(e => e.trim() !== '');
+      } else {
+        selectedExposures.value = [];
+      }
+
       // Carica le province
       await loadProvinces();
 
@@ -1432,9 +1448,22 @@ export default defineComponent({
           // Auto-compila il CAP se disponibile
           if (formData.value.State && newTown) {
             const cap = getCAPByCity(formData.value.State, newTown);
-            if (cap) {
+            if (cap && formData.value.PostCode !== cap) {
               formData.value.PostCode = cap;
             }
+          }
+        }
+      }
+    );
+
+    // Watcher per auto-compilare il comune quando si modifica il CAP
+    watch(
+      () => formData.value.PostCode,
+      (newCAP) => {
+        if (!firtLoad.value && newCAP && formData.value.State) {
+          const cityName = getCityByCAP(formData.value.State, newCAP);
+          if (cityName && formData.value.City !== cityName) {
+            formData.value.City = cityName;
           }
         }
       }
@@ -1481,6 +1510,18 @@ export default defineComponent({
           formRef.value.validateField('FlatRateCommission', () => { });
         }
       }
+    );
+
+    // Watcher per convertire l'array di esposizioni selezionate in stringa
+    watch(
+      () => selectedExposures.value,
+      (newExposures) => {
+        if (!firtLoad.value) {
+          // Unisce le esposizioni con "-" (es. "Nord-Est")
+          formData.value.Exposure = newExposures.length > 0 ? newExposures.join('-') : '';
+        }
+      },
+      { deep: true }
     );
 
     const onFileChanged = async (event: Event) => {
@@ -1693,6 +1734,11 @@ export default defineComponent({
             if (isTrattativaRiservata.value) {
               formData.value.Price = -1;
             }
+
+            // Aggiorna Exposure dall'array di esposizioni selezionate
+            formData.value.Exposure = selectedExposures.value.length > 0 
+              ? selectedExposures.value.join('-') 
+              : '';
 
             await updatePhotosOrder(formData.value.Photos);
             await updateRealEstateProperty(formData.value);
@@ -1981,6 +2027,7 @@ export default defineComponent({
       agentName,
       effectiveCommission,
       id,
+      selectedExposures,
     };
   },
 });

@@ -428,7 +428,7 @@
                   <select class="form-select form-select-lg" v-model="formData.City">
                     <option value="">🏙️ Seleziona comune</option>
                     <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                      {{ city.Name }}
+                      {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                     </option>
                   </select>
                   <!--end::Input-->
@@ -663,7 +663,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createAgency, Agency } from "@/core/data/agencies";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCAPByCity, getCityByCAP, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-agency-modal",
@@ -676,7 +676,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const formData = ref<any>({
       FirstName: "",
       LastName: "",
@@ -750,8 +750,21 @@ export default defineComponent({
       (newCity) => {
         if (newCity && formData.value.Province) {
           const cap = getCAPByCity(formData.value.Province, newCity);
-          if (cap) {
+          if (cap && formData.value.ZipCode !== cap) {
             formData.value.ZipCode = cap;
+          }
+        }
+      }
+    );
+
+    // Watcher per auto-compilare il comune quando si modifica il CAP
+    watch(
+      () => formData.value.ZipCode,
+      (newCAP) => {
+        if (newCAP && formData.value.Province) {
+          const city = getCityByCAP(formData.value.Province, newCAP);
+          if (city && formData.value.City !== city) {
+            formData.value.City = city;
           }
         }
       }

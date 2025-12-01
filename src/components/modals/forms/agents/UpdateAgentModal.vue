@@ -371,7 +371,7 @@
                   <select class="form-select form-select-lg" v-model="formData.City">
                     <option value="">🏙️ Seleziona comune</option>
                     <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                      {{ city.Name }}
+                      {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                     </option>
                   </select>
                   <!--end::Input-->
@@ -380,28 +380,6 @@
 
                 <!--begin::Input group-->
                 <div class="row g-9 mb-7">
-                  <!--begin::Col-->
-                  <div class="col-md-4 fv-row">
-                    <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
-                      <i class="ki-duotone ki-geo fs-5 me-2 text-primary">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                      </i>
-                      <span class="required">CAP</span>
-                    </label>
-                    <!--end::Label-->
-
-                    <!--begin::Input-->
-                    <el-form-item prop="zipCode">
-                      <el-input v-model="formData.ZipCode" placeholder="Es. 00100" size="large" />
-                    </el-form-item>
-                    <!--end::Input-->
-                  </div>
-                  <!--end::Col-->
-
                   <!--begin::Col-->
                   <div class="col-md-4 fv-row">
                     <!--begin::Label-->
@@ -766,7 +744,7 @@ import { Tooltip } from "bootstrap";
 import { updateAgent, getAgent, deleteAgent } from "@/core/data/agents";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, provinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCAPByCity, getCityByCAP, provinceCities } from "@/core/data/italian-geographic-data-loader";
 import { getAgencies, type Agency } from "@/core/data/agencies";
 
 export default defineComponent({
@@ -788,7 +766,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const agenciesList = ref<Array<Agency>>([]);
     const showClientId = ref(false);
     const showClientSecret = ref(false);
@@ -803,7 +781,6 @@ export default defineComponent({
       Referent: "",
       Address: "",
       City: "",
-      ZipCode: "",
       Province: "",
       Color: "#00FFFF", // Default: Ciano
       AgencyId: "",
@@ -883,26 +860,12 @@ export default defineComponent({
       (newProvince) => {
         if (newProvince && provinceCities[newProvince]) {
           cities.value = provinceCities[newProvince];
-          formData.value.ZipCode = ""; // Reset CAP
         } else {
           cities.value = [];
-          formData.value.ZipCode = "";
         }
       }
     );
 
-    // Watcher per auto-compilare il CAP quando si seleziona il comune
-    watch(
-      () => formData.value.City,
-      (newCity) => {
-        if (newCity && formData.value.Province) {
-          const cap = getCAPByCity(formData.value.Province, newCity);
-          if (cap) {
-            formData.value.ZipCode = cap;
-          }
-        }
-      }
-    );
 
     const rules = ref({
       FirstName: [
@@ -951,13 +914,6 @@ export default defineComponent({
         {
           required: true,
           message: "Provincia obligatoria",
-          trigger: "change",
-        },
-      ],
-      ZipCode: [
-        {
-          required: true,
-          message: "CAP obligatorio",
           trigger: "change",
         },
       ],
@@ -1031,7 +987,6 @@ export default defineComponent({
       if (!formData.value.Address?.trim()) validationErrors.push("Indirizzo");
       if (!formData.value.City?.trim()) validationErrors.push("Città");
       if (!formData.value.Province?.trim()) validationErrors.push("Provincia");
-      if (!formData.value.ZipCode?.trim()) validationErrors.push("CAP");
       
       // Validazioni condizionali
       if (user?.Role === "Admin" && !formData.value.AgencyId?.trim()) {

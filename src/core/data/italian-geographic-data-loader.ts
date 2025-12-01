@@ -175,3 +175,33 @@ export function getProvinceNameByCode(provinceCode: string): string | undefined 
   return provinceNameMap[provinceCode.trim().toUpperCase()];
 }
 
+/**
+ * Funzione per ottenere il comune dato provincia e CAP
+ * Se ci sono più comuni con lo stesso CAP, restituisce il primo trovato
+ * @param provinceName - Nome della provincia
+ * @param cap - CAP del comune
+ * @returns Il nome del comune o undefined se non trovato
+ */
+export function getCityByCAP(provinceName: string, cap: string): string | undefined {
+  if (!provinceName || !cap) {
+    return undefined;
+  }
+
+  // Normalizza il CAP a 5 cifre
+  const normalizedCAP = cap.toString().padStart(5, '0');
+
+  // Se i dati sono già in cache, usali direttamente
+  if (provinceCitiesCache && provinceCitiesCache[provinceName]) {
+    const cities = provinceCitiesCache[provinceName];
+    const city = cities.find(c => c.CAP === normalizedCAP);
+    return city?.Name;
+  }
+  
+  // Altrimenti prova con i dati sincroni (potrebbero essere ancora in caricamento)
+  const cities = provinceCities[provinceName];
+  if (!cities) return undefined;
+  
+  const city = cities.find(c => c.CAP === normalizedCAP);
+  return city?.Name;
+}
+

@@ -166,18 +166,6 @@
             </div>
             <!--end::Input group-->
 
-            <!--begin::Input group-->
-            <div class="mb-3">
-              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
-                <i class="ki-duotone ki-position fs-5 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                Località
-              </label>
-              <input class="form-control form-control-lg" v-model="formData.Location" type="text" placeholder="Inserisci la località (opzionale)" />
-            </div>
-            <!--end::Input group-->
           </div>
         </div>
         <!--end::Localizzazione-->
@@ -309,15 +297,69 @@
           </div>
           <div>
             <!--begin::Input group-->
-            <div class="mb-3">
-              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
-                <i class="ki-duotone ki-home-2 fs-5 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                Numero Locali
-              </label>
-              <input class="form-control form-control-lg" v-model="formData.RoomsNumber" type="text" placeholder="Es: 3+1, 4+2, etc." />
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Locali Da
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.RoomsFrom" type="number" placeholder="Numero minimo di locali" min="0" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Locali A
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.RoomsTo" type="number" placeholder="Numero massimo di locali" min="0" />
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Bagni
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.Bathrooms" type="number" placeholder="Numero di bagni" min="0" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Piano
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.Floor">
+                  <option value="">🏠 Seleziona Piano</option>
+                  <option value="Interrato -2">Interrato -2</option>
+                  <option value="Interrato -1">Interrato -1</option>
+                  <option value="Seminterrato">Seminterrato</option>
+                  <option value="Piano Terra">Piano Terra</option>
+                  <option value="Piano Rialzato">Piano Rialzato</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
             </div>
             <!--end::Input group-->
 
@@ -410,15 +452,79 @@
             <!--end::Input group-->
 
             <!--begin::Input group-->
-            <div class="mb-3">
-              <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
-                <i class="ki-duotone ki-car fs-5 text-primary">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                Posti Auto
-              </label>
-              <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" placeholder="Inserisci il numero di posti auto" min="0" />
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Arredamento
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.Furniture">
+                  <option value="">🪑 Seleziona Arredamento</option>
+                  <option value="Arredato">✅ Arredato</option>
+                  <option value="Parzialmente Arredato">🟡 Parzialmente Arredato</option>
+                  <option value="Non Arredato">❌ Non Arredato</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-home-2 fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Classe Energetica
+                </label>
+                <select class="form-select form-select-lg" v-model="formData.EnergyClass">
+                  <option value="">⚡ Seleziona Classe Energetica</option>
+                  <option value="A4">🟢 A4</option>
+                  <option value="A3">🟢 A3</option>
+                  <option value="A2">🟢 A2</option>
+                  <option value="A1">🟢 A1</option>
+                  <option value="B">🟡 B</option>
+                  <option value="C">🟠 C</option>
+                  <option value="D">🟠 D</option>
+                  <option value="E">🔴 E</option>
+                  <option value="F">🔴 F</option>
+                  <option value="G">🔴 G</option>
+                </select>
+              </div>
+            </div>
+            <!--end::Input group-->
+
+            <!--begin::Input group-->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-car fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Posti Auto
+                </label>
+                <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" placeholder="Inserisci il numero di posti auto" min="0" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
+                  <i class="ki-duotone ki-gavel fs-5 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Asta
+                </label>
+                <div class="form-check form-switch form-check-custom form-check-solid">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="toggle-auction"
+                    v-model="formData.Auction"
+                  />
+                  <label class="form-check-label ms-3 fw-semibold" for="toggle-auction">
+                    Immobile in asta
+                  </label>
+                </div>
+              </div>
             </div>
             <!--end::Input group-->
           </div>
@@ -571,6 +677,9 @@
             <template v-slot:Id="{ row: item }">
               {{ item.Id }}
             </template>
+            <template v-slot:AgencyName="{ row: item }">
+              {{ item.User ? `${item.User.FirstName} ${item.User.LastName}` : '-' }}
+            </template>
             <template v-slot:CreationDate="{ row: item }">
               {{ item.CreationDate.substring(0, 10).split('-').reverse().join('-') }}<br />
               {{ item.AssignmentEnd.substring(0, 10).split('-').reverse().join('-') }}
@@ -585,6 +694,11 @@
             </template>
             <template v-slot:Price="{ row: item }">
               {{ item.Price }}
+            </template>
+            <template v-slot:MatchPercentage="{ row: item }">
+              <span :class="getMatchPercentageClass(item.matchPercentage)">
+                {{ item.matchPercentage }}%
+              </span>
             </template>
             <template v-slot:actions="{ row: item }">
               <div class="d-flex gap-2 justify-content-center action-buttons">
@@ -658,16 +772,21 @@ export default defineComponent({
       PriceFrom:0,
       Archived: false,
       Closed: false,
-      RoomsNumber: "",
+      RoomsFrom: 0,
+      RoomsTo: 0,
+      Bathrooms: 0,
+      Floor: "",
       GardenTo:0,
       GardenFrom:0,
       MQFrom: 0,
       MQTo: 0,
       PropertyState: "",
       Heating: "",
+      Furniture: "",
+      EnergyClass: "",
+      Auction: false,
       ParkingSpaces: 0,
       Notes: "",
-      Location:"",
       MortgageAdviceRequired: false
     });
     const inserModel = ref<InsertModel>({
@@ -680,19 +799,25 @@ export default defineComponent({
         columnName: "Codice",
         columnLabel: "Id",
         sortEnabled: true,
-        columnWidth: 175,
+        columnWidth: 100,
+      },
+      {
+        columnName: "Agenzia di competenza",
+        columnLabel: "AgencyName",
+        sortEnabled: true,
+        columnWidth: 200,
       },
       {
         columnName: "Ins. / Inc.",
         columnLabel: "CreationDate",
         sortEnabled: true,
-        columnWidth: 175,
+        columnWidth: 150,
       },
       {
         columnName: "Mq",
         columnLabel: "CommercialSurfaceate",
         sortEnabled: true,
-        columnWidth: 175,
+        columnWidth: 100,
       },
       {
         columnName: "Indirizzo",
@@ -704,7 +829,13 @@ export default defineComponent({
         columnName: "Prezzo",
         columnLabel: "Price",
         sortEnabled: true,
-        columnWidth: 175,
+        columnWidth: 150,
+      },
+      {
+        columnName: "Match %",
+        columnLabel: "MatchPercentage",
+        sortEnabled: true,
+        columnWidth: 100,
       },
       {
         columnName: "Actions",
@@ -716,6 +847,205 @@ export default defineComponent({
 
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
     let selectedCities = ref<Array<string>>([]);
+
+    // Funzione per calcolare la percentuale di match tra richiesta e immobile
+    // NOTA: Questa funzione non è più utilizzata - il calcolo viene fatto dal backend
+    // Mantenuta per riferimento o per calcoli aggiuntivi se necessario
+    const calculateMatchPercentage = (request: Request, property: RealEstateProperty): number => {
+      let totalCriteria = 0;
+      let matchedCriteria = 0;
+
+      // 1. Contract (Status) - OBBLIGATORIO
+      totalCriteria++;
+      if (property.Status && request.Contract && property.Status === request.Contract) {
+        matchedCriteria++;
+      }
+
+      // 2. PropertyType (Typology) - se presente nella richiesta
+      if (request.PropertyType && request.PropertyType.trim() !== '') {
+        totalCriteria++;
+        const requestTypes = request.PropertyType.split(',').map(t => t.trim().toLowerCase());
+        if (property.Typology) {
+          const propertyTypeLower = property.Typology.toLowerCase();
+          if (requestTypes.some(type => propertyTypeLower.includes(type))) {
+            matchedCriteria++;
+          }
+        }
+      }
+
+      // 3. Province (State) - se presente nella richiesta
+      if (request.Province && request.Province.trim() !== '') {
+        totalCriteria++;
+        if (property.State && property.State.toLowerCase() === request.Province.toLowerCase()) {
+          matchedCriteria++;
+        }
+      }
+
+      // 4. City - se presente nella richiesta
+      if (request.City && request.City.trim() !== '') {
+        totalCriteria++;
+        const requestCities = request.City.split(',').map(c => c.trim().toLowerCase());
+        if (property.City) {
+          const propertyCityLower = property.City.toLowerCase();
+          if (requestCities.some(city => propertyCityLower.includes(city))) {
+            matchedCriteria++;
+          }
+        }
+      }
+
+      // 5. Price Range - se presente nella richiesta
+      if (request.PriceFrom > 0 || request.PriceTo > 0) {
+        totalCriteria++;
+        if (request.PriceFrom > 0 && request.PriceTo > 0) {
+          if (property.Price >= request.PriceFrom && property.Price <= request.PriceTo) {
+            matchedCriteria++;
+          }
+        } else if (request.PriceFrom > 0) {
+          if (property.Price >= request.PriceFrom) {
+            matchedCriteria++;
+          }
+        } else if (request.PriceTo > 0) {
+          if (property.Price <= request.PriceTo) {
+            matchedCriteria++;
+          }
+        }
+      }
+
+      // 6. MQ Range - se presente nella richiesta
+      if (request.MQFrom > 0 || request.MQTo > 0) {
+        totalCriteria++;
+        if (request.MQFrom > 0 && request.MQTo > 0) {
+          if (property.CommercialSurfaceate > request.MQFrom && property.CommercialSurfaceate < request.MQTo) {
+            matchedCriteria++;
+          }
+        } else if (request.MQFrom > 0) {
+          if (property.CommercialSurfaceate > request.MQFrom) {
+            matchedCriteria++;
+          }
+        } else if (request.MQTo > 0) {
+          if (property.CommercialSurfaceate < request.MQTo) {
+            matchedCriteria++;
+          }
+        }
+      }
+
+      // 7. Garden Range - se presente nella richiesta
+      if (request.GardenFrom > 0 || request.GardenTo > 0) {
+        totalCriteria++;
+        if (request.GardenFrom > 0 && request.GardenTo > 0) {
+          if (property.MQGarden >= request.GardenFrom && property.MQGarden <= request.GardenTo) {
+            matchedCriteria++;
+          }
+        } else if (request.GardenFrom > 0) {
+          if (property.MQGarden >= request.GardenFrom) {
+            matchedCriteria++;
+          }
+        } else if (request.GardenTo > 0) {
+          if (property.MQGarden <= request.GardenTo) {
+            matchedCriteria++;
+          }
+        }
+      }
+
+      // 8. PropertyState - se presente in entrambi
+      if (request.PropertyState && request.PropertyState.trim() !== '' && 
+          property.StateOfTheProperty && property.StateOfTheProperty.trim() !== '') {
+        totalCriteria++;
+        if (property.StateOfTheProperty === request.PropertyState) {
+          matchedCriteria++;
+        }
+      }
+
+      // 9. Heating - se presente in entrambi
+      if (request.Heating && request.Heating.trim() !== '' && 
+          property.Heating && property.Heating.trim() !== '') {
+        totalCriteria++;
+        if (property.Heating.toLowerCase() === request.Heating.toLowerCase()) {
+          matchedCriteria++;
+        }
+      }
+
+      // 10. ParkingSpaces - se presente nella richiesta
+      if (request.ParkingSpaces > 0) {
+        totalCriteria++;
+        if (property.ParkingSpaces >= request.ParkingSpaces) {
+          matchedCriteria++;
+        }
+      }
+
+      // 11. Rooms Range - se presente nella richiesta
+      if (request.RoomsFrom > 0 || request.RoomsTo > 0) {
+        totalCriteria++;
+        if (request.RoomsFrom > 0 && request.RoomsTo > 0) {
+          if (property.Bedrooms >= request.RoomsFrom && property.Bedrooms <= request.RoomsTo) {
+            matchedCriteria++;
+          }
+        } else if (request.RoomsFrom > 0) {
+          if (property.Bedrooms >= request.RoomsFrom) {
+            matchedCriteria++;
+          }
+        } else if (request.RoomsTo > 0) {
+          if (property.Bedrooms <= request.RoomsTo) {
+            matchedCriteria++;
+          }
+        }
+      }
+
+      // 12. Bathrooms - se presente nella richiesta
+      if (request.Bathrooms > 0) {
+        totalCriteria++;
+        if (property.Bathrooms >= request.Bathrooms) {
+          matchedCriteria++;
+        }
+      }
+
+      // 13. Floor - se presente in entrambi
+      if (request.Floor && request.Floor.trim() !== '' && 
+          property.Floor && property.Floor.trim() !== '') {
+        totalCriteria++;
+        if (property.Floor.toLowerCase() === request.Floor.toLowerCase()) {
+          matchedCriteria++;
+        }
+      }
+
+      // 14. Furniture - se presente in entrambi
+      if (request.Furniture && request.Furniture.trim() !== '' && 
+          property.Furniture && property.Furniture.trim() !== '') {
+        totalCriteria++;
+        if (property.Furniture.toLowerCase() === request.Furniture.toLowerCase()) {
+          matchedCriteria++;
+        }
+      }
+
+      // 15. EnergyClass - se presente in entrambi
+      if (request.EnergyClass && request.EnergyClass.trim() !== '' && 
+          property.EnergyClass && property.EnergyClass.trim() !== '') {
+        totalCriteria++;
+        if (property.EnergyClass === request.EnergyClass) {
+          matchedCriteria++;
+        }
+      }
+
+      // 16. Auction - se presente nella richiesta
+      if (request.Auction !== undefined) {
+        totalCriteria++;
+        if (property.Auction === request.Auction) {
+          matchedCriteria++;
+        }
+      }
+
+      // Calcola la percentuale
+      if (totalCriteria === 0) return 0;
+      return Math.round((matchedCriteria / totalCriteria) * 100);
+    };
+
+    // Funzione per ottenere la classe CSS in base alla percentuale di match
+    const getMatchPercentageClass = (percentage: number): string => {
+      if (percentage >= 90) return 'badge badge-light-success';
+      if (percentage >= 75) return 'badge badge-light-primary';
+      if (percentage >= 50) return 'badge badge-light-warning';
+      return 'badge badge-light-danger';
+    };
 
     // Funzioni per caricare i dati dal JSON
     const loadProvinces = async () => {
@@ -737,7 +1067,7 @@ export default defineComponent({
           const citiesData = getCitiesByProvince(provinceName);
           cities.value = citiesData.map(city => ({
             Id: city.Name,
-            Name: city.Name
+            Name: `${city.Name} (${city.CAP})`
           }));
         } else {
           cities.value = [];
@@ -755,7 +1085,18 @@ export default defineComponent({
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
       selectedCities.value = formData.value.City.split(",");
       inserModel.value = await getToInsert();
-      initItems.value.splice(0, formData.value.RealEstateProperties.length, ...formData.value.RealEstateProperties);
+      
+      // Gli immobili arrivano già filtrati e con MatchPercentage calcolato dal backend (>= 50%)
+      // Non serve più calcolare o filtrare lato frontend
+      if (formData.value.RealEstateProperties) {
+        // Assicurati che matchPercentage sia disponibile (già calcolato dal backend)
+        formData.value.RealEstateProperties = formData.value.RealEstateProperties.map((property: any) => ({
+          ...property,
+          matchPercentage: property.MatchPercentage || property.matchPercentage || 0
+        }));
+        initItems.value.splice(0, formData.value.RealEstateProperties.length, ...formData.value.RealEstateProperties);
+      }
+      
       await loadProvinces();
       
       // Se c'è già una provincia selezionata, carica le città
@@ -775,11 +1116,9 @@ export default defineComponent({
           if (newProvince) {
             await loadCitiesByProvince(newProvince);
             formData.value.City = null;
-            formData.value.Location = null;
           } else {
             cities.value = [];
             formData.value.City = null;
-            formData.value.Location = "";
           }
         } else {
           firtLoad.value = false;
@@ -787,19 +1126,6 @@ export default defineComponent({
       }
     );
 
-    watch(
-      () => selectedCities.value,
-      (newTown) => {
-        if (!firtLoad.value) {
-          // Le località sono stringhe libere, non serve caricare nulla
-          if (!newTown || (Array.isArray(newTown) && newTown.length === 0)) {
-            formData.value.Location = "";
-          }
-        } else {
-          firtLoad.value = false;
-        }
-      }
-    );
     
     watch(selectedPropertyTypes, (newVal) => {
       if (newVal.includes('Qualsiasi')) {
@@ -873,6 +1199,9 @@ export default defineComponent({
         GardenTo: formData.value.GardenTo ?? 0,
         MQFrom: formData.value.MQFrom ?? 0,
         MQTo: formData.value.MQTo ?? 0,
+        RoomsFrom: formData.value.RoomsFrom ?? 0,
+        RoomsTo: formData.value.RoomsTo ?? 0,
+        Bathrooms: formData.value.Bathrooms ?? 0,
         ParkingSpaces: formData.value.ParkingSpaces ?? 0,
       };
 
@@ -883,6 +1212,9 @@ export default defineComponent({
       formData.value.GardenTo = payload.GardenTo;
       formData.value.MQFrom = payload.MQFrom;
       formData.value.MQTo = payload.MQTo;
+      formData.value.RoomsFrom = payload.RoomsFrom;
+      formData.value.RoomsTo = payload.RoomsTo;
+      formData.value.Bathrooms = payload.Bathrooms;
       formData.value.ParkingSpaces = payload.ParkingSpaces;
       formData.value.PropertyType = payload.PropertyType;
       formData.value.City = payload.City;
@@ -924,7 +1256,15 @@ export default defineComponent({
 
     const search = ref<string>("");
     const searchItems = () => {
-      formData.value.RealEstateProperties.splice(0, formData.value.RealEstateProperties.length, ...initItems.value);
+      // Gli immobili sono già filtrati dal backend (>= 50%), non serve ricalcolare
+      // Usa il MatchPercentage che arriva dal backend
+      const allProperties = initItems.value.map((property: any) => ({
+        ...property,
+        matchPercentage: property.MatchPercentage || property.matchPercentage || 0
+      }));
+
+      formData.value.RealEstateProperties.splice(0, formData.value.RealEstateProperties.length, ...allProperties);
+      
       if (search.value !== "") {
         let results: Array<RealEstateProperty> = [];
         for (let j = 0; j < formData.value.RealEstateProperties.length; j++) {
@@ -979,7 +1319,8 @@ export default defineComponent({
       searchItems,
       search,
       selectedCities,
-      selectedPropertyTypes
+      selectedPropertyTypes,
+      getMatchPercentageClass
     };
   },
 });

@@ -449,7 +449,7 @@
                   <select class="form-select form-select-lg" v-model="formData.City">
                     <option value="">🏙️ Seleziona comune</option>
                     <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                      {{ city.Name }}
+                      {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                     </option>
                   </select>
                   <!--end::Input-->
@@ -661,7 +661,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createAgent, Agent } from "@/core/data/agents";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCAPByCity, getCityByCAP, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 import { getAgencies, type Agency } from "@/core/data/agencies";
 
 export default defineComponent({
@@ -676,7 +676,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const agenciesList = ref<Array<Agency>>([]);
     const formData = ref<any>({
       FirstName: "",
@@ -689,7 +689,6 @@ export default defineComponent({
       Address: "",
       City: "",
       Province: "",
-      ZipCode: "",
       Password: "",
       Color: "#00FFFF", // Default: Ciano
       EmailConfirmed: true,
@@ -762,27 +761,13 @@ export default defineComponent({
             cities.value = provinceCities[newProvince] || [];
           }
           formData.value.City = ""; // Reset città
-          formData.value.ZipCode = ""; // Reset CAP
         } else {
           cities.value = [];
           formData.value.City = "";
-          formData.value.ZipCode = "";
         }
       }
     );
 
-    // Watcher per auto-compilare il CAP quando si seleziona il comune
-    watch(
-      () => formData.value.City,
-      (newCity) => {
-        if (newCity && formData.value.Province) {
-          const cap = getCAPByCity(formData.value.Province, newCity);
-          if (cap) {
-            formData.value.ZipCode = cap;
-          }
-        }
-      }
-    );
 
     const rules = ref({
       FirstName: [
@@ -831,13 +816,6 @@ export default defineComponent({
         {
           required: true,
           message: "Provincia obligatoria",
-          trigger: "change",
-        },
-      ],
-      ZipCode: [
-        {
-          required: true,
-          message: "CAP obligatorio",
           trigger: "change",
         },
       ],
@@ -925,7 +903,6 @@ export default defineComponent({
       if (!formData.value.Address?.trim()) validationErrors.push("Indirizzo");
       if (!formData.value.City?.trim()) validationErrors.push("Città");
       if (!formData.value.Province?.trim()) validationErrors.push("Provincia");
-      if (!formData.value.ZipCode?.trim()) validationErrors.push("CAP");
       
       // Validazioni condizionali
       if (user?.Role === "Admin" && !formData.value.AgencyId?.trim()) {

@@ -418,7 +418,7 @@
                     <select class="form-select form-select-lg" v-model="formData.City">
                       <option value="">🏙️ Seleziona comune</option>
                       <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                        {{ city.Name }}
+                        {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                       </option>
                     </select>
                     <!--end::Input-->
@@ -491,7 +491,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createCustomer, Customer } from "@/core/data/customers";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 import { getSearchItems, type SearchModel } from "@/core/data/events";
 
 export default defineComponent({
@@ -507,7 +507,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const ownerSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: []
@@ -564,7 +564,8 @@ export default defineComponent({
           const provinceCities = getCitiesByProvince(newProvince);
           cities.value = provinceCities.map(city => ({
             Id: city.Name,
-            Name: city.Name
+            Name: city.Name,
+            CAP: city.CAP
           }));
           formData.value.City = ""; // Reset città
         } else {

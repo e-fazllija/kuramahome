@@ -63,6 +63,8 @@ export class RealEstateProperty {
   FlatRateCommission: number;
   CommissionReversal: number;
   EffectiveCommission?: number;
+  MatchPercentage?: number;
+  AgencyName?: string;
 }
 
 export class RequestTabelData {
