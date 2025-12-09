@@ -4,147 +4,89 @@
     <!--begin::Card Header with Filters and Stats-->
     <div class="card-header widget-13-header">
       <!--begin::Unified Controls Row-->
-      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 gap-lg-4 widget-13-unified-row  my-5">
-        <!--begin::Filters Section-->
-        <div class="d-flex flex-column flex-md-row gap-3 widget-13-filters-section">
-          <!--begin::Agency Filter-->
-          <div v-if="!isAgent" class="widget-13-filter-item">
-            <label class="widget-13-filter-label">
-              <i class="ki-duotone ki-filter fs-5">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              <span class="fw-semibold">Agenzia</span>
-            </label>
-            <select 
-              v-model="selectedAgencyId" 
-              @change="onAgencyChange"
-              class="form-select widget-13-filter-select"
-            >
-              <option value="">Tutte le agenzie</option>
-              <option v-for="agency in agenciesList" :key="agency.id" :value="agency.id">
-                {{ agency.name }}
-              </option>
-            </select>
-          </div>
-          <!--end::Agency Filter-->
-          
+      <div class="row align-items-center widget-13-unified-row my-0 g-4 justify-content-between">
+        <!--begin::Filters Group-->
+        <div class="col-12 col-md-6 d-flex flex-nowrap align-items-stretch gap-4 widget-13-filters-group">
           <!--begin::Year Filter-->
-          <div class="widget-13-filter-item">
-            <label class="widget-13-filter-label">
-              <i class="ki-duotone ki-calendar fs-5">
-                <span class="path1"></span>
-                <span class="path2"></span>
-              </i>
-              <span class="fw-semibold">Anno</span>
-            </label>
+          <div class="widget-13-filter-badge">
+            <div class="d-flex flex-column align-items-center mb-2">
+              <span class="text-muted fs-7 fw-semibold">Filtro Anno</span>
+            </div>
             <select 
               v-model="selectedYear" 
+              class="widget-13-filter-select"
               @change="onYearChange"
-              class="form-select widget-13-filter-select"
             >
-              <option v-for="year in availableYears" :key="year" :value="year">
+              <option 
+                v-for="year in availableYears" 
+                :key="year" 
+                :value="year"
+              >
                 {{ year }}
               </option>
             </select>
           </div>
           <!--end::Year Filter-->
+          
+          <!--begin::Agency Filter-->
+          <div class="widget-13-filter-badge">
+            <div class="d-flex flex-column align-items-center mb-2">
+              <span class="text-muted fs-7 fw-semibold">{{ isAdmin ? 'Filtro Agenzia' : 'Filtro Agente' }}</span>
+            </div>
+            <select 
+              v-model="selectedAgency" 
+              class="widget-13-filter-select"
+              @change="onAgencyChange"
+            >
+              <option value="all">Tutti</option>
+              <optgroup v-if="isAdmin" label="Agenzie">
+                <option 
+                  v-for="agency in agenciesList" 
+                  :key="agency.id || (agency as any).Id" 
+                  :value="`agency_${agency.id || (agency as any).Id}`"
+                >
+                  {{ agency.UserName || agency.userName || agency.name || 'Agenzia' }}
+                </option>
+              </optgroup>
+              <optgroup label="Agenti">
+                <option 
+                  v-for="agent in agentsList" 
+                  :key="(agent as any).Id || (agent as any).id" 
+                  :value="`agent_${(agent as any).Id || (agent as any).id}`"
+                >
+                  {{ (agent as any).FirstName || (agent as any).firstName || '' }} {{ (agent as any).LastName || (agent as any).lastName || '' }}
+                </option>
+              </optgroup>
+            </select>
+          </div>
+          <!--end::Agency Filter-->
         </div>
-        <!--end::Filters Section-->
+        <!--end::Filters Group-->
         
-        <!--begin::KPI Stats Section-->
-        <div class="d-flex flex-wrap gap-2 gap-md-3 justify-content-start justify-content-lg-end flex-grow-1 widget-13-kpi-section">
-          <!--begin::Agents Total-->
-          <div v-if="!isAgent" class="widget-13-kpi-item">
-            <div class="symbol symbol-40px">
-              <span class="symbol-label bg-warning">
-                <i class="ki-duotone ki-user-tick fs-5 text-white">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                </i>
-              </span>
+        <!--begin::Group Name and Totals-->
+        <div class="col-12 col-md-6 d-flex align-items-center justify-content-end gap-4 widget-13-group-info">
+          <div class="d-flex align-items-center gap-3 widget-13-group-badge">
+            <div class="widget-13-group-icon">
+              <i class="fas fa-users text-primary"></i>
             </div>
-            <div class="widget-13-kpi-content">
-              <div class="fw-bold fs-4 text-warning">{{ totalAgents }}</div>
-              <div class="text-gray-600 fs-7 fw-semibold">Agenti</div>
+            <div class="d-flex flex-column">
+              <span class="text-muted fs-7 fw-semibold mb-1">Gruppo</span>
+              <span class="fw-bold fs-6 text-gray-800">{{ adminName }}</span>
             </div>
           </div>
-          <!--end::Agents Total-->
-          
-          <!--begin::Agencies Total-->
-          <div v-if="!isAgent" class="widget-13-kpi-item">
-            <div class="symbol symbol-40px">
-              <span class="symbol-label bg-info">
-                <i class="ki-duotone ki-shop fs-5 text-white">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                  <span class="path4"></span>
-                  <span class="path5"></span>
-                </i>
-              </span>
+          <div class="d-flex gap-4 widget-13-totals">
+            <div class="d-flex flex-column align-items-center widget-13-total-item">
+              <span class="text-muted fs-8 mb-1">Agenzie</span>
+              <span class="fw-bold fs-4 text-primary widget-13-counter">{{ animatedTotalAgencies }}</span>
             </div>
-            <div class="widget-13-kpi-content">
-              <div class="fw-bold fs-4 text-info">{{ totalAgencies }}</div>
-              <div class="text-gray-600 fs-7 fw-semibold">Agenzie</div>
+            <div class="widget-13-total-divider"></div>
+            <div class="d-flex flex-column align-items-center widget-13-total-item">
+              <span class="text-muted fs-8 mb-1">Agenti</span>
+              <span class="fw-bold fs-4 text-primary widget-13-counter">{{ animatedTotalAgents }}</span>
             </div>
           </div>
-          <!--end::Agencies Total-->
-          
-          <!--begin::Sold Properties-->
-          <div class="widget-13-kpi-item">
-            <div class="symbol symbol-40px">
-              <span class="symbol-label bg-success">
-                <i class="ki-duotone ki-check-circle fs-5 text-white">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </span>
-            </div>
-            <div class="widget-13-kpi-content">
-              <div class="fw-bold fs-4 text-success">{{ soldProperties }}</div>
-              <div class="text-gray-600 fs-7 fw-semibold">Venduti</div>
-            </div>
-          </div>
-          <!--end::Sold Properties-->
-          
-          <!--begin::Rented Properties-->
-          <div class="widget-13-kpi-item">
-            <div class="symbol symbol-40px">
-              <span class="symbol-label bg-primary">
-                <i class="ki-duotone ki-home-2 fs-5 text-white">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </span>
-            </div>
-            <div class="widget-13-kpi-content">
-              <div class="fw-bold fs-4 text-primary">{{ rentedProperties }}</div>
-              <div class="text-gray-600 fs-7 fw-semibold">Affittati</div>
-            </div>
-          </div>
-          <!--end::Rented Properties-->
-          
-          <!--begin::Auction Properties-->
-          <div class="widget-13-kpi-item">
-            <div class="symbol symbol-40px">
-              <span class="symbol-label bg-danger">
-                <i class="ki-duotone ki-euro fs-5 text-white">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                </i>
-              </span>
-            </div>
-            <div class="widget-13-kpi-content">
-              <div class="fw-bold fs-4 text-danger">{{ auctionProperties }}</div>
-              <div class="text-gray-600 fs-7 fw-semibold">Asta</div>
-            </div>
-          </div>
-          <!--end::Auction Properties-->
         </div>
-        <!--end::KPI Stats Section-->
+        <!--end::Group Name and Totals-->
       </div>
       <!--end::Unified Controls Row-->
     </div>
@@ -193,58 +135,101 @@ export default defineComponent({
       type: Array as PropType<Agency[]>,
       default: () => []
     },
+    agentsList: {
+      type: Array as PropType<any[]>,
+      default: () => []
+    },
+    totalAgencies: {
+      type: Number,
+      default: 0
+    },
     totalAgents: {
       type: Number,
       default: 0
+    },
+    adminName: {
+      type: String,
+      default: ''
     },
     isAgent: {
       type: Boolean,
       default: false
     },
-    selectedAgency: {
-      type: String,
-      default: ''
-    },
-    selectedYear: {
-      type: Number,
-      default: () => new Date().getFullYear()
-    },
-    soldProperties: {
-      type: Number,
-      default: 0
-    },
-    rentedProperties: {
-      type: Number,
-      default: 0
-    },
-    auctionProperties: {
-      type: Number,
-      default: 0
+    isAdmin: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['agency-select', 'agency-change', 'year-change'],
+  emits: ['agency-select', 'filter-change'],
   setup(props, { emit }) {
-    // Agency filter
-    const selectedAgencyId = ref<string>(props.selectedAgency || '');
-    
-    // Year filter
-    const selectedYear = ref<number>(props.selectedYear);
+    // Map reference
+    const mapContainer = ref<HTMLElement | null>(null);
+    let map: L.Map | null = null;
+    const markers: L.Marker[] = [];
+
+    // Use totali dalle props (vengono dalla chiamata API)
+    const totalAgencies = computed(() => props.totalAgencies || 0);
+    const totalAgents = computed(() => props.totalAgents || 0);
+
+    // Animated counters (start from 0 and animate to actual value)
+    const animatedTotalAgencies = ref(0);
+    const animatedTotalAgents = ref(0);
+
+    // Animation function
+    const animateCounter = (target: number, current: { value: number }, duration: number = 1500) => {
+      const start = current.value;
+      const increment = target - start;
+      const steps = 60; // 60 frames
+      const stepDuration = duration / steps;
+      let step = 0;
+
+      const timer = setInterval(() => {
+        step++;
+        const progress = step / steps;
+        // Easing function (ease-out)
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        current.value = Math.floor(start + increment * easeOut);
+
+        if (step >= steps) {
+          current.value = target;
+          clearInterval(timer);
+        }
+      }, stepDuration);
+    };
+
+    // Watch for changes in totals and animate
+    watch([totalAgencies, totalAgents], ([newAgencies, newAgents]) => {
+      animateCounter(newAgencies, animatedTotalAgencies, 1500);
+      animateCounter(newAgents, animatedTotalAgents, 1500);
+    }, { immediate: true });
+
+    // Filters state
     const currentYear = new Date().getFullYear();
     const availableYears = computed(() => {
-      const years = [];
+      const years: number[] = [];
       for (let i = 0; i < 6; i++) {
         years.push(currentYear - i);
       }
       return years;
     });
 
-    // Map reference
-    const mapContainer = ref<HTMLElement | null>(null);
-    let map: L.Map | null = null;
-    const markers: L.Marker[] = [];
+    const selectedYear = ref<number>(currentYear);
+    const selectedAgency = ref<string>('all');
 
-    // Calculate total agencies
-    const totalAgencies = computed(() => props.agenciesList.length);
+    // Filter change handlers (for now just emit events, logic will be implemented later)
+    const onYearChange = () => {
+      emit('filter-change', {
+        year: selectedYear.value,
+        agency: selectedAgency.value
+      });
+    };
+
+    const onAgencyChange = () => {
+      emit('filter-change', {
+        year: selectedYear.value,
+        agency: selectedAgency.value
+      });
+    };
 
     // Get main agency coordinates (first agency or agency with specific criteria)
     const getMainAgencyCoords = (): [number, number] => {
@@ -502,10 +487,8 @@ export default defineComponent({
       markers.forEach(marker => marker.remove());
       markers.length = 0;
 
-      // Filter agencies based on selectedAgencyId
-      const visibleAgencies = selectedAgencyId.value 
-        ? props.agenciesList.filter(agency => agency.id === selectedAgencyId.value)
-        : props.agenciesList;
+      // Show all agencies
+      const visibleAgencies = props.agenciesList;
 
       const existingCoords: [number, number][] = [];
       const allCoords: [number, number][] = []; // Store all coordinates for bounds calculation
@@ -528,9 +511,6 @@ export default defineComponent({
         '#607d8b', // Grigio blu
         '#ff5722'  // Rosso arancione
       ];
-
-      // Highlight color for selected agency
-      const highlightColor = '#FFD700'; // Gold
 
       // Process each visible agency
       for (let index = 0; index < visibleAgencies.length; index++) {
@@ -568,15 +548,10 @@ export default defineComponent({
           coords = [42.5, 13.0];
         }
 
-        // Check if this agency is selected
-        const isSelected = selectedAgencyId.value && 
-                          agency.id === selectedAgencyId.value;
-        
-        // Assign color: gold if selected, otherwise from array
-        const color = isSelected ? highlightColor : markerColors[index % markerColors.length];
-        const markerSize = isSelected ? 32 : 26;
-        const borderWidth = isSelected ? 5 : 4;
-        const pulseAnimation = isSelected ? 'animation: pulse 2s infinite;' : '';
+        // Assign color from array
+        const color = markerColors[index % markerColors.length];
+        const markerSize = 26;
+        const borderWidth = 4;
         
         // Custom icon with agency color and selection highlight
         const customIcon = L.divIcon({
@@ -588,18 +563,9 @@ export default defineComponent({
               height: ${markerSize}px; 
               border-radius: 50%; 
               border: ${borderWidth}px solid white; 
-              box-shadow: 0 ${isSelected ? 6 : 3}px ${isSelected ? 16 : 12}px rgba(0,0,0,${isSelected ? 0.5 : 0.35});
-              ${pulseAnimation}
+              box-shadow: 0 3px 12px rgba(0,0,0,0.35);
               transition: all 0.3s ease;
             "></div>
-            ${isSelected ? `
-              <style>
-                @keyframes pulse {
-                  0%, 100% { transform: scale(1); }
-                  50% { transform: scale(1.15); }
-                }
-              </style>
-            ` : ''}
           `,
           iconSize: [markerSize, markerSize],
           iconAnchor: [markerSize / 2, markerSize / 2]
@@ -685,13 +651,6 @@ export default defineComponent({
       emit('agency-select', agency);
     };
 
-    const onAgencyChange = () => {
-      emit('agency-change', selectedAgencyId.value);
-    };
-    
-    const onYearChange = () => {
-      emit('year-change', selectedYear.value);
-    };
 
     // Lifecycle hooks
     onMounted(() => {
@@ -712,37 +671,148 @@ export default defineComponent({
       }
     }, { deep: true });
 
-    // Watch for changes in selectedAgency prop
-    watch(() => props.selectedAgency, (newValue) => {
-      selectedAgencyId.value = newValue || '';
-      // Re-render markers to highlight selected agency
-      if (map) {
-        addAgencyMarkers();
-      }
-    });
-
-    // Watch for changes in selectedAgencyId to update markers
-    watch(selectedAgencyId, () => {
-      if (map) {
-        addAgencyMarkers();
-      }
-    });
-    
-    // Watch for changes in selectedYear prop
-    watch(() => props.selectedYear, (newYear) => {
-      selectedYear.value = newYear;
-    });
 
     return {
       mapContainer,
       totalAgencies,
-      selectedAgencyId,
-      selectedYear,
+      totalAgents,
+      animatedTotalAgencies,
+      animatedTotalAgents,
+      adminName: computed(() => props.adminName || ''),
       availableYears,
+      selectedYear,
+      selectedAgency,
+      onYearChange,
       onAgencyChange,
-      onYearChange
+      agenciesList: computed(() => props.agenciesList),
+      agentsList: computed(() => props.agentsList),
+      isAdmin: computed(() => props.isAdmin)
     };
   }
 });
 </script>
+
+<style scoped>
+.widget-13-header {
+  padding: 0.5rem 0;
+}
+
+.widget-13-filter-badge {
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.05) 0%, rgba(0, 119, 204, 0.1) 100%);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 119, 204, 0.15);
+  flex: 1 1 auto;
+  min-width: 140px;
+  max-width: 200px;
+}
+
+.widget-13-filter-select {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  width: 100%;
+  background-color: #FFFFFF;
+  color: #333333;
+}
+
+.widget-13-filter-select:hover {
+  border-color: rgba(0, 119, 204, 0.5);
+}
+
+.widget-13-filter-select:focus {
+  border-color: #0077CC;
+  outline: none;
+}
+
+[data-bs-theme="dark"] .widget-13-filter-badge {
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.2) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .widget-13-filter-select {
+  background-color: #2C2C2C;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #E0E0E0;
+}
+
+.widget-13-filter-select optgroup {
+  font-weight: 700;
+  color: #0077CC;
+}
+
+.widget-13-group-info {
+  padding-left: 1rem;
+  border-left: 2px solid rgba(0, 119, 204, 0.2);
+}
+
+.widget-13-group-badge {
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.05) 0%, rgba(0, 119, 204, 0.1) 100%);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 119, 204, 0.15);
+}
+
+.widget-13-group-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0077CC 0%, #005fa3 100%);
+  border-radius: 10px;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.widget-13-total-divider {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 119, 204, 0.3), transparent);
+}
+
+.widget-13-counter {
+  font-variant-numeric: tabular-nums;
+}
+
+[data-bs-theme="dark"] .widget-13-group-info {
+  border-left-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-bs-theme="dark"] .widget-13-group-badge {
+  background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.2) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .widget-13-total-divider {
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+@media (max-width: 991px) {
+  .widget-13-group-info {
+    border-left: none;
+    border-top: 2px solid rgba(0, 119, 204, 0.2);
+    padding-left: 0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+
+  [data-bs-theme="dark"] .widget-13-group-info {
+    border-top-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+@media (max-width: 576px) {
+  .widget-13-group-info {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .widget-13-totals {
+    width: 100%;
+    justify-content: space-around;
+  }
+}
+</style>
 

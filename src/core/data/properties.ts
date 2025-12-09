@@ -350,6 +350,7 @@ const cleanNumericFields = (data: any): any => {
     'AgreedCommission',
     'FlatRateCommission',
     'CommissionReversal',
+    'EffectiveCommission',
     'CustomerId'
   ];
 

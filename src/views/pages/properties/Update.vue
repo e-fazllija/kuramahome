@@ -1740,6 +1740,33 @@ export default defineComponent({
               ? selectedExposures.value.join('-') 
               : '';
 
+            // Calcola e assegna EffectiveCommission (valore numerico, non formattato)
+            let grossCommission = 0;
+            const agreedCommission = Number(formData.value.AgreedCommission);
+            const flatRateCommission = Number(formData.value.FlatRateCommission);
+            const price = Number(formData.value.Price);
+            const priceReduced = Number(formData.value.PriceReduced);
+            const storno = Number(formData.value.CommissionReversal) || 0;
+
+            // Determina quale prezzo usare: se presente il prezzo ribassato, usa quello, altrimenti il prezzo normale
+            // Ma salta se il prezzo è -1 (trattativa riservata)
+            const priceToUse = (price === -1) ? 0 : ((priceReduced && !Number.isNaN(priceReduced) && priceReduced > 0) ? priceReduced : price);
+
+            // Se c'è provvigione concordata (percentuale)
+            if (agreedCommission && !Number.isNaN(agreedCommission) && agreedCommission > 0 && priceToUse > 0) {
+              grossCommission = (priceToUse * agreedCommission) / 100;
+            }
+            // Se c'è provvigione forfettaria (euro)
+            else if (flatRateCommission && !Number.isNaN(flatRateCommission) && flatRateCommission > 0) {
+              grossCommission = flatRateCommission;
+            }
+
+            // Calcola la provvigione netta (lorda - storno)
+            const netCommission = grossCommission - storno;
+
+            // Il risultato non può essere negativo (minimo 0)
+            formData.value.EffectiveCommission = Math.max(0, netCommission);
+
             await updatePhotosOrder(formData.value.Photos);
             await updateRealEstateProperty(formData.value);
 

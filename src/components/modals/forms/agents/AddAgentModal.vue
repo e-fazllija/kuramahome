@@ -478,49 +478,62 @@
 
                     <!--begin::Input-->
                     <el-form-item prop="color">
-                      <div class="mb-3">
-                        <!--begin::Griglia colori-->
-                        <div class="row g-2 mb-3">
-                          <div 
-                            v-for="color in colorOptions" 
-                            :key="color.value"
-                            class="col-3 col-sm-2 col-md-2"
-                          >
-                            <div
-                              class="position-relative d-flex align-items-center justify-content-center rounded border border-2 cursor-pointer"
-                              :class="formData.Color === color.value ? 'border-primary shadow-sm' : 'border-gray-300'"
+                      <div class="dropdown">
+                        <button 
+                          class="btn btn-light btn-active-light-primary d-flex align-items-center justify-content-between w-100 p-3 border border-gray-300 rounded"
+                          type="button" 
+                          id="colorDropdownAgent"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          <span class="d-flex align-items-center gap-3">
+                            <span 
+                              class="rounded border border-2 border-gray-300 shadow-sm"
                               :style="{ 
-                                backgroundColor: color.value,
-                                minHeight: '50px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease'
+                                width: '40px', 
+                                height: '40px', 
+                                backgroundColor: formData.Color || '#e0e0e0'
                               }"
-                              @click="selectColor(color.value)"
-                              :title="color.name"
+                            ></span>
+                            <span class="fw-semibold text-gray-800">
+                              {{ formData.Color ? 'Colore selezionato' : 'Seleziona un colore' }}
+                            </span>
+                          </span>
+                          <i class="ki-duotone ki-down fs-3 text-gray-600">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end w-100 p-3 shadow-lg" aria-labelledby="colorDropdownAgent" style="max-height: 400px; overflow-y: auto;">
+                          <div class="row g-2">
+                            <div 
+                              v-for="color in colorOptions" 
+                              :key="color.value"
+                              class="col-3 col-md-4"
                             >
-                              <i v-if="formData.Color === color.value" class="ki-duotone ki-check fs-2 text-white position-absolute">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                              </i>
+                              <button
+                                type="button"
+                                class="btn btn-outline btn-outline-dashed w-100 d-flex align-items-center justify-content-center p-2 rounded position-relative"
+                                :class="formData.Color === color.value ? 'btn-active-light-primary border-primary shadow-sm' : 'border-gray-300'"
+                                @click="selectColor(color.value)"
+                                :title="color.value"
+                              >
+                                <span 
+                                  class="rounded border border-2 border-gray-300 shadow-sm"
+                                  :style="{ 
+                                    width: '50px', 
+                                    height: '50px', 
+                                    backgroundColor: color.value
+                                  }"
+                                ></span>
+                                <i v-if="formData.Color === color.value" class="ki-duotone ki-check fs-3 text-white position-absolute" style="z-index: 10;">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                </i>
+                              </button>
                             </div>
                           </div>
-                        </div>
-                        <!--end::Griglia colori-->
-                        
-                        <!--begin::Display colore selezionato-->
-                        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded border">
-                          <span class="fw-semibold text-gray-700">Colore selezionato:</span>
-                          <div 
-                            class="rounded border border-2 border-gray-300"
-                            :style="{ 
-                              width: '40px', 
-                              height: '40px', 
-                              backgroundColor: formData.Color 
-                            }"
-                          ></div>
-                          <span class="badge badge-light-primary fs-7">{{ formData.Color }}</span>
-                        </div>
-                        <!--end::Display colore selezionato-->
+                        </ul>
                       </div>
                     </el-form-item>
                     <!--end::Input-->
@@ -740,6 +753,14 @@ export default defineComponent({
     // Funzione per selezionare un colore
     const selectColor = (color: string) => {
       formData.value.Color = color;
+      // Chiudi il dropdown dopo la selezione
+      const dropdownElement = document.getElementById('colorDropdownAgent');
+      if (dropdownElement) {
+        const dropdown = (window as any).bootstrap?.Dropdown?.getInstance(dropdownElement);
+        if (dropdown) {
+          dropdown.hide();
+        }
+      }
     };
 
     // Carica le agenzie se l'utente è Admin
