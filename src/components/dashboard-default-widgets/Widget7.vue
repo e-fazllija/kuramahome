@@ -400,10 +400,9 @@
                         </div>
                         <div class="d-flex flex-column flex-grow-1">
                           <span class="fw-bold fs-7 text-gray-800">{{ zone.name }}</span>
-                          <span class="text-muted fs-8">{{ zone.count }} immobili</span>
                         </div>
                         <div class="text-end">
-                          <span class="fw-bold fs-6 text-primary">{{ zone.percentage }}%</span>
+                          <span class="fw-bold fs-6 text-primary">{{ zone.count }} immobili</span>
                         </div>
                       </div>
                     </div>
@@ -465,10 +464,9 @@
                         </div>
                         <div class="d-flex flex-column flex-grow-1">
                           <span class="fw-bold fs-7 text-gray-800">{{ category.name }}</span>
-                          <span class="text-muted fs-8">{{ category.count }} immobili</span>
                         </div>
                         <div class="text-end">
-                          <span class="fw-bold fs-6 text-primary">{{ category.percentage }}%</span>
+                          <span class="fw-bold fs-6 text-primary">{{ category.count }} immobili</span>
                         </div>
                       </div>
                     </div>
@@ -619,6 +617,134 @@
             </div>
             <!--end::Guadagni Layout-->
 
+            <!--begin::Scadenze Incarichi Layout-->
+            <div v-else-if="i === 5">
+              <div class="card h-100">
+                <div class="card-header border-0 pt-4 pb-2">
+                  <h4 class="card-title fw-bold fs-5 mb-1">⏰ Scadenze Incarichi</h4>
+                  <span class="text-muted fs-7">Immobili con incarico in scadenza e scaduti</span>
+                </div>
+                <div class="card-body pt-2">
+                  <div v-if="loadingExpiringAssignments" class="text-center py-10">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Caricamento...</span>
+                    </div>
+                    <p class="text-muted fs-7 mt-3">Caricamento scadenze...</p>
+                  </div>
+                  <div v-else class="row g-4">
+                    <!-- Colonna Sinistra: In Scadenza -->
+                    <div class="col-12 col-lg-6">
+                      <div class="d-flex align-items-center mb-3">
+                        <h5 class="fw-bold fs-6 mb-0 text-warning">
+                          <i class="ki-duotone ki-calendar fs-5 me-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                          In Scadenza ({{ expiringProperties.length }})
+                        </h5>
+                      </div>
+                      <div v-if="expiringProperties && expiringProperties.length > 0" class="expiring-properties-list" style="max-height: 500px; overflow-y: auto;">
+                        <div 
+                          v-for="(property, index) in expiringProperties" 
+                          :key="property.Id || index"
+                          @click="goToProperty(property.Id)"
+                          class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 cursor-pointer property-item bg-light-warning border border-warning border-opacity-25"
+                          style="transition: all 0.2s ease;"
+                        >
+                          <div class="d-flex align-items-center flex-grow-1">
+                            <div class="symbol symbol-40px me-3">
+                              <span class="symbol-label text-white fw-bold fs-7 bg-warning">
+                                {{ index + 1 }}
+                              </span>
+                            </div>
+                            <div class="d-flex flex-column flex-grow-1">
+                              <span class="fw-bold fs-7 text-gray-800 mb-1">
+                                {{ property.Title || property.AddressLine || `Immobile ${property.Id}` }}
+                              </span>
+                              <span class="text-muted fs-8">
+                                {{ property.AddressLine }}{{ property.City ? ', ' + property.City : '' }}
+                              </span>
+                              <span class="text-muted fs-9">Cod.: {{ property.Id }}</span>
+                            </div>
+                          </div>
+                          <div class="text-end ms-3">
+                            <div class="fw-bold fs-6 mb-1 text-warning">
+                              {{ property.DaysUntilExpiry }} {{ property.DaysUntilExpiry === 1 ? 'giorno' : 'giorni' }}
+                            </div>
+                            <div class="text-muted fs-8">
+                              Scade: {{ formatDate(property.AssignmentEnd) }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div v-else class="text-center py-8">
+                        <i class="ki-duotone ki-check-circle fs-2x text-success mb-3">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <p class="text-muted fs-7 mb-0">Nessuna scadenza imminente</p>
+                      </div>
+                    </div>
+
+                    <!-- Colonna Destra: Scaduti -->
+                    <div class="col-12 col-lg-6">
+                      <div class="d-flex align-items-center mb-3">
+                        <h5 class="fw-bold fs-6 mb-0 text-danger">
+                          <i class="ki-duotone ki-cross-circle fs-5 me-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                          Scaduti ({{ expiredProperties.length }})
+                        </h5>
+                      </div>
+                      <div v-if="expiredProperties && expiredProperties.length > 0" class="expiring-properties-list" style="max-height: 500px; overflow-y: auto;">
+                        <div 
+                          v-for="(property, index) in expiredProperties" 
+                          :key="property.Id || index"
+                          @click="goToProperty(property.Id)"
+                          class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 cursor-pointer property-item bg-light-danger border border-danger border-opacity-50"
+                          style="transition: all 0.2s ease;"
+                        >
+                          <div class="d-flex align-items-center flex-grow-1">
+                            <div class="symbol symbol-40px me-3">
+                              <span class="symbol-label text-white fw-bold fs-7 bg-danger">
+                                {{ index + 1 }}
+                              </span>
+                            </div>
+                            <div class="d-flex flex-column flex-grow-1">
+                              <span class="fw-bold fs-7 text-gray-800 mb-1">
+                                {{ property.Title || property.AddressLine || `Immobile ${property.Id}` }}
+                              </span>
+                              <span class="text-muted fs-8">
+                                {{ property.AddressLine }}{{ property.City ? ', ' + property.City : '' }}
+                              </span>
+                              <span class="text-muted fs-9">Cod.: {{ property.Id }}</span>
+                            </div>
+                          </div>
+                          <div class="text-end ms-3">
+                            <div class="fw-bold fs-6 mb-1 text-danger">
+                              {{ getDaysSinceExpiry(property.AssignmentEnd) }} {{ getDaysSinceExpiry(property.AssignmentEnd) === 1 ? 'giorno fa' : 'giorni fa' }}
+                            </div>
+                            <div class="text-muted fs-8">
+                              Scaduto: {{ formatDate(property.AssignmentEnd) }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div v-else class="text-center py-8">
+                        <i class="ki-duotone ki-check-circle fs-2x text-success mb-3">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <p class="text-muted fs-7 mb-0">Nessun immobile scaduto</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Scadenze Incarichi Layout-->
+
             <!--begin::Default Table Layout (Other Tabs)-->
             <div v-else>
             <div class="table-responsive">
@@ -720,7 +846,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch } from "vue";
-import { getTopAgenciesData, getTopAgentsData, getTopZonesData, getTopTypologiesData, getTopEarningsData, type TopAgencyItem, type TopAgentItem, type TopZoneItem, type TopTypologyItem, type TopEarningItem } from "@/core/data/dashboard";
+import { getTopAgenciesData, getTopAgentsData, getTopZonesData, getTopTypologiesData, getTopEarningsData, getExpiringAssignments, type TopAgencyItem, type TopAgentItem, type TopZoneItem, type TopTypologyItem, type TopEarningItem, type ExpiringAssignmentItem } from "@/core/data/dashboard";
 
 export default defineComponent({
   name: "default-dashboard-widget-7",
@@ -777,6 +903,11 @@ export default defineComponent({
       totalSalesYearCommission: 0,
     });
     const loadingEarnings = ref<boolean>(false);
+
+    // Dati API per Scadenze Incarichi
+    const expiringAssignmentsData = ref<ExpiringAssignmentItem[]>([]);
+    const expiredAssignmentsData = ref<ExpiringAssignmentItem[]>([]);
+    const loadingExpiringAssignments = ref<boolean>(false);
     
     // Stato per ordinamento Top Agenzie
     const sortByAgencies = ref<string>('soldProperties'); // Default: ordina per vendite (lowercase per matchare backend)
@@ -821,6 +952,11 @@ export default defineComponent({
         title: "Guadagni",
         icon: "dollar",
         index: "4",
+      },
+      {
+        title: "Scadenze",
+        icon: "calendar",
+        index: "5",
       },
     ];
 
@@ -1120,6 +1256,74 @@ export default defineComponent({
     const totalPortfolioCommissions = computed(() => topEarningsData.value.totalPortfolioCommission || 0);
     const totalYearSalesCommissions = computed(() => topEarningsData.value.totalSalesYearCommission || 0);
 
+    // Funzione helper per calcolare i giorni rimanenti (per compatibilità con template)
+    const getDaysUntilExpiry = (assignmentEnd: string | undefined | null): number => {
+      if (!assignmentEnd || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '') {
+        return 999; // Senza scadenza = sempre valido
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiry;
+    };
+
+    // Funzione per formattare la data
+    const formatDate = (dateString: string | undefined | null): string => {
+      if (!dateString || dateString === '0001-01-01T00:00:00' || dateString === '') {
+        return 'Senza scadenza';
+      }
+      const date = new Date(dateString);
+      return date.toLocaleDateString('it-IT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    };
+
+    // Funzione per caricare i dati delle scadenze incarichi dall'API
+    const loadExpiringAssignments = async (daysThreshold?: number) => {
+      try {
+        loadingExpiringAssignments.value = true;
+        const data = await getExpiringAssignments(daysThreshold);
+        expiringAssignmentsData.value = data.Properties || [];
+        expiredAssignmentsData.value = data.ExpiredProperties || [];
+      } catch (error) {
+        console.error('Errore nel caricamento delle scadenze incarichi:', error);
+        expiringAssignmentsData.value = [];
+        expiredAssignmentsData.value = [];
+      } finally {
+        loadingExpiringAssignments.value = false;
+      }
+    };
+
+    // Immobili in scadenza (usa dati API)
+    const expiringProperties = computed(() => {
+      return expiringAssignmentsData.value || [];
+    });
+
+    // Immobili scaduti (usa dati API)
+    const expiredProperties = computed(() => {
+      return expiredAssignmentsData.value || [];
+    });
+
+    // Funzione per calcolare i giorni trascorsi dalla scadenza (per scaduti)
+    const getDaysSinceExpiry = (assignmentEnd: string | undefined | null): number => {
+      if (!assignmentEnd || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '') {
+        return 0;
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      const daysSinceExpiry = Math.ceil((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
+      return daysSinceExpiry;
+    };
+
+    // Funzione per navigare all'immobile in nuova scheda
+    const goToProperty = (propertyId: number | undefined) => {
+      if (!propertyId) return;
+      const route = `/dashboard/property/${propertyId}`;
+      window.open(route, '_blank', 'noopener,noreferrer');
+    };
+
     // Carica i dati iniziali
     onMounted(() => {
       loadTopAgenciesData(selectedYearAgencies.value, sortByAgencies.value, sortOrderAgencies.value);
@@ -1127,6 +1331,7 @@ export default defineComponent({
       loadTopZonesData();
       loadTopTypologiesData();
       loadTopEarningsData(selectedYearSales.value);
+      loadExpiringAssignments(30); // Carica scadenze con soglia di 30 giorni
     });
 
     // Watch per ricaricare quando cambia l'anno
@@ -1179,6 +1384,13 @@ export default defineComponent({
       sortOrderAgents,
       loadTopTypologiesData,
       loadTopEarningsData,
+      expiringProperties,
+      expiredProperties,
+      getDaysUntilExpiry,
+      getDaysSinceExpiry,
+      formatDate,
+      goToProperty,
+      loadingExpiringAssignments,
     };
   },
 });
@@ -1205,5 +1417,40 @@ export default defineComponent({
 .sortable-column .d-flex {
   align-items: center;
   gap: 0.25rem;
+}
+
+.property-item {
+  cursor: pointer;
+}
+
+.property-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .property-item:hover {
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.expiring-properties-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.expiring-properties-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.expiring-properties-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.expiring-properties-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+[data-bs-theme="dark"] .expiring-properties-list::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 </style>

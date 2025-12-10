@@ -115,6 +115,7 @@
                       type="text"
                       placeholder="Inserisci il nome"
                       size="large"
+                      @blur="capitalizeFirstName"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -139,6 +140,7 @@
                       type="text"
                       placeholder="Inserisci il cognome"
                       size="large"
+                      @blur="capitalizeLastName"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -370,6 +372,7 @@
                       v-model="formData.Address"
                       placeholder="Via, numero civico"
                       size="large"
+                      @blur="capitalizeAddress"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -486,6 +489,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, watch } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createCustomer, Customer } from "@/core/data/customers";
@@ -574,6 +578,31 @@ export default defineComponent({
         }
       }
     );
+
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeFirstName = () => {
+      if (formData.value.FirstName && typeof formData.value.FirstName === 'string' && formData.value.FirstName.trim()) {
+        formData.value.FirstName = toTitleCase(formData.value.FirstName);
+      }
+    };
+
+    const capitalizeLastName = () => {
+      if (formData.value.LastName && typeof formData.value.LastName === 'string' && formData.value.LastName.trim()) {
+        formData.value.LastName = toTitleCase(formData.value.LastName);
+      }
+    };
+
+    const capitalizeAddress = () => {
+      if (formData.value.Address && typeof formData.value.Address === 'string' && formData.value.Address.trim()) {
+        formData.value.Address = smartTitleCase(formData.value.Address);
+      }
+    };
+
+    const capitalizeCity = () => {
+      if (formData.value.City && typeof formData.value.City === 'string' && formData.value.City.trim()) {
+        formData.value.City = toTitleCase(formData.value.City);
+      }
+    };
 
     const rules = ref({
       Type: [
@@ -701,6 +730,10 @@ export default defineComponent({
       cities,
       user,
       ownerSearchItems,
+      capitalizeFirstName,
+      capitalizeLastName,
+      capitalizeAddress,
+      capitalizeCity,
     };
   },
 });

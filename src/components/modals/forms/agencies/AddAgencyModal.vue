@@ -128,6 +128,7 @@
                         type="text"
                         placeholder="Inserisci il nome"
                         size="large"
+                        @blur="capitalizeFirstName"
                       />
                     </el-form-item>
                   </div>
@@ -139,6 +140,7 @@
                         type="text"
                         placeholder="Inserisci il cognome"
                         size="large"
+                        @blur="capitalizeLastName"
                       />
                     </el-form-item>
                   </div>
@@ -158,6 +160,7 @@
                       type="text"
                       placeholder="Es. Rossi Immobiliare S.r.l."
                       size="large"
+                      @blur="capitalizeCompanyName"
                     />
                   </el-form-item>
                 </div>
@@ -324,6 +327,7 @@
                     type="text" 
                     placeholder="Nome del referente"
                     size="large"
+                    @blur="capitalizeReferent"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -375,6 +379,7 @@
                       v-model="formData.Address" 
                       placeholder="Via, numero civico"
                       size="large"
+                      @blur="capitalizeAddress"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -692,6 +697,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, watch } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createAgency, Agency } from "@/core/data/agencies";
@@ -1044,6 +1050,37 @@ export default defineComponent({
       }
     };
 
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeFirstName = () => {
+      if (formData.value.FirstName && typeof formData.value.FirstName === 'string' && formData.value.FirstName.trim()) {
+        formData.value.FirstName = toTitleCase(formData.value.FirstName);
+      }
+    };
+
+    const capitalizeLastName = () => {
+      if (formData.value.LastName && typeof formData.value.LastName === 'string' && formData.value.LastName.trim()) {
+        formData.value.LastName = toTitleCase(formData.value.LastName);
+      }
+    };
+
+    const capitalizeCompanyName = () => {
+      if (formData.value.CompanyName && typeof formData.value.CompanyName === 'string' && formData.value.CompanyName.trim()) {
+        formData.value.CompanyName = toTitleCase(formData.value.CompanyName);
+      }
+    };
+
+    const capitalizeReferent = () => {
+      if (formData.value.Referent && typeof formData.value.Referent === 'string' && formData.value.Referent.trim()) {
+        formData.value.Referent = toTitleCase(formData.value.Referent);
+      }
+    };
+
+    const capitalizeAddress = () => {
+      if (formData.value.Address && typeof formData.value.Address === 'string' && formData.value.Address.trim()) {
+        formData.value.Address = smartTitleCase(formData.value.Address);
+      }
+    };
+
     return {
       formData,
       rules,
@@ -1057,6 +1094,11 @@ export default defineComponent({
       selectColor,
       provinces,
       cities,
+      capitalizeFirstName,
+      capitalizeLastName,
+      capitalizeCompanyName,
+      capitalizeReferent,
+      capitalizeAddress,
     };
   },
 });

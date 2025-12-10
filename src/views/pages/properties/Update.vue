@@ -32,6 +32,28 @@
   <KTSpinner v-if="loading" :centered="true" size="md" />
   <!--begin::Content-->
   <div v-else class="collapse show">
+    <!--begin::Assignment Status Banner-->
+    <div v-if="assignmentStatusMessage" class="container-fluid px-0 px-md-3 mb-3">
+      <div :class="assignmentStatusClass" class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-40px me-3">
+              <span :class="assignmentStatusIconClass" class="symbol-label">
+                <i :class="assignmentStatusIcon" class="fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+            </div>
+            <div class="flex-grow-1">
+              <h5 class="fw-bold mb-1">{{ assignmentStatusTitle }}</h5>
+              <p class="mb-0 fs-7">{{ assignmentStatusMessage }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end::Assignment Status Banner-->
     <!--begin::Tabs-->
     <div class="container-fluid px-0 px-md-3">
       <ul class="nav nav-tabs flex-nowrap overflow-auto" id="propertyTabs" role="tablist"
@@ -677,7 +699,7 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-in-home" v-model="formData.InHome"
-                          :disabled="!canModify && user.Role === 'Agent'" />
+                          :disabled="(!canModify && user.Role === 'Agent') || isExpired" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-in-home">
                           In Home
                         </label>
@@ -689,7 +711,7 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-highlighted"
-                          v-model="formData.Highlighted" :disabled="!canModify && user.Role === 'Agent'" />
+                          v-model="formData.Highlighted" :disabled="(!canModify && user.Role === 'Agent') || isExpired" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-highlighted">
                           In Evidenza
                         </label>
@@ -725,10 +747,17 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-sold" v-model="formData.Sold"
-                          :disabled="!canModify && user.Role === 'Agent'" />
+                          :disabled="(!canModify && user.Role === 'Agent') || isExpired" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-sold">
                           Venduto
                         </label>
+                      </div>
+                      <div v-if="isExpired" class="text-muted fs-8 mt-1">
+                        <i class="ki-duotone ki-information fs-7 me-1">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Impossibile modificare: incarico scaduto
                       </div>
                     </div>
                   </div>
@@ -1365,6 +1394,109 @@ export default defineComponent({
 
     // Salva il UserId originale dell'immobile (non deve essere modificato)
     const originalUserId = ref<string>("");
+
+    // Funzioni helper per verificare lo stato dell'incarico
+    const isAssignmentExpired = (assignmentEnd: string | undefined | null): boolean => {
+      if (!assignmentEnd || assignmentEnd === '' || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '0001-01-01') {
+        return false; // Senza scadenza = non scaduto
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0); // Reset ore per confronto solo date
+      endDate.setHours(0, 0, 0, 0);
+      return endDate < now;
+    };
+
+    const isAssignmentExpiringSoon = (assignmentEnd: string | undefined | null): boolean => {
+      if (!assignmentEnd || assignmentEnd === '' || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '0001-01-01') {
+        return false; // Senza scadenza = non in scadenza
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiry > 0 && daysUntilExpiry <= 30;
+    };
+
+    const getDaysUntilExpiry = (assignmentEnd: string | undefined | null): number => {
+      if (!assignmentEnd || assignmentEnd === '' || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '0001-01-01') {
+        return 999; // Senza scadenza = sempre valido
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiry;
+    };
+
+    const formatDate = (dateString: string | undefined | null): string => {
+      if (!dateString || dateString === '' || dateString === '0001-01-01T00:00:00' || dateString === '0001-01-01') {
+        return 'Senza scadenza';
+      }
+      const date = new Date(dateString);
+      return date.toLocaleDateString('it-IT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    };
+
+    // Computed per lo stato dell'incarico
+    const isExpired = computed(() => isAssignmentExpired(formData.value.AssignmentEnd));
+    const isExpiringSoon = computed(() => isAssignmentExpiringSoon(formData.value.AssignmentEnd));
+    const daysUntilExpiry = computed(() => getDaysUntilExpiry(formData.value.AssignmentEnd));
+
+    // Computed per il banner di stato
+    const assignmentStatusMessage = computed(() => {
+      if (!formData.value.AssignmentEnd || formData.value.AssignmentEnd === '' || formData.value.AssignmentEnd === '0001-01-01T00:00:00' || formData.value.AssignmentEnd === '0001-01-01') {
+        return null; // Nessun banner se non c'è scadenza
+      }
+      if (isExpired.value) {
+        return `Incarico scaduto il ${formatDate(formData.value.AssignmentEnd)}. Rinnova l'incarico per continuare a gestire questo immobile.`;
+      }
+      if (isExpiringSoon.value) {
+        return `Incarico in scadenza tra ${daysUntilExpiry.value} ${daysUntilExpiry.value === 1 ? 'giorno' : 'giorni'} (scade il ${formatDate(formData.value.AssignmentEnd)}).`;
+      }
+      return null;
+    });
+
+    const assignmentStatusClass = computed(() => {
+      if (isExpired.value) {
+        return 'bg-light-danger border-danger border';
+      }
+      if (isExpiringSoon.value) {
+        return 'bg-light-warning border-warning border';
+      }
+      return '';
+    });
+
+    const assignmentStatusTitle = computed(() => {
+      if (isExpired.value) {
+        return '⚠️ Incarico Scaduto';
+      }
+      if (isExpiringSoon.value) {
+        return '⏰ Incarico in Scadenza';
+      }
+      return '';
+    });
+
+    const assignmentStatusIconClass = computed(() => {
+      if (isExpired.value) {
+        return 'bg-danger';
+      }
+      if (isExpiringSoon.value) {
+        return 'bg-warning';
+      }
+      return '';
+    });
+
+    const assignmentStatusIcon = computed(() => {
+      if (isExpired.value) {
+        return 'ki-duotone ki-cross-circle';
+      }
+      if (isExpiringSoon.value) {
+        return 'ki-duotone ki-information';
+      }
+      return '';
+    });
 
     onMounted(async () => {
       loading.value = true;
@@ -2033,6 +2165,13 @@ export default defineComponent({
       onFileChanged,
       typesavailable,
       showTipologia,
+      isExpired,
+      isExpiringSoon,
+      assignmentStatusMessage,
+      assignmentStatusClass,
+      assignmentStatusTitle,
+      assignmentStatusIconClass,
+      assignmentStatusIcon,
       setPhotoHighlighted,
       deleteFile,
       deleteItem,

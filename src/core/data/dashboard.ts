@@ -877,6 +877,22 @@ export interface AppointmentsAnalyticsData {
     ConfirmedData: Record<string, number>;
 }
 
+export interface ExpiringAssignmentItem {
+    Id: number;
+    Title: string;
+    AddressLine: string;
+    City: string;
+    AssignmentEnd: string;
+    DaysUntilExpiry: number;
+}
+
+export interface ExpiringAssignmentsData {
+    Properties: ExpiringAssignmentItem[];
+    Total: number;
+    ExpiredProperties: ExpiringAssignmentItem[];
+    TotalExpired: number;
+}
+
 const getMapData = (agencyId?: string, year?: number): Promise<MapData> => {
     const agencyParam = agencyId ? `agencyId=${encodeURIComponent(agencyId)}` : '';
     const yearParam = year ? `year=${year}` : '';
@@ -1002,6 +1018,21 @@ const getAnalyticsData = (year: number, agencyId?: string): Promise<AnalyticsDat
         });
 };
 
+const getExpiringAssignments = (daysThreshold?: number): Promise<ExpiringAssignmentsData> => {
+    const params: string[] = [];
+    if (daysThreshold) params.push(`daysThreshold=${daysThreshold}`);
+    const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+
+    return ApiService.get(`Dashboard/GetExpiringAssignments${queryString}`, "")
+        .then(({ data }) => {
+            return data as ExpiringAssignmentsData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento delle scadenze incarichi', response?.status);
+            throw new Error('Errore nel caricamento delle scadenze incarichi');
+        });
+};
+
 export { 
     // API dashboard
     getMapData,
@@ -1012,6 +1043,7 @@ export {
     getTopTypologiesData,
     getTopEarningsData,
     getAnalyticsData,
+    getExpiringAssignments,
     
     // Funzioni di processing per grafici e statistiche
     processPropertiesForChart, 

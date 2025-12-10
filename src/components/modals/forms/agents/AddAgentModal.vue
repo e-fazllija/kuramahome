@@ -150,6 +150,7 @@
                         type="text"
                         placeholder="Inserisci il nome"
                         size="large"
+                        @blur="capitalizeFirstName"
                       />
                     </el-form-item>
                   </div>
@@ -161,6 +162,7 @@
                         type="text"
                         placeholder="Inserisci il cognome"
                         size="large"
+                        @blur="capitalizeLastName"
                       />
                     </el-form-item>
                   </div>
@@ -175,11 +177,12 @@
                 <div class="fv-row mb-7">
                   <label class="form-label fw-bold text-gray-800 fs-6">Ragione Sociale *</label>
                   <el-form-item prop="companyName">
-                    <el-input
+                      <el-input
                       v-model="formData.CompanyName"
                       type="text"
                       placeholder="Es. Rossi Immobiliare S.r.l."
                       size="large"
+                      @blur="capitalizeCompanyName"
                     />
                   </el-form-item>
                 </div>
@@ -392,10 +395,11 @@
 
                   <!--begin::Input-->
                   <el-form-item prop="addressLine">
-                    <el-input 
+                      <el-input 
                       v-model="formData.Address" 
                       placeholder="Via, numero civico"
                       size="large"
+                      @blur="capitalizeAddress"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -690,6 +694,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, watch } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createAgent, Agent } from "@/core/data/agents";
@@ -1043,6 +1048,31 @@ export default defineComponent({
       }
     };
 
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeFirstName = () => {
+      if (formData.value.FirstName && typeof formData.value.FirstName === 'string' && formData.value.FirstName.trim()) {
+        formData.value.FirstName = toTitleCase(formData.value.FirstName);
+      }
+    };
+
+    const capitalizeLastName = () => {
+      if (formData.value.LastName && typeof formData.value.LastName === 'string' && formData.value.LastName.trim()) {
+        formData.value.LastName = toTitleCase(formData.value.LastName);
+      }
+    };
+
+    const capitalizeCompanyName = () => {
+      if (formData.value.CompanyName && typeof formData.value.CompanyName === 'string' && formData.value.CompanyName.trim()) {
+        formData.value.CompanyName = toTitleCase(formData.value.CompanyName);
+      }
+    };
+
+    const capitalizeAddress = () => {
+      if (formData.value.Address && typeof formData.value.Address === 'string' && formData.value.Address.trim()) {
+        formData.value.Address = smartTitleCase(formData.value.Address);
+      }
+    };
+
     return {
       formData,
       rules,
@@ -1058,6 +1088,10 @@ export default defineComponent({
       cities,
       user,
       agenciesList,
+      capitalizeFirstName,
+      capitalizeLastName,
+      capitalizeCompanyName,
+      capitalizeAddress,
     };
   },
 });

@@ -160,7 +160,7 @@
 
                   <!--begin::Input-->
                   <el-form-item prop="FirstName">
-                    <el-input v-model="formData.FirstName" type="text" placeholder="Inserisci il nome dell'agente" size="large" />
+                    <el-input v-model="formData.FirstName" type="text" placeholder="Inserisci il nome dell'agente" size="large" @blur="capitalizeFirstName" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -179,7 +179,7 @@
 
                   <!--begin::Input-->
                   <el-form-item prop="LastName">
-                    <el-input v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" size="large" />
+                    <el-input v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" size="large" @blur="capitalizeLastName" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -318,7 +318,7 @@
 
                   <!--begin::Input-->
                   <el-form-item prop="addressLine">
-                    <el-input v-model="formData.Address" placeholder="Via, numero civico" size="large" />
+                    <el-input v-model="formData.Address" placeholder="Via, numero civico" size="large" @blur="capitalizeAddress" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -642,6 +642,7 @@
                       type="text"
                       placeholder="Es. Rossi Immobiliare S.r.l."
                       size="large"
+                      @blur="capitalizeCompanyName"
                     />
                   </el-form-item>
                 </div>
@@ -771,6 +772,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { defineComponent, ref, watch, nextTick } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -1229,6 +1231,31 @@ export default defineComponent({
       }
     });
 
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeFirstName = () => {
+      if (formData.value.FirstName && typeof formData.value.FirstName === 'string' && formData.value.FirstName.trim()) {
+        formData.value.FirstName = toTitleCase(formData.value.FirstName);
+      }
+    };
+
+    const capitalizeLastName = () => {
+      if (formData.value.LastName && typeof formData.value.LastName === 'string' && formData.value.LastName.trim()) {
+        formData.value.LastName = toTitleCase(formData.value.LastName);
+      }
+    };
+
+    const capitalizeCompanyName = () => {
+      if (formData.value.CompanyName && typeof formData.value.CompanyName === 'string' && formData.value.CompanyName.trim()) {
+        formData.value.CompanyName = toTitleCase(formData.value.CompanyName);
+      }
+    };
+
+    const capitalizeAddress = () => {
+      if (formData.value.Address && typeof formData.value.Address === 'string' && formData.value.Address.trim()) {
+        formData.value.Address = smartTitleCase(formData.value.Address);
+      }
+    };
+
     return {
       formData,
       rules,
@@ -1246,7 +1273,11 @@ export default defineComponent({
       agenciesList,
       showClientId,
       showClientSecret,
-      handleSyncChange
+      handleSyncChange,
+      capitalizeFirstName,
+      capitalizeLastName,
+      capitalizeCompanyName,
+      capitalizeAddress
     };
   },
 });

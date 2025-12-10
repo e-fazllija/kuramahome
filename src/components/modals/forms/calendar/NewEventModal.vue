@@ -66,6 +66,7 @@
                     type="text" 
                     name="EventName"
                     placeholder="Inserisci il nome dell'evento"
+                    @blur="capitalizeEventName"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -171,6 +172,7 @@
                     type="text" 
                     placeholder="Descrizione dell'evento" 
                     name="EventDescription"
+                    @blur="capitalizeEventDescription"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -196,6 +198,7 @@
                     type="text" 
                     placeholder="Dove si terrà l'evento" 
                     name="EventLocation"
+                    @blur="capitalizeEventLocation"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -395,6 +398,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import { hideModal, removeModalBackdrop } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase, capitalize } from "@/core/helpers/text";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import events, { todayDate, getToInsert, createEvent, InsertModel, Event } from "@/core/data/events";
 import { useAuthStore } from "@/stores/auth";
@@ -631,6 +635,24 @@ export default defineComponent({
       }
     };
     
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeEventName = () => {
+      if (targetData.value.EventName && typeof targetData.value.EventName === 'string' && targetData.value.EventName.trim()) {
+        targetData.value.EventName = toTitleCase(targetData.value.EventName);
+      }
+    };
+
+    const capitalizeEventDescription = () => {
+      if (targetData.value.EventDescription && typeof targetData.value.EventDescription === 'string' && targetData.value.EventDescription.trim()) {
+        targetData.value.EventDescription = capitalize(targetData.value.EventDescription);
+      }
+    };
+
+    const capitalizeEventLocation = () => {
+      if (targetData.value.EventLocation && typeof targetData.value.EventLocation === 'string' && targetData.value.EventLocation.trim()) {
+        targetData.value.EventLocation = smartTitleCase(targetData.value.EventLocation);
+      }
+    };
 
     return {
       formRef,
@@ -643,7 +665,10 @@ export default defineComponent({
       inserModel,
       removeModalBackdrop,
       colorOptions,
-      selectColor
+      selectColor,
+      capitalizeEventName,
+      capitalizeEventDescription,
+      capitalizeEventLocation
     };
   },
   data() {

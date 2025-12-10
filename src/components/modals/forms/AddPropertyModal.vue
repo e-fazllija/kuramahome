@@ -101,7 +101,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Title">
-                  <el-input v-model="formData.Title" type="text" size="large" class="form-control-palette" placeholder="Inserisci il titolo dell'immobile" />
+                  <el-input v-model="formData.Title" type="text" size="large" class="form-control-palette" placeholder="Inserisci il titolo dell'immobile" @blur="capitalizeTitle" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -468,7 +468,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="AddressLine">
-                    <el-input v-model="formData.AddressLine" type="text" size="large" placeholder="Via, numero civico" />
+                    <el-input v-model="formData.AddressLine" type="text" size="large" placeholder="Via, numero civico" @blur="capitalizeAddressLine" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -531,7 +531,7 @@
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <el-input v-model="formData.Location" type="text" size="large" placeholder="Inserisci la località" />
+                    <el-input v-model="formData.Location" type="text" size="large" placeholder="Inserisci la località" @blur="capitalizeLocation" />
                     <!--end::Input-->
                   </div>
 
@@ -1203,6 +1203,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, watch, onMounted, reactive, computed } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { createRealEstateProperty, RealEstateProperty, getToInsert, InsertModel } from "@/core/data/properties";
@@ -2025,6 +2026,25 @@ export default defineComponent({
       });
     });
 
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeTitle = () => {
+      if (formData.value.Title && typeof formData.value.Title === 'string' && formData.value.Title.trim()) {
+        formData.value.Title = toTitleCase(formData.value.Title);
+      }
+    };
+
+    const capitalizeAddressLine = () => {
+      if (formData.value.AddressLine && typeof formData.value.AddressLine === 'string' && formData.value.AddressLine.trim()) {
+        formData.value.AddressLine = smartTitleCase(formData.value.AddressLine);
+      }
+    };
+
+    const capitalizeLocation = () => {
+      if (formData.value.Location && typeof formData.value.Location === 'string' && formData.value.Location.trim()) {
+        formData.value.Location = toTitleCase(formData.value.Location);
+      }
+    };
+
     return {
       formData,
       rules,
@@ -2044,7 +2064,10 @@ export default defineComponent({
       inserModel,
       invalidFields,
       effectiveCommission,
-      selectedExposures
+      selectedExposures,
+      capitalizeTitle,
+      capitalizeAddressLine,
+      capitalizeLocation
     };
   },
 });

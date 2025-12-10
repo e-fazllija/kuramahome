@@ -264,6 +264,15 @@
             </select>
           </div>
 
+          <!-- Filtro Stato Incarico -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select class="form-select filter-select" v-model="assignmentStatusFilter" @change="applyFilters">
+              <option value="">📅 Tutti gli incarichi</option>
+              <option value="valid">✅ Incarichi validi</option>
+              <option value="expired">⚠️ Incarichi scaduti</option>
+            </select>
+          </div>
+
           <!-- Bottone Pulisci Filtri -->
           <div class="col-12 col-sm-auto ms-sm-auto">
             <button 
@@ -291,9 +300,34 @@
         <template v-slot:Id="{ row: item }">
           <span class="clickable-row" @click="goToPropertyDetails(item.Id)" style="cursor: pointer; color: #3699ff; font-weight: 600;">{{ item.Id }}</span>
         </template>
-        <template v-slot:CreationDate="{ row: item }">
-          {{ item.CreationDate.substring(0, 10).split('-').reverse().join('-') }}<br />
-          {{ item.AssignmentEnd.substring(0, 10).split('-').reverse().join('-') }}
+        <template v-slot:AssignmentStatus="{ row: item }">
+          <span v-if="isAssignmentExpired(item)" class="badge badge-light-danger">
+            <i class="ki-duotone ki-cross-circle fs-6 me-1">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Scaduto
+          </span>
+          <span v-else-if="isAssignmentExpiringSoon(item)" class="badge badge-light-warning">
+            <i class="ki-duotone ki-information fs-6 me-1">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            In scadenza
+          </span>
+          <span v-else class="badge badge-light-success">
+            <i class="ki-duotone ki-check-circle fs-6 me-1">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Valido
+          </span>
+        </template>
+        <template v-slot:AssignmentEnd="{ row: item }">
+          <span v-if="item.AssignmentEnd && item.AssignmentEnd !== '0001-01-01T00:00:00'">
+            {{ item.AssignmentEnd.substring(0, 10).split('-').reverse().join('-') }}
+          </span>
+          <span v-else class="text-muted">Senza scadenza</span>
         </template>
         <template v-slot:CommercialSurfaceate="{ row: item }">
           {{ item.CommercialSurfaceate }}
@@ -415,49 +449,64 @@ export default defineComponent({
         columnName: "Codice",
         columnLabel: "Id",
         sortEnabled: true,
-        columnWidth: 100,
+        columnWidth: 80,
+        textAlign: "center",
       },
       {
-        columnName: "Ins. / Inc.",
-        columnLabel: "CreationDate",
+        columnName: "Stato Incarico",
+        columnLabel: "AssignmentStatus",
         sortEnabled: true,
         columnWidth: 120,
+        textAlign: "center",
+      },
+      {
+        columnName: "Scad. incarico",
+        columnLabel: "AssignmentEnd",
+        sortEnabled: true,
+        columnWidth: 120,
+        textAlign: "center",
       },
       {
         columnName: "Mq",
         columnLabel: "CommercialSurfaceate",
         sortEnabled: true,
         columnWidth: 80,
+        textAlign: "center",
       },
       {
         columnName: "Indirizzo",
         columnLabel: "AddressLine",
         sortEnabled: true,
-        columnWidth: 200,
+        columnWidth: 160,
+        textAlign: "center",
       },
       {
         columnName: "Prezzo",
         columnLabel: "Price",
         sortEnabled: true,
-        columnWidth: 150,
+        columnWidth: 130,
+        textAlign: "center",
       },
       {
-        columnName: "Provvigione effettiva",
+        columnName: "Provv. effettiva",
         columnLabel: "EffectiveCommission",
         sortEnabled: true,
-        columnWidth: 180,
+        columnWidth: 130,
+        textAlign: "center",
       },
       {
         columnName: "Immagine",
         columnLabel: "Photos",
         sortEnabled: false,
         columnWidth: 150,
+        textAlign: "center",
       },
       {
         columnName: "Actions",
         columnLabel: "actions",
         sortEnabled: false,
         columnWidth: 135,
+        textAlign: "center",
       },
     ]);
     const selectedIds = ref<Array<Number>>([]);
@@ -493,6 +542,7 @@ export default defineComponent({
     const selectedProvince = ref<string>("");
     const selectedCity = ref<string>("");
     const selectedLocation = ref<string>("");
+    const assignmentStatusFilter = ref<string>("");
 
     // Subscription limits state
     const isCheckingLimit = ref(false);
@@ -711,6 +761,27 @@ export default defineComponent({
       loading.value = false;
     };
 
+    // Funzione helper per verificare se l'incarico è scaduto
+    const isAssignmentExpired = (item: RequestTabelData): boolean => {
+      if (!item.AssignmentEnd || item.AssignmentEnd === '0001-01-01T00:00:00' || item.AssignmentEnd === '') {
+        return false; // Senza scadenza = sempre valido
+      }
+      const assignmentEnd = new Date(item.AssignmentEnd);
+      const now = new Date();
+      return assignmentEnd < now;
+    };
+
+    // Funzione helper per verificare se l'incarico sta per scadere (entro 30 giorni)
+    const isAssignmentExpiringSoon = (item: RequestTabelData): boolean => {
+      if (!item.AssignmentEnd || item.AssignmentEnd === '0001-01-01T00:00:00' || item.AssignmentEnd === '') {
+        return false; // Senza scadenza = non in scadenza
+      }
+      const assignmentEnd = new Date(item.AssignmentEnd);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((assignmentEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiry > 0 && daysUntilExpiry <= 30;
+    };
+
     const applyFilters = () => {
       let items = [...rawItems.value];
 
@@ -728,6 +799,15 @@ export default defineComponent({
         });
       }
       // Se ownerFilter è vuoto, mostra tutti gli immobili della cerchia (già filtrati dal backend)
+
+      // Applica il filtro stato incarico
+      if (assignmentStatusFilter.value) {
+        if (assignmentStatusFilter.value === 'valid') {
+          items = items.filter((item) => !isAssignmentExpired(item));
+        } else if (assignmentStatusFilter.value === 'expired') {
+          items = items.filter((item) => isAssignmentExpired(item));
+        }
+      }
 
       tableData.value = items;
       MenuComponent.reinitialization();
@@ -834,7 +914,27 @@ export default defineComponent({
     const sort = (sort: Sort) => {
       const reverse: boolean = sort.order === "asc";
       if (sort.label) {
-        arraySort(tableData.value, sort.label, { reverse });
+        // Gestione speciale per AssignmentEnd
+        if (sort.label === "AssignmentEnd") {
+          tableData.value.sort((a, b) => {
+            const dateA = a.AssignmentEnd && a.AssignmentEnd !== '0001-01-01T00:00:00' && a.AssignmentEnd !== '' 
+              ? new Date(a.AssignmentEnd).getTime() 
+              : Number.MAX_SAFE_INTEGER; // Senza scadenza = sempre in fondo
+            const dateB = b.AssignmentEnd && b.AssignmentEnd !== '0001-01-01T00:00:00' && b.AssignmentEnd !== '' 
+              ? new Date(b.AssignmentEnd).getTime() 
+              : Number.MAX_SAFE_INTEGER;
+            return reverse ? dateA - dateB : dateB - dateA;
+          });
+        } else if (sort.label === "AssignmentStatus") {
+          // Ordina per stato: scaduti prima, poi in scadenza, poi validi
+          tableData.value.sort((a, b) => {
+            const expiredA = isAssignmentExpired(a) ? 0 : (isAssignmentExpiringSoon(a) ? 1 : 2);
+            const expiredB = isAssignmentExpired(b) ? 0 : (isAssignmentExpiringSoon(b) ? 1 : 2);
+            return reverse ? expiredA - expiredB : expiredB - expiredA;
+          });
+        } else {
+          arraySort(tableData.value, sort.label, { reverse });
+        }
       }
     };
 
@@ -996,6 +1096,7 @@ export default defineComponent({
       selectedLocation.value = "";
       filteredCities.value = [];
       ownerFilter.value = "";
+      assignmentStatusFilter.value = "";
       searchItems();
     };
 
@@ -1074,7 +1175,10 @@ export default defineComponent({
         handleExportProperties,
         ownerFilter,
         applyFilters,
-        formatNumber
+        formatNumber,
+        assignmentStatusFilter,
+        isAssignmentExpired,
+        isAssignmentExpiringSoon
       };
   },
   data() {
