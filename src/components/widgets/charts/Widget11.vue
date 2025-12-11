@@ -254,6 +254,10 @@ export default defineComponent({
       required: false,
       default: undefined
     },
+    canLoadData: {
+      type: Boolean,
+      default: true
+    },
   },
   setup(props) {
     const chartRef = ref<typeof VueApexCharts | null>(null);
@@ -297,12 +301,23 @@ export default defineComponent({
 
     // Funzione per caricare i dati Analytics dall'API
     const loadAnalyticsData = async () => {
+      // Non caricare i dati se non ha i permessi
+      if (!props.canLoadData) {
+        analyticsData.value = null;
+        return;
+      }
+      
       try {
         loading.value = true;
         const data = await getAnalyticsData(props.year, props.agencyId);
         analyticsData.value = data;
-      } catch (error) {
-        console.error('Errore nel caricamento dei dati Analytics:', error);
+      } catch (error: any) {
+        // Se è un errore 403, non loggare come errore (è normale se non ha Premium)
+        if (error?.response?.status === 403) {
+          console.warn('Accesso negato: piano Premium richiesto per questa funzionalità');
+        } else {
+          console.error('Errore nel caricamento dei dati Analytics:', error);
+        }
         analyticsData.value = null;
       } finally {
         loading.value = false;
@@ -571,13 +586,24 @@ export default defineComponent({
       loadAnalyticsData();
     });
 
-    // Watch per ricaricare quando cambiano year o agencyId
+    // Watch per ricaricare quando cambiano year o agencyId (solo se può caricare)
     watch(() => props.year, () => {
-      loadAnalyticsData();
+      if (props.canLoadData) {
+        loadAnalyticsData();
+      }
     });
 
     watch(() => props.agencyId, () => {
-      loadAnalyticsData();
+      if (props.canLoadData) {
+        loadAnalyticsData();
+      }
+    });
+    
+    // Watch per canLoadData: se diventa true, carica i dati
+    watch(() => props.canLoadData, (newVal) => {
+      if (newVal && !analyticsData.value) {
+        loadAnalyticsData();
+      }
     });
 
     return {

@@ -395,7 +395,6 @@ export default defineComponent({
       return {
         chart: {
           id: 'chart-properties',
-          group: 'immobili-group',
           type: 'line',
           height: 200,
           toolbar: {
@@ -513,7 +512,6 @@ export default defineComponent({
       return {
         chart: {
           id: 'chart-commissions',
-          group: 'immobili-group',
           type: 'line',
           height: 200,
           toolbar: {
@@ -568,14 +566,27 @@ export default defineComponent({
           fontWeight: 600
         },
         tooltip: {
-          shared: true,
-          intersect: false,
+          shared: false,
+          intersect: true,
           followCursor: true,
-          y: {
-            formatter: (val: number) => {
-              // Formatta sempre con massimo 2 decimali
-              return `€ ${formatCommission(val)}`;
-            }
+          custom: function({ series, seriesIndex, dataPointIndex, w }: any) {
+            const chartDataSeriesValue = chartDataSeries.value;
+            const month = chartDataSeriesValue.months[dataPointIndex];
+            const commissionValue = chartDataSeriesValue.commissionsMonthlyTotals[dataPointIndex];
+            
+            // Colori per dark mode
+            const isDark = themeMode.value === 'dark';
+            const titleColor = isDark ? '#E0E0E0' : '#333333';
+            const textColor = isDark ? '#E0E0E0' : '#333333';
+            const infoColor = getCSSVariableValue("--bs-info") || (isDark ? "#17a2b8" : "#17a2b8");
+            
+            return `
+              <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; margin-bottom: 6px; color: ${titleColor};">${month}</div>
+              <div style="display: flex; align-items: center;">
+                <span style="display: inline-block; width: 12px; height: 12px; background-color: ${infoColor}; border-radius: 2px; margin-right: 6px;"></span>
+                <span style="font-size: 13px; font-weight: 600; color: ${textColor};">Provvigioni: € ${formatCommission(commissionValue)}</span>
+              </div>
+            `;
           }
         }
       };

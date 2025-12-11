@@ -16,7 +16,7 @@
     <div class="card-body pt-6">
       <!--begin::Nav-->
       <ul class="nav nav-pills nav-pills-custom mb-3">
-        <template v-for="(item, i) in items" :key="i">
+        <template v-for="(item, i) in items" :key="item.index">
           <!--begin::Item-->
           <li class="nav-item mb-3 me-3 me-lg-6">
             <!--begin::Link-->
@@ -53,7 +53,7 @@
 
       <!--begin::Tab Content-->
       <div class="tab-content">
-        <template v-for="(item, i) in items" :key="i">
+        <template v-for="(item, i) in items" :key="item.index">
           <!--begin::Tap pane-->
           <div
             class="tab-pane fade"
@@ -61,7 +61,7 @@
             :id="`kt_stats_widget_7_tab_${i}`"
           >
             <!--begin::Top Agenzie Layout-->
-            <div v-if="i === 0">
+            <div v-if="item.index === '0' && !hideTopAgencies">
               <!--begin::Filtro Anno-->
               <div class="d-flex justify-content-end align-items-center mb-4">
                 <label class="form-label text-muted fs-7 me-3 mb-0">Filtra per anno:</label>
@@ -163,8 +163,8 @@
                       </tr>
                     </thead>
                   <tbody>
-                    <template v-if="getTableData(i).length > 0">
-                      <tr v-for="(row, j) in getTableData(i)" :key="row.id || j">
+                    <template v-if="getTableData(parseInt(item.index)).length > 0">
+                      <tr v-for="(row, j) in getTableData(parseInt(item.index))" :key="row.id || j">
                         <td>
                           <div class="symbol symbol-40px me-3">
                             <span :class="[
@@ -231,7 +231,7 @@
             <!--end::Top Agenzie Layout-->
 
             <!--begin::Top Agenti Layout-->
-            <div v-else-if="i === 1">
+            <div v-else-if="item.index === '1'">
               <!--begin::Filtro Anno-->
               <div class="d-flex justify-content-end align-items-center mb-4">
                 <label class="form-label text-muted fs-7 me-3 mb-0">Filtra per anno:</label>
@@ -320,8 +320,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <template v-if="getTableData(i).length > 0">
-                      <tr v-for="(row, j) in getTableData(i)" :key="row.id || j">
+                    <template v-if="getTableData(parseInt(item.index)).length > 0">
+                      <tr v-for="(row, j) in getTableData(parseInt(item.index))" :key="row.id || j">
                         <td>
                           <div class="symbol symbol-40px me-3">
                             <span :class="[
@@ -383,7 +383,7 @@
             <!--end::Top Agenti Layout-->
 
             <!--begin::Top Zone Layout-->
-            <div v-else-if="i === 2" class="row g-5">
+            <div v-else-if="item.index === '2'" class="row g-5">
               <!--begin::Top Zone Immobili (Left)-->
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
@@ -447,7 +447,7 @@
             <!--end::Top Zone Layout-->
 
             <!--begin::Tipologie Layout-->
-            <div v-else-if="i === 3" class="row g-5">
+            <div v-else-if="item.index === '3'" class="row g-5">
               <!--begin::Top Categorie Portafoglio (Left)-->
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
@@ -511,7 +511,7 @@
             <!--end::Tipologie Layout-->
 
             <!--begin::Guadagni Layout-->
-            <div v-else-if="i === 4" class="row g-5">
+            <div v-else-if="item.index === '4'" class="row g-5">
               <!--begin::Top Portafoglio Provvigioni (Left)-->
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
@@ -618,7 +618,7 @@
             <!--end::Guadagni Layout-->
 
             <!--begin::Scadenze Incarichi Layout-->
-            <div v-else-if="i === 5">
+            <div v-else-if="item.index === '5'">
               <div class="card h-100">
                 <div class="card-header border-0 pt-4 pb-2">
                   <h4 class="card-title fw-bold fs-5 mb-1">⏰ Scadenze Incarichi</h4>
@@ -760,8 +760,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <template v-if="getTableData(i).length > 0">
-                    <tr v-for="(row, j) in getTableData(i)" :key="j">
+                  <template v-if="getTableData(parseInt(item.index)).length > 0">
+                    <tr v-for="(row, j) in getTableData(parseInt(item.index))" :key="j">
                       <td>
                         <div class="symbol symbol-40px me-3">
                           <span :class="[
@@ -861,6 +861,8 @@ export default defineComponent({
     allProperties: { type: Array, default: () => [] },
     calendarEvents: { type: Array, default: () => [] },
     selectedYear: { type: Number, default: () => new Date().getFullYear() },
+    hideTopAgencies: { type: Boolean, default: false },
+    canLoadData: { type: Boolean, default: true },
   },
   setup(props) {
     const activeTab = ref<number>(0);
@@ -927,7 +929,7 @@ export default defineComponent({
       return years;
     });
 
-    const items = [
+    const allItems = [
       {
         title: "Top Agenzie",
         icon: "office-bag",
@@ -959,6 +961,25 @@ export default defineComponent({
         index: "5",
       },
     ];
+    
+    // Filtra gli items: nascondi "Top Agenzie" se hideTopAgencies è true
+    const items = computed(() => {
+      if (props.hideTopAgencies) {
+        return allItems.filter(item => item.title !== "Top Agenzie");
+      }
+      return allItems;
+    });
+    
+    // Se "Top Agenzie" viene nascosto e activeTab punta a Top Agenzie, passa al primo tab disponibile
+    watch(() => props.hideTopAgencies, (hide) => {
+      if (hide) {
+        // Se il tab attivo è "Top Agenzie" (index 0), passa al primo tab disponibile (Top Agenti, index 1)
+        const currentItem = items.value[activeTab.value];
+        if (currentItem && currentItem.index === '0') {
+          activeTab.value = 0; // Il primo tab ora sarà "Top Agenti" (che ha index 1)
+        }
+      }
+    }, { immediate: true });
 
     const setActiveTab = (index: number) => {
       activeTab.value = index;
@@ -980,6 +1001,11 @@ export default defineComponent({
 
     // Funzione per caricare i dati dei Top Agenti dall'API
     const loadTopAgentsData = async (year?: number, sortBy?: string, sortOrder?: string) => {
+      if (!props.canLoadData) {
+        loadingAgents.value = false;
+        topAgentsData.value = [];
+        return;
+      }
       try {
         loadingAgents.value = true;
         const data = await getTopAgentsData(year, sortBy, sortOrder);
@@ -1014,6 +1040,8 @@ export default defineComponent({
 
     // Funzione per gestire il click su una colonna per ordinare
     const handleSortAgencies = (column: string) => {
+      if (props.hideTopAgencies) return; // Non gestire ordinamento se Top Agenzie è nascosto
+      
       if (sortByAgencies.value === column) {
         // Se clicchi sulla stessa colonna, inverte l'ordine
         sortOrderAgencies.value = sortOrderAgencies.value === 'desc' ? 'asc' : 'desc';
@@ -1028,6 +1056,11 @@ export default defineComponent({
 
     // Funzione per caricare i dati delle Top Agenzie dall'API
     const loadTopAgenciesData = async (year?: number, sortBy?: string, sortOrder?: string) => {
+      if (!props.canLoadData) {
+        loadingAgencies.value = false;
+        topAgenciesData.value = [];
+        return;
+      }
       try {
         loadingAgencies.value = true;
         const data = await getTopAgenciesData(year, sortBy, sortOrder);
@@ -1133,6 +1166,14 @@ export default defineComponent({
 
     // Funzione per caricare i dati delle Top Zone dall'API
     const loadTopZonesData = async () => {
+      if (!props.canLoadData) {
+        loadingZones.value = false;
+        topZonesData.value = {
+          propertiesZones: [],
+          requestsZones: []
+        };
+        return;
+      }
       try {
         loadingZones.value = true;
         const data = await getTopZonesData();
@@ -1177,6 +1218,14 @@ export default defineComponent({
 
     // Funzione per caricare i dati delle Top Tipologie dall'API
     const loadTopTypologiesData = async () => {
+      if (!props.canLoadData) {
+        loadingTypologies.value = false;
+        topTypologiesData.value = {
+          categoriesPortfolio: [],
+          categoriesRequests: []
+        };
+        return;
+      }
       try {
         loadingTypologies.value = true;
         const data = await getTopTypologiesData();
@@ -1197,6 +1246,16 @@ export default defineComponent({
 
     // Funzione per caricare i dati Top Guadagni (portafoglio + vendite anno)
     const loadTopEarningsData = async (year?: number) => {
+      if (!props.canLoadData) {
+        loadingEarnings.value = false;
+        topEarningsData.value = {
+          portfolio: [],
+          salesYear: [],
+          totalPortfolioCommission: 0,
+          totalSalesYearCommission: 0,
+        };
+        return;
+      }
       try {
         loadingEarnings.value = true;
         const data = await getTopEarningsData(year);
@@ -1282,6 +1341,12 @@ export default defineComponent({
 
     // Funzione per caricare i dati delle scadenze incarichi dall'API
     const loadExpiringAssignments = async (daysThreshold?: number) => {
+      if (!props.canLoadData) {
+        loadingExpiringAssignments.value = false;
+        expiringAssignmentsData.value = [];
+        expiredAssignmentsData.value = [];
+        return;
+      }
       try {
         loadingExpiringAssignments.value = true;
         const data = await getExpiringAssignments(daysThreshold);
@@ -1326,7 +1391,19 @@ export default defineComponent({
 
     // Carica i dati iniziali
     onMounted(() => {
-      loadTopAgenciesData(selectedYearAgencies.value, sortByAgencies.value, sortOrderAgencies.value);
+      if (!props.canLoadData) {
+        // Non caricare dati, ma evita spinner infiniti
+        loadingAgencies.value = false;
+        loadingAgents.value = false;
+        loadingZones.value = false;
+        loadingTypologies.value = false;
+        loadingEarnings.value = false;
+        loadingExpiringAssignments.value = false;
+        return;
+      }
+      if (!props.hideTopAgencies) {
+        loadTopAgenciesData(selectedYearAgencies.value, sortByAgencies.value, sortOrderAgencies.value);
+      }
       loadTopAgentsData(selectedYearAgents.value, sortByAgents.value, sortOrderAgents.value);
       loadTopZonesData();
       loadTopTypologiesData();
@@ -1336,17 +1413,23 @@ export default defineComponent({
 
     // Watch per ricaricare quando cambia l'anno
     watch(selectedYearAgencies, (newYear) => {
-      loadTopAgenciesData(newYear, sortByAgencies.value, sortOrderAgencies.value);
+      if (!props.hideTopAgencies && props.canLoadData) {
+        loadTopAgenciesData(newYear, sortByAgencies.value, sortOrderAgencies.value);
+      }
     });
 
     // Watch per ricaricare quando cambia l'anno per Top Agenti
     watch(selectedYearAgents, (newYear) => {
-      loadTopAgentsData(newYear, sortByAgents.value, sortOrderAgents.value);
+      if (props.canLoadData) {
+        loadTopAgentsData(newYear, sortByAgents.value, sortOrderAgents.value);
+      }
     });
 
     // Watch per ricaricare vendite anno per Guadagni
     watch(selectedYearSales, (newYear) => {
-      loadTopEarningsData(newYear);
+      if (props.canLoadData) {
+        loadTopEarningsData(newYear);
+      }
     });
 
     return {

@@ -6,7 +6,7 @@
       <!--begin::Unified Controls Row-->
       <div class="row align-items-center widget-13-unified-row my-0 g-4 justify-content-between">
         <!--begin::Filters Group-->
-        <div class="col-12 col-md-6 d-flex flex-nowrap align-items-stretch gap-4 widget-13-filters-group">
+        <div v-if="!isAgent" class="col-12 col-md-6 d-flex flex-nowrap align-items-stretch gap-4 widget-13-filters-group">
           <!--begin::Year Filter-->
           <div class="widget-13-filter-badge">
             <div class="d-flex flex-column align-items-center mb-2">
@@ -64,7 +64,7 @@
         <!--end::Filters Group-->
         
         <!--begin::Group Name and Totals-->
-        <div class="col-12 col-md-6 d-flex align-items-center justify-content-end gap-4 widget-13-group-info">
+        <div :class="['col-12', isAgent ? 'col-md-12' : 'col-md-6', 'd-flex align-items-center', isAgent ? 'justify-content-center' : 'justify-content-end', 'gap-4 widget-13-group-info']">
           <div class="d-flex align-items-center gap-3 widget-13-group-badge">
             <div class="widget-13-group-icon">
               <i class="fas fa-users text-primary"></i>
@@ -266,16 +266,17 @@ export default defineComponent({
       const mainCoords = getMainAgencyCoords();
 
       // Create map centered on main agency (initial view, will be adjusted by addAgencyMarkers)
+      // Disabilitare tutte le interazioni per tutti gli utenti
       map = L.map(mapContainer.value, {
         center: mainCoords,
         zoom: 9.56, // Initial zoom, will be adjusted based on visible agencies
-        zoomControl: true,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        dragging: true,
-        touchZoom: false,
-        boxZoom: true,
-        keyboard: false
+        zoomControl: false, // Disabilitato per tutti
+        scrollWheelZoom: false, // Disabilitato per tutti
+        doubleClickZoom: false, // Disabilitato per tutti
+        dragging: false, // Disabilitato per tutti
+        touchZoom: false, // Disabilitato per tutti
+        boxZoom: false, // Disabilitato per tutti
+        keyboard: false // Disabilitato per tutti
       });
 
       // Add colorful and vibrant map tiles (CartoDB Voyager)
@@ -606,7 +607,7 @@ export default defineComponent({
           maxWidth: 280
         });
         
-        // Show popup on hover
+        // Show popup on hover (solo visualizzazione, nessuna interazione)
         marker.on('mouseover', () => {
           marker.openPopup();
         });
@@ -615,11 +616,11 @@ export default defineComponent({
           marker.closePopup();
         });
         
-        // Click event to select agency (and keep popup open)
-        marker.on('click', () => {
-          marker.openPopup();
-          selectAgency(agency);
-        });
+        // Disabilitare click sui marker (nessuna interazione)
+        // marker.on('click', () => {
+        //   marker.openPopup();
+        //   selectAgency(agency);
+        // });
 
         markers.push(marker);
       }
@@ -686,7 +687,8 @@ export default defineComponent({
       onAgencyChange,
       agenciesList: computed(() => props.agenciesList),
       agentsList: computed(() => props.agentsList),
-      isAdmin: computed(() => props.isAdmin)
+      isAdmin: computed(() => props.isAdmin),
+      isAgent: computed(() => props.isAgent)
     };
   }
 });

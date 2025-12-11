@@ -29,39 +29,142 @@
   <!--end::Agencies Map-->
 
     <!--begin::Andamento Immobili-->
-    <div v-if="!loading && canViewChart3" class="row gy-5 g-xl-10 mb-8">
-            <div class="col-xl-12">
-        <Chart3 widget-classes="card-xl-stretch" :chart-height="200" title="Immobili"
-        subTitle="Andamento immobili inseriti e venduti" :chartData="chartData" :soldChartData="soldChartData" 
-        :totalCommissionsPortfolio="totalCommissionsPortfolio" :totalCommissionsEarned="totalCommissionsEarned"
-        :commissionsMonthlyData="commissionsMonthlyData" chartType="bar"/>
+    <div v-if="!loading && (isAdmin || isAgency)" class="row gy-5 g-xl-10 mb-8">
+      <div class="col-xl-12">
+        <div class="card card-xl-stretch position-relative">
+          <Chart3 
+            widget-classes="card-xl-stretch" 
+            :chart-height="200" 
+            title="Immobili"
+            subTitle="Andamento immobili inseriti e venduti" 
+            :chartData="chartData" 
+            :soldChartData="soldChartData" 
+            :totalCommissionsPortfolio="totalCommissionsPortfolio" 
+            :totalCommissionsEarned="totalCommissionsEarned"
+            :commissionsMonthlyData="commissionsMonthlyData" 
+            chartType="bar"
+            :class="{ 'opacity-75': !canViewChart3 }"
+          />
+          <div
+            v-if="!canViewChart3"
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-body bg-opacity-75"
+            style="z-index: 10;"
+          >
+            <div class="locked-overlay-card text-center">
+              <div class="locked-overlay-icon bg-primary bg-opacity-10 text-primary">
+                <i class="ki-duotone ki-crown fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+              </div>
+              <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
+              <p class="text-muted mb-4">
+                Contenuto disponibile con piano Premium.
+              </p>
+              <router-link to="/dashboard/subscription/manage" class="btn btn-primary">
+                <i class="ki-duotone ki-rocket fs-5 me-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Aggiorna ora
+              </router-link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!--end::Andamento Immobili-->
 
       <!--begin::Analytics Overview-->
-  <div v-if="!loading && !isAgent" class="row mb-8">
+  <div v-if="!loading && (isAdmin || isAgency)" class="row mb-8">
     <div class="col-xl-12">
-      <Chart11 
-        :year="selectedYearFilter"
-        :agency-id="selectedAgencyFilter"
-      />
+      <div class="card position-relative">
+        <Chart11 
+          :year="selectedYearFilter"
+          :agency-id="selectedAgencyFilter"
+          :can-load-data="canViewChart11"
+        />
+        <div
+          v-if="!canViewChart11"
+          class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-body bg-opacity-75"
+          style="z-index: 10;"
+        >
+          <div class="locked-overlay-card text-center">
+            <div class="locked-overlay-icon bg-primary bg-opacity-10 text-primary">
+              <i class="ki-duotone ki-crown fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </div>
+            <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
+            <p class="text-muted mb-4">
+              Contenuto disponibile con piano Premium.
+            </p>
+            <router-link to="/dashboard/subscription/manage" class="btn btn-primary">
+              <i class="ki-duotone ki-rocket fs-5 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Aggiorna ora
+            </router-link>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!--end::Analytics Overview-->
 
   <!--begin::Widget1-->
-  <div v-if="!loading && isAdmin && !isAgency" class="row mb-8">
+  <div v-if="!loading && (isAdmin || isAgency)" class="row mb-8">
     <div class="col-xl-12">
-      <Widget7 
-        :agents-data="agentsRawData"
-        :agencies-data="agenciesList"
-        :properties-data="allPropertiesData"
-        :commissions-data="[]"
-        :all-sold-properties="allSoldPropertiesData"
-        :all-properties="allPropertiesData"
-        :calendar-events="[]"
-      />
+      <div class="card position-relative">
+        <Widget7 
+          :agents-data="agentsRawData"
+          :agencies-data="agenciesList"
+          :properties-data="allPropertiesData"
+          :commissions-data="[]"
+          :all-sold-properties="allSoldPropertiesData"
+          :all-properties="allPropertiesData"
+          :calendar-events="[]"
+          :hide-top-agencies="isAgency"
+          :can-load-data="canViewWidget7"
+          :class="{ 'opacity-75': !canViewWidget7 }"
+        />
+        <div
+          v-if="!canViewWidget7"
+          class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-body bg-opacity-75"
+          style="z-index: 10;"
+        >
+          <div class="locked-overlay-card text-center">
+            <div class="locked-overlay-icon bg-primary bg-opacity-10 text-primary">
+              <i class="ki-duotone ki-crown fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </div>
+            <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
+            <p class="text-muted mb-4">
+              Contenuto disponibile con piano Premium.
+            </p>
+            <router-link to="/dashboard/subscription/manage" class="btn btn-primary">
+              <i class="ki-duotone ki-rocket fs-5 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Aggiorna ora
+            </router-link>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!--end::Widget1-->
@@ -153,7 +256,6 @@ import ApiService from "@/core/services/ApiService";
 import { useAuthStore, type User } from "@/stores/auth";
 import { isAgent as helperIsAgent } from "@/core/helpers/auth";
 import { getCurrentSubscription } from "@/core/data/subscription";
-import PremiumLock from "@/components/PremiumLock.vue";
 
 export default defineComponent({
   name: "main-dashboard",
@@ -163,8 +265,7 @@ export default defineComponent({
     Chart10,
     Chart11,
     Chart13,
-    SubscriptionExpiryBanner,
-    PremiumLock
+    SubscriptionExpiryBanner
   },
   setup() {
         const store = useAuthStore();
@@ -197,19 +298,37 @@ export default defineComponent({
           return planName === 'pro' && status === 'active';
         });
         
+        // Verifica se l'utente ha piano basic
+        const isBasic = computed(() => {
+          if (!subscription.value) return false;
+          const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
+          const status = subscription.value.Status?.toLowerCase() || '';
+          return planName === 'basic' && status === 'active';
+        });
+        
         // Verifica se l'utente ha piano pro o premium (piani che permettono di vedere Chart3)
         const hasProOrPremium = computed(() => {
           return isPro.value || isPremium.value;
         });
         
-        // Verifica se l'utente può vedere la mappa (sempre Admin o Agency, senza vincoli di piano)
+        // Verifica se l'utente può vedere la mappa (tutti i ruoli, tutti i piani)
         const canViewMap = computed(() => {
-          return isAdmin.value || isAgency.value;
+          return true; // Tutti possono vedere la mappa
         });
         
-        // Verifica se l'utente può vedere Chart3 (solo Admin o Agency con piano pro o premium)
+        // Verifica se l'utente può vedere Chart3 (Admin e Agency con piano Pro o Premium)
         const canViewChart3 = computed(() => {
-          return isAdmin.value || (isAgency.value && hasProOrPremium.value);
+          return (isAdmin.value || isAgency.value) && hasProOrPremium.value;
+        });
+        
+        // Verifica se l'utente può vedere Chart11 (Admin e Agency solo con Premium)
+        const canViewChart11 = computed(() => {
+          return (isAdmin.value || isAgency.value) && isPremium.value;
+        });
+        
+        // Verifica se l'utente può vedere Widget7 (Admin e Agency solo con Premium)
+        const canViewWidget7 = computed(() => {
+          return (isAdmin.value || isAgency.value) && isPremium.value;
         });
         
         // Carica la subscription per verificare il piano premium
@@ -508,13 +627,8 @@ export default defineComponent({
       try {
         await ensureAdminProfileLoaded();
         
-        // Per gli Agent, carica solo i dati essenziali della dashboard
-        if (isAgent.value) {
-          loading.value = false;
-          return;
-        }
-        
         // 🚀 NUOVA API PER WIDGET13 (MAPPA) - Chiamata dedicata con cache
+        // Tutti (Admin, Agency, Agent) vedono la mappa con gli stessi dati
         if (canViewMap.value) {
           try {
             const mapData = await getMapData(undefined, currentYear);
@@ -741,8 +855,11 @@ export default defineComponent({
       adminProfile,
       isPremium,
       isPro,
+      isBasic,
       canViewMap,
       canViewChart3,
+      canViewChart11,
+      canViewWidget7,
       isLoadingSubscription,
       propertiesMonthlyData,
       totalCommissions,
@@ -809,30 +926,41 @@ export default defineComponent({
   box-shadow: 0 6px 20px rgba(0, 119, 204, 0.4);
 }
 
+.locked-overlay-card {
+  max-width: 360px;
+  width: 100%;
+  padding: 1.75rem;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 119, 204, 0.12);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.8));
+}
+
+.locked-overlay-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(0, 119, 204, 0.1);
+}
+
+[data-bs-theme="dark"] .locked-overlay-card {
+  background: linear-gradient(145deg, rgba(26, 26, 26, 0.94), rgba(26, 26, 26, 0.82));
+  border-color: rgba(0, 119, 204, 0.2);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+[data-bs-theme="dark"] .locked-overlay-icon {
+  box-shadow: inset 0 0 0 1px rgba(102, 179, 255, 0.25);
+}
+
 /* Separator */
 .separator.separator-dashed {
   border-top-width: 2px;
   opacity: 0.5;
-}
-
-/* Premium Lock Overlay */
-.premium-lock-overlay {
-  background-color: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(0.3px);
-  z-index: 10;
-  border-radius: 16px;
-}
-
-[data-bs-theme="dark"] .premium-lock-overlay {
-  background-color: rgba(26, 26, 26, 0.08);
-}
-
-/* Premium Content Blurred */
-.premium-content-blurred {
-  filter: blur(1px);
-  opacity: 0.85;
-  pointer-events: none;
-  user-select: none;
 }
 
 /* Light Mode */
