@@ -277,6 +277,10 @@ export default defineComponent({
     userId: {
       type: String,
       default: ''
+    },
+    autoSelectCurrentPlan: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['close', 'success', 'cancel'],
@@ -358,6 +362,19 @@ export default defineComponent({
     onMounted(async () => {
       await Promise.all([loadPlans(), loadCurrentSubscription()]);
     });
+
+    // Watch per selezionare automaticamente il piano quando i piani sono caricati
+    // e la modale è aperta con autoSelectCurrentPlan
+    watch([() => plans.value.length, () => props.isOpen, () => props.autoSelectCurrentPlan], 
+      async ([plansLength, isOpen, autoSelect]) => {
+        if (isOpen && autoSelect && plansLength > 0 && props.currentPlan && !selectedPlan.value) {
+          // Aspetta un momento per assicurarsi che tutto sia pronto
+          await new Promise(resolve => setTimeout(resolve, 100));
+          await selectPlan(props.currentPlan);
+        }
+      },
+      { immediate: false }
+    );
 
     const selectPlan = async (plan: string) => {
       // Trova il piano selezionato dall'array
@@ -713,8 +730,15 @@ export default defineComponent({
     // Watch for modal open to reload subscription
     watch(() => props.isOpen, async (newVal) => {
       if (newVal) {
-        // Ricarica l'abbonamento corrente quando si apre la modale
-        await loadCurrentSubscription();
+        // Ricarica i piani e l'abbonamento corrente quando si apre la modale
+        await Promise.all([loadPlans(), loadCurrentSubscription()]);
+        
+        // Se deve selezionare automaticamente il piano e i piani sono già disponibili
+        if (props.autoSelectCurrentPlan && props.currentPlan && plans.value.length > 0) {
+          // Aspetta un momento per assicurarsi che tutto sia pronto
+          await new Promise(resolve => setTimeout(resolve, 200));
+          await selectPlan(props.currentPlan);
+        }
       } else {
         selectedPlan.value = null;
         upgradeCreditCalculation.value = null;

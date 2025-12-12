@@ -293,6 +293,7 @@
       :mode="pricingMode"
       :currentPlan="currentPlanName"
       :userId="user.Id"
+      :autoSelectCurrentPlan="shouldAutoSelectPlanForRenewal"
       @close="closePricingModal"
       @success="handleUpgradeSuccess"
     />
@@ -324,9 +325,40 @@ export default defineComponent({
     const subscription = ref<UserSubscription | null>(null);
     const showPricingModal = ref(false);
     const pricingMode = ref<'new' | 'upgrade'>('upgrade');
+    const shouldAutoSelectPlanForRenewal = ref(false);
 
     const currentPlanName = computed(() => {
       return subscription.value?.SubscriptionPlan?.Name?.toLowerCase() || '';
+    });
+
+    // Determina se selezionare automaticamente il piano corrente
+    // Solo se l'abbonamento è attivo (non scaduto)
+    const shouldAutoSelectPlan = computed(() => {
+      if (!subscription.value || !subscription.value.SubscriptionPlan) {
+        return false; // Nessun abbonamento, mostra tutti i piani
+      }
+      
+      // Verifica se l'abbonamento è scaduto
+      const status = subscription.value.Status?.toLowerCase();
+      if (status === 'expired' || status === 'cancelled') {
+        return false; // Scaduto o cancellato, mostra tutti i piani
+      }
+      
+      // Verifica se la data di scadenza è passata
+      if (subscription.value.EndDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const endDate = new Date(subscription.value.EndDate);
+        endDate.setHours(0, 0, 0, 0);
+        
+        if (endDate < today) {
+          return false; // Scaduto, mostra tutti i piani
+        }
+      }
+      
+      // Abbonamento attivo, seleziona automaticamente il piano corrente
+      return true;
     });
 
     const statusBadgeClass = computed(() => {
@@ -461,6 +493,9 @@ export default defineComponent({
     };
 
     const openPricingModal = () => {
+      // Per l'upgrade, mostra sempre tutti i piani (non selezionare automaticamente)
+      shouldAutoSelectPlanForRenewal.value = false;
+      pricingMode.value = 'upgrade';
       showPricingModal.value = true;
     };
 
@@ -469,8 +504,9 @@ export default defineComponent({
     };
 
     const renewSubscription = () => {
-      // Apre la modale in modalità rinnovo
-      // La modale mostrerà il piano attuale per il rinnovo
+      // Per il rinnovo, se l'abbonamento è attivo, seleziona automaticamente il piano corrente
+      // Se è scaduto, mostra tutti i piani (comportamento normale)
+      shouldAutoSelectPlanForRenewal.value = shouldAutoSelectPlan.value;
       pricingMode.value = 'upgrade';
       showPricingModal.value = true;
     };
@@ -555,6 +591,8 @@ export default defineComponent({
       showPricingModal,
       pricingMode,
       currentPlanName,
+      shouldAutoSelectPlan,
+      shouldAutoSelectPlanForRenewal,
       statusBadgeClass,
       statusText,
       planFeatures,
