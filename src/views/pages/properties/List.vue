@@ -301,7 +301,14 @@
           <span class="clickable-row" @click="goToPropertyDetails(item.Id)" style="cursor: pointer; color: #3699ff; font-weight: 600;">{{ item.Id }}</span>
         </template>
         <template v-slot:AssignmentStatus="{ row: item }">
-          <span v-if="isAssignmentExpired(item)" class="badge badge-light-danger">
+          <span v-if="item.Sold === true" class="badge badge-light-success">
+            <i class="ki-duotone ki-check fs-6 me-1">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Venduto
+          </span>
+          <span v-else-if="isAssignmentExpired(item)" class="badge badge-light-danger">
             <i class="ki-duotone ki-cross-circle fs-6 me-1">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -324,7 +331,16 @@
           </span>
         </template>
         <template v-slot:AssignmentEnd="{ row: item }">
-          <span v-if="item.AssignmentEnd && item.AssignmentEnd !== '0001-01-01T00:00:00'">
+          <span v-if="item.Sold === true">
+            <template v-if="item.UpdateDate">
+              {{ new Date(item.UpdateDate).toLocaleDateString('it-IT') }}
+            </template>
+            <template v-else-if="item.AssignmentEnd && item.AssignmentEnd !== '0001-01-01T00:00:00'">
+              {{ item.AssignmentEnd.substring(0, 10).split('-').reverse().join('-') }}
+            </template>
+            <template v-else class="text-muted">-</template>
+          </span>
+          <span v-else-if="item.AssignmentEnd && item.AssignmentEnd !== '0001-01-01T00:00:00'">
             {{ item.AssignmentEnd.substring(0, 10).split('-').reverse().join('-') }}
           </span>
           <span v-else class="text-muted">Senza scadenza</span>
@@ -449,7 +465,7 @@ export default defineComponent({
         columnName: "Codice",
         columnLabel: "Id",
         sortEnabled: true,
-        columnWidth: 80,
+        columnWidth: 70,
         textAlign: "center",
       },
       {
@@ -460,7 +476,7 @@ export default defineComponent({
         textAlign: "center",
       },
       {
-        columnName: "Scad. incarico",
+        columnName: "Scad. incarico/Vendita",
         columnLabel: "AssignmentEnd",
         sortEnabled: true,
         columnWidth: 120,
@@ -470,7 +486,7 @@ export default defineComponent({
         columnName: "Mq",
         columnLabel: "CommercialSurfaceate",
         sortEnabled: true,
-        columnWidth: 80,
+        columnWidth: 60,
         textAlign: "center",
       },
       {

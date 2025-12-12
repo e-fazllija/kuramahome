@@ -62,9 +62,10 @@
               </div>
               <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
               <p class="text-muted mb-4">
-                Contenuto disponibile con piano Premium.
+                <span v-if="isAdmin">Contenuto disponibile con piano Premium.</span>
+                <span v-else>La possibilità di aggiornare o fare l'upgrade è disponibile solo per l'amministratore.</span>
               </p>
-              <router-link to="/dashboard/subscription/manage" class="btn btn-primary">
+              <router-link v-if="isAdmin" to="/dashboard/subscription/manage" class="btn btn-primary">
                 <i class="ki-duotone ki-rocket fs-5 me-2">
                   <span class="path1"></span>
                   <span class="path2"></span>
@@ -104,9 +105,10 @@
             </div>
             <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
             <p class="text-muted mb-4">
-              Contenuto disponibile con piano Premium.
+              <span v-if="isAdmin">Contenuto disponibile con piano Premium.</span>
+              <span v-else>La possibilità di aggiornare o fare l'upgrade è disponibile solo per l'amministratore.</span>
             </p>
-            <router-link to="/dashboard/subscription/manage" class="btn btn-primary">
+            <router-link v-if="isAdmin" to="/dashboard/subscription/manage" class="btn btn-primary">
               <i class="ki-duotone ki-rocket fs-5 me-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -153,9 +155,10 @@
             </div>
             <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
             <p class="text-muted mb-4">
-              Contenuto disponibile con piano Premium.
+              <span v-if="isAdmin">Contenuto disponibile con piano Premium.</span>
+              <span v-else>La possibilità di aggiornare o fare l'upgrade è disponibile solo per l'amministratore.</span>
             </p>
-            <router-link to="/dashboard/subscription/manage" class="btn btn-primary">
+            <router-link v-if="isAdmin" to="/dashboard/subscription/manage" class="btn btn-primary">
               <i class="ki-duotone ki-rocket fs-5 me-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
