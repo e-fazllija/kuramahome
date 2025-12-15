@@ -1020,8 +1020,9 @@
           <!--end::Label-->
           <!--begin::Input-->
           <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment">
-            <option value="Verbale">📝 Verbale</option>
             <option value="Esclusivo">⭐ Esclusivo</option>
+            <option value="Non Esclusivo">📄 Non Esclusivo</option>
+            <option value="Verbale">📝 Verbale</option>
             <option value="Semi-Verbale">📋 Semi-Verbale</option>
             <option value="Immobile MLS">🌐 Immobile MLS</option>
           </select>
@@ -1273,7 +1274,7 @@ export default defineComponent({
       AgreedCommission: 0,
       FlatRateCommission: 0,
       CommissionReversal: 0,
-      TypeOfAssignment: "",
+      TypeOfAssignment: "Esclusivo",
     });
     const inserModel = ref<InsertModel>({
       Customers: [],

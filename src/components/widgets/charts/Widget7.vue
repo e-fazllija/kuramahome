@@ -19,8 +19,8 @@
             selectedView === option.id ? 'active' : ''
           ]"
         >
-          <i v-if="option.icon" :class="option.icon + ' fs-7 me-1'"></i>
-          {{ option.label }}
+          <i v-if="option.icon" :class="option.icon + ' fs-7 me-0'"></i>
+          <span class="ms-1">{{ option.label }}</span>
         </a>
       </div>
       <!--end::Toolbar-->
