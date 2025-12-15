@@ -5,46 +5,135 @@
     <div class="card-header border-0 pt-5">
       <h3 class="card-title align-items-start flex-column">
         <span class="card-label fw-bold fs-3 mb-1">{{ title }}</span>
-
-        <span class="text-muted fw-semobold fs-7"
-          >{{ subTitle }}</span
-        >
+        <span class="text-muted fw-semobold fs-7">{{ subTitle }}</span>
       </h3>
 
-      <!--begin::Toolbar-->
-      <div class="card-toolbar" data-kt-buttons="true">
-        <span
-          class="btn btn-sm px-4 me-1"
-          :style="getButtonStyle('sale')"
-          >Vendita</span
-        >
-
-        <span
-          class="btn btn-sm px-4 me-1"
-          :style="getButtonStyle('rent')"
-          >Affitto</span
-        >
-
-        <span
-          class="btn btn-sm px-4"
-          :style="getButtonStyle('auction')"
-          >Aste</span
-        >
-      </div>
-      <!--end::Toolbar-->
     </div>
     <!--end::Header-->
 
     <!--begin::Body-->
     <div class="card-body">
-      <!--begin::Chart-->
-      <apexchart
-        ref="chartRef"
-        :type="chartType"
-        :options="chart"
-        :series="series"
-      ></apexchart>
-      <!--end::Chart-->
+      <div class="row g-4 align-items-stretch">
+        <!--begin::Totali Immobili-->
+        <div class="col-12 col-md-3">
+          <div class="d-flex flex-column gap-2 h-100">
+            <!--begin::Vendita-->
+            <div class="card border border-primary border-2">
+              <div class="card-body p-3">
+                <div class="d-flex flex-column align-items-center mb-3">
+                  <span class="text-muted fs-8">Vendita</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="d-flex flex-column align-items-start">
+                    <span class="text-muted fs-9 mb-1">Tot Inseriti</span>
+                    <span class="fw-bold fs-3 text-primary">{{ totalSaleInserted }}</span>
+                  </div>
+                  <div class="d-flex flex-column align-items-end">
+                    <span class="text-muted fs-9 mb-1">Tot Venduti</span>
+                    <span class="fw-bold fs-3 text-primary">{{ totalSaleSold }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Vendita-->
+
+            <!--begin::Affitto-->
+            <div class="card border border-success border-2">
+              <div class="card-body p-3">
+                <div class="d-flex flex-column align-items-center mb-3">
+                  <span class="text-muted fs-8">Affitto</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="d-flex flex-column align-items-start">
+                    <span class="text-muted fs-9 mb-1">Tot Inseriti</span>
+                    <span class="fw-bold fs-3 text-success">{{ totalRentInserted }}</span>
+                  </div>
+                  <div class="d-flex flex-column align-items-end">
+                    <span class="text-muted fs-9 mb-1">Tot Venduti</span>
+                    <span class="fw-bold fs-3 text-success">{{ totalRentSold }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Affitto-->
+
+            <!--begin::Aste-->
+            <div class="card border border-warning border-2">
+              <div class="card-body p-3">
+                <div class="d-flex flex-column align-items-center mb-3">
+                  <span class="text-muted fs-8">Aste</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="d-flex flex-column align-items-start">
+                    <span class="text-muted fs-9 mb-1">Tot Inseriti</span>
+                    <span class="fw-bold fs-3 text-warning">{{ totalAuctionInserted }}</span>
+                  </div>
+                  <div class="d-flex flex-column align-items-end">
+                    <span class="text-muted fs-9 mb-1">Tot Venduti</span>
+                    <span class="fw-bold fs-3 text-warning">{{ totalAuctionSold }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Aste-->
+
+            <!--begin::Provvigioni-->
+            <div class="card border border-info border-2">
+              <div class="card-body p-3">
+                <div class="d-flex flex-column align-items-center mb-3">
+                  <span class="text-muted fs-8">Portafoglio</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="d-flex flex-column align-items-start">
+                    <span class="text-muted fs-9 mb-1">Tot Portafoglio</span>
+                    <span class="fw-bold fs-3 text-info">€ {{ formatNumber(totalCommissionsPortfolio) }}</span>
+                  </div>
+                  <div class="d-flex flex-column align-items-end">
+                    <span class="text-muted fs-9 mb-1">Incassati</span>
+                    <span class="fw-bold fs-3 text-info">€ {{ formatNumber(totalCommissionsEarned) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Provvigioni-->
+          </div>
+        </div>
+        <!--end::Totali Immobili-->
+
+        <!--begin::Grafici Sincronizzati-->
+        <div class="col-12 col-md-9">
+          <div class="d-flex flex-column gap-4 h-100">
+            <!--begin::Grafico Immobili (3 linee)-->
+            <div class="card">
+              <div class="card-body p-4">
+                <h4 class="card-title fw-bold fs-5 mb-4">Andamento Immobili</h4>
+                <apexchart
+                  type="line"
+                  height="200"
+                  :options="chartOptionsProperties"
+                  :series="seriesProperties"
+                ></apexchart>
+              </div>
+            </div>
+            <!--end::Grafico Immobili-->
+
+            <!--begin::Grafico Provvigioni-->
+            <div class="card">
+              <div class="card-body p-4">
+                <h4 class="card-title fw-bold fs-5 mb-4">Andamento Provvigioni</h4>
+                <apexchart
+                  type="area"
+                  height="200"
+                  :options="chartOptionsCommissions"
+                  :series="seriesCommissions"
+                ></apexchart>
+              </div>
+            </div>
+            <!--end::Grafico Provvigioni-->
+          </div>
+        </div>
+        <!--end::Grafici Sincronizzati-->
+      </div>
     </div>
     <!--end::Body-->
   </div>
@@ -52,29 +141,54 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useThemeStore } from "@/stores/theme";
-import type { ApexOptions } from "apexcharts";
 import { getCSSVariableValue } from "@/assets/ts/_utils";
-import type VueApexCharts from "vue3-apexcharts";
+import type { ApexOptions } from "apexcharts";
 
 export default defineComponent({
   name: "widget-3",
   props: {
     widgetClasses: String,
     chartData: Object,
+    soldChartData: Object,
     title: String,
     subTitle: String,
-    chartType: {
-      type: String,
-      default: 'bar' // 'bar' o 'line'
+    totalCommissionsPortfolio: {
+      type: Number,
+      default: 0
+    },
+    totalCommissionsEarned: {
+      type: Number,
+      default: 0
+    },
+    commissionsMonthlyData: {
+      type: Object,
+      default: () => ({})
     },
   },
   components: {},
   setup(props) {
-    const chartRef = ref<typeof VueApexCharts | null>(null);
-    let chart: ApexOptions = {};
     const store = useThemeStore();
+
+    const formatNumber = (value: number): string => {
+      if (!value && value !== 0) return '0';
+      return new Intl.NumberFormat('it-IT', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(value);
+    };
+
+    // Formatter per provvigioni con 2 decimali
+    const formatCommission = (value: number): string => {
+      if (!value && value !== 0) return '0,00';
+      return new Intl.NumberFormat('it-IT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(value);
+    };
+
+
     const categoryToColors = {
       sale: {
         base: getCSSVariableValue("--bs-primary"),
@@ -92,6 +206,17 @@ export default defineComponent({
 
     const getCategoryBaseColor = (cat: 'sale' | 'rent' | 'auction') => categoryToColors[cat].base;
     const getCategoryLightColor = (cat: 'sale' | 'rent' | 'auction') => categoryToColors[cat].light;
+    
+    // Funzione per ottenere colori delle linee visibili in entrambe le modalità
+    const getLineColor = (cat: 'sale' | 'rent', isDark: boolean) => {
+      if (isDark) {
+        // Colori più luminosi per dark mode
+        return cat === 'sale' ? '#4A9EFF' : '#52C9A3'; // Blu e verde più luminosi
+      } else {
+        // Usa i colori standard per light mode
+        return getCategoryBaseColor(cat);
+      }
+    };
 
     const getButtonStyle = (cat: 'sale' | 'rent' | 'auction') => {
       const isDark = themeMode.value === 'dark';
@@ -105,298 +230,439 @@ export default defineComponent({
 
     const getKeysAndValues = () => {
       const chartData = props.chartData as any ?? {};
-      const months = chartData.months ?? [];
+      const soldChartData = props.soldChartData as any ?? {};
+      const months = chartData.months ?? soldChartData.months ?? [];
       const data = chartData.data ?? {};
+      const soldData = soldChartData.data ?? {};
+      
+      // Crea categorie duplicate per ogni mese per avere due colonne affiancate
+      const categories: string[] = [];
+      months.forEach((month: string) => {
+        categories.push(`${month} I`); // I = Inseriti (sinistra)
+        categories.push(`${month} V`); // V = Venduti (destra)
+      });
+      
+      // Calcola i totali separati per inseriti e venduti
+      let totalSaleInserted = 0;
+      let totalSaleSold = 0;
+      let totalRentInserted = 0;
+      let totalRentSold = 0;
+      let totalAuctionInserted = 0;
+      let totalAuctionSold = 0;
+      
+      months.forEach((month: string) => {
+        totalSaleInserted += data.sale?.[month] ?? 0;
+        totalRentInserted += data.rent?.[month] ?? 0;
+        totalAuctionInserted += data.auction?.[month] ?? 0;
+        totalSaleSold += soldData.sale?.[month] ?? 0;
+        totalRentSold += soldData.rent?.[month] ?? 0;
+        totalAuctionSold += soldData.auction?.[month] ?? 0;
+      });
+      
+      const totalSale = totalSaleInserted + totalSaleSold;
+      const totalRent = totalRentInserted + totalRentSold;
+      const totalAuction = totalAuctionInserted + totalAuctionSold;
       
       return {
-        computedKeys: months,
-        valuesSale: months.map(month => data.sale?.[month] ?? 0),
-        valuesRent: months.map(month => data.rent?.[month] ?? 0),
-        valuesAuction: months.map(month => data.auction?.[month] ?? 0)
+        computedKeys: categories,
+        months: months,
+        totalSale,
+        totalRent,
+        totalAuction,
+        totalSaleInserted,
+        totalSaleSold,
+        totalRentInserted,
+        totalRentSold,
+        totalAuctionInserted,
+        totalAuctionSold,
+        valuesSaleInserted: months.flatMap((month: string) => [
+          data.sale?.[month] ?? 0,
+          0
+        ]),
+        valuesRentInserted: months.flatMap((month: string) => [
+          data.rent?.[month] ?? 0,
+          0
+        ]),
+        valuesAuctionInserted: months.flatMap((month: string) => [
+          data.auction?.[month] ?? 0,
+          0
+        ]),
+        valuesSaleSold: months.flatMap((month: string) => [
+          0,
+          soldData.sale?.[month] ?? 0
+        ]),
+        valuesRentSold: months.flatMap((month: string) => [
+          0,
+          soldData.rent?.[month] ?? 0
+        ]),
+        valuesAuctionSold: months.flatMap((month: string) => [
+          0,
+          soldData.auction?.[month] ?? 0
+        ])
       };
     };
-
-    const initial = getKeysAndValues();
-    const series = ref([
-      {
-        name: "Vendita",
-        data: initial.valuesSale,
-      },
-      {
-        name: "Affitto",
-        data: initial.valuesRent,
-      },
-      {
-        name: "Aste",
-        data: initial.valuesAuction,
-      },
-    ]);
 
     const themeMode = computed(() => {
       return store.mode;
     });
 
-    onBeforeMount(() => {
-      Object.assign(chart, chartOptions());
-    });
+    // Prepara i dati per i mini grafici
+    const getChartSeriesData = () => {
+      const chartData = props.chartData as any ?? {};
+      const soldChartData = props.soldChartData as any ?? {};
+      const months = chartData.months ?? soldChartData.months ?? [];
+      const data = chartData.data ?? {};
+      const soldData = soldChartData.data ?? {};
 
-    const refreshChart = () => {
-      if (!chartRef.value) {
-        return;
-      }
+      // Calcola i totali per categoria (separati per inseriti e venduti)
+      const saleInserted = months.map((month: string) => data.sale?.[month] ?? 0);
+      const saleSold = months.map((month: string) => soldData.sale?.[month] ?? 0);
+      const rentInserted = months.map((month: string) => data.rent?.[month] ?? 0);
+      const rentSold = months.map((month: string) => soldData.rent?.[month] ?? 0);
+      const auctionInserted = months.map((month: string) => data.auction?.[month] ?? 0);
+      const auctionSold = months.map((month: string) => soldData.auction?.[month] ?? 0);
+      
+      // Calcola i totali aggregati (tutti gli inseriti e tutti i venduti)
+      const totalInserted = months.map((month: string, index: number) => 
+        saleInserted[index] + rentInserted[index] + auctionInserted[index]
+      );
+      const totalSold = months.map((month: string, index: number) => 
+        saleSold[index] + rentSold[index] + auctionSold[index]
+      );
 
-      const newOptions = chartOptions();
-      Object.assign(chart, newOptions);
+      // Per le provvigioni, calcola i totali mensili (non cumulativi) e la media
+      // Se ci sono dati mensili delle provvigioni incassate, usali
+      const commissionsMonthly = props.commissionsMonthlyData as Record<string, number> ?? {};
+      
+      // Calcola i totali mensili (somma per ogni mese, non cumulativa)
+      const commissionsMonthlyTotals = months.map((month: string) => {
+        // Prendi il valore mensile delle provvigioni incassate (se disponibile)
+        return commissionsMonthly[month] ?? 0;
+      });
 
-      // Usa updateOptions invece di refresh per evitare errori con resetSeries
-      chartRef.value.updateOptions(newOptions, true, true);
+      // Calcola la media annuale delle provvigioni
+      const totalYearly = commissionsMonthlyTotals.reduce((sum, val) => sum + val, 0);
+      const averageMonthly = months.length > 0 ? totalYearly / months.length : 0;
+      
+      // Crea array con la media per ogni mese (linea costante)
+      const commissionsAverage = months.map(() => averageMonthly);
+
+      return {
+        months,
+        saleInserted,
+        saleSold,
+        rentInserted,
+        rentSold,
+        auctionInserted,
+        auctionSold,
+        totalInserted,
+        totalSold,
+        commissionsMonthlyTotals,
+        commissionsAverage
+      };
     };
 
-    watch(themeMode, () => {
-      refreshChart();
+    const chartDataSeries = computed(() => getChartSeriesData());
+
+    // Serie per grafico Immobili (2 linee: Inseriti e Venduti)
+    const seriesProperties = computed(() => [
+      {
+        name: 'Inseriti',
+        data: chartDataSeries.value.totalInserted
+      },
+      {
+        name: 'Venduti',
+        data: chartDataSeries.value.totalSold
+      }
+    ]);
+
+    // Serie per grafico Provvigioni (solo barre)
+    const seriesCommissions = computed(() => [
+      {
+        name: 'Totale Mensile',
+        type: 'column',
+        data: chartDataSeries.value.commissionsMonthlyTotals
+      }
+    ]);
+
+    // Opzioni grafico Immobili (3 linee)
+    const chartOptionsProperties = computed((): ApexOptions => {
+      const isDark = themeMode.value === 'dark';
+      const months = chartDataSeries.value.months;
+      const labelColor = getCSSVariableValue("--bs-gray-500");
+      const borderColor = getCSSVariableValue("--bs-gray-200");
+      
+      return {
+        chart: {
+          id: 'chart-properties',
+          type: 'line',
+          height: 200,
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: true,
+            type: 'x'
+          }
+        },
+        stroke: {
+          curve: 'smooth',
+          width: isDark ? 4 : 3 // Linea più spessa in dark mode per migliore visibilità
+        },
+        colors: [
+          getLineColor('sale', isDark),
+          getLineColor('rent', isDark)
+        ],
+        xaxis: {
+          categories: months,
+          labels: {
+            style: {
+              colors: labelColor,
+              fontSize: "12px"
+            }
+          }
+        },
+        yaxis: {
+          labels: {
+            style: {
+              colors: labelColor,
+              fontSize: "12px"
+            },
+            formatter: (val: number) => Math.round(val).toString()
+          }
+        },
+        grid: {
+          borderColor: borderColor,
+          strokeDashArray: 4
+        },
+        legend: {
+          show: true,
+          position: "top",
+          horizontalAlign: "right"
+        },
+        tooltip: {
+          shared: true,
+          intersect: false,
+          followCursor: true,
+          custom: function({ series, seriesIndex, dataPointIndex, w }: any) {
+            const chartDataSeriesValue = chartDataSeries.value;
+            const month = chartDataSeriesValue.months[dataPointIndex];
+            const saleIns = chartDataSeriesValue.saleInserted[dataPointIndex];
+            const saleSold = chartDataSeriesValue.saleSold[dataPointIndex];
+            const rentIns = chartDataSeriesValue.rentInserted[dataPointIndex];
+            const rentSold = chartDataSeriesValue.rentSold[dataPointIndex];
+            const auctionIns = chartDataSeriesValue.auctionInserted[dataPointIndex];
+            const auctionSold = chartDataSeriesValue.auctionSold[dataPointIndex];
+            const totalIns = chartDataSeriesValue.totalInserted[dataPointIndex];
+            const totalSold = chartDataSeriesValue.totalSold[dataPointIndex];
+            
+            const saleColor = getCategoryBaseColor('sale');
+            const rentColor = getCategoryBaseColor('rent');
+            const auctionColor = getCategoryBaseColor('auction');
+            
+            // Colori per dark mode
+            const isDark = themeMode.value === 'dark';
+            const titleColor = isDark ? '#E0E0E0' : '#333333';
+            const textColor = isDark ? '#E0E0E0' : '#333333';
+            const detailColor = isDark ? '#AAAAAA' : '#666666';
+            
+            return `
+              <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; margin-bottom: 6px; color: ${titleColor};">${month}</div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                  <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <span style="display: inline-block; width: 12px; height: 12px; background-color: ${saleColor}; border-radius: 2px; margin-right: 6px;"></span>
+                    <span style="font-size: 13px; font-weight: 600; color: ${textColor};">Inseriti: ${Math.round(totalIns)}</span>
+                  </div>
+                  <div style="padding-left: 18px; font-size: 12px; color: ${detailColor};">
+                    Vendita: ${saleIns} | Affitto: ${rentIns} | Aste: ${auctionIns}
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <span style="display: inline-block; width: 12px; height: 12px; background-color: ${rentColor}; border-radius: 2px; margin-right: 6px;"></span>
+                    <span style="font-size: 13px; font-weight: 600; color: ${textColor};">Venduti: ${Math.round(totalSold)}</span>
+                  </div>
+                  <div style="padding-left: 18px; font-size: 12px; color: ${detailColor};">
+                    Vendita: ${saleSold} | Affitto: ${rentSold} | Aste: ${auctionSold}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+        },
+        markers: {
+          size: 4,
+          hover: {
+            size: 6
+          }
+        }
+      };
     });
 
-    const chartOptions = (): ApexOptions => {
-  const labelColor = getCSSVariableValue("--bs-gray-500");
-  const borderColor = getCSSVariableValue("--bs-gray-200");
-  const baseColorSale = props.chartType === 'line' ? "#1976d2" : getCSSVariableValue("--bs-primary");
-  const lightColorSale = props.chartType === 'line' ? "#42a5f5" : getCSSVariableValue("--bs-primary-light");
-  const baseColorRent = props.chartType === 'line' ? "#388e3c" : getCSSVariableValue("--bs-success");
-  const lightColorRent = props.chartType === 'line' ? "#66bb6a" : getCSSVariableValue("--bs-success-light");
-  const baseColorAuction = props.chartType === 'line' ? "#f57c00" : getCSSVariableValue("--bs-warning");
-  const lightColorAuction = props.chartType === 'line' ? "#ffb74d" : getCSSVariableValue("--bs-warning-light");
-
-  const { computedKeys, valuesSale, valuesRent, valuesAuction } = getKeysAndValues();
-  series.value = [
-    {
-      name: "Vendita",
-      data: valuesSale,
-    },
-    {
-      name: "Affitto",
-      data: valuesRent,
-    },
-    {
-      name: "Aste",
-      data: valuesAuction,
-    },
-  ];
-
-  return {
-    chart: {
-      fontFamily: "inherit",
-      type: props.chartType as "bar" | "line",
-      height: 350,
-      stacked: props.chartType === 'bar',
-      toolbar: {
-        show: false,
-      },
-    },
-    plotOptions: props.chartType === 'bar' ? {
-      bar: {
-        horizontal: false,
-        columnWidth: "50%",
-        borderRadius: 4,
-      },
-    } : {},
-    legend: {
-      show: false,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    fill: props.chartType === 'line' ? {
-      type: "gradient",
-      gradient: {
-        shade: 'light',
-        type: 'vertical',
-        shadeIntensity: 0.5,
-        gradientToColors: [baseColorSale, baseColorRent, baseColorAuction],
-        inverseColors: false,
-        opacityFrom: 0.8,
-        opacityTo: 0.1,
-        stops: [0, 100]
-      }
-    } : {
-      type: "solid",
-      opacity: 0.95,
-    },
-    stroke: props.chartType === 'line' ? {
-      show: true,
-      width: 3,
-    } : {
-      show: false,
-      width: 0,
-    },
-    xaxis: {
-      categories: computedKeys,
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        rotate: -45,
-        rotateAlways: false,
-        hideOverlappingLabels: true,
-        trim: true,
-        style: {
-          colors: labelColor,
-          fontSize: "12px",
+    // Opzioni grafico Provvigioni (NON sincronizzato con immobili)
+    const chartOptionsCommissions = computed((): ApexOptions => {
+      const isDark = themeMode.value === 'dark';
+      const months = chartDataSeries.value.months;
+      const labelColor = getCSSVariableValue("--bs-gray-500");
+      const borderColor = getCSSVariableValue("--bs-gray-200");
+      const infoColor = getCSSVariableValue("--bs-info") || (isDark ? "#17a2b8" : "#17a2b8");
+      const secondaryColor = getCSSVariableValue("--bs-gray-600") || (isDark ? "#AAAAAA" : "#666666");
+      
+      return {
+        chart: {
+          id: 'chart-commissions',
+          type: 'line',
+          height: 200,
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: true,
+            type: 'x'
+          }
         },
-      },
-      crosshairs: {
-        position: "front",
+        plotOptions: {
+          bar: {
+            columnWidth: '60%',
+            borderRadius: 4
+          }
+        },
         stroke: {
-          color: baseColorSale,
-          width: 1,
-          dashArray: 3,
+          width: 0 // Nessuno stroke per le barre
         },
-      },
-      tooltip: {
-        enabled: false,
-      },
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: labelColor,
-          fontSize: "12px",
+        fill: {
+          type: 'solid',
+          opacity: 0.8 // Opacità per barre
         },
-      },
-    },
-    states: {
-      normal: {
-        filter: {
-          type: "none",
-          value: 0,
+        colors: [infoColor],
+        xaxis: {
+          categories: months,
+          labels: {
+            style: {
+              colors: labelColor,
+              fontSize: "12px"
+            }
+          }
         },
-      },
-      hover: {
-        filter: {
-          type: "none",
-          value: 0,
+        yaxis: {
+          labels: {
+            style: {
+              colors: labelColor,
+              fontSize: "12px"
+            },
+            formatter: (val: number) => `€ ${formatCommission(val)}`
+          }
         },
-      },
-      active: {
-        allowMultipleDataPointsSelection: false,
-        filter: {
-          type: "none",
-          value: 0,
+        grid: {
+          borderColor: borderColor,
+          strokeDashArray: 4
         },
-      },
-    },
-    tooltip: {
-      shared: true,
-      intersect: false,
-      followCursor: true,
-      style: {
-        fontSize: "12px",
-      },
-      y: {
-        formatter: function (val) {
-          return val.toString();
-        },
-      },
-    },
-    colors: [baseColorSale, baseColorRent, baseColorAuction],
-    grid: {
-      borderColor: borderColor,
-      strokeDashArray: 4,
-      yaxis: {
-        lines: {
+        legend: {
           show: true,
+          position: "top",
+          horizontalAlign: "right",
+          fontSize: "14px",
+          fontWeight: 600
         },
-      },
-    },
-    markers: {
-      strokeColors: baseColorSale,
-      strokeWidth: 3,
-    },
-    responsive: [
-      {
-        breakpoint: 768,
-        options: {
-          chart: {
-            height: 300,
-          },
-          plotOptions: props.chartType === 'bar' ? {
-            bar: {
-              horizontal: false,
-              columnWidth: "70%",
-              borderRadius: 3,
-            },
-          } : {},
-          xaxis: {
-            labels: {
-              rotate: -45,
-              rotateAlways: true,
-              hideOverlappingLabels: true,
-              style: {
-                fontSize: "10px",
-              },
-            },
-          },
-          yaxis: {
-            labels: {
-              style: {
-                fontSize: "10px",
-              },
-            },
-          },
-          legend: {
-            show: false,
-          },
-        },
-      },
-      {
-        breakpoint: 480,
-        options: {
-          chart: {
-            height: 280,
-          },
-          plotOptions: props.chartType === 'bar' ? {
-            bar: {
-              horizontal: false,
-              columnWidth: "80%",
-              borderRadius: 2,
-            },
-          } : {},
-          xaxis: {
-            labels: {
-              rotate: -60,
-              rotateAlways: true,
-              hideOverlappingLabels: true,
-              maxHeight: 60,
-              style: {
-                fontSize: "9px",
-              },
-            },
-          },
-          yaxis: {
-            labels: {
-              style: {
-                fontSize: "9px",
-              },
-            },
-          },
-        },
-      },
-    ],
-  };
-};
+        tooltip: {
+          shared: false,
+          intersect: true,
+          followCursor: true,
+          custom: function({ series, seriesIndex, dataPointIndex, w }: any) {
+            const chartDataSeriesValue = chartDataSeries.value;
+            const month = chartDataSeriesValue.months[dataPointIndex];
+            const commissionValue = chartDataSeriesValue.commissionsMonthlyTotals[dataPointIndex];
+            
+            // Colori per dark mode
+            const isDark = themeMode.value === 'dark';
+            const titleColor = isDark ? '#E0E0E0' : '#333333';
+            const textColor = isDark ? '#E0E0E0' : '#333333';
+            const infoColor = getCSSVariableValue("--bs-info") || (isDark ? "#17a2b8" : "#17a2b8");
+            
+            return `
+              <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; margin-bottom: 6px; color: ${titleColor};">${month}</div>
+              <div style="display: flex; align-items: center;">
+                <span style="display: inline-block; width: 12px; height: 12px; background-color: ${infoColor}; border-radius: 2px; margin-right: 6px;"></span>
+                <span style="font-size: 13px; font-weight: 600; color: ${textColor};">Provvigioni: € ${formatCommission(commissionValue)}</span>
+              </div>
+            `;
+          }
+        }
+      };
+    });
+
+    // Watch per aggiornare i grafici quando cambiano i dati
+    watch(() => [props.chartData, props.soldChartData], () => {
+      // I computed si aggiornano automaticamente quando cambiano i props
+    }, { deep: true });
+
+    // Watch per le provvigioni
+    watch(() => [props.totalCommissionsPortfolio, props.totalCommissionsEarned, props.commissionsMonthlyData], () => {
+      // I computed si aggiornano automaticamente quando cambiano i props
+    }, { deep: true });
+
+    watch(themeMode, () => {
+      // I computed si aggiornano automaticamente
+    });
+
+    const totals = computed(() => {
+      const { 
+        totalSale, 
+        totalRent, 
+        totalAuction,
+        totalSaleInserted,
+        totalSaleSold,
+        totalRentInserted,
+        totalRentSold,
+        totalAuctionInserted,
+        totalAuctionSold
+      } = getKeysAndValues();
+      return {
+        totalSale,
+        totalRent,
+        totalAuction,
+        totalSaleInserted,
+        totalSaleSold,
+        totalRentInserted,
+        totalRentSold,
+        totalAuctionInserted,
+        totalAuctionSold
+      };
+    });
+
+    // Computed per i totali (reattivi ai cambiamenti dei dati)
+    const totalSale = computed(() => totals.value.totalSale);
+    const totalRent = computed(() => totals.value.totalRent);
+    const totalAuction = computed(() => totals.value.totalAuction);
+    const totalSaleInserted = computed(() => totals.value.totalSaleInserted);
+    const totalSaleSold = computed(() => totals.value.totalSaleSold);
+    const totalRentInserted = computed(() => totals.value.totalRentInserted);
+    const totalRentSold = computed(() => totals.value.totalRentSold);
+    const totalAuctionInserted = computed(() => totals.value.totalAuctionInserted);
+    const totalAuctionSold = computed(() => totals.value.totalAuctionSold);
 
     return {
-      chart,
-      series,
-      chartRef,
       getButtonStyle,
+      formatNumber,
+      totalSale,
+      totalRent,
+      totalAuction,
+      totalSaleInserted,
+      totalSaleSold,
+      totalRentInserted,
+      totalRentSold,
+      totalAuctionInserted,
+      totalAuctionSold,
+      totalCommissionsPortfolio: computed(() => props.totalCommissionsPortfolio),
+      totalCommissionsEarned: computed(() => props.totalCommissionsEarned),
+      seriesProperties,
+      seriesCommissions,
+      chartOptionsProperties,
+      chartOptionsCommissions,
     };
   },
 });
-
-
 </script>
 
 <!-- CSS moved to global file: dark-mode.css -->

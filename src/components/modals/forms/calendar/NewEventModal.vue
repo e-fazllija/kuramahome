@@ -66,6 +66,7 @@
                     type="text" 
                     name="EventName"
                     placeholder="Inserisci il nome dell'evento"
+                    @blur="capitalizeEventName"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -88,13 +89,63 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Color">
-                  <select v-model="targetData.Color" class="form-select form-select-lg"
-                         :style="{ backgroundColor: targetData.Color, color: '#fff' }">
-                    <option v-for="(color, index) in colorOptions" :key="index" 
-                         :value="color.hex" :style="{ backgroundColor: color.hex, color: '#fff' }">
-                         {{ color.name || 'Colore' }}
-                    </option>
-                  </select>
+                  <div class="dropdown">
+                    <button 
+                      class="btn btn-light btn-active-light-primary d-flex align-items-center justify-content-between w-100 p-3 border border-gray-300 rounded"
+                      type="button" 
+                      id="colorDropdown"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <span class="d-flex align-items-center gap-3">
+                        <span 
+                          class="rounded border border-2 border-gray-300 shadow-sm"
+                          :style="{ 
+                            width: '40px', 
+                            height: '40px', 
+                            backgroundColor: targetData.Color || '#e0e0e0'
+                          }"
+                        ></span>
+                        <span class="fw-semibold text-gray-800">
+                          {{ targetData.Color ? 'Colore selezionato' : 'Seleziona un colore' }}
+                        </span>
+                      </span>
+                      <i class="ki-duotone ki-down fs-3 text-gray-600">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end w-100 p-3 shadow-lg" aria-labelledby="colorDropdown" style="max-height: 400px; overflow-y: auto;">
+                      <div class="row g-2">
+                        <div 
+                          v-for="(color, index) in colorOptions" 
+                          :key="index"
+                          class="col-3 col-md-4"
+                        >
+                          <button
+                            type="button"
+                            class="btn btn-outline btn-outline-dashed w-100 d-flex align-items-center justify-content-center p-2 rounded position-relative"
+                            :class="targetData.Color === color.hex ? 'btn-active-light-primary border-primary shadow-sm' : 'border-gray-300'"
+                            @click="selectColor(color.hex)"
+                            :title="color.hex"
+                          >
+                            <span 
+                              class="rounded border border-2 border-gray-300 shadow-sm"
+                              :style="{ 
+                                width: '50px', 
+                                height: '50px', 
+                                backgroundColor: color.hex
+                              }"
+                            ></span>
+                            <i v-if="targetData.Color === color.hex" class="ki-duotone ki-check fs-3 text-white position-absolute" style="z-index: 10;">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                            </i>
+                          </button>
+                        </div>
+                      </div>
+                    </ul>
+                  </div>
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -121,6 +172,7 @@
                     type="text" 
                     placeholder="Descrizione dell'evento" 
                     name="EventDescription"
+                    @blur="capitalizeEventDescription"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -146,6 +198,7 @@
                     type="text" 
                     placeholder="Dove si terrà l'evento" 
                     name="EventLocation"
+                    @blur="capitalizeEventLocation"
                   />
                 </el-form-item>
                 <!--end::Input-->
@@ -345,6 +398,7 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import { hideModal, removeModalBackdrop } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase, capitalize } from "@/core/helpers/text";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import events, { todayDate, getToInsert, createEvent, InsertModel, Event } from "@/core/data/events";
 import { useAuthStore } from "@/stores/auth";
@@ -567,7 +621,38 @@ export default defineComponent({
         }
       });
     };
+
+    // Funzione per selezionare un colore
+    const selectColor = (color: string) => {
+      targetData.value.Color = color;
+      // Chiudi il dropdown dopo la selezione
+      const dropdownElement = document.getElementById('colorDropdown');
+      if (dropdownElement) {
+        const dropdown = (window as any).bootstrap?.Dropdown?.getInstance(dropdownElement);
+        if (dropdown) {
+          dropdown.hide();
+        }
+      }
+    };
     
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeEventName = () => {
+      if (targetData.value.EventName && typeof targetData.value.EventName === 'string' && targetData.value.EventName.trim()) {
+        targetData.value.EventName = toTitleCase(targetData.value.EventName);
+      }
+    };
+
+    const capitalizeEventDescription = () => {
+      if (targetData.value.EventDescription && typeof targetData.value.EventDescription === 'string' && targetData.value.EventDescription.trim()) {
+        targetData.value.EventDescription = capitalize(targetData.value.EventDescription);
+      }
+    };
+
+    const capitalizeEventLocation = () => {
+      if (targetData.value.EventLocation && typeof targetData.value.EventLocation === 'string' && targetData.value.EventLocation.trim()) {
+        targetData.value.EventLocation = smartTitleCase(targetData.value.EventLocation);
+      }
+    };
 
     return {
       formRef,
@@ -579,7 +664,11 @@ export default defineComponent({
       getAssetPath,
       inserModel,
       removeModalBackdrop,
-      colorOptions
+      colorOptions,
+      selectColor,
+      capitalizeEventName,
+      capitalizeEventDescription,
+      capitalizeEventLocation
     };
   },
   data() {

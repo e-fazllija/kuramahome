@@ -20,6 +20,9 @@ const cleanNumericFields = (data: any): any => {
     'GardenTo',
     'MQFrom',
     'MQTo',
+    'RoomsFrom',
+    'RoomsTo',
+    'Bathrooms',
     'ParkingSpaces'
   ];
 
@@ -43,18 +46,23 @@ export class Request {
   PropertyType: string;
   Province: string;
   City: string;
-  Location: string;
   PriceTo: number;
   PriceFrom: number;
   GardenFrom: number;
   GardenTo: number;
   Archived: boolean;
   Closed: boolean;
-  RoomsNumber?: string;
+  RoomsFrom: number;
+  RoomsTo: number;
+  Bathrooms: number;
+  Floor?: string;
   MQFrom: number;
   MQTo: number;
   PropertyState?: string;
   Heating?: string;
+  Furniture?: string;
+  EnergyClass?: string;
+  Auction: boolean;
   ParkingSpaces: number;
   Notes?: string;
   CreationDate?: Date;
@@ -77,7 +85,6 @@ export class RequestTabelData {
   Contract: string;
   CreationDate?: Date;
   City:string;
-  Locations: string;
   PriceTo: number;
   PriceFrom: number;
   PropertyType: string;
@@ -137,7 +144,6 @@ const getRequestsList = (filterRequest: string, userIdOverride?: string): Promis
         Contract: item.Contract,
         CreationDate: item.CreationDate,
         StringDate: item.CreationDate.toString().substring(0, 10).split('-').reverse().join('-'),
-        Locations: item.Location,
         City: item.City ?? item.Town,
         PriceTo: item.PriceTo,
         PriceFrom: item.PriceFrom,

@@ -177,25 +177,6 @@ export interface DashboardAggregatedData {
     Requests: RequestListItem[];
 }
 
-// ===== API PRINCIPALE DASHBOARD =====
-// Restituisce tutti i dati necessari per la dashboard in una sola chiamata
-const getDashboardAggregatedData = (agencyId?: string, year?: number): Promise<DashboardAggregatedData> => {
-    const agencyParam = agencyId ? `agencyId=${agencyId}` : '';
-    const yearParam = year ? `year=${year}` : '';
-    
-    // Costruisci i parametri della query
-    const params = [agencyParam, yearParam].filter(p => p).join('&');
-    const queryString = params ? `?${params}` : '';
-    
-    return ApiService.get(`Generic/GetDashboardAggregatedData${queryString}`, "")
-        .then(({ data }) => {
-            return data as DashboardAggregatedData;
-        })
-        .catch(({ response }) => {
-            store.setError(response?.data?.Message || 'Errore nel caricamento della dashboard', response?.status);
-            throw new Error('Errore nel caricamento della dashboard');
-        });
-};
 
 // ===== INTERFACCE RICHIESTE =====
 export interface RequestListItem {
@@ -736,9 +717,333 @@ const processTopZones = (properties: RealEstatePropertyListItem[]) => {
         return chartData;
     };
 
+// ===== API MAP DATA (Widget13) =====
+// Modelli leggeri per ottimizzare il trasferimento dati
+export interface MapAgency {
+    Id: string;
+    UserName: string;
+    AdminId?: string;
+    Address?: string;
+    City?: string;
+    Province?: string;
+    ZipCode?: string;
+    PhoneNumber?: string;
+    Email?: string;
+}
+
+export interface MapAgent {
+    Id: string;
+    FirstName?: string;
+    LastName?: string;
+}
+
+export interface MapData {
+    TotalAgencies: number;
+    TotalAgents: number;
+    Agencies: MapAgency[];
+    Agents: MapAgent[];
+}
+
+export interface Widget3Data {
+    Months: string[];
+    PropertiesData: {
+        Sale: Record<string, number>;
+        Rent: Record<string, number>;
+        Auction: Record<string, number>;
+    };
+    SoldPropertiesData: {
+        Sale: Record<string, number>;
+        Rent: Record<string, number>;
+        Auction: Record<string, number>;
+    };
+    CommissionsMonthlyData: Record<string, number>;
+    TotalCommissionsPortfolio: number;
+    TotalCommissionsEarned: number;
+}
+
+export interface PropertiesData {
+    Sale: Record<string, number>;
+    Rent: Record<string, number>;
+    Auction: Record<string, number>;
+}
+
+export interface Widget3Data {
+    Months: string[];
+    PropertiesData: PropertiesData;
+    SoldPropertiesData: PropertiesData;
+    CommissionsMonthlyData: Record<string, number>;
+    TotalCommissionsPortfolio: number;
+    TotalCommissionsEarned: number;
+}
+
+export interface TopAgencyItem {
+    Id: string;
+    Name: string;
+    Location: string;
+    Properties: number;
+    Customers: number;
+    Requests: number;
+    SoldProperties: number;
+    Appointments: number;
+    Commissions: number;
+}
+
+export interface TopAgenciesData {
+    Agencies: TopAgencyItem[];
+}
+
+export interface TopAgentItem {
+    Id: string;
+    Name: string;
+    Location: string;
+    SoldProperties: number;
+    LoadedProperties: number;
+    Requests: number;
+    Appointments: number;
+    Commissions: number;
+}
+
+export interface TopAgentsData {
+    Agents: TopAgentItem[];
+}
+
+export interface TopZoneItem {
+    Name: string;
+    Count: number;
+    Percentage: number;
+}
+
+export interface TopZonesData {
+    PropertiesZones: TopZoneItem[];
+    RequestsZones: TopZoneItem[];
+}
+
+export interface TopTypologyItem {
+    Name: string;
+    Count: number;
+    Percentage: number;
+}
+
+export interface TopTypologiesData {
+    CategoriesPortfolio: TopTypologyItem[];
+    CategoriesRequests: TopTypologyItem[];
+}
+
+export interface TopEarningItem {
+    Id: string;
+    Title: string;
+    AddressLine: string;
+    City: string;
+    UserFirstName: string;
+    Price: number;
+    EffectiveCommission: number;
+}
+
+export interface TopEarningsData {
+    Portfolio: TopEarningItem[];
+    SalesYear: TopEarningItem[];
+    TotalPortfolioCommission: number;
+    TotalSalesYearCommission: number;
+}
+
+export interface AnalyticsData {
+    Requests: RequestsAnalyticsData;
+    Properties: PropertiesAnalyticsData;
+    Customers: CustomersAnalyticsData;
+    Appointments: AppointmentsAnalyticsData;
+}
+
+export interface RequestsAnalyticsData {
+    Total: number;
+    MonthlyData: Record<string, number>;
+    ClosedData: Record<string, number>;
+}
+
+export interface PropertiesAnalyticsData {
+    Total: number;
+    MonthlyData: Record<string, number>;
+    SoldData: Record<string, number>;
+}
+
+export interface CustomersAnalyticsData {
+    Total: number;
+    MonthlyData: Record<string, number>;
+    BuyersData: Record<string, number>;
+}
+
+export interface AppointmentsAnalyticsData {
+    Total: number;
+    MonthlyData: Record<string, number>;
+    ConfirmedData: Record<string, number>;
+}
+
+export interface ExpiringAssignmentItem {
+    Id: number;
+    Title: string;
+    AddressLine: string;
+    City: string;
+    AssignmentEnd: string;
+    DaysUntilExpiry: number;
+}
+
+export interface ExpiringAssignmentsData {
+    Properties: ExpiringAssignmentItem[];
+    Total: number;
+    ExpiredProperties: ExpiringAssignmentItem[];
+    TotalExpired: number;
+}
+
+const getMapData = (agencyId?: string, year?: number): Promise<MapData> => {
+    const agencyParam = agencyId ? `agencyId=${encodeURIComponent(agencyId)}` : '';
+    const yearParam = year ? `year=${year}` : '';
+    
+    // Costruisci i parametri della query
+    const params = [agencyParam, yearParam].filter(p => p).join('&');
+    const queryString = params ? `?${params}` : '';
+    
+    return ApiService.get(`Dashboard/GetMapData${queryString}`, "")
+        .then(({ data }) => {
+            return data as MapData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati della mappa', response?.status);
+            throw new Error('Errore nel caricamento dei dati della mappa');
+        });
+    };
+
+const getWidget3Data = (agencyId?: string, year?: number): Promise<Widget3Data> => {
+    const agencyParam = agencyId ? `agencyId=${encodeURIComponent(agencyId)}` : '';
+    const yearParam = year ? `year=${year}` : '';
+    
+    const params = [agencyParam, yearParam].filter(p => p).join('&');
+    const queryString = params ? `?${params}` : '';
+    
+    return ApiService.get(`Dashboard/GetWidget3Data${queryString}`, "")
+        .then(({ data }) => {
+            return data as Widget3Data;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati Widget3', response?.status);
+            throw new Error('Errore nel caricamento dei dati Widget3');
+        });
+};
+
+const getTopAgenciesData = (year?: number, sortBy?: string, sortOrder?: string): Promise<TopAgenciesData> => {
+    const params: string[] = [];
+    
+    if (year) params.push(`year=${year}`);
+    if (sortBy) params.push(`sortBy=${encodeURIComponent(sortBy)}`);
+    if (sortOrder) params.push(`sortOrder=${encodeURIComponent(sortOrder)}`);
+    
+    const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+    
+    return ApiService.get(`Dashboard/GetTopAgenciesData${queryString}`, "")
+        .then(({ data }) => {
+            return data as TopAgenciesData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati Top Agenzie', response?.status);
+            throw new Error('Errore nel caricamento dei dati Top Agenzie');
+        });
+};
+
+const getTopAgentsData = (year?: number, sortBy?: string, sortOrder?: string): Promise<TopAgentsData> => {
+    const params: string[] = [];
+    
+    if (year) params.push(`year=${year}`);
+    if (sortBy) params.push(`sortBy=${encodeURIComponent(sortBy)}`);
+    if (sortOrder) params.push(`sortOrder=${encodeURIComponent(sortOrder)}`);
+    
+    const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+    
+    return ApiService.get(`Dashboard/GetTopAgentsData${queryString}`, "")
+        .then(({ data }) => {
+            return data as TopAgentsData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati Top Agenti', response?.status);
+            throw new Error('Errore nel caricamento dei dati Top Agenti');
+        });
+};
+
+const getTopZonesData = (): Promise<TopZonesData> => {
+    return ApiService.get(`Dashboard/GetTopZonesData`, "")
+        .then(({ data }) => {
+            return data as TopZonesData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati Top Zone', response?.status);
+            throw new Error('Errore nel caricamento dei dati Top Zone');
+        });
+};
+
+const getTopTypologiesData = (): Promise<TopTypologiesData> => {
+    return ApiService.get(`Dashboard/GetTopTypologiesData`, "")
+        .then(({ data }) => {
+            return data as TopTypologiesData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati Top Tipologie', response?.status);
+            throw new Error('Errore nel caricamento dei dati Top Tipologie');
+        });
+};
+
+const getTopEarningsData = (year?: number): Promise<TopEarningsData> => {
+    const params: string[] = [];
+    if (year) params.push(`year=${year}`);
+    const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+
+    return ApiService.get(`Dashboard/GetTopEarningsData${queryString}`, "")
+        .then(({ data }) => {
+            return data as TopEarningsData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati Top Guadagni', response?.status);
+            throw new Error('Errore nel caricamento dei dati Top Guadagni');
+        });
+};
+
+const getAnalyticsData = (year: number, agencyId?: string): Promise<AnalyticsData> => {
+    const params: string[] = [`year=${year}`];
+    if (agencyId) params.push(`agencyId=${encodeURIComponent(agencyId)}`);
+    const queryString = `?${params.join('&')}`;
+
+    return ApiService.get(`Dashboard/GetAnalyticsData${queryString}`, "")
+        .then(({ data }) => {
+            return data as AnalyticsData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento dei dati Analytics', response?.status);
+            throw new Error('Errore nel caricamento dei dati Analytics');
+        });
+};
+
+const getExpiringAssignments = (daysThreshold?: number): Promise<ExpiringAssignmentsData> => {
+    const params: string[] = [];
+    if (daysThreshold) params.push(`daysThreshold=${daysThreshold}`);
+    const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+
+    return ApiService.get(`Dashboard/GetExpiringAssignments${queryString}`, "")
+        .then(({ data }) => {
+            return data as ExpiringAssignmentsData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento delle scadenze incarichi', response?.status);
+            throw new Error('Errore nel caricamento delle scadenze incarichi');
+        });
+};
+
 export { 
-    // API principale
-    getDashboardAggregatedData,
+    // API dashboard
+    getMapData,
+    getWidget3Data,
+    getTopAgenciesData,
+    getTopAgentsData,
+    getTopZonesData,
+    getTopTypologiesData,
+    getTopEarningsData,
+    getAnalyticsData,
+    getExpiringAssignments,
     
     // Funzioni di processing per grafici e statistiche
     processPropertiesForChart, 

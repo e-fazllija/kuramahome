@@ -234,37 +234,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch } from "vue";
+import { defineComponent, ref, computed, onMounted, watch } from "vue";
 import type { PropType } from "vue";
 import type { ApexOptions } from "apexcharts";
 import type VueApexCharts from "vue3-apexcharts";
+import { getAnalyticsData, type AnalyticsData } from "@/core/data/dashboard";
 type KPIType = 'requests' | 'properties' | 'customers' | 'appointments';
 
 export default defineComponent({
   name: "widget-11",
   props: {
-    kpiData: {
-      type: Object as PropType<{
-        requests: { total: number; monthlyData: Record<string, number>; closedData?: Record<string, number> };
-        properties: { total: number; monthlyData: Record<string, number>; soldData?: Record<string, number> };
-        customers: { total: number; monthlyData: Record<string, number>; buyersData?: Record<string, number> };
-        appointments: { total: number; monthlyData: Record<string, number>; confirmedData?: Record<string, number> };
-      }>,
-      required: true
-    },
-    selectedYear: {
+    year: {
       type: Number,
+      required: true,
       default: () => new Date().getFullYear()
-    }
+    },
+    agencyId: {
+      type: String,
+      required: false,
+      default: undefined
+    },
+    canLoadData: {
+      type: Boolean,
+      default: true
+    },
   },
   setup(props) {
     const chartRef = ref<typeof VueApexCharts | null>(null);
     const selectedKPI = ref<KPIType>('properties');
     const chartKey = ref<number>(0);
     
+    // Dati API
+    const analyticsData = ref<AnalyticsData | null>(null);
+    const loading = ref<boolean>(false);
+    
     // Year filter (synchronized with Widget13)
     const currentYear = new Date().getFullYear();
-    const selectedYear = ref<number>(props.selectedYear || currentYear);
+    const selectedYear = computed(() => props.year);
     const availableYears = computed(() => {
       const years = [];
       for (let i = 0; i < 6; i++) {
@@ -293,26 +299,66 @@ export default defineComponent({
       return false; // Always show charts now
     });
 
+    // Funzione per caricare i dati Analytics dall'API
+    const loadAnalyticsData = async () => {
+      // Non caricare i dati se non ha i permessi
+      if (!props.canLoadData) {
+        analyticsData.value = null;
+        return;
+      }
+      
+      try {
+        loading.value = true;
+        const data = await getAnalyticsData(props.year, props.agencyId);
+        analyticsData.value = data;
+      } catch (error: any) {
+        // Se è un errore 403, non loggare come errore (è normale se non ha Premium)
+        if (error?.response?.status === 403) {
+          console.warn('Accesso negato: piano Premium richiesto per questa funzionalità');
+        } else {
+          console.error('Errore nel caricamento dei dati Analytics:', error);
+        }
+        analyticsData.value = null;
+      } finally {
+        loading.value = false;
+      }
+    };
+
     // Get chart data based on selected KPI and year
     const getChartData = () => {
-      const kpi = selectedKPI.value;
-      const data = props.kpiData[kpi];
+      if (!analyticsData.value) return { primary: [], secondary: [] };
       
-      if (!data) return { primary: [], secondary: [] };
-
-      const primaryData = months.value.map(month => data.monthlyData[month] || 0);
+      const kpi = selectedKPI.value;
+      let monthlyData: Record<string, number> = {};
+      
+      switch (kpi) {
+        case 'requests':
+          monthlyData = analyticsData.value.Requests.MonthlyData;
+          break;
+        case 'properties':
+          monthlyData = analyticsData.value.Properties.MonthlyData;
+          break;
+        case 'customers':
+          monthlyData = analyticsData.value.Customers.MonthlyData;
+          break;
+        case 'appointments':
+          monthlyData = analyticsData.value.Appointments.MonthlyData;
+          break;
+      }
+      
+      const primaryData = months.value.map(month => monthlyData[month] || 0);
       
       let secondaryData: number[] = [];
       
       // Add secondary data for specific KPIs
-      if (kpi === 'properties' && 'soldData' in data && data.soldData) {
-        secondaryData = months.value.map(month => data.soldData![month] || 0);
-      } else if (kpi === 'requests' && 'closedData' in data && data.closedData) {
-        secondaryData = months.value.map(month => data.closedData![month] || 0);
-      } else if (kpi === 'appointments' && 'confirmedData' in data && data.confirmedData) {
-        secondaryData = months.value.map(month => data.confirmedData![month] || 0);
-      } else if (kpi === 'customers' && 'buyersData' in data && data.buyersData) {
-        secondaryData = months.value.map(month => data.buyersData![month] || 0);
+      if (kpi === 'properties') {
+        secondaryData = months.value.map(month => analyticsData.value!.Properties.SoldData[month] || 0);
+      } else if (kpi === 'requests') {
+        secondaryData = months.value.map(month => analyticsData.value!.Requests.ClosedData[month] || 0);
+      } else if (kpi === 'appointments') {
+        secondaryData = months.value.map(month => analyticsData.value!.Appointments.ConfirmedData[month] || 0);
+      } else if (kpi === 'customers') {
+        secondaryData = months.value.map(month => analyticsData.value!.Customers.BuyersData[month] || 0);
       }
 
       return { primary: primaryData, secondary: secondaryData };
@@ -320,17 +366,27 @@ export default defineComponent({
 
     // Get totals for selected year for a specific KPI
     const getYearTotals = (kpi?: KPIType) => {
-      const targetKpi = kpi || selectedKPI.value;
-      const data = props.kpiData[targetKpi];
+      if (!analyticsData.value) return 0;
       
-      if (!data) return 0;
+      const targetKpi = kpi || selectedKPI.value;
+      let total = 0;
+      
+      switch (targetKpi) {
+        case 'requests':
+          total = analyticsData.value.Requests.Total;
+          break;
+        case 'properties':
+          total = analyticsData.value.Properties.Total;
+          break;
+        case 'customers':
+          total = analyticsData.value.Customers.Total;
+          break;
+        case 'appointments':
+          total = analyticsData.value.Appointments.Total;
+          break;
+      }
 
-      // Sum all months for the selected year
-      const yearTotal = months.value.reduce((total, month) => {
-        return total + (data.monthlyData[month] || 0);
-      }, 0);
-
-      return yearTotal;
+      return total;
     };
 
     // Get all year totals for all KPIs
@@ -525,11 +581,28 @@ export default defineComponent({
       chartKey.value++;
     };
 
-    // Watch for changes in selectedYear prop
-    watch(() => props.selectedYear, (newYear) => {
-      if (newYear) {
-        selectedYear.value = newYear;
-        chartKey.value++; // Force chart refresh
+    // Carica i dati iniziali
+    onMounted(() => {
+      loadAnalyticsData();
+    });
+
+    // Watch per ricaricare quando cambiano year o agencyId (solo se può caricare)
+    watch(() => props.year, () => {
+      if (props.canLoadData) {
+        loadAnalyticsData();
+      }
+    });
+
+    watch(() => props.agencyId, () => {
+      if (props.canLoadData) {
+        loadAnalyticsData();
+      }
+    });
+    
+    // Watch per canLoadData: se diventa true, carica i dati
+    watch(() => props.canLoadData, (newVal) => {
+      if (newVal && !analyticsData.value) {
+        loadAnalyticsData();
       }
     });
 
@@ -547,7 +620,8 @@ export default defineComponent({
       getYearTotals,
       yearTotals,
       selectedYear,
-      availableYears
+      availableYears,
+      loading
     };
   }
 });
