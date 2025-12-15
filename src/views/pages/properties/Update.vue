@@ -247,8 +247,9 @@
                         Tipologia incarico
                       </label>
                       <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="Verbale">Verbale</option>
                         <option value="Esclusivo">Esclusivo</option>
+                        <option value="Non Esclusivo">Non Esclusivo</option>
+                        <option value="Verbale">Verbale</option>
                         <option value="Semi-Verbale">Semi-Verbale</option>
                         <option value="Immobile MLS">Immobile MLS</option>
                       </select>
@@ -897,13 +898,13 @@
               <!--end::Upload Section-->
 
               <!--begin::Image Gallery-->
-              <div v-if="formData.Photos && formData.Photos.length > 0" class="row g-3">
-                <draggable :list="formData.Photos" :disabled="false" item-key="Id" class="list-group"
+              <div v-if="formData.Photos && formData.Photos.length > 0" class="image-gallery-grid">
+                <draggable :list="formData.Photos" :disabled="false" item-key="Id" class="image-gallery-container"
                   ghost-class="sortable-ghost" chosen-class="sortable-chosen" @start="onDragStart" @end="onDragEnd"
                   :animation="300">
                   <template #item="{ element, index }">
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="card position-relative" :class="{ 'border-warning border-2': element.Highlighted }">
+                    <div class="image-gallery-item">
+                      <div class="card position-relative h-100" :class="{ 'border-warning border-2': element.Highlighted }">
                         <div class="position-absolute top-0 start-0 m-2" style="cursor: move; z-index: 10;">
                           <i class="ki-duotone ki-menu fs-4 text-primary">
                             <span class="path1"></span>
@@ -911,10 +912,31 @@
                             <span class="path3"></span>
                           </i>
                         </div>
+                        <div class="position-absolute top-0 end-0 m-2 d-flex gap-2" style="z-index: 10;">
+                          <button 
+                            type="button" 
+                            class="btn btn-sm btn-danger p-1 d-flex align-items-center justify-content-center" 
+                            style="width: 28px; height: 28px; border-radius: 50%;"
+                            @click="deleteFile(element.Id)"
+                            title="Elimina immagine">
+                            <i class="ki-duotone ki-cross fs-5 text-white">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                            </i>
+                          </button>
+                          <div v-if="element.Highlighted">
+                            <span class="badge bg-warning">
+                              <i class="ki-duotone ki-star fs-6">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                              </i>
+                            </span>
+                          </div>
+                        </div>
                         <img :src="element.Url" :alt="`Immagine ${index + 1}`" @error="handleImageError($event)"
                           @load="handleImageLoad($event)" class="card-img-top"
-                          style="height: 150px; object-fit: cover;" />
-                        <div v-if="imageErrors[element.Id]" class="card-body text-center">
+                          style="height: 200px; width: 100%; object-fit: cover;" />
+                        <div v-if="imageErrors[element.Id]" class="card-body text-center d-flex flex-column justify-content-center" style="height: 200px;">
                           <i class="ki-duotone ki-picture fs-1 text-muted">
                             <span class="path1"></span>
                             <span class="path2"></span>
@@ -936,25 +958,7 @@
                               </i>
                               Principale
                             </button>
-                            <button type="button" class="btn btn-danger btn-sm" @click="deleteFile(element.Id)">
-                              <i class="ki-duotone ki-trash fs-6 me-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                                <span class="path5"></span>
-                              </i>
-                              Elimina
-                            </button>
                           </div>
-                        </div>
-                        <div v-if="element.Highlighted" class="position-absolute top-0 end-0 m-2">
-                          <span class="badge bg-warning">
-                            <i class="ki-duotone ki-star fs-6">
-                              <span class="path1"></span>
-                              <span class="path2"></span>
-                            </i>
-                          </span>
                         </div>
                       </div>
                     </div>
@@ -1031,6 +1035,7 @@ export default defineComponent({
     const isTrattativaRiservata = ref(false);
     const imageErrors = ref<Record<number, boolean>>({});
     const selectedExposures = ref<string[]>([]);
+    const photosToDelete = ref<number[]>([]);
 
     // Funzioni per caricare i dati dal JSON
     const loadProvinces = async () => {
@@ -1172,7 +1177,7 @@ export default defineComponent({
       AgreedCommission: 0,
       FlatRateCommission: 0,
       CommissionReversal: 0,
-      TypeOfAssignment: "Verbale",
+      TypeOfAssignment: "Esclusivo",
     });
 
     const inserModel = ref<InsertModel>({
@@ -1712,39 +1717,16 @@ export default defineComponent({
         });
     };
 
-    const deleteFile = async (photoId: number) => {
-      loading.value = true;
-      await deletePhoto(photoId)
-        .then(() => {
-          loading.value = false;
-
-          Swal.fire({
-            text: "Operazione terminata con successo!",
-            icon: "success",
-            buttonsStyling: false,
-            confirmButtonText: "Continua!",
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn btn-primary",
-            },
-          }).then(async () => {
-            formData.value = await getRealEstateProperty(id)
-          });
-        })
-        .catch(({ response }) => {
-          console.log(response);
-          loading.value = false;
-          Swal.fire({
-            text: "Attenzione, si è verificato un errore.",
-            icon: "error",
-            buttonsStyling: false,
-            confirmButtonText: "Continua!",
-            heightAuto: false,
-            customClass: {
-              confirmButton: "btn btn-primary",
-            },
-          });
-        });
+    const deleteFile = (photoId: number) => {
+      // Aggiungi la foto all'array delle foto da eliminare
+      if (!photosToDelete.value.includes(photoId)) {
+        photosToDelete.value.push(photoId);
+      }
+      
+      // Rimuovi la foto dalla visualizzazione
+      if (formData.value.Photos) {
+        formData.value.Photos = formData.value.Photos.filter(photo => photo.Id !== photoId);
+      }
     }
 
     watch(
@@ -1898,6 +1880,19 @@ export default defineComponent({
 
             // Il risultato non può essere negativo (minimo 0)
             formData.value.EffectiveCommission = Math.max(0, netCommission);
+
+            // Elimina le foto marcate per l'eliminazione
+            if (photosToDelete.value.length > 0) {
+              for (const photoId of photosToDelete.value) {
+                try {
+                  await deletePhoto(photoId);
+                } catch (error) {
+                  console.error(`Errore durante l'eliminazione della foto ${photoId}:`, error);
+                }
+              }
+              // Pulisci l'array dopo l'eliminazione
+              photosToDelete.value = [];
+            }
 
             await updatePhotosOrder(formData.value.Photos);
             await updateRealEstateProperty(formData.value);
@@ -2060,12 +2055,12 @@ export default defineComponent({
 
     // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
     const canModify = computed(() => {
-      if (!formData.value || !formData.value.User) {
+      if (!formData.value || !formData.value.UserId) {
         return false;
       }
 
-      const propertyOwner = formData.value.User;
       const currentUser = user;
+      const propertyOwner = formData.value.User;
 
       // Se l'utente è il proprietario, può sempre modificare
       if (currentUser.Id === formData.value.UserId) {
@@ -2083,9 +2078,16 @@ export default defineComponent({
         if (formData.value.UserId === currentUser.Id) {
           return true;
         }
-        // L'immobile è di un suo Agent (verifica tramite AdminId)
-        if (propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
+        // L'immobile è di un suo Agent (verifica tramite AdminId se User è disponibile)
+        if (propertyOwner && propertyOwner.AdminId === currentUser.Id && propertyOwner.Role === 'Agent') {
           return true;
+        }
+        // Se User non è disponibile, verifica tramite inserModel (lista agenti disponibili)
+        if (!propertyOwner && inserModel.value.Users) {
+          const agent = inserModel.value.Users.find((u: any) => u.Id === formData.value.UserId);
+          if (agent && agent.AdminId === currentUser.Id && agent.Role === 'Agent') {
+            return true;
+          }
         }
         return false;
       }
@@ -2198,3 +2200,39 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.image-gallery-grid {
+  width: 100%;
+}
+
+.image-gallery-container {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+.image-gallery-item {
+  width: 100%;
+}
+
+@media (min-width: 576px) {
+  .image-gallery-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .image-gallery-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.sortable-ghost {
+  opacity: 0.5;
+}
+
+.sortable-chosen {
+  cursor: grabbing;
+}
+</style>
