@@ -32,6 +32,28 @@
   <KTSpinner v-if="loading" :centered="true" size="md" />
   <!--begin::Content-->
   <div v-else class="collapse show">
+    <!--begin::Assignment Status Banner-->
+    <div v-if="assignmentStatusMessage" class="container-fluid px-0 px-md-3 mb-3">
+      <div :class="assignmentStatusClass" class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-40px me-3">
+              <span :class="assignmentStatusIconClass" class="symbol-label">
+                <i :class="assignmentStatusIcon" class="fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+            </div>
+            <div class="flex-grow-1">
+              <h5 class="fw-bold mb-1">{{ assignmentStatusTitle }}</h5>
+              <p class="mb-0 fs-7">{{ assignmentStatusMessage }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end::Assignment Status Banner-->
     <!--begin::Tabs-->
     <div class="container-fluid px-0 px-md-3">
       <ul class="nav nav-tabs flex-nowrap overflow-auto" id="propertyTabs" role="tablist"
@@ -292,7 +314,7 @@
                           :disabled="!canModify && user.Role === 'Agent'">
                           <option value="">Seleziona città</option>
                           <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                            {{ city.Name }}
+                            {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                           </option>
                         </select>
                       </el-form-item>
@@ -307,11 +329,11 @@
                     </div>
 
                     <div class="col-12 col-md-6">
-                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Codice Fiscale <span
+                      <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">CAP <span
                           class="text-danger">*</span></label>
                       <el-form-item prop="PostCode">
                         <input class="form-control form-control-lg" v-model="formData.PostCode" type="text"
-                          placeholder="Inserisci il codice fiscale" required
+                          placeholder="Inserisci il CAP" required
                           :disabled="!canModify && user.Role === 'Agent'" />
                       </el-form-item>
                     </div>
@@ -347,7 +369,6 @@
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Piano</label>
                       <select class="form-select form-select-lg" v-model="formData.Floor"
                         :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="">Scegli</option>
                         <option value="Interrato -2">Interrato -2</option>
                         <option value="Interrato -1">Interrato -1</option>
                         <option value="Seminterrato">Seminterrato</option>
@@ -390,8 +411,11 @@
                     <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Spese
                         condominiali</label>
-                      <input class="form-control form-control-lg" v-model="formData.CondominiumExpenses" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                      <div class="input-group">
+                        <input class="form-control form-control-lg" v-model="formData.CondominiumExpenses" type="number"
+                          placeholder="Inserisci importo" :disabled="!canModify && user.Role === 'Agent'" />
+                        <span class="input-group-text">€</span>
+                      </div>
                     </div>
                   </div>
 
@@ -451,14 +475,17 @@
 
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Esposizione</label>
-                    <select class="form-select form-select-lg" v-model="formData.Exposure"
-                      :disabled="!canModify && user.Role === 'Agent'">
-                      <option value="">Selezionare l'esposizione</option>
+                    <select class="form-select form-select-lg" v-model="selectedExposures" multiple
+                      :disabled="!canModify && user.Role === 'Agent'"
+                      style="min-height: 100px;">
                       <option value="Nord">Nord</option>
                       <option value="Sud">Sud</option>
                       <option value="Est">Est</option>
                       <option value="Ovest">Ovest</option>
                     </select>
+                    <small class="text-palette-secondary d-block mt-1 fs-8">
+                      Tieni premuto Ctrl (o Cmd su Mac) per selezionare più esposizioni
+                    </small>
                   </div>
 
                   <div class="mb-3">
@@ -672,7 +699,7 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-in-home" v-model="formData.InHome"
-                          :disabled="!canModify && user.Role === 'Agent'" />
+                          :disabled="(!canModify && user.Role === 'Agent') || isExpired" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-in-home">
                           In Home
                         </label>
@@ -684,7 +711,7 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-highlighted"
-                          v-model="formData.Highlighted" :disabled="!canModify && user.Role === 'Agent'" />
+                          v-model="formData.Highlighted" :disabled="(!canModify && user.Role === 'Agent') || isExpired" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-highlighted">
                           In Evidenza
                         </label>
@@ -720,10 +747,17 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-sold" v-model="formData.Sold"
-                          :disabled="!canModify && user.Role === 'Agent'" />
+                          :disabled="(!canModify && user.Role === 'Agent') || isExpired" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-sold">
                           Venduto
                         </label>
+                      </div>
+                      <div v-if="isExpired" class="text-muted fs-8 mt-1">
+                        <i class="ki-duotone ki-information fs-7 me-1">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        Impossibile modificare: incarico scaduto
                       </div>
                     </div>
                   </div>
@@ -961,7 +995,7 @@
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Modal } from "bootstrap";
-import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getCityByCAP } from "@/core/data/italian-geographic-data-loader";
 import {
   updateRealEstateProperty,
   RealEstateProperty,
@@ -990,12 +1024,13 @@ export default defineComponent({
     const formRef = ref<any>(null); // Element Plus Form component reference
     const typesavailable = ref<string[]>([]);
     const provinces = ref<Array<{ Id: string, Name: string }>>([]);
-    const cities = ref<Array<{ Id: string, Name: string }>>([]);
+    const cities = ref<Array<{ Id: string, Name: string, CAP?: string }>>([]);
     const showTipologia = ref(false);
     const loading = ref<boolean>(true);
     const firtLoad = ref(false);
     const isTrattativaRiservata = ref(false);
     const imageErrors = ref<Record<number, boolean>>({});
+    const selectedExposures = ref<string[]>([]);
 
     // Funzioni per caricare i dati dal JSON
     const loadProvinces = async () => {
@@ -1017,7 +1052,8 @@ export default defineComponent({
           const citiesData = getCitiesByProvince(provinceName);
           cities.value = citiesData.map(city => ({
             Id: city.Name,
-            Name: city.Name
+            Name: city.Name,
+            CAP: city.CAP
           }));
         } else {
           cities.value = [];
@@ -1104,6 +1140,7 @@ export default defineComponent({
       PostCode: "",
       CommercialSurfaceate: 0,
       TotalBuildingfloors: 0,
+      Floor: "Piano Terra",
       Elevators: 0,
       MoreDetails: "",
       MoreFeatures: "",
@@ -1358,6 +1395,109 @@ export default defineComponent({
     // Salva il UserId originale dell'immobile (non deve essere modificato)
     const originalUserId = ref<string>("");
 
+    // Funzioni helper per verificare lo stato dell'incarico
+    const isAssignmentExpired = (assignmentEnd: string | undefined | null): boolean => {
+      if (!assignmentEnd || assignmentEnd === '' || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '0001-01-01') {
+        return false; // Senza scadenza = non scaduto
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0); // Reset ore per confronto solo date
+      endDate.setHours(0, 0, 0, 0);
+      return endDate < now;
+    };
+
+    const isAssignmentExpiringSoon = (assignmentEnd: string | undefined | null): boolean => {
+      if (!assignmentEnd || assignmentEnd === '' || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '0001-01-01') {
+        return false; // Senza scadenza = non in scadenza
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiry > 0 && daysUntilExpiry <= 30;
+    };
+
+    const getDaysUntilExpiry = (assignmentEnd: string | undefined | null): number => {
+      if (!assignmentEnd || assignmentEnd === '' || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '0001-01-01') {
+        return 999; // Senza scadenza = sempre valido
+      }
+      const endDate = new Date(assignmentEnd);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiry;
+    };
+
+    const formatDate = (dateString: string | undefined | null): string => {
+      if (!dateString || dateString === '' || dateString === '0001-01-01T00:00:00' || dateString === '0001-01-01') {
+        return 'Senza scadenza';
+      }
+      const date = new Date(dateString);
+      return date.toLocaleDateString('it-IT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    };
+
+    // Computed per lo stato dell'incarico
+    const isExpired = computed(() => isAssignmentExpired(formData.value.AssignmentEnd));
+    const isExpiringSoon = computed(() => isAssignmentExpiringSoon(formData.value.AssignmentEnd));
+    const daysUntilExpiry = computed(() => getDaysUntilExpiry(formData.value.AssignmentEnd));
+
+    // Computed per il banner di stato
+    const assignmentStatusMessage = computed(() => {
+      if (!formData.value.AssignmentEnd || formData.value.AssignmentEnd === '' || formData.value.AssignmentEnd === '0001-01-01T00:00:00' || formData.value.AssignmentEnd === '0001-01-01') {
+        return null; // Nessun banner se non c'è scadenza
+      }
+      if (isExpired.value) {
+        return `Incarico scaduto il ${formatDate(formData.value.AssignmentEnd)}. Rinnova l'incarico per continuare a gestire questo immobile.`;
+      }
+      if (isExpiringSoon.value) {
+        return `Incarico in scadenza tra ${daysUntilExpiry.value} ${daysUntilExpiry.value === 1 ? 'giorno' : 'giorni'} (scade il ${formatDate(formData.value.AssignmentEnd)}).`;
+      }
+      return null;
+    });
+
+    const assignmentStatusClass = computed(() => {
+      if (isExpired.value) {
+        return 'bg-light-danger border-danger border';
+      }
+      if (isExpiringSoon.value) {
+        return 'bg-light-warning border-warning border';
+      }
+      return '';
+    });
+
+    const assignmentStatusTitle = computed(() => {
+      if (isExpired.value) {
+        return '⚠️ Incarico Scaduto';
+      }
+      if (isExpiringSoon.value) {
+        return '⏰ Incarico in Scadenza';
+      }
+      return '';
+    });
+
+    const assignmentStatusIconClass = computed(() => {
+      if (isExpired.value) {
+        return 'bg-danger';
+      }
+      if (isExpiringSoon.value) {
+        return 'bg-warning';
+      }
+      return '';
+    });
+
+    const assignmentStatusIcon = computed(() => {
+      if (isExpired.value) {
+        return 'ki-duotone ki-cross-circle';
+      }
+      if (isExpiringSoon.value) {
+        return 'ki-duotone ki-information';
+      }
+      return '';
+    });
+
     onMounted(async () => {
       loading.value = true;
       firtLoad.value = true;
@@ -1377,6 +1517,14 @@ export default defineComponent({
 
       // Inizializza la checkbox "Trattativa riservata" in base al prezzo
       isTrattativaRiservata.value = formData.value.Price === -1;
+
+      // Converti la stringa Exposure in array per la selezione multipla
+      if (formData.value.Exposure) {
+        // Gestisce sia separatori "-" che "," per retrocompatibilità
+        selectedExposures.value = formData.value.Exposure.split(/[-,\s]+/).filter(e => e.trim() !== '');
+      } else {
+        selectedExposures.value = [];
+      }
 
       // Carica le province
       await loadProvinces();
@@ -1432,9 +1580,22 @@ export default defineComponent({
           // Auto-compila il CAP se disponibile
           if (formData.value.State && newTown) {
             const cap = getCAPByCity(formData.value.State, newTown);
-            if (cap) {
+            if (cap && formData.value.PostCode !== cap) {
               formData.value.PostCode = cap;
             }
+          }
+        }
+      }
+    );
+
+    // Watcher per auto-compilare il comune quando si modifica il CAP
+    watch(
+      () => formData.value.PostCode,
+      (newCAP) => {
+        if (!firtLoad.value && newCAP && formData.value.State) {
+          const cityName = getCityByCAP(formData.value.State, newCAP);
+          if (cityName && formData.value.City !== cityName) {
+            formData.value.City = cityName;
           }
         }
       }
@@ -1481,6 +1642,18 @@ export default defineComponent({
           formRef.value.validateField('FlatRateCommission', () => { });
         }
       }
+    );
+
+    // Watcher per convertire l'array di esposizioni selezionate in stringa
+    watch(
+      () => selectedExposures.value,
+      (newExposures) => {
+        if (!firtLoad.value) {
+          // Unisce le esposizioni con "-" (es. "Nord-Est")
+          formData.value.Exposure = newExposures.length > 0 ? newExposures.join('-') : '';
+        }
+      },
+      { deep: true }
     );
 
     const onFileChanged = async (event: Event) => {
@@ -1693,6 +1866,38 @@ export default defineComponent({
             if (isTrattativaRiservata.value) {
               formData.value.Price = -1;
             }
+
+            // Aggiorna Exposure dall'array di esposizioni selezionate
+            formData.value.Exposure = selectedExposures.value.length > 0 
+              ? selectedExposures.value.join('-') 
+              : '';
+
+            // Calcola e assegna EffectiveCommission (valore numerico, non formattato)
+            let grossCommission = 0;
+            const agreedCommission = Number(formData.value.AgreedCommission);
+            const flatRateCommission = Number(formData.value.FlatRateCommission);
+            const price = Number(formData.value.Price);
+            const priceReduced = Number(formData.value.PriceReduced);
+            const storno = Number(formData.value.CommissionReversal) || 0;
+
+            // Determina quale prezzo usare: se presente il prezzo ribassato, usa quello, altrimenti il prezzo normale
+            // Ma salta se il prezzo è -1 (trattativa riservata)
+            const priceToUse = (price === -1) ? 0 : ((priceReduced && !Number.isNaN(priceReduced) && priceReduced > 0) ? priceReduced : price);
+
+            // Se c'è provvigione concordata (percentuale)
+            if (agreedCommission && !Number.isNaN(agreedCommission) && agreedCommission > 0 && priceToUse > 0) {
+              grossCommission = (priceToUse * agreedCommission) / 100;
+            }
+            // Se c'è provvigione forfettaria (euro)
+            else if (flatRateCommission && !Number.isNaN(flatRateCommission) && flatRateCommission > 0) {
+              grossCommission = flatRateCommission;
+            }
+
+            // Calcola la provvigione netta (lorda - storno)
+            const netCommission = grossCommission - storno;
+
+            // Il risultato non può essere negativo (minimo 0)
+            formData.value.EffectiveCommission = Math.max(0, netCommission);
 
             await updatePhotosOrder(formData.value.Photos);
             await updateRealEstateProperty(formData.value);
@@ -1960,6 +2165,13 @@ export default defineComponent({
       onFileChanged,
       typesavailable,
       showTipologia,
+      isExpired,
+      isExpiringSoon,
+      assignmentStatusMessage,
+      assignmentStatusClass,
+      assignmentStatusTitle,
+      assignmentStatusIconClass,
+      assignmentStatusIcon,
       setPhotoHighlighted,
       deleteFile,
       deleteItem,
@@ -1981,6 +2193,7 @@ export default defineComponent({
       agentName,
       effectiveCommission,
       id,
+      selectedExposures,
     };
   },
 });

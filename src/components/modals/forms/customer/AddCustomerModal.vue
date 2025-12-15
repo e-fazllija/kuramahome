@@ -115,6 +115,7 @@
                       type="text"
                       placeholder="Inserisci il nome"
                       size="large"
+                      @blur="capitalizeFirstName"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -139,6 +140,7 @@
                       type="text"
                       placeholder="Inserisci il cognome"
                       size="large"
+                      @blur="capitalizeLastName"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -370,6 +372,7 @@
                       v-model="formData.Address"
                       placeholder="Via, numero civico"
                       size="large"
+                      @blur="capitalizeAddress"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -418,7 +421,7 @@
                     <select class="form-select form-select-lg" v-model="formData.City">
                       <option value="">🏙️ Seleziona comune</option>
                       <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                        {{ city.Name }}
+                        {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                       </option>
                     </select>
                     <!--end::Input-->
@@ -486,12 +489,13 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, watch } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createCustomer, Customer } from "@/core/data/customers";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 import { getSearchItems, type SearchModel } from "@/core/data/events";
 
 export default defineComponent({
@@ -507,7 +511,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const ownerSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: []
@@ -564,7 +568,8 @@ export default defineComponent({
           const provinceCities = getCitiesByProvince(newProvince);
           cities.value = provinceCities.map(city => ({
             Id: city.Name,
-            Name: city.Name
+            Name: city.Name,
+            CAP: city.CAP
           }));
           formData.value.City = ""; // Reset città
         } else {
@@ -573,6 +578,31 @@ export default defineComponent({
         }
       }
     );
+
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeFirstName = () => {
+      if (formData.value.FirstName && typeof formData.value.FirstName === 'string' && formData.value.FirstName.trim()) {
+        formData.value.FirstName = toTitleCase(formData.value.FirstName);
+      }
+    };
+
+    const capitalizeLastName = () => {
+      if (formData.value.LastName && typeof formData.value.LastName === 'string' && formData.value.LastName.trim()) {
+        formData.value.LastName = toTitleCase(formData.value.LastName);
+      }
+    };
+
+    const capitalizeAddress = () => {
+      if (formData.value.Address && typeof formData.value.Address === 'string' && formData.value.Address.trim()) {
+        formData.value.Address = smartTitleCase(formData.value.Address);
+      }
+    };
+
+    const capitalizeCity = () => {
+      if (formData.value.City && typeof formData.value.City === 'string' && formData.value.City.trim()) {
+        formData.value.City = toTitleCase(formData.value.City);
+      }
+    };
 
     const rules = ref({
       Type: [
@@ -700,6 +730,10 @@ export default defineComponent({
       cities,
       user,
       ownerSearchItems,
+      capitalizeFirstName,
+      capitalizeLastName,
+      capitalizeAddress,
+      capitalizeCity,
     };
   },
 });

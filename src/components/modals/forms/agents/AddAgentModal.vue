@@ -150,6 +150,7 @@
                         type="text"
                         placeholder="Inserisci il nome"
                         size="large"
+                        @blur="capitalizeFirstName"
                       />
                     </el-form-item>
                   </div>
@@ -161,6 +162,7 @@
                         type="text"
                         placeholder="Inserisci il cognome"
                         size="large"
+                        @blur="capitalizeLastName"
                       />
                     </el-form-item>
                   </div>
@@ -175,11 +177,12 @@
                 <div class="fv-row mb-7">
                   <label class="form-label fw-bold text-gray-800 fs-6">Ragione Sociale *</label>
                   <el-form-item prop="companyName">
-                    <el-input
+                      <el-input
                       v-model="formData.CompanyName"
                       type="text"
                       placeholder="Es. Rossi Immobiliare S.r.l."
                       size="large"
+                      @blur="capitalizeCompanyName"
                     />
                   </el-form-item>
                 </div>
@@ -392,10 +395,11 @@
 
                   <!--begin::Input-->
                   <el-form-item prop="addressLine">
-                    <el-input 
+                      <el-input 
                       v-model="formData.Address" 
                       placeholder="Via, numero civico"
                       size="large"
+                      @blur="capitalizeAddress"
                     />
                   </el-form-item>
                   <!--end::Input-->
@@ -449,7 +453,7 @@
                   <select class="form-select form-select-lg" v-model="formData.City">
                     <option value="">🏙️ Seleziona comune</option>
                     <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                      {{ city.Name }}
+                      {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                     </option>
                   </select>
                   <!--end::Input-->
@@ -478,28 +482,62 @@
 
                     <!--begin::Input-->
                     <el-form-item prop="color">
-                      <div class="color-picker-container">
-                        <div class="color-options">
-                          <div 
-                            v-for="color in colorOptions" 
-                            :key="color.value"
-                            class="color-option"
-                            :class="{ 'selected': formData.Color === color.value }"
-                            :style="{ backgroundColor: color.value }"
-                            @click="selectColor(color.value)"
-                            :title="color.name"
-                          >
-                            <i v-if="formData.Color === color.value" class="ki-duotone ki-check fs-4 text-white">
-                              <span class="path1"></span>
-                              <span class="path2"></span>
-                            </i>
+                      <div class="dropdown">
+                        <button 
+                          class="btn btn-light btn-active-light-primary d-flex align-items-center justify-content-between w-100 p-3 border border-gray-300 rounded"
+                          type="button" 
+                          id="colorDropdownAgent"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          <span class="d-flex align-items-center gap-3">
+                            <span 
+                              class="rounded border border-2 border-gray-300 shadow-sm"
+                              :style="{ 
+                                width: '40px', 
+                                height: '40px', 
+                                backgroundColor: formData.Color || '#e0e0e0'
+                              }"
+                            ></span>
+                            <span class="fw-semibold text-gray-800">
+                              {{ formData.Color ? 'Colore selezionato' : 'Seleziona un colore' }}
+                            </span>
+                          </span>
+                          <i class="ki-duotone ki-down fs-3 text-gray-600">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end w-100 p-3 shadow-lg" aria-labelledby="colorDropdownAgent" style="max-height: 400px; overflow-y: auto;">
+                          <div class="row g-2">
+                            <div 
+                              v-for="color in colorOptions" 
+                              :key="color.value"
+                              class="col-3 col-md-4"
+                            >
+                              <button
+                                type="button"
+                                class="btn btn-outline btn-outline-dashed w-100 d-flex align-items-center justify-content-center p-2 rounded position-relative"
+                                :class="formData.Color === color.value ? 'btn-active-light-primary border-primary shadow-sm' : 'border-gray-300'"
+                                @click="selectColor(color.value)"
+                                :title="color.value"
+                              >
+                                <span 
+                                  class="rounded border border-2 border-gray-300 shadow-sm"
+                                  :style="{ 
+                                    width: '50px', 
+                                    height: '50px', 
+                                    backgroundColor: color.value
+                                  }"
+                                ></span>
+                                <i v-if="formData.Color === color.value" class="ki-duotone ki-check fs-3 text-white position-absolute" style="z-index: 10;">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                </i>
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                        <div class="selected-color-display">
-                          <span class="color-label">Colore selezionato:</span>
-                          <div class="current-color" :style="{ backgroundColor: formData.Color }"></div>
-                          <span class="color-value">{{ formData.Color }}</span>
-                        </div>
+                        </ul>
                       </div>
                     </el-form-item>
                     <!--end::Input-->
@@ -656,12 +694,13 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, watch } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import {createAgent, Agent } from "@/core/data/agents";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCAPByCity, getCityByCAP, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
 import { getAgencies, type Agency } from "@/core/data/agencies";
 
 export default defineComponent({
@@ -676,7 +715,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const agenciesList = ref<Array<Agency>>([]);
     const formData = ref<any>({
       FirstName: "",
@@ -689,7 +728,6 @@ export default defineComponent({
       Address: "",
       City: "",
       Province: "",
-      ZipCode: "",
       Password: "",
       Color: "#00FFFF", // Default: Ciano
       EmailConfirmed: true,
@@ -720,6 +758,14 @@ export default defineComponent({
     // Funzione per selezionare un colore
     const selectColor = (color: string) => {
       formData.value.Color = color;
+      // Chiudi il dropdown dopo la selezione
+      const dropdownElement = document.getElementById('colorDropdownAgent');
+      if (dropdownElement) {
+        const dropdown = (window as any).bootstrap?.Dropdown?.getInstance(dropdownElement);
+        if (dropdown) {
+          dropdown.hide();
+        }
+      }
     };
 
     // Carica le agenzie se l'utente è Admin
@@ -762,27 +808,13 @@ export default defineComponent({
             cities.value = provinceCities[newProvince] || [];
           }
           formData.value.City = ""; // Reset città
-          formData.value.ZipCode = ""; // Reset CAP
         } else {
           cities.value = [];
           formData.value.City = "";
-          formData.value.ZipCode = "";
         }
       }
     );
 
-    // Watcher per auto-compilare il CAP quando si seleziona il comune
-    watch(
-      () => formData.value.City,
-      (newCity) => {
-        if (newCity && formData.value.Province) {
-          const cap = getCAPByCity(formData.value.Province, newCity);
-          if (cap) {
-            formData.value.ZipCode = cap;
-          }
-        }
-      }
-    );
 
     const rules = ref({
       FirstName: [
@@ -831,13 +863,6 @@ export default defineComponent({
         {
           required: true,
           message: "Provincia obligatoria",
-          trigger: "change",
-        },
-      ],
-      ZipCode: [
-        {
-          required: true,
-          message: "CAP obligatorio",
           trigger: "change",
         },
       ],
@@ -925,7 +950,6 @@ export default defineComponent({
       if (!formData.value.Address?.trim()) validationErrors.push("Indirizzo");
       if (!formData.value.City?.trim()) validationErrors.push("Città");
       if (!formData.value.Province?.trim()) validationErrors.push("Provincia");
-      if (!formData.value.ZipCode?.trim()) validationErrors.push("CAP");
       
       // Validazioni condizionali
       if (user?.Role === "Admin" && !formData.value.AgencyId?.trim()) {
@@ -1024,6 +1048,31 @@ export default defineComponent({
       }
     };
 
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeFirstName = () => {
+      if (formData.value.FirstName && typeof formData.value.FirstName === 'string' && formData.value.FirstName.trim()) {
+        formData.value.FirstName = toTitleCase(formData.value.FirstName);
+      }
+    };
+
+    const capitalizeLastName = () => {
+      if (formData.value.LastName && typeof formData.value.LastName === 'string' && formData.value.LastName.trim()) {
+        formData.value.LastName = toTitleCase(formData.value.LastName);
+      }
+    };
+
+    const capitalizeCompanyName = () => {
+      if (formData.value.CompanyName && typeof formData.value.CompanyName === 'string' && formData.value.CompanyName.trim()) {
+        formData.value.CompanyName = toTitleCase(formData.value.CompanyName);
+      }
+    };
+
+    const capitalizeAddress = () => {
+      if (formData.value.Address && typeof formData.value.Address === 'string' && formData.value.Address.trim()) {
+        formData.value.Address = smartTitleCase(formData.value.Address);
+      }
+    };
+
     return {
       formData,
       rules,
@@ -1039,6 +1088,10 @@ export default defineComponent({
       cities,
       user,
       agenciesList,
+      capitalizeFirstName,
+      capitalizeLastName,
+      capitalizeCompanyName,
+      capitalizeAddress,
     };
   },
 });

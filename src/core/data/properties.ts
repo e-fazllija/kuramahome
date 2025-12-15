@@ -63,6 +63,8 @@ export class RealEstateProperty {
   FlatRateCommission: number;
   CommissionReversal: number;
   EffectiveCommission?: number;
+  MatchPercentage?: number;
+  AgencyName?: string;
 }
 
 export class RequestTabelData {
@@ -83,6 +85,8 @@ export class RequestTabelData {
   AdminId?: string;
   UserId?: string;
   EffectiveCommission?: number;
+  Sold?: boolean;
+  UpdateDate?: Date | string;
 }
 
 export class InsertModel {
@@ -205,7 +209,9 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         Auction: item.Auction,
         AdminId: item.AgencyId,
         UserId: item.AgentId,
-        EffectiveCommission: item.EffectiveCommission
+        EffectiveCommission: item.EffectiveCommission,
+        Sold: item.Sold,
+        UpdateDate: item.UpdateDate
       } as RequestTabelData));
     })
     .catch(({ response }) => {
@@ -348,6 +354,7 @@ const cleanNumericFields = (data: any): any => {
     'AgreedCommission',
     'FlatRateCommission',
     'CommissionReversal',
+    'EffectiveCommission',
     'CustomerId'
   ];
 

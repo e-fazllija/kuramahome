@@ -348,7 +348,7 @@
                 <select class="form-select form-select-lg" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
                   <option value="">🏙️ Seleziona comune</option>
                   <option v-for="(city, index) in cities" :key="index" :value="city.Name">
-                    {{ city.Name }}
+                    {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
                   </option>
                 </select>
               </div>
@@ -582,7 +582,7 @@ export default defineComponent({
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const ownerSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: []
@@ -682,7 +682,8 @@ export default defineComponent({
         const provinceCities = getCitiesByProvince(formData.value.State);
         cities.value = provinceCities.map(city => ({
           Id: city.Name,
-          Name: city.Name
+          Name: city.Name,
+          CAP: city.CAP
         }));
       }
       
@@ -697,7 +698,6 @@ export default defineComponent({
               Contract: results[key].Contract,
               CreationDate: results[key].CreationDate,
               City: results[key].City,
-              Locations: results[key].Location,
               PriceTo: results[key].PriceTo,
               PriceFrom: results[key].PriceFrom,
               PropertyType: results[key].PropertyType,
@@ -721,7 +721,8 @@ export default defineComponent({
           const provinceCities = getCitiesByProvince(newProvince);
           cities.value = provinceCities.map(city => ({
             Id: city.Name,
-            Name: city.Name
+            Name: city.Name,
+            CAP: city.CAP
           }));
         } else {
           cities.value = [];

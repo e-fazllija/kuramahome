@@ -27,8 +27,8 @@ class ApiService {
     
     // Crea un'istanza axios dedicata
     ApiService.axiosInstance = axios.create({
-      // baseURL: "https://localhost:7267/api/"
-      baseURL: "https://miraihomeapi.azurewebsites.net/api/"
+      baseURL: "https://localhost:7267/api/"
+      // baseURL: "https://miraihomeapi.azurewebsites.net/api/"
     });
 
     // Mantieni la compatibilità con VueAxios per eventuali utilizzi legacy

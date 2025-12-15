@@ -183,23 +183,6 @@
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-               <div class="d-flex flex-column mb-5 fv-row">
-                    <!--begin::Label-->
-                    <label class="fs-6 fw-bold mb-3 text-gray-800">
-                        <i class="ki-duotone ki-position fs-5 me-2 text-primary">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        <span class="required">Località</span>
-                        </label>
-                    <!--end::Label-->
-                    <!--begin::Input (input di testo perché le località sono stringhe libere nel database) -->
-                    <el-input v-model="formData.Location" type="text" size="large" placeholder="Inserisci la località (opzionale)" />
-                    <!--end::Input-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
                 <div class="row g-4 mb-7">
                   <div class="col-12 col-md-6 fv-row">
                     <!--begin::Label-->
@@ -292,25 +275,108 @@
                 <!--end::Input group-->
 
                 <!--begin::Input group-->
-                <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Numero Locali</span>
-                  </label>
-                  <!--end::Label-->
-  
-                  <!--begin::Input-->
-                  <el-form-item prop="RoomsNumber">
-                    <el-input v-model="formData.RoomsNumber" 
-                    type= "text" 
-                    size="large"
-                    placeholder="Es: 3+1, 4+2, etc." />
-                  </el-form-item>
-                  <!--end::Input-->
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Locali Da</span>
+                    </label>
+                    <!--end::Label-->
+      
+                    <!--begin::Input-->
+                    <el-form-item prop="RoomsFrom">
+                      <el-input v-model="formData.RoomsFrom" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Numero minimo di locali" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
+
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Locali A</span>
+                    </label>
+                    <!--end::Label-->
+      
+                    <!--begin::Input-->
+                    <el-form-item prop="RoomsTo">
+                      <el-input v-model="formData.RoomsTo" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Numero massimo di locali" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
+                </div>
+                <!--end::Input group-->
+
+                <!--begin::Input group-->
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Bagni</span>
+                    </label>
+                    <!--end::Label-->
+      
+                    <!--begin::Input-->
+                    <el-form-item prop="Bathrooms">
+                      <el-input v-model="formData.Bathrooms" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Numero di bagni" />
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
+
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Piano</span>
+                    </label>
+                    <!--end::Label-->
+      
+                    <!--begin::Input-->
+                    <el-form-item prop="Floor">
+                      <select class="form-select form-select-lg" v-model="formData.Floor">
+                        <option value="">🏠 Seleziona Piano</option>
+                        <option value="Interrato -2">Interrato -2</option>
+                        <option value="Interrato -1">Interrato -1</option>
+                        <option value="Seminterrato">Seminterrato</option>
+                        <option value="Piano Terra">Piano Terra</option>
+                        <option value="Piano Rialzato">Piano Rialzato</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                      </select>
+                    </el-form-item>
+                    <!--end::Input-->
+                  </div>
                 </div>
                 <!--end::Input group-->
 
@@ -450,26 +516,90 @@
                 </div>
                 <!--end::Input group-->
 
-                 <!--begin::Input group-->
-                 <div class="fv-row mb-7">
-                  <!--begin::Label-->
-                  <label class="fs-6 fw-bold mb-3 text-gray-800">
-                    <i class="ki-duotone ki-car fs-5 me-2 text-primary">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <span>Posto Auto</span>
-                  </label>
-                  <!--end::Label-->
-                    <select class="form-select form-select-lg" v-model="formData.ParkingSpaces">
-                        <option value="">🚗 Seleziona Posto Auto</option>
-                        <option value="Assegnato">🎯 Assegnato</option>
-                        <option value="Box Auto">🏠 Box Auto</option>
-                        <option value="Condominiale">🏢 Condominiale</option>
-                        <option value="Posto auto coperto">🏠 Posto auto coperto</option>
-                        <option value="Posto auto scoperto">☀️ Posto auto scoperto</option>
+                <!--begin::Input group-->
+                <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Arredamento</span>
+                    </label>
+                    <!--end::Label-->
+                    <select class="form-select form-select-lg" v-model="formData.Furniture">
+                        <option value="">🪑 Seleziona Arredamento</option>
+                        <option value="Arredato">✅ Arredato</option>
+                        <option value="Parzialmente Arredato">🟡 Parzialmente Arredato</option>
+                        <option value="Non Arredato">❌ Non Arredato</option>
                     </select>
-                  <!--end::Input-->
+                  </div>
+
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-home-2 fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Classe Energetica</span>
+                    </label>
+                    <!--end::Label-->
+                    <select class="form-select form-select-lg" v-model="formData.EnergyClass">
+                        <option value="">⚡ Seleziona Classe Energetica</option>
+                        <option value="A4">🟢 A4</option>
+                        <option value="A3">🟢 A3</option>
+                        <option value="A2">🟢 A2</option>
+                        <option value="A1">🟢 A1</option>
+                        <option value="B">🟡 B</option>
+                        <option value="C">🟠 C</option>
+                        <option value="D">🟠 D</option>
+                        <option value="E">🔴 E</option>
+                        <option value="F">🔴 F</option>
+                        <option value="G">🔴 G</option>
+                    </select>
+                  </div>
+                </div>
+                <!--end::Input group-->
+
+                 <!--begin::Input group-->
+                 <div class="row g-4 mb-7">
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-car fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Posti Auto</span>
+                    </label>
+                    <!--end::Label-->
+                    <el-form-item prop="ParkingSpaces">
+                      <el-input v-model="formData.ParkingSpaces" 
+                      type= "number" 
+                      size="large"
+                      placeholder="Numero di posti auto" />
+                    </el-form-item>
+                  </div>
+
+                  <div class="col-12 col-md-6 fv-row">
+                    <!--begin::Label-->
+                    <label class="fs-6 fw-bold mb-3 text-gray-800">
+                      <i class="ki-duotone ki-gavel fs-5 me-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                      <span>Asta</span>
+                    </label>
+                    <!--end::Label-->
+                    <div class="form-check form-switch form-check-custom form-check-solid">
+                        <input class="form-check-input" type="checkbox" value="" v-model="formData.Auction" />
+                        <label class="form-check-label ms-3 fw-semibold">
+                          Immobile in asta
+                        </label>
+                    </div>
+                  </div>
                 </div>
                 <!--end::Input group-->
 
@@ -586,16 +716,21 @@ export default defineComponent({
         PriceTo: 0,
         Archived: false,
         Closed: false,
-        RoomsNumber: "",
+        RoomsFrom: 0,
+        RoomsTo: 0,
+        Bathrooms: 0,
+        Floor: "",
         GardenTo:0,
         GardenFrom:0,
         MQFrom: 0, 
         MQTo: 0, 
         PropertyState: "",
         Heating: "",
+        Furniture: "",
+        EnergyClass: "",
+        Auction: false,
         ParkingSpaces: 0, 
         Notes: "",
-        Location:"",
         MortgageAdviceRequired: false,
         UserId: undefined
       });
@@ -630,7 +765,7 @@ export default defineComponent({
               const citiesData = getCitiesByProvince(provinceName);
               cities.value = citiesData.map(city => ({
                 Id: city.Name,
-                Name: city.Name
+                Name: `${city.Name} (${city.CAP})`
               }));
             } else {
               cities.value = [];
@@ -697,24 +832,13 @@ export default defineComponent({
                 // Carica le città della provincia selezionata
                 await loadCitiesByProvince(newProvince);
                 formData.value.City = null;
-                formData.value.Location = null;
             } else {
                 cities.value = [];
                 formData.value.City = null;
-                formData.value.Location = "";
             }
         }
         );
 
-      watch(
-        () => formData.value.City,
-        async (newCity) => {
-          // Le località sono stringhe libere, non serve caricare nulla
-          if (!newCity || (Array.isArray(newCity) && newCity.length === 0)) {
-            formData.value.Location = "";
-          }
-        }
-      );
 
       const validateRequiredFields = () => {
         const requiredFields = [
@@ -723,7 +847,6 @@ export default defineComponent({
           { key: "PropertyType", label: "Tipologia Immobiliare" },
           { key: "Province", label: "Provincia" },
           { key: "City", label: "Comune" },
-          { key: "Location", label: "Località" },
         ] as const;
 
         const missingFields = requiredFields.filter(({ key }) => {
@@ -773,8 +896,12 @@ export default defineComponent({
           if (valid) {
             loading.value = true;
             formData.value.City = (formData.value.City as any).toString()
-            // Location è già una stringa, non serve convertire
             formData.value.PropertyType = formData.value.PropertyType.toString()
+            // Normalizza i campi numerici
+            formData.value.RoomsFrom = formData.value.RoomsFrom ?? 0;
+            formData.value.RoomsTo = formData.value.RoomsTo ?? 0;
+            formData.value.Bathrooms = formData.value.Bathrooms ?? 0;
+            formData.value.ParkingSpaces = formData.value.ParkingSpaces ?? 0;
 
           try {
             await createRequest(formData.value);

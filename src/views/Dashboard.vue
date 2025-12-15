@@ -10,480 +10,167 @@
      <!--begin::Subscription Expiry Banner (Fixed Left)-->
   <SubscriptionExpiryBanner v-if="!loading && !isAgent" />
   <!--end::Subscription Expiry Banner-->
+  
   <!--begin::Agencies Map-->
-  <div v-if="!loading && isAdmin" class="row mb-8">
+  <div v-if="!loading && canViewMap" class="row mb-8">
     <div class="col-xl-12">
       <Chart13 
         :agencies-list="agenciesList"
-        :total-agents="data?.TotalAgents || 0"
+        :agents-list="agentsRawData"
+        :total-agencies="mapDataRef?.TotalAgencies || 0"
+        :total-agents="mapDataRef?.TotalAgents || 0"
+        :admin-name="adminName"
         :is-agent="isAgent"
-        :selected-agency="selectedAgencyId"
-        :selected-year="selectedYear"
-        :sold-properties="filteredSoldProperties"
-        :rented-properties="filteredRentedProperties"
-        :auction-properties="filteredAuctionProperties"
-        @agency-change="onAgencyChange"
-        @agency-select="onAgencySelect"
-        @year-change="onYearChange"
+        :is-admin="isAdmin"
+        @filter-change="onDashboardFilterChange"
       />
     </div>
   </div>
   <!--end::Agencies Map-->
 
-  <!--begin::Analytics Overview-->
-  <div v-if="!loading && !isAgent" class="row mb-8">
+    <!--begin::Andamento Immobili-->
+    <div v-if="!loading && (isAdmin || isAgency)" class="row gy-5 g-xl-10 mb-8">
+      <div class="col-xl-12">
+        <div class="card card-xl-stretch position-relative">
+          <Chart3 
+            widget-classes="card-xl-stretch" 
+            :chart-height="200" 
+            title="Immobili"
+            subTitle="Andamento immobili inseriti e venduti" 
+            :chartData="chartData" 
+            :soldChartData="soldChartData" 
+            :totalCommissionsPortfolio="totalCommissionsPortfolio" 
+            :totalCommissionsEarned="totalCommissionsEarned"
+            :commissionsMonthlyData="commissionsMonthlyData" 
+            chartType="bar"
+            :class="{ 'opacity-75': !canViewChart3 }"
+          />
+          <div
+            v-if="!canViewChart3"
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-body bg-opacity-75"
+            style="z-index: 10;"
+          >
+            <div class="locked-overlay-card text-center">
+              <div class="locked-overlay-icon bg-primary bg-opacity-10 text-primary">
+                <i class="ki-duotone ki-crown fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+              </div>
+              <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
+              <p class="text-muted mb-4">
+                <span v-if="isAdmin">Contenuto disponibile con piano Premium.</span>
+                <span v-else>La possibilità di aggiornare o fare l'upgrade è disponibile solo per l'amministratore.</span>
+              </p>
+              <router-link v-if="isAdmin" to="/dashboard/subscription/manage" class="btn btn-primary">
+                <i class="ki-duotone ki-rocket fs-5 me-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Aggiorna ora
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end::Andamento Immobili-->
+
+      <!--begin::Analytics Overview-->
+  <div v-if="!loading && (isAdmin || isAgency)" class="row mb-8">
     <div class="col-xl-12">
-      <Chart11 
-        :kpi-data="kpiAnalyticsData"
-        :selected-year="selectedYear"
-      />
+      <div class="card position-relative">
+        <Chart11 
+          :year="selectedYearFilter"
+          :agency-id="selectedAgencyFilter"
+          :can-load-data="canViewChart11"
+        />
+        <div
+          v-if="!canViewChart11"
+          class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-body bg-opacity-75"
+          style="z-index: 10;"
+        >
+          <div class="locked-overlay-card text-center">
+            <div class="locked-overlay-icon bg-primary bg-opacity-10 text-primary">
+              <i class="ki-duotone ki-crown fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+            </div>
+            <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
+            <p class="text-muted mb-4">
+              <span v-if="isAdmin">Contenuto disponibile con piano Premium.</span>
+              <span v-else>La possibilità di aggiornare o fare l'upgrade è disponibile solo per l'amministratore.</span>
+            </p>
+            <router-link v-if="isAdmin" to="/dashboard/subscription/manage" class="btn btn-primary">
+              <i class="ki-duotone ki-rocket fs-5 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Aggiorna ora
+            </router-link>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!--end::Analytics Overview-->
-  
-  <!--begin::Andamento Immobili-->
-  <div v-if="!loading && !isAgent" class="row gy-5 g-xl-10 mb-8">
+
+  <!--begin::Widget1-->
+  <div v-if="!loading && (isAdmin || isAgency)" class="row mb-8">
     <div class="col-xl-12">
-      <div class="card card-xl-stretch mb-xl-10">
-        <div class="card-header border-0 pt-5 pb-2">
-          <h3 class="card-title align-items-start flex-column">
-            <span class="card-label fw-bold fs-3 mb-1">📈 Andamento Immobili</span>
-            <span class="text-muted fw-semobold fs-7">Evoluzione del portafoglio immobiliare</span>
-          </h3>
-        </div>
-        <div class="card-body">
-          <div class="row g-4">
-            <div class="col-12 col-xl-6">
-              <Chart3 widget-classes="card-xl-stretch" chart-height="300" title="Immobili Inseriti"
-              subTitle="Andamento immobili inseriti" :chartData="chartData"/>
+      <div class="card position-relative">
+        <Widget7 
+          :agents-data="agentsRawData"
+          :agencies-data="agenciesList"
+          :properties-data="allPropertiesData"
+          :commissions-data="[]"
+          :all-sold-properties="allSoldPropertiesData"
+          :all-properties="allPropertiesData"
+          :calendar-events="[]"
+          :hide-top-agencies="isAgency"
+          :can-load-data="canViewWidget7"
+          :class="{ 'opacity-75': !canViewWidget7 }"
+        />
+        <div
+          v-if="!canViewWidget7"
+          class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-body bg-opacity-75"
+          style="z-index: 10;"
+        >
+          <div class="locked-overlay-card text-center">
+            <div class="locked-overlay-icon bg-primary bg-opacity-10 text-primary">
+              <i class="ki-duotone ki-crown fs-3">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
             </div>
-            <div class="col-12 col-xl-6">
-              <Chart3 widget-classes="card-xl-stretch" chart-height="300" title="Immobili Venduti"
-              subTitle="Andamento immobili venduti" :chartData="soldChartData" chartType="bar"/>
-            </div>
+            <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
+            <p class="text-muted mb-4">
+              <span v-if="isAdmin">Contenuto disponibile con piano Premium.</span>
+              <span v-else>La possibilità di aggiornare o fare l'upgrade è disponibile solo per l'amministratore.</span>
+            </p>
+            <router-link v-if="isAdmin" to="/dashboard/subscription/manage" class="btn btn-primary">
+              <i class="ki-duotone ki-rocket fs-5 me-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Aggiorna ora
+            </router-link>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!--end::Andamento Immobili-->
-
-  <!--begin::Distribuzione & Zone-->
-  <div v-if="!loading && !isAgent && isAdmin" class="row gy-5 g-xl-10 mb-8">
-    <div class="col-xl-12">
-      <div class="card card-xl-stretch mb-xl-10">
-        <div class="card-header border-0 pt-5 pb-2">
-          <h3 class="card-title align-items-start flex-column">
-            <span class="card-label fw-bold fs-3 mb-1">📊 Distribuzione & Zone</span>
-            <span class="text-muted fw-semobold fs-7">Analisi dettagliata del portafoglio</span>
-          </h3>
-        </div>
-        <div class="card-body position-relative">
-          <!--begin::Premium Lock Overlay-->
-          <div v-if="!isLoadingSubscription && !isPremium" class="premium-lock-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-index-10">
-            <PremiumLock />
-          </div>
-          <!--end::Premium Lock Overlay-->
-          
-          <!--begin::Content Structure (always visible)-->
-          <div class="row g-4" :class="{ 'premium-content-blurred': !isLoadingSubscription && !isPremium }">
-            <!--begin::Tipologie-->
-            <div class="col-12 col-xl-6">
-              <Chart4 
-                v-if="isLoadingSubscription || isPremium"
-                widget-classes="card-xl-stretch" 
-                title="Distribuzione Tipologie Immobili"
-                :datas="typologyData"/>
-              <!--begin::Preview Structure-->
-              <div v-else class="card card-xl-stretch">
-                <div class="card-header border-0 pt-5 pb-2">
-                  <h3 class="card-title align-items-start flex-column">
-                    <span class="card-label fw-bold fs-3 mb-1">Distribuzione Tipologie Immobili</span>
-                  </h3>
-                </div>
-                <div class="card-body">
-                  <div class="text-center py-10">
-                    <i class="ki-duotone ki-chart-simple fs-3x text-muted mb-3 opacity-50">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                      <span class="path4"></span>
-                    </i>
-                  </div>
-                </div>
-              </div>
-              <!--end::Preview Structure-->
-            </div>
-            <!--end::Tipologie-->
-            <!--begin::Zone-->
-            <div class="col-12 col-xl-6">
-              <div class="card h-100">
-                <div class="card-header border-0 pt-4 pb-2">
-                  <h4 class="card-title fw-bold fs-5 mb-1">🏆 Top Zone Strategiche</h4>
-                  <span class="text-muted fs-7">Zone con più immobili</span>
-                </div>
-                <div class="card-body pt-2">
-                  <!--begin::Zone Immobili-->
-                  <div class="mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                      <i class="ki-duotone ki-home-2 fs-2 text-primary me-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                      <h5 class="fw-bold fs-6 text-gray-800 mb-0">Zone con più Immobili</h5>
-                    </div>
-                    <!--begin::Zones List-->
-                    <div v-if="(isLoadingSubscription || isPremium) && topZonesData && topZonesData.length > 0" class="d-flex flex-column">
-                      <div v-for="(zone, index) in topZonesData.slice(0, 5)" :key="index" 
-                           class="d-flex align-items-center mb-2 p-2 rounded-3 bg-light-primary border border-primary border-opacity-25">
-                        <div class="symbol symbol-35px me-3">
-                          <span class="symbol-label bg-primary text-white fw-bold fs-7">{{ index + 1 }}</span>
-                        </div>
-                        <div class="d-flex flex-column flex-grow-1">
-                          <span class="fw-bold fs-7 text-gray-800">{{ zone.name }}</span>
-                          <span class="text-muted fs-8">{{ zone.count }} immobili</span>
-                        </div>
-                        <div class="text-end">
-                          <span class="fw-bold fs-6 text-primary">{{ zone.percentage }}%</span>
-                        </div>
-                      </div>
-                    </div>
-                    <!--end::Zones List-->
-                    
-                    <!--begin::Preview Structure-->
-                    <div v-else class="d-flex flex-column opacity-50">
-                      <div v-for="n in 5" :key="n" 
-                           class="d-flex align-items-center mb-2 p-2 rounded-3 bg-light-secondary border border-secondary border-opacity-25">
-                        <div class="symbol symbol-35px me-3">
-                          <span class="symbol-label bg-secondary text-white fw-bold fs-7">{{ n }}</span>
-                        </div>
-                        <div class="d-flex flex-column flex-grow-1">
-                          <span class="fw-bold fs-7 text-gray-500">---</span>
-                          <span class="text-muted fs-8">-- immobili</span>
-                        </div>
-                        <div class="text-end">
-                          <span class="fw-bold fs-6 text-secondary">--%</span>
-                        </div>
-                      </div>
-                    </div>
-                    <!--end::Preview Structure-->
-                  </div>
-                  <!--end::Zone Immobili-->
-
-                </div>
-              </div>
-            </div>
-            <!--end::Zone-->
-          </div>
-          <!--end::Content Structure-->
-        </div>
-      </div>
-    </div>
-    </div>
-  <!--end::Distribuzione & Zone-->
-
-  <!--begin::Performance Teams-->
-  <div v-if="!loading && !isAgent && isAdmin" class="row gy-5 g-xl-10 mb-8">
-    <div class="col-xl-12">
-      <div class="card card-xl-stretch mb-xl-10">
-        <div class="card-header border-0 pt-5 pb-2">
-          <h3 class="card-title align-items-start flex-column">
-            <span class="card-label fw-bold fs-3 mb-1">🏆 Performance & Distribuzione</span>
-            <span class="text-muted fw-semobold fs-7">Classifiche delle agenzie e degli agenti</span>
-          </h3>
-    </div>
-        <div class="card-body position-relative">
-          <!--begin::Premium Lock Overlay-->
-          <div v-if="!isLoadingSubscription && !isPremium" class="premium-lock-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-index-10">
-            <PremiumLock />
-          </div>
-          <!--end::Premium Lock Overlay-->
-          
-          <!--begin::Content Structure (always visible)-->
-          <div class="row g-4" :class="{ 'premium-content-blurred': !isLoadingSubscription && !isPremium }">
-            <!--begin::Distribuzione Immobili-->
-    <div class="col-12 col-lg-6 col-xl-4">
-              <div class="card h-100">
-                <div class="card-header border-0 pt-4 pb-2">
-                  <h4 class="card-title fw-bold fs-5 mb-1">🏠 Distribuzione Immobili</h4>
-                  <span class="text-muted fs-7">Categorie del portafoglio</span>
-    </div>
-                <div class="card-body pt-2">
-                  <!--begin::Numero Totale-->
-                  <div class="text-center mb-4">
-                    <div class="fw-bold fs-2 text-primary mb-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
-                      {{ (isLoadingSubscription || isPremium) ? availablePropertiesCount : '---' }}
-                    </div>
-                    <div class="text-muted fs-7">Immobili disponibili</div>
-  </div>
-                  <!--end::Numero Totale-->
-
-                  <!--begin::Progress Bars-->
-                  <div class="d-flex flex-column">
-                    <!--begin::Vendite-->
-                    <div class="mb-3">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-bold fs-7 text-gray-800">Vendite</span>
-                        <span class="fw-bold fs-7 text-primary" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
-                          {{ (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? Math.round((salePropertiesCount / availablePropertiesCount) * 100) : '--' }}%
-                        </span>
-    </div>
-                      <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-primary" 
-                             :style="{ width: (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? (salePropertiesCount / availablePropertiesCount) * 100 + '%' : '0%' }"
-                             :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }"
-                             role="progressbar"></div>
-    </div>
-                      <div class="text-muted fs-8 mt-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
-                        {{ (isLoadingSubscription || isPremium) ? salePropertiesCount : '--' }} immobili
-                      </div>
-  </div>
-                    <!--end::Vendite-->
-
-                    <!--begin::Affitti-->
-                    <div class="mb-3">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-bold fs-7 text-gray-800">Affitti</span>
-                        <span class="fw-bold fs-7 text-success" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
-                          {{ (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? Math.round((rentPropertiesCount / availablePropertiesCount) * 100) : '--' }}%
-                        </span>
-    </div>
-                      <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-success" 
-                             :style="{ width: (isLoadingSubscription || isPremium) && availablePropertiesCount > 0 ? (rentPropertiesCount / availablePropertiesCount) * 100 + '%' : '0%' }"
-                             :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }"
-                             role="progressbar"></div>
-    </div>
-                      <div class="text-muted fs-8 mt-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
-                        {{ (isLoadingSubscription || isPremium) ? rentPropertiesCount : '--' }} immobili
-                      </div>
-</div>
-                    <!--end::Affitti-->
-
-                    <!--begin::Aste-->
-                    <div class="mb-2">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-bold fs-7 text-gray-800">Aste</span>
-                        <span class="fw-bold fs-7 text-warning" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
-                          {{ (isLoadingSubscription || isPremium) ? (auctionData?.percentage || 0) : '--' }}%
-                        </span>
-                      </div>
-                      <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-warning" 
-                             :style="{ width: (isLoadingSubscription || isPremium) ? (auctionData?.percentage || 0) + '%' : '0%' }"
-                             :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }"
-                             role="progressbar"></div>
-                      </div>
-                      <div class="text-muted fs-8 mt-1" :class="{ 'opacity-50': !isLoadingSubscription && !isPremium }">
-                        {{ (isLoadingSubscription || isPremium) ? (auctionData?.total || 0) : '--' }} immobili
-                      </div>
-                    </div>
-                    <!--end::Aste-->
-                  </div>
-                  <!--end::Progress Bars-->
-                </div>
-    </div>
-    </div>
-            <!--end::Distribuzione Immobili-->
-
-            <!--begin::Top Agenzie-->
-     <div class="col-12 col-lg-6 col-xl-4">
-              <div class="card h-100">
-                <div class="card-header border-0 pt-4 pb-2">
-                  <h4 class="card-title fw-bold fs-5 mb-1">🏢 Top Agenzie</h4>
-                  <span class="text-muted fs-7">Classifica per {{ getAgencyRankingTypeLabel() }}</span>
-                </div>
-                <div class="card-body pt-2">
-                  <!--begin::Filtro Tipo Classifica-->
-                  <div class="mb-3">
-                    <div class="d-flex gap-1 flex-wrap">
-                      <button 
-                        @click="setAgencyRankingType('sales')"
-                        :class="[
-                          'btn btn-sm px-2 py-1',
-                          selectedAgencyRankingType === 'sales' ? 'btn-primary' : 'btn-light-primary'
-                        ]"
-                      >
-                        <i class="ki-duotone ki-check-circle fs-7 me-1">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        Venduti
-                      </button>
-                      <button 
-                        @click="setAgencyRankingType('appointments')"
-                        :class="[
-                          'btn btn-sm px-2 py-1',
-                          selectedAgencyRankingType === 'appointments' ? 'btn-success' : 'btn-light-success'
-                        ]"
-                      >
-                        <i class="ki-duotone ki-home-2 fs-7 me-1">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        Caricati
-                      </button>
-    </div>
-  </div>
-                  <!--end::Filtro Tipo Classifica-->
-
-                  <!--begin::Classifica Agenzie-->
-                  <div v-if="(isLoadingSubscription || isPremium) && filteredAgenciesRankingData && filteredAgenciesRankingData.length > 0" class="d-flex flex-column">
-                    <div v-for="(agency, index) in filteredAgenciesRankingData.slice(0, 5)" :key="agency.id" 
-                         :class="[
-                           'd-flex align-items-center mb-2 p-2 rounded-3',
-                           index < 3 ? 'bg-light-info border border-info border-opacity-25' : 'bg-light-secondary border border-secondary border-opacity-25'
-                         ]">
-                      <div class="symbol symbol-30px me-2">
-                        <span :class="[
-                          'symbol-label text-white fw-bold fs-8',
-                          index === 0 ? 'bg-warning' : index === 1 ? 'bg-secondary' : index === 2 ? 'bg-info' : 'bg-primary'
-                        ]">
-                          {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1 }}
-                        </span>
-                      </div>
-                      <div class="d-flex flex-column flex-grow-1">
-                        <span class="fw-bold fs-8 text-gray-800">{{ agency.name }}</span>
-                        <span class="text-muted fs-9">{{ agency.count }} {{ getAgencyRankingUnitLabel() }}</span>
-                      </div>
-                      <div class="text-end">
-                        <span class="fw-bold fs-7 text-info">#{{ index + 1 }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <!--begin::Preview Structure-->
-                  <div v-else class="d-flex flex-column opacity-50">
-                    <div v-for="n in 5" :key="n" 
-                         :class="[
-                           'd-flex align-items-center mb-2 p-2 rounded-3',
-                           n <= 3 ? 'bg-light-secondary border border-secondary border-opacity-25' : 'bg-light-secondary border border-secondary border-opacity-25'
-                         ]">
-                      <div class="symbol symbol-30px me-2">
-                        <span :class="[
-                          'symbol-label text-white fw-bold fs-8',
-                          n === 1 ? 'bg-warning' : n === 2 ? 'bg-secondary' : n === 3 ? 'bg-info' : 'bg-secondary'
-                        ]">
-                          {{ n === 1 ? '🥇' : n === 2 ? '🥈' : n === 3 ? '🥉' : n }}
-                        </span>
-                      </div>
-                      <div class="d-flex flex-column flex-grow-1">
-                        <span class="fw-bold fs-8 text-gray-500">---</span>
-                        <span class="text-muted fs-9">-- {{ getAgencyRankingUnitLabel() }}</span>
-                      </div>
-                      <div class="text-end">
-                        <span class="fw-bold fs-7 text-secondary">#{{ n }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <!--end::Preview Structure-->
-                  <!--end::Classifica Agenzie-->
-                </div>
-              </div>
-</div>
-            <!--end::Top Agenzie-->
-
-            <!--begin::Top Agenti-->
-    <div class="col-12 col-lg-6 col-xl-4">
-              <div class="card h-100">
-                <div class="card-header border-0 pt-4 pb-2">
-                  <h4 class="card-title fw-bold fs-5 mb-1">🏆 Top Agenti</h4>
-                  <span class="text-muted fs-7">Classifica per {{ getRankingTypeLabel() }}</span>
-                </div>
-                <div class="card-body pt-2">
-                  <!--begin::Filtro Tipo Classifica-->
-                  <div class="mb-3">
-                    <div class="d-flex gap-1 flex-wrap">
-                      <button 
-                        @click="setRankingType('sales')"
-                        :class="[
-                          'btn btn-sm px-2 py-1',
-                          selectedRankingType === 'sales' ? 'btn-primary' : 'btn-light-primary'
-                        ]"
-                      >
-                        <i class="ki-duotone ki-home-2 fs-7 me-1">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        Vendite
-                      </button>
-                      <button 
-                        @click="setRankingType('appointments')"
-                        :class="[
-                          'btn btn-sm px-2 py-1',
-                          selectedRankingType === 'appointments' ? 'btn-success' : 'btn-light-success'
-                        ]"
-                      >
-                        <i class="ki-duotone ki-home-2 fs-7 me-1">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        Caricati
-                      </button>
-    </div>
-    </div>
-                  <!--end::Filtro Tipo Classifica-->
-
-                  <!--begin::Classifica Agenti-->
-                  <div v-if="(isLoadingSubscription || isPremium) && filteredAgentsRankingData && filteredAgentsRankingData.length > 0" class="d-flex flex-column">
-                    <div v-for="(agent, index) in filteredAgentsRankingData.slice(0, 5)" :key="agent.id" 
-                         :class="[
-                           'd-flex align-items-center mb-2 p-2 rounded-3',
-                           index < 3 ? 'bg-light-primary border border-primary border-opacity-25' : 'bg-light-secondary border border-secondary border-opacity-25'
-                         ]">
-                      <div class="symbol symbol-30px me-2">
-                        <span :class="[
-                          'symbol-label text-white fw-bold fs-8',
-                          index === 0 ? 'bg-warning' : index === 1 ? 'bg-secondary' : index === 2 ? 'bg-info' : 'bg-primary'
-                        ]">
-                          {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1 }}
-                        </span>
-                      </div>
-                      <div class="d-flex flex-column flex-grow-1">
-                        <span class="fw-bold fs-8 text-gray-800">{{ agent.name }}</span>
-                        <span class="text-muted fs-9">{{ agent.count }} {{ getRankingUnitLabel() }}</span>
-                      </div>
-                      <div class="text-end">
-                        <span class="fw-bold fs-7 text-primary">#{{ index + 1 }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <!--begin::Preview Structure-->
-                  <div v-else class="d-flex flex-column opacity-50">
-                    <div v-for="n in 5" :key="n" 
-                         :class="[
-                           'd-flex align-items-center mb-2 p-2 rounded-3',
-                           n <= 3 ? 'bg-light-secondary border border-secondary border-opacity-25' : 'bg-light-secondary border border-secondary border-opacity-25'
-                         ]">
-                      <div class="symbol symbol-30px me-2">
-                        <span :class="[
-                          'symbol-label text-white fw-bold fs-8',
-                          n === 1 ? 'bg-warning' : n === 2 ? 'bg-secondary' : n === 3 ? 'bg-info' : 'bg-secondary'
-                        ]">
-                          {{ n === 1 ? '🥇' : n === 2 ? '🥈' : n === 3 ? '🥉' : n }}
-                        </span>
-                      </div>
-                      <div class="d-flex flex-column flex-grow-1">
-                        <span class="fw-bold fs-8 text-gray-500">---</span>
-                        <span class="text-muted fs-9">-- {{ getRankingUnitLabel() }}</span>
-                      </div>
-                      <div class="text-end">
-                        <span class="fw-bold fs-7 text-secondary">#{{ n }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <!--end::Preview Structure-->
-                  <!--end::Classifica Agenti-->
-                </div>
-              </div>
-            </div>
-            <!--end::Top Agenti-->
-          </div>
-          <!--end::Content Premium-->
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::Performance Teams-->
+  <!--end::Widget1-->
   </div>
 
   <!--begin::Subscription Expired-->
@@ -547,10 +234,9 @@
   </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed } from "vue";
-import Widget1 from "@/components/dashboard-default-widgets/Widget1.vue";
+import Widget7 from "@/components/dashboard-default-widgets/Widget7.vue";
 
 import Chart3 from "@/components/widgets/charts/Widget3.vue";
-import Chart4 from "@/components/widgets/charts/Widget4.vue";
 import Chart10 from "@/components/widgets/charts/Widget10.vue";
 import Chart11 from "@/components/widgets/charts/Widget11.vue";
 import Chart13 from "@/components/widgets/charts/Widget13.vue";
@@ -558,11 +244,8 @@ import SubscriptionExpiryBanner from "@/views/crafted/subscription/SubscriptionE
 
 import { getAssetPath } from "@/core/helpers/assets";
 import { 
-  getDashboardAggregatedData,
-  processPropertiesForChart, 
-  processSoldPropertiesForChart, 
-  processTypologyDistribution, 
-  processTopZones, 
+  getMapData,
+  getWidget3Data, 
   processAgentsRanking, 
   processCalendarEvents, 
   processRequestsForChart, 
@@ -570,23 +253,22 @@ import {
   processAgentsForChart, 
   processCustomersForChart 
 } from "@/core/data/dashboard";
-import type { DashboardDetails, DashboardAggregatedData } from "@/core/data/dashboard";
+import type { DashboardDetails, MapData, Widget3Data } from "@/core/data/dashboard";
+import { getRealEstatePropertiesList, type RequestTabelData } from "@/core/data/properties";
+import ApiService from "@/core/services/ApiService";
 import { useAuthStore, type User } from "@/stores/auth";
-import { isAgent as helperIsAgent, getUserAgencyId } from "@/core/helpers/auth";
+import { isAgent as helperIsAgent } from "@/core/helpers/auth";
 import { getCurrentSubscription } from "@/core/data/subscription";
-import PremiumLock from "@/components/PremiumLock.vue";
 
 export default defineComponent({
   name: "main-dashboard",
   components: {
-    Widget1,
+    Widget7,
     Chart3,
-    Chart4,
     Chart10,
     Chart11,
     Chart13,
-    SubscriptionExpiryBanner,
-    PremiumLock
+    SubscriptionExpiryBanner
   },
   setup() {
         const store = useAuthStore();
@@ -598,6 +280,9 @@ export default defineComponent({
         // Verifica se l'utente è Admin
         const isAdmin = computed(() => store.user?.Role === 'Admin');
         
+        // Verifica se l'utente è Agency
+        const isAgency = computed(() => store.user?.Role === 'Agency');
+        
         // Verifica se l'utente ha piano premium
         const subscription = ref<any>(null);
         const isLoadingSubscription = ref<boolean>(true);
@@ -606,6 +291,47 @@ export default defineComponent({
           const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
           const status = subscription.value.Status?.toLowerCase() || '';
           return planName === 'premium' && status === 'active';
+        });
+        
+        // Verifica se l'utente ha piano pro
+        const isPro = computed(() => {
+          if (!subscription.value) return false;
+          const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
+          const status = subscription.value.Status?.toLowerCase() || '';
+          return planName === 'pro' && status === 'active';
+        });
+        
+        // Verifica se l'utente ha piano basic
+        const isBasic = computed(() => {
+          if (!subscription.value) return false;
+          const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
+          const status = subscription.value.Status?.toLowerCase() || '';
+          return planName === 'basic' && status === 'active';
+        });
+        
+        // Verifica se l'utente ha piano pro o premium (piani che permettono di vedere Chart3)
+        const hasProOrPremium = computed(() => {
+          return isPro.value || isPremium.value;
+        });
+        
+        // Verifica se l'utente può vedere la mappa (tutti i ruoli, tutti i piani)
+        const canViewMap = computed(() => {
+          return true; // Tutti possono vedere la mappa
+        });
+        
+        // Verifica se l'utente può vedere Chart3 (Admin e Agency con piano Pro o Premium)
+        const canViewChart3 = computed(() => {
+          return (isAdmin.value || isAgency.value) && hasProOrPremium.value;
+        });
+        
+        // Verifica se l'utente può vedere Chart11 (Admin e Agency solo con Premium)
+        const canViewChart11 = computed(() => {
+          return (isAdmin.value || isAgency.value) && isPremium.value;
+        });
+        
+        // Verifica se l'utente può vedere Widget7 (Admin e Agency solo con Premium)
+        const canViewWidget7 = computed(() => {
+          return (isAdmin.value || isAgency.value) && isPremium.value;
         });
         
         // Carica la subscription per verificare il piano premium
@@ -626,26 +352,31 @@ export default defineComponent({
     const data = ref<DashboardDetails>();
         const chartData = ref<any>(null);
         const soldChartData = ref<any>(null);
-        const typologyData = ref<any>(null);
-        const topZonesData = ref<any>(null);
-            const auctionData = ref<any>(null);
             const soldPropertiesCount = ref<number>(0);
-            const availablePropertiesCount = ref<number>(0);
             const insertedPropertiesCount = ref<number>(0);
-            const salePropertiesCount = ref<number>(0);
-            const rentPropertiesCount = ref<number>(0);
+            const totalCommissions = ref<number>(0);
+            const totalCommissionsPortfolio = ref<number>(0);
+            const totalCommissionsEarned = ref<number>(0);
+            const commissionsMonthlyData = ref<Record<string, number>>({});
             // Admin profile details (for map positioning)
             const adminProfile = ref<Partial<User> | null>(null);
             const isAdminProfileLoaded = ref<boolean>(false);
             
-            // Agency filter
-            const selectedAgencyId = ref<string>('');
             const agenciesList = ref<any[]>([]);
+            const mapDataRef = ref<MapData | null>(null);
             
-            // Agents ranking filter
-            const selectedRankingType = ref<'sales' | 'appointments'>('sales');
-            const agentsRankingData = ref<any>(null);
             const agentsRawData = ref<any[]>([]);
+            
+            // Admin name for widget header
+            const adminName = computed(() => {
+              if (isAdmin.value && adminProfile.value) {
+                return adminProfile.value.Username || 
+                       `${adminProfile.value.FirstName || ''} ${adminProfile.value.LastName || ''}`.trim() ||
+                       store.user?.Username || 
+                       'Admin';
+              }
+              return store.user?.Username || store.user?.Email || 'Utente';
+            });
             
             // Agents monthly data
             const agentsMonthlyData = ref<Record<string, number>>({});
@@ -660,12 +391,85 @@ export default defineComponent({
               buyer: Record<string, number>;
             }>({ seller: {}, buyer: {} });
             
-            // Agencies ranking filter
-            const selectedAgencyRankingType = ref<'sales' | 'appointments'>('sales');
-            const agenciesRankingData = ref<any>(null);
+            // Current year for data processing
+            const currentYear = new Date().getFullYear();
             
-            // Year filter
-            const selectedYear = ref<number>(new Date().getFullYear());
+            // Filtri per Widget3 (sincronizzati con mappa)
+            const selectedYearFilter = ref<number>(currentYear);
+            const selectedAgencyFilter = ref<string | undefined>(undefined);
+            
+            // Funzione per caricare i dati Widget3 con filtri
+            const loadWidget3Data = async (agencyId?: string, year?: number) => {
+              if (!canViewChart3.value) return;
+              
+              try {
+                const widget3Data = await getWidget3Data(agencyId, year);
+                
+                // Converti i dati nel formato atteso da Widget3
+                // Il backend restituisce Sale/Rent/Auction (PascalCase), il frontend si aspetta sale/rent/auction (camelCase)
+                // Verifica che PropertiesData esista e abbia le proprietà
+                if (widget3Data && widget3Data.PropertiesData) {
+                  chartData.value = {
+                    months: widget3Data.Months || [],
+                    data: {
+                      sale: widget3Data.PropertiesData.Sale || {},
+                      rent: widget3Data.PropertiesData.Rent || {},
+                      auction: widget3Data.PropertiesData.Auction || {}
+                    }
+                  };
+                } else {
+                  console.warn('PropertiesData non disponibile, inizializzo con valori vuoti');
+                  chartData.value = {
+                    months: widget3Data?.Months || [],
+                    data: { sale: {}, rent: {}, auction: {} }
+                  };
+                }
+                
+                if (widget3Data && widget3Data.SoldPropertiesData) {
+                  soldChartData.value = {
+                    months: widget3Data.Months || [],
+                    data: {
+                      sale: widget3Data.SoldPropertiesData.Sale || {},
+                      rent: widget3Data.SoldPropertiesData.Rent || {},
+                      auction: widget3Data.SoldPropertiesData.Auction || {}
+                    }
+                  };
+                } else {
+                  console.warn('SoldPropertiesData non disponibile, inizializzo con valori vuoti');
+                  soldChartData.value = {
+                    months: widget3Data?.Months || [],
+                    data: { sale: {}, rent: {}, auction: {} }
+                  };
+                }
+                
+                // Aggiorna totali provvigioni
+                totalCommissionsPortfolio.value = widget3Data?.TotalCommissionsPortfolio || 0;
+                totalCommissionsEarned.value = widget3Data?.TotalCommissionsEarned || 0;
+                totalCommissions.value = totalCommissionsPortfolio.value + totalCommissionsEarned.value;
+                
+                // Aggiorna provvigioni mensili
+                commissionsMonthlyData.value = widget3Data?.CommissionsMonthlyData || {};
+              } catch (error: any) {
+                if (error?.response?.status === 403) {
+                  console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
+                } else {
+                  console.error('Errore nel caricamento dei dati Widget3:', error);
+                }
+                // Inizializza con valori vuoti in caso di errore per evitare errori di accesso
+                if (!chartData.value) {
+                  chartData.value = {
+                    months: [],
+                    data: { sale: {}, rent: {}, auction: {} }
+                  };
+                }
+                if (!soldChartData.value) {
+                  soldChartData.value = {
+                    months: [],
+                    data: { sale: {}, rent: {}, auction: {} }
+                  };
+                }
+              }
+            };
             
             // Calendar/Appointments data
             const totalAppointments = ref<number>(0);
@@ -681,27 +485,6 @@ export default defineComponent({
             
             // Appointments chart data
             const appointmentsChartData = ref<any>(null);
-            
-            // Filtered agencies list based on selection
-            const filteredAgenciesList = computed(() => {
-              if (!selectedAgencyId.value) {
-                // Se nessuna agenzia selezionata, mostra tutte
-                return agenciesList.value;
-              } else {
-                // Se agenzia specifica selezionata, mostra le sotto-agenzie
-                const subAgencies = agenciesList.value.filter(agency => 
-                  agency.AdminId === selectedAgencyId.value
-                );
-                
-                // Se non ci sono sotto-agenzie, mostra l'agenzia selezionata stessa
-                if (subAgencies.length === 0) {
-                  const selectedAgency = agenciesList.value.find(agency => agency.id === selectedAgencyId.value);
-                  return selectedAgency ? [selectedAgency] : [];
-                }
-                
-                return subAgencies;
-              }
-            });
 
             // KPI Analytics data for Chart11
             const kpiAnalyticsData = computed(() => {
@@ -727,7 +510,7 @@ export default defineComponent({
 
               // Immobili inseriti - dati reali dal grafico chartData
               const propertiesData: Record<string, number> = { ...emptyMonthlyData };
-              if (chartData.value && chartData.value.months && chartData.value.data) {
+              if (chartData.value && chartData.value.months && chartData.value.data && chartData.value.data.sale && chartData.value.data.rent && chartData.value.data.auction) {
                 chartData.value.months.forEach((month: string) => {
                   // Somma vendite + affitti + aste per il totale immobili inseriti
                   const sale = chartData.value.data.sale[month] || 0;
@@ -739,7 +522,7 @@ export default defineComponent({
 
               // Immobili venduti - dati reali dal grafico soldChartData
               const soldData: Record<string, number> = { ...emptyMonthlyData };
-              if (soldChartData.value && soldChartData.value.months && soldChartData.value.data) {
+              if (soldChartData.value && soldChartData.value.months && soldChartData.value.data && soldChartData.value.data.sale && soldChartData.value.data.rent && soldChartData.value.data.auction) {
                 soldChartData.value.months.forEach((month: string) => {
                   // Somma vendite + affitti + aste per il totale immobili venduti
                   const sale = soldChartData.value.data.sale[month] || 0;
@@ -799,7 +582,24 @@ export default defineComponent({
                 }
               };
             });
-        
+
+            // Properties monthly data for Widget7
+            const propertiesMonthlyData = computed(() => {
+              if (!chartData.value || !chartData.value.months || !chartData.value.data || 
+                  !chartData.value.data.sale || !chartData.value.data.rent || !chartData.value.data.auction) {
+                return {};
+              }
+              
+              const monthlyData: Record<string, number> = {};
+              chartData.value.months.forEach((month: string) => {
+                const sale = chartData.value.data.sale[month] || 0;
+                const rent = chartData.value.data.rent[month] || 0;
+                const auction = chartData.value.data.auction[month] || 0;
+                monthlyData[month] = sale + rent + auction;
+              });
+              
+              return monthlyData;
+            });
 
         async function ensureAdminProfileLoaded() {
           if (!isAdmin.value) {
@@ -824,132 +624,172 @@ export default defineComponent({
           }
         }
 
-        async function getItems(agencyId?: string) {
+        async function getItems() {
       loading.value = true;
       
       try {
         await ensureAdminProfileLoaded();
+        
+        // 🚀 NUOVA API PER WIDGET13 (MAPPA) - Chiamata dedicata con cache
+        // Tutti (Admin, Agency, Agent) vedono la mappa con gli stessi dati
+        if (canViewMap.value) {
+          try {
+            const mapData = await getMapData(undefined, currentYear);
+            
+            // Mappa i dati delle agenzie per compatibilità con Widget13 (modello leggero)
+            const mappedAgencies: any[] = mapData.Agencies.map((agency: any) => ({
+              ...agency,
+              name: agency.UserName || '',
+              id: agency.Id,
+              AdminId: agency.AdminId || null,
+              City: agency.City || '',
+              Province: agency.Province || '',
+              ZipCode: agency.ZipCode || '',
+              Address: agency.Address || '',
+              PhoneNumber: agency.PhoneNumber || '',
+              Email: agency.Email || ''
+            }));
 
-        // 🚀 NUOVA API AGGREGATA - Una singola chiamata invece di 8+!
-        const dashboardData = await getDashboardAggregatedData(agencyId, selectedYear.value);
-        
-        // Assegna i dati aggregati
-        data.value = {
-          RealEstatePropertyHomeDetails: dashboardData.RealEstatePropertyHomeDetails,
-          RequestHomeDetails: dashboardData.RequestHomeDetails,
-          TotalCustomers: dashboardData.TotalCustomers,
-          TotalBuyers: dashboardData.TotalBuyers,
-          TotalSellers: dashboardData.TotalSellers,
-          TotalAgents: dashboardData.TotalAgents,
-          TotalAppointments: dashboardData.TotalAppointments,
-          TotalConfirmedAppointments: dashboardData.TotalConfirmedAppointments
-        };
-        
-        // Per gli Agent, carica solo i dati essenziali della dashboard
-        if (isAgent.value) {
-          loading.value = false;
-          return;
+            // Aggiungi l'admin stesso se è Admin e non è già nella lista
+            if (isAdmin.value && store.user) {
+              const profileSource = adminProfile.value || store.user;
+              const loggedAgency = {
+                ...profileSource,
+                name: profileSource?.Username || `${profileSource?.FirstName || ''} ${profileSource?.LastName || ''}`.trim(),
+                id: profileSource?.Id,
+                AdminId: profileSource?.AdminId || profileSource?.Id || null,
+                ZipCode: profileSource?.ZipCode || '',
+                City: profileSource?.City || '',
+                Province: profileSource?.Province || ''
+              };
+
+              const alreadyIncluded = mappedAgencies.some(agency => agency.id === loggedAgency.id);
+              if (!alreadyIncluded) {
+                mappedAgencies.push(loggedAgency);
+              }
+            }
+
+            agenciesList.value = mappedAgencies;
+            agentsRawData.value = mapData.Agents;
+            
+            // Salva i dati della mappa per il Widget13
+            mapDataRef.value = mapData;
+            
+            // Aggiorna data per altri widget che usano TotalAgents
+            data.value = {
+              TotalAgents: mapData.TotalAgents
+            };
+          } catch (error: any) {
+            console.error('Errore nel caricamento dei dati della mappa:', error);
+          }
         }
         
-        // Processa i dati degli immobili (disponibili e venduti) solo se premium
+        // Carica dati Widget3 iniziali
+        await loadWidget3Data(selectedAgencyFilter.value, selectedYearFilter.value);
+        
+        // Processa i dati degli immobili usando GetList solo se premium (per altri widget che non usano le nuove API)
         if (isPremium.value) {
           try {
-            const availableProperties = dashboardData.AvailableProperties ?? [];
-            const soldProperties = dashboardData.SoldProperties ?? [];
-            const allPropertiesMap = new Map<number | string, any>();
+            // Chiama GetList direttamente per ottenere i dati raw con il campo Sold
+            // Passa stringa vuota per ottenere tutti gli immobili
+            const response = await ApiService.get(
+              `RealEstateProperty/GetList?currentPage=0&agencyId=&filterRequest=&contract=&priceFrom=&priceTo=&category=&typologie=&town=`,
+              ""
+            );
+            
+            const rawProperties = response.data.Data as Array<any>;
 
-            availableProperties.forEach(property => {
-              allPropertiesMap.set(property.Id, property);
-            });
+            // Converti i dati raw in RealEstatePropertyListItem per compatibilità
+            const allProperties = rawProperties.map((item: any) => ({
+              Id: item.Id,
+              CreationDate: typeof item.CreationDate === 'string' ? item.CreationDate : (item.CreationDate instanceof Date ? item.CreationDate.toISOString() : String(item.CreationDate)),
+              UpdateDate: item.UpdateDate || item.AssignmentEnd || undefined,
+              Status: item.Status,
+              Auction: item.Auction || false,
+              Sold: item.Sold || false,
+              City: item.City,
+              Price: item.Price || 0,
+              Category: item.Category,
+              Typology: item.Typology,
+              AgencyId: item.AgencyId,
+              AddressLine: item.AddressLine,
+              AssignmentEnd: item.AssignmentEnd,
+              CommercialSurfaceate: item.CommercialSurfaceate,
+              State: item.State,
+              StateOfTheProperty: item.StateOfTheProperty,
+              FirstPhotoUrl: item.FirstPhotoUrl || null,
+              EffectiveCommission: item.EffectiveCommission || 0
+            }));
 
-            soldProperties.forEach(property => {
-              allPropertiesMap.set(property.Id, property);
-            });
-
-            const allProperties = Array.from(allPropertiesMap.values());
-
-            // Processa per i grafici (immobili inseriti = totale immessi)
-            chartData.value = processPropertiesForChart(allProperties, selectedYear.value);
+            // Separa gli immobili in base a Sold (se disponibile nel backend)
+            const availableProperties = allProperties.filter((p: any) => !p.Sold);
+            const soldProperties = allProperties.filter((p: any) => p.Sold === true);
 
             // Salva i dati per il ranking
             allPropertiesData.value = allProperties;
+            allSoldPropertiesData.value = soldProperties;
 
             // Salva i totali
             insertedPropertiesCount.value = allProperties.length;
-            availablePropertiesCount.value = availableProperties.length;
-
-            // Calcola i totali per Status (solo disponibili)
-            const saleProperties = availableProperties.filter(p => p.Status === 'Vendita' && !p.Auction);
-            const rentProperties = availableProperties.filter(p => p.Status === 'Affitto' && !p.Auction);
-            const auctionProperties = availableProperties.filter(p => p.Auction === true);
-
-            salePropertiesCount.value = saleProperties.length;
-            rentPropertiesCount.value = rentProperties.length;
-
-            auctionData.value = {
-              total: auctionProperties.length,
-              percentage: availableProperties.length > 0 
-                ? Math.round((auctionProperties.length / availableProperties.length) * 100) 
-                : 0
-            };
-
-            // Processa dati delle tipologie e delle zone (solo disponibili)
-            typologyData.value = processTypologyDistribution(availableProperties);
-            topZonesData.value = processTopZones(availableProperties);
+            soldPropertiesCount.value = soldProperties.length;
           } catch (error: any) {
             if (error?.response?.status === 403) {
               console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
             } else {
-              console.error('Errore nel processing delle proprietà disponibili:', error);
+              console.error('Errore nel processing delle proprietà:', error);
             }
           }
         }
-        
-        // Processa i dati degli immobili venduti solo se premium
-        if (isPremium.value && dashboardData.SoldProperties) {
-          try {
-            soldChartData.value = processSoldPropertiesForChart(dashboardData.SoldProperties, selectedYear.value);
-            soldPropertiesCount.value = dashboardData.SoldProperties.length;
-            
-            // Salva i dati per il ranking
-            allSoldPropertiesData.value = dashboardData.SoldProperties;
-            
-            // Calcola i totali filtrati per Widget13 (anno + agenzia)
-            const currentYear = selectedYear.value;
-            const filteredByYear = dashboardData.SoldProperties.filter(property => {
-              const updateDate = property.UpdateDate && property.UpdateDate !== '0001-01-01T00:00:00' 
-                ? new Date(property.UpdateDate) 
-                : new Date(property.CreationDate);
-              return updateDate.getFullYear() === currentYear;
-            });
-            
-            // Conta per tipologia
-            filteredSoldProperties.value = filteredByYear.filter(p => p.Status === 'Vendita' && !p.Auction).length;
-            filteredRentedProperties.value = filteredByYear.filter(p => p.Status === 'Affitto' && !p.Auction).length;
-            filteredAuctionProperties.value = filteredByYear.filter(p => p.Auction === true).length;
-          } catch (error: any) {
-            if (error?.response?.status === 403) {
-              console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
-            } else {
-              console.error('Errore nel processing delle proprietà vendute:', error);
-            }
-          }
-        }
-        
-        // Processa i dati delle agenzie
-        const mappedAgencies: any[] = dashboardData.Agencies
-          ? dashboardData.Agencies.map(agency => ({
-              ...agency,
-              name: agency.UserName || `${agency.FirstName || ''} ${agency.LastName || ''}`.trim(),
-              id: agency.Id,
-            AdminId: (agency as any).AdminId || null,
-            City: (agency as any).City || (agency as any).city || '',
-            Province: (agency as any).Province || (agency as any).province || '',
-            ZipCode: (agency as any).ZipCode || (agency as any).zipCode || ''
-            }))
-          : [];
+      } catch (error) {
+        console.error('❌ Errore nel caricamento della dashboard:', error);
+        // Mostra un errore all'utente se necessario
+      } finally {
+        loading.value = false;
+      }
+    }
 
-        if (isAdmin.value && store.user) {
+
+    onMounted(async () => {
+      // Carica la subscription per verificare premium
+      await loadSubscription();
+      await ensureAdminProfileLoaded();
+      
+      await getItems();
+    });
+
+
+    // Dashboard filter change handler - ricarica i dati della mappa e Widget3 con i nuovi filtri
+    const onDashboardFilterChange = async (filters: { year: number; agency: string }) => {
+      if (!canViewMap.value) return;
+      
+      try {
+        // Aggiorna i filtri
+        selectedYearFilter.value = filters.year;
+        selectedAgencyFilter.value = filters.agency === 'all' ? undefined : filters.agency;
+        
+        // Passa l'ID completo con prefisso al backend (es: "agency_xxx" o "agent_xxx")
+        // Il backend userà il prefisso per sapere come filtrare
+        const agencyId = selectedAgencyFilter.value && selectedAgencyFilter.value !== 'all' 
+          ? selectedAgencyFilter.value 
+          : undefined;
+        
+        // Ricarica i dati della mappa
+        const mapData = await getMapData(agencyId, filters.year);
+        
+        // Mappa i dati delle agenzie
+        const mappedAgencies: any[] = mapData.Agencies.map((agency: any) => ({
+          ...agency,
+          name: agency.UserName || `${agency.FirstName || ''} ${agency.LastName || ''}`.trim(),
+          id: agency.Id,
+          AdminId: agency.AdminId || null,
+          City: agency.City || '',
+          Province: agency.Province || '',
+          ZipCode: agency.ZipCode || ''
+        }));
+
+        // Aggiungi l'admin stesso se è Admin e non è già nella lista
+        // Ma NON aggiungerlo se c'è un filtro attivo per un'agenzia/agente specifico
+        if (isAdmin.value && store.user && !agencyId) {
           const profileSource = adminProfile.value || store.user;
           const loggedAgency = {
             ...profileSource,
@@ -968,222 +808,21 @@ export default defineComponent({
         }
 
         agenciesList.value = mappedAgencies;
+        agentsRawData.value = mapData.Agents;
         
-        // Processa i dati degli agenti solo se premium
-        if (isPremium.value && dashboardData.Agents) {
-          try {
-            agentsRankingData.value = processAgentsRanking(dashboardData.Agents);
-            agentsRawData.value = dashboardData.Agents;
-            
-            // Processa i dati mensili degli agenti per il grafico
-            const agentsChartData = processAgentsForChart(dashboardData.Agents, selectedYear.value);
-            agentsMonthlyData.value = agentsChartData.monthlyData;
-          } catch (error: any) {
-            if (error?.response?.status === 403) {
-              console.warn('Accesso negato: piano premium richiesto per questa funzionalità');
-            } else {
-              console.error('Errore nel processing degli agenti:', error);
-            }
-          }
-        }
+        // Salva i dati della mappa per il Widget13
+        mapDataRef.value = mapData;
         
-        // Processa i dati degli appuntamenti
-        if (dashboardData.CalendarEvents) {
-          const appointmentsData = processCalendarEvents(dashboardData.CalendarEvents);
-          totalAppointments.value = appointmentsData.total;
-          confirmedAppointments.value = appointmentsData.confirmed;
-          
-          // Processa per il grafico mensile
-          appointmentsChartData.value = processAppointmentsForChart(dashboardData.CalendarEvents, selectedYear.value);
-        }
+        data.value = {
+          TotalAgents: mapData.TotalAgents
+        };
         
-        // Processa i dati delle richieste
-        if (dashboardData.Requests) {
-          requestsChartData.value = processRequestsForChart(dashboardData.Requests, selectedYear.value);
-        }
-        
-        // Processa i dati dei clienti
-        if (dashboardData.Customers) {
-          const customersChartData = processCustomersForChart(dashboardData.Customers, selectedYear.value);
-          customersMonthlyData.value = customersChartData;
-        }
+        // Ricarica i dati del Widget3 con i nuovi filtri
+        await loadWidget3Data(agencyId, filters.year);
       } catch (error) {
-        console.error('❌ Errore nel caricamento della dashboard:', error);
-        // Mostra un errore all'utente se necessario
-      } finally {
-        loading.value = false;
+        console.error('Errore nel caricamento dei dati con filtri:', error);
       }
-    }
-
-
-    onMounted(async () => {
-      // Carica la subscription per verificare premium
-      await loadSubscription();
-      await ensureAdminProfileLoaded();
-      
-      // Usa helper per ottenere l'AgencyId corretto in base al ruolo
-      const initialAgencyId = getUserAgencyId();
-      await getItems(initialAgencyId);
-    });
-
-
-        // Handle agency filter change
-        const onAgencyChange = async (agencyId?: string) => {
-          selectedAgencyId.value = agencyId || '';
-          await getItems(selectedAgencyId.value || undefined);
-        };
-
-        // Handle year change from map widget
-        const onYearChange = async (year: number) => {
-          selectedYear.value = year;
-          await getItems(selectedAgencyId.value || undefined);
-        };
-
-        // Handle agency selection from map widget
-        const onAgencySelect = async (agency: any) => {
-          selectedAgencyId.value = agency.id;
-          await getItems(agency.id);
-        };
-
-        // Get selected agency name
-        const getSelectedAgencyName = () => {
-          const agency = agenciesList.value.find(a => a.id === selectedAgencyId.value);
-          return agency ? agency.name : 'Agenzia non trovata';
-        };
-
-        // Agents ranking functions
-        const setRankingType = (type: 'sales' | 'appointments') => {
-          selectedRankingType.value = type;
-        };
-
-        const getRankingTypeLabel = () => {
-          switch (selectedRankingType.value) {
-            case 'sales': return 'immobili venduti';
-            case 'appointments': return 'immobili caricati';
-            default: return 'immobili venduti';
-          }
-        };
-
-        const getRankingUnitLabel = () => {
-          switch (selectedRankingType.value) {
-            case 'sales': return 'vendite';
-            case 'appointments': return 'immobili';
-            default: return 'vendite';
-          }
-        };
-
-        // Agencies ranking functions
-        const setAgencyRankingType = (type: 'sales' | 'appointments') => {
-          selectedAgencyRankingType.value = type;
-        };
-
-        const getAgencyRankingTypeLabel = () => {
-          switch (selectedAgencyRankingType.value) {
-            case 'sales': return 'immobili venduti';
-            case 'appointments': return 'immobili caricati';
-            default: return 'immobili venduti';
-          }
-        };
-
-        const getAgencyRankingUnitLabel = () => {
-          switch (selectedAgencyRankingType.value) {
-            case 'sales': return 'vendite';
-            case 'appointments': return 'immobili';
-            default: return 'vendite';
-          }
-        };
-
-        const filteredAgentsRankingData = computed(() => {
-          if (!agentsRawData.value || agentsRawData.value.length === 0) {
-            return [];
-          }
-
-          // Conta le vendite/immobili caricati per ogni agente FILTRATI PER ANNO
-          const agentsWithCounts = agentsRawData.value.map(agent => {
-            let count = 0;
-            const agentName = `${agent.Name || ''} ${agent.LastName || ''}`.trim();
-
-            if (selectedRankingType.value === 'sales') {
-              // Conta immobili venduti dell'agente nell'anno selezionato
-              count = allSoldPropertiesData.value.filter(property => {
-                if (property.AgentId !== agent.Id) return false;
-                
-                // Filtra per anno
-                const updateDate = property.UpdateDate && property.UpdateDate !== '0001-01-01T00:00:00' 
-                  ? new Date(property.UpdateDate) 
-                  : new Date(property.CreationDate);
-                return updateDate.getFullYear() === selectedYear.value;
-              }).length;
-            } else if (selectedRankingType.value === 'appointments') {
-              // Conta immobili caricati dall'agente nell'anno selezionato
-              count = allPropertiesData.value.filter(property => {
-                if (property.AgentId !== agent.Id) return false;
-                
-                // Filtra per anno
-                const creationDate = new Date(property.CreationDate);
-                return creationDate.getFullYear() === selectedYear.value;
-              }).length;
-            }
-
-            return {
-              id: agent.Id,
-              name: agentName,
-              count: count
-            };
-          });
-
-          // Ordina per count decrescente e filtra quelli con count > 0
-          return agentsWithCounts
-            .filter(agent => agent.count > 0)
-            .sort((a, b) => b.count - a.count);
-        });
-
-        const filteredAgenciesRankingData = computed(() => {
-          if (!agenciesList.value || agenciesList.value.length === 0) {
-            return [];
-          }
-
-            const agenciesWithCounts = agenciesList.value.map(agency => {
-            let count = 0;
-            const agencyName = agency.UserName || agency.name || 'Agency';
-            const agencyId = agency.Id;
-
-            if (selectedAgencyRankingType.value === 'sales') {
-              // Conta immobili venduti dell'agenzia nell'anno selezionato
-              count = allSoldPropertiesData.value.filter(property => {
-                const propertyAdminId = property.AgencyId ?? property.AdminId;
-                if (propertyAdminId !== agencyId) return false;
-                
-                // Filtra per anno
-                const updateDate = property.UpdateDate && property.UpdateDate !== '0001-01-01T00:00:00' 
-                  ? new Date(property.UpdateDate) 
-                  : new Date(property.CreationDate);
-                return updateDate.getFullYear() === selectedYear.value;
-              }).length;
-            } else if (selectedAgencyRankingType.value === 'appointments') {
-              // Conta immobili caricati dall'agenzia nell'anno selezionato
-              count = allPropertiesData.value.filter(property => {
-                const propertyAdminId = property.AgencyId ?? property.AdminId;
-                if (propertyAdminId !== agencyId) return false;
-                
-                // Filtra per anno
-                const creationDate = new Date(property.CreationDate);
-                return creationDate.getFullYear() === selectedYear.value;
-              }).length;
-            }
-
-            return {
-              id: agency.Id,
-              name: agencyName,
-              count: count
-            };
-          });
-
-          // Ordina per count decrescente e filtra quelli con count > 0
-          return agenciesWithCounts
-            .filter(agency => agency.count > 0)
-            .sort((a, b) => b.count - a.count);
-    });
+    };
 
     // onUnmounted(() => {
     //   if (!localStorage.getItem(LS_CONFIG_NAME_KEY)) {
@@ -1196,39 +835,17 @@ export default defineComponent({
       data,
       chartData,
       soldChartData,
-      typologyData,
-      topZonesData,
-      auctionData,
       soldPropertiesCount,
-      availablePropertiesCount,
       insertedPropertiesCount,
-      salePropertiesCount,
-      rentPropertiesCount,
-      agentsRankingData,
       agentsRawData,
-      selectedAgencyId,
       agenciesList,
-      onAgencyChange,
-      onYearChange,
-      onAgencySelect,
-      getSelectedAgencyName,
-      selectedRankingType,
-      setRankingType,
-      getRankingTypeLabel,
-      getRankingUnitLabel,
-      filteredAgentsRankingData,
-      selectedAgencyRankingType,
-      setAgencyRankingType,
-      getAgencyRankingTypeLabel,
-      getAgencyRankingUnitLabel,
-      filteredAgenciesRankingData,
+      mapDataRef,
+      adminName,
       totalAppointments,
       confirmedAppointments,
       kpiAnalyticsData,
       agentsMonthlyData,
       customersMonthlyData,
-      filteredAgenciesList,
-      selectedYear,
       filteredSoldProperties,
       filteredRentedProperties,
       filteredAuctionProperties,
@@ -1237,9 +854,24 @@ export default defineComponent({
       subscriptionExpired,
       isAgent,
       isAdmin,
+      isAgency,
       adminProfile,
       isPremium,
-      isLoadingSubscription
+      isPro,
+      isBasic,
+      canViewMap,
+      canViewChart3,
+      canViewChart11,
+      canViewWidget7,
+      isLoadingSubscription,
+      propertiesMonthlyData,
+      totalCommissions,
+      totalCommissionsPortfolio,
+      totalCommissionsEarned,
+      commissionsMonthlyData,
+      onDashboardFilterChange,
+      selectedYearFilter,
+      selectedAgencyFilter
     }
   },
 });
@@ -1297,30 +929,41 @@ export default defineComponent({
   box-shadow: 0 6px 20px rgba(0, 119, 204, 0.4);
 }
 
+.locked-overlay-card {
+  max-width: 360px;
+  width: 100%;
+  padding: 1.75rem;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 119, 204, 0.12);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.8));
+}
+
+.locked-overlay-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(0, 119, 204, 0.1);
+}
+
+[data-bs-theme="dark"] .locked-overlay-card {
+  background: linear-gradient(145deg, rgba(26, 26, 26, 0.94), rgba(26, 26, 26, 0.82));
+  border-color: rgba(0, 119, 204, 0.2);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+[data-bs-theme="dark"] .locked-overlay-icon {
+  box-shadow: inset 0 0 0 1px rgba(102, 179, 255, 0.25);
+}
+
 /* Separator */
 .separator.separator-dashed {
   border-top-width: 2px;
   opacity: 0.5;
-}
-
-/* Premium Lock Overlay */
-.premium-lock-overlay {
-  background-color: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(0.3px);
-  z-index: 10;
-  border-radius: 16px;
-}
-
-[data-bs-theme="dark"] .premium-lock-overlay {
-  background-color: rgba(26, 26, 26, 0.08);
-}
-
-/* Premium Content Blurred */
-.premium-content-blurred {
-  filter: blur(1px);
-  opacity: 0.85;
-  pointer-events: none;
-  user-select: none;
 }
 
 /* Light Mode */

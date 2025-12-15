@@ -101,7 +101,7 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="Title">
-                  <el-input v-model="formData.Title" type="text" size="large" class="form-control-palette" placeholder="Inserisci il titolo dell'immobile" />
+                  <el-input v-model="formData.Title" type="text" size="large" class="form-control-palette" placeholder="Inserisci il titolo dell'immobile" @blur="capitalizeTitle" />
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -468,7 +468,7 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <el-form-item prop="AddressLine">
-                    <el-input v-model="formData.AddressLine" type="text" size="large" placeholder="Via, numero civico" />
+                    <el-input v-model="formData.AddressLine" type="text" size="large" placeholder="Via, numero civico" @blur="capitalizeAddressLine" />
                   </el-form-item>
                   <!--end::Input-->
                 </div>
@@ -510,7 +510,7 @@
                     <el-form-item prop="City">
                       <select class="form-select form-select-lg" aria-label="Single select example" v-model="formData.City" required>
                           <option value="">🏙️ Seleziona comune</option>
-                          <option v-for="(city, index) in cities" :key="index" :value="city.Id">{{ city.Name }}</option>
+                          <option v-for="(city, index) in cities" :key="index" :value="city.Id">{{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}</option>
                       </select>
                     </el-form-item>
                     <!--end::Input-->
@@ -531,7 +531,7 @@
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
-                    <el-input v-model="formData.Location" type="text" size="large" placeholder="Inserisci la località" />
+                    <el-input v-model="formData.Location" type="text" size="large" placeholder="Inserisci la località" @blur="capitalizeLocation" />
                     <!--end::Input-->
                   </div>
 
@@ -542,12 +542,12 @@
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-                      Codice Fiscale
+                      CAP
                     </label>
                     <!--end::Label-->
                     <!--begin::Input-->
                     <el-form-item prop="PostCode">
-                      <el-input v-model="formData.PostCode" type="text" size="large" placeholder="Inserisci il codice fiscale" />
+                      <el-input v-model="formData.PostCode" type="text" size="large" placeholder="Inserisci il CAP" />
                     </el-form-item>
                     <!--end::Input-->
                   </div>
@@ -608,7 +608,11 @@
                       <!--end::Label-->
                       <!--begin::Input-->
                       <el-form-item prop="CondominiumExpenses">
-                        <el-input v-model="formData.CondominiumExpenses" type="number" size="large" placeholder="€ Spese mensili" />
+                        <el-input v-model="formData.CondominiumExpenses" type="number" size="large" placeholder="Inserisci importo">
+                          <template #append>
+                            <span>€</span>
+                          </template>
+                        </el-input>
                       </el-form-item>
                       <!--end::Input-->
                     </div>
@@ -892,12 +896,16 @@
                   </label>
                   <!--end::Label-->
                   <!--begin::Input-->
-                  <select class="form-select form-select-lg h-auto" v-model="formData.Exposure" multiple>
+                  <select class="form-select form-select-lg h-auto" v-model="selectedExposures" multiple
+                    style="min-height: 100px;">
                     <option value="Nord">🧭 Nord</option>
                     <option value="Sud">☀️ Sud</option>
                     <option value="Est">🌅 Est</option>
                     <option value="Ovest">🌄 Ovest</option>
                   </select>
+                  <small class="text-palette-secondary d-block mt-1 fs-8">
+                    Tieni premuto Ctrl (o Cmd su Mac) per selezionare più esposizioni
+                  </small>
                   <!--end::Input-->
                 </div>
                 <!--end::Input group-->
@@ -1195,12 +1203,13 @@
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, watch, onMounted, reactive, computed } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { createRealEstateProperty, RealEstateProperty, getToInsert, InsertModel } from "@/core/data/properties";
 import { useAuthStore } from "@/stores/auth";
 import Multiselect from '@vueform/multiselect'
-import { getAllProvinceNames, getCitiesByProvince, getCAPByCity } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getCityByCAP } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-property-modal",
@@ -1211,9 +1220,10 @@ export default defineComponent({
     const addPropertyModalRef = ref<null | HTMLElement>(null);
     const store = useAuthStore();
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
-    const cities = ref<Array<{Id: string, Name: string}>>([]);
+    const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
     const loading = ref<boolean>(false);
     const isTrattativaRiservata = ref(false);
+    const selectedExposures = ref<string[]>([]);
     const formData = ref<RealEstateProperty>({
       Title: "",
       Category: "Residenziale",
@@ -1232,6 +1242,7 @@ export default defineComponent({
       PostCode: "",
       CommercialSurfaceate: 0,
       TotalBuildingfloors: 0,
+      Floor: "Piano Terra",
       Elevators: 0,
       MoreDetails: "",
       MoreFeatures: "",
@@ -1317,7 +1328,8 @@ export default defineComponent({
           const citiesData = getCitiesByProvince(provinceName);
           cities.value = citiesData.map(city => ({
             Id: city.Name,
-            Name: city.Name
+            Name: city.Name,
+            CAP: city.CAP
           }));
         } else {
           cities.value = [];
@@ -1432,7 +1444,7 @@ export default defineComponent({
         () => formData.value.City,
         async (newCity) => {
             // Auto-compila il CAP se disponibile
-            if (formData.value.State && newCity) {
+            if (formData.value.State && newCity && formData.value.PostCode !== getCAPByCity(formData.value.State, newCity)) {
               const cap = getCAPByCity(formData.value.State, newCity);
               if (cap) {
                 formData.value.PostCode = cap;
@@ -1443,6 +1455,23 @@ export default defineComponent({
               clearFieldError("City");
             }
         }
+        );
+
+        // Watcher per auto-compilare il comune quando si modifica il CAP
+        watch(
+          () => formData.value.PostCode,
+          (newCAP) => {
+            if (newCAP && formData.value.State) {
+              const cityName = getCityByCAP(formData.value.State, newCAP);
+              if (cityName && formData.value.City !== cityName) {
+                formData.value.City = cityName;
+                clearFieldError("City");
+              }
+            }
+            if (newCAP) {
+              clearFieldError("PostCode");
+            }
+          }
         );
 
     watch(() => formData.value.CustomerId, (value) => {
@@ -1559,6 +1588,16 @@ export default defineComponent({
           formRef.value.validateField('FlatRateCommission', () => {});
         }
       }
+    );
+
+    // Watcher per convertire l'array di esposizioni selezionate in stringa
+    watch(
+      () => selectedExposures.value,
+      (newExposures) => {
+        // Unisce le esposizioni con "-" (es. "Nord-Est")
+        formData.value.Exposure = newExposures.length > 0 ? newExposures.join('-') : '';
+      },
+      { deep: true }
     );
 
     const validatePrice = (_rule: any, value: number | string, callback: any) => {
@@ -1694,7 +1733,7 @@ export default defineComponent({
       PostCode: [
         {
           required: true,
-          message: "Il codice fiscale è obbligatorio",
+          message: "Il CAP è obbligatorio",
           trigger: "change",
         },
       ],
@@ -1791,7 +1830,7 @@ export default defineComponent({
         markFieldInvalid("City");
       }
       if (!formData.value.PostCode) {
-        missingFields.push("Codice fiscale");
+        missingFields.push("CAP");
         markFieldInvalid("PostCode");
       }
       if (!formData.value.CommercialSurfaceate || formData.value.CommercialSurfaceate <= 0) {
@@ -1884,6 +1923,11 @@ export default defineComponent({
           if (isTrattativaRiservata.value) {
             formData.value.Price = -1;
           }
+
+          // Aggiorna Exposure dall'array di esposizioni selezionate
+          formData.value.Exposure = selectedExposures.value.length > 0 
+            ? selectedExposures.value.join('-') 
+            : '';
           
           try {
           const result = await createRealEstateProperty(formData.value);
@@ -1982,6 +2026,25 @@ export default defineComponent({
       });
     });
 
+    // Funzioni per capitalizzare i campi quando l'utente perde il focus
+    const capitalizeTitle = () => {
+      if (formData.value.Title && typeof formData.value.Title === 'string' && formData.value.Title.trim()) {
+        formData.value.Title = toTitleCase(formData.value.Title);
+      }
+    };
+
+    const capitalizeAddressLine = () => {
+      if (formData.value.AddressLine && typeof formData.value.AddressLine === 'string' && formData.value.AddressLine.trim()) {
+        formData.value.AddressLine = smartTitleCase(formData.value.AddressLine);
+      }
+    };
+
+    const capitalizeLocation = () => {
+      if (formData.value.Location && typeof formData.value.Location === 'string' && formData.value.Location.trim()) {
+        formData.value.Location = toTitleCase(formData.value.Location);
+      }
+    };
+
     return {
       formData,
       rules,
@@ -2000,7 +2063,11 @@ export default defineComponent({
       isTrattativaRiservata,
       inserModel,
       invalidFields,
-      effectiveCommission
+      effectiveCommission,
+      selectedExposures,
+      capitalizeTitle,
+      capitalizeAddressLine,
+      capitalizeLocation
     };
   },
 });

@@ -145,18 +145,42 @@
                     </div>
                   </div>
                   <div class="card-body p-8">
-                    <!-- Selected Plan Summary -->
-                    <div class="payment-summary mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
-                      <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                          <h4 class="fw-bold mb-1 pricing-text-primary">Piano {{ selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1) }}</h4>
-                          <p class="mb-0 pricing-text-secondary">{{ getPlanDescription(selectedPlan) }}</p>
+                    <!-- Upgrade Credit Breakdown -->
+                    <div v-if="selectedPlan && upgradeCreditCalculation" class="payment-summary mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
+                      <div v-if="upgradeCreditCalculation.CreditAmount > 0" class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <span class="pricing-text-secondary">Prezzo nuovo piano:</span>
+                          <span class="fw-semibold pricing-text-primary">€{{ upgradeCreditCalculation.OriginalAmount?.toFixed(2) || getPlanPrice(selectedPlan).toFixed(2) }}</span>
                         </div>
-                        <div class="text-end">
-                          <div class="fs-1 fw-bolder text-primary">€{{ getPlanPrice(selectedPlan) }}</div>
-                          <span class="fs-7 pricing-text-secondary">/mese</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <span class="pricing-text-secondary">
+                            <i class="ki-duotone ki-check-circle fs-5 text-success me-1">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                            </i>
+                            Credito residuo ({{ upgradeCreditCalculation.DaysRemaining }} giorni):
+                          </span>
+                          <span class="fw-semibold text-success">-€{{ upgradeCreditCalculation.CreditAmount?.toFixed(2) || '0.00' }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                          <span class="fw-bold pricing-text-primary">Totale da pagare:</span>
+                          <span class="fs-3 fw-bolder text-primary">€{{ upgradeCreditCalculation.FinalAmount?.toFixed(2) || getPlanPrice(selectedPlan).toFixed(2) }}</span>
                         </div>
                       </div>
+                      <div v-else class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <span class="fw-bold pricing-text-primary">Totale da pagare:</span>
+                          <span class="fs-3 fw-bolder text-primary">€{{ getPlanPrice(selectedPlan).toFixed(2) }}</span>
+                        </div>
+                      </div>
+                      <p v-if="upgradeCreditCalculation.CreditAmount > 0" class="fs-8 text-muted mb-0 mt-3">
+                        <i class="ki-duotone ki-information-5 fs-6 me-1">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                        </i>
+                        Il credito del tuo abbonamento attuale è stato applicato all'importo.
+                      </p>
                     </div>
 
                     <!-- Stripe Payment Element -->
@@ -214,9 +238,10 @@
 import { defineComponent, ref, watch, computed, onMounted } from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe, StripeElements } from '@stripe/stripe-js';
-import { createPaymentIntent } from '@/core/data/billing';
+import { createPaymentIntent, calculateUpgradeCredit, type UpgradeCreditCalculationResponse } from '@/core/data/billing';
 import { getActivePlans, type SubscriptionPlan } from '@/core/data/subscription-plans';
 import { checkDowngradeCompatibility, type DowngradeCompatibilityResponse } from '@/core/data/subscription-limits';
+import { getCurrentSubscription, type UserSubscription } from '@/core/data/subscription';
 import { useAuthStore } from '@/stores/auth';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
@@ -252,6 +277,10 @@ export default defineComponent({
     userId: {
       type: String,
       default: ''
+    },
+    autoSelectCurrentPlan: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['close', 'success', 'cancel'],
@@ -263,6 +292,8 @@ export default defineComponent({
     const isVerified = ref(true); // Start as verified for modal usage
     const isLoadingPlans = ref(true);
     const plans = ref<SubscriptionPlan[]>([]);
+    const currentSubscription = ref<UserSubscription | null>(null);
+    const upgradeCreditCalculation = ref<UpgradeCreditCalculationResponse | null>(null);
     let stripe: Stripe | null = null;
     let elements: StripeElements | null = null;
 
@@ -291,9 +322,59 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
-      loadPlans();
+    // Carica l'abbonamento corrente
+    const loadCurrentSubscription = async () => {
+      try {
+        currentSubscription.value = await getCurrentSubscription();
+      } catch (error) {
+        console.error('Errore nel caricamento abbonamento corrente:', error);
+        currentSubscription.value = null;
+      }
+    };
+
+    // Verifica se l'abbonamento è scaduto
+    const isSubscriptionExpired = computed(() => {
+      if (!currentSubscription.value || !currentSubscription.value.EndDate) {
+        return true; // Se non c'è abbonamento o data scadenza, considera scaduto
+      }
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const endDate = new Date(currentSubscription.value.EndDate);
+      endDate.setHours(0, 0, 0, 0);
+      
+      return endDate < today || currentSubscription.value.Status?.toLowerCase() === 'expired';
     });
+
+    // Verifica se è un downgrade (nuovo piano costa meno del corrente)
+    const isDowngrade = (newPlan: SubscriptionPlan): boolean => {
+      if (!currentSubscription.value?.SubscriptionPlan) {
+        return false; // Se non c'è abbonamento corrente, non è un downgrade
+      }
+      
+      const currentPlanPrice = currentSubscription.value.SubscriptionPlan.Price || 0;
+      const newPlanPrice = newPlan.Price || 0;
+      
+      return newPlanPrice < currentPlanPrice;
+    };
+
+    onMounted(async () => {
+      await Promise.all([loadPlans(), loadCurrentSubscription()]);
+    });
+
+    // Watch per selezionare automaticamente il piano quando i piani sono caricati
+    // e la modale è aperta con autoSelectCurrentPlan
+    watch([() => plans.value.length, () => props.isOpen, () => props.autoSelectCurrentPlan], 
+      async ([plansLength, isOpen, autoSelect]) => {
+        if (isOpen && autoSelect && plansLength > 0 && props.currentPlan && !selectedPlan.value) {
+          // Aspetta un momento per assicurarsi che tutto sia pronto
+          await new Promise(resolve => setTimeout(resolve, 100));
+          await selectPlan(props.currentPlan);
+        }
+      },
+      { immediate: false }
+    );
 
     const selectPlan = async (plan: string) => {
       // Trova il piano selezionato dall'array
@@ -309,7 +390,61 @@ export default defineComponent({
         return;
       }
 
-      // Verifica compatibilità downgrade PRIMA di procedere
+      // Carica l'abbonamento corrente se non è già caricato
+      if (!currentSubscription.value) {
+        await loadCurrentSubscription();
+      }
+
+      // Verifica se è un downgrade
+      const isDowngradeAttempt = isDowngrade(selectedPlanObj);
+      
+      // Se è un downgrade E l'abbonamento è ancora attivo (non scaduto), blocca
+      if (isDowngradeAttempt && !isSubscriptionExpired.value) {
+        const currentPlanName = currentSubscription.value?.SubscriptionPlan?.Name || 'attuale';
+        const endDate = currentSubscription.value?.EndDate 
+          ? new Date(currentSubscription.value.EndDate).toLocaleDateString('it-IT')
+          : 'N/A';
+        
+        Swal.fire({
+          title: '<div class="text-warning"><i class="ki-duotone ki-information-5 fs-2x me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> Downgrade Non Disponibile</div>',
+          html: `
+            <div class="text-start">
+              <p class="mb-4 pricing-text-primary">
+                Non puoi fare il downgrade mentre il tuo abbonamento è ancora attivo.
+              </p>
+              <div class="bg-light-warning p-4 rounded mb-4">
+                <div class="d-flex align-items-center mb-2">
+                  <i class="ki-duotone ki-crown fs-2 text-warning me-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  <div>
+                    <div class="fw-bold pricing-text-primary">Piano Attuale: ${currentPlanName}</div>
+                    <div class="fs-7 pricing-text-secondary">Scadenza: ${endDate}</div>
+                  </div>
+                </div>
+              </div>
+              <p class="mb-0 pricing-text-secondary fs-7">
+                <strong>Nota:</strong> Puoi cambiare piano solo quando l'abbonamento è scaduto. 
+                Al momento della scadenza, potrai scegliere qualsiasi piano disponibile (rispettando i requisiti).
+              </p>
+            </div>
+          `,
+          icon: 'warning',
+          confirmButtonText: 'Ho capito',
+          buttonsStyling: false,
+          heightAuto: false,
+          customClass: {
+            confirmButton: 'btn btn-primary fw-bold',
+            popup: 'text-start'
+          },
+          width: '600px'
+        });
+        return;
+      }
+
+      // Se è un downgrade ma l'abbonamento è scaduto, verifica i requisiti
+      // Se è un upgrade, procedi sempre
       try {
         Swal.fire({
           title: "Verifica compatibilità...",
@@ -328,14 +463,17 @@ export default defineComponent({
 
         Swal.close();
 
-        // Se il downgrade non è possibile, mostra la modale di warning
+        // Se il downgrade non è possibile (requisiti non rispettati), mostra la modale di warning
         if (!compatibility.canDowngrade) {
           showDowngradeWarningModal(compatibility, selectedPlanObj);
           return;
         }
 
-        // Se il downgrade è possibile, procedi normalmente
+        // Se il downgrade è possibile o è un upgrade, procedi normalmente
         selectedPlan.value = plan;
+        
+        // Calcola il credito per upgrade (se applicabile)
+        await calculateCreditForPlan(plan);
         
         // Initialize Stripe after plan selection
         setTimeout(async () => {
@@ -346,6 +484,10 @@ export default defineComponent({
         console.error('Errore nella verifica compatibilità:', error);
         // In caso di errore, procedi comunque (non bloccare l'utente)
         selectedPlan.value = plan;
+        
+        // Calcola il credito per upgrade (se applicabile)
+        await calculateCreditForPlan(plan);
+        
         setTimeout(async () => {
           await initializeStripe();
         }, 100);
@@ -408,8 +550,25 @@ export default defineComponent({
       });
     };
 
+    const calculateCreditForPlan = async (planName: string) => {
+      try {
+        // Solo se l'utente è autenticato
+        if (!authStore.user?.Email) {
+          upgradeCreditCalculation.value = null;
+          return;
+        }
+
+        const calculation = await calculateUpgradeCredit(planName);
+        upgradeCreditCalculation.value = calculation;
+      } catch (error: any) {
+        // In caso di errore, nascondi il breakdown ma non bloccare il flusso
+        upgradeCreditCalculation.value = null;
+      }
+    };
+
     const cancelPayment = () => {
       selectedPlan.value = null;
+      upgradeCreditCalculation.value = null;
       stripe = null;
       elements = null;
     };
@@ -568,10 +727,21 @@ export default defineComponent({
       }
     };
 
-    // Watch for modal close to reset state
-    watch(() => props.isOpen, (newVal) => {
-      if (!newVal) {
+    // Watch for modal open to reload subscription
+    watch(() => props.isOpen, async (newVal) => {
+      if (newVal) {
+        // Ricarica i piani e l'abbonamento corrente quando si apre la modale
+        await Promise.all([loadPlans(), loadCurrentSubscription()]);
+        
+        // Se deve selezionare automaticamente il piano e i piani sono già disponibili
+        if (props.autoSelectCurrentPlan && props.currentPlan && plans.value.length > 0) {
+          // Aspetta un momento per assicurarsi che tutto sia pronto
+          await new Promise(resolve => setTimeout(resolve, 200));
+          await selectPlan(props.currentPlan);
+        }
+      } else {
         selectedPlan.value = null;
+        upgradeCreditCalculation.value = null;
         isProcessing.value = false;
         stripe = null;
         elements = null;
@@ -595,6 +765,7 @@ export default defineComponent({
       isLoadingPlans,
       plans,
       displayEmail,
+      upgradeCreditCalculation,
       selectPlan,
       cancelPayment,
       handleClose,
