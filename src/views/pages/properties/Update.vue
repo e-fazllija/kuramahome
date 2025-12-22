@@ -131,7 +131,7 @@
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        Agente <span class="text-danger">*</span>
+                        Agente/Agenzia <span class="text-danger">*</span>
                       </label>
                       <el-form-item prop="AgentId">
                         <select 
@@ -140,13 +140,13 @@
                           required
                           :disabled="!canModify && user.Role === 'Agent'"
                         >
-                          <option value="">Seleziona l'agente</option>
+                          <option value="">Seleziona agente o agenzia</option>
                           <option
                             v-for="user in inserModel.Users"
                             :key="user.Id"
                             :value="user.Id"
                           >
-                            {{ user.FirstName }} {{ user.LastName }}
+                            {{ user.Role === 'Agency' ? '🏢 Agenzia: ' : '👤 ' }}{{ user.FirstName }} {{ user.LastName }}
                           </option>
                         </select>
                       </el-form-item>
@@ -450,11 +450,10 @@
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Arredamento</label>
                     <select class="form-select form-select-lg" v-model="formData.Furniture"
                       :disabled="!canModify && user.Role === 'Agent'">
-                      <option value="">Seleziona il tipo di arredamento</option>
-                      <option value="Arredato">Arredato</option>
-                      <option value="Non Arredato">Non Arredato</option>
-                      <option value="Parzialmente Arredato">Parzialmente Arredato</option>
-                      <option value="Arredato Solo Cucina">Arredato Solo Cucina</option>
+                      <option value="">🪑 Seleziona Arredamento</option>
+                  <option value="Arredato">✅ Arredato</option>
+                  <option value="Parzialmente Arredato">🟡 Parzialmente Arredato</option>
+                  <option value="Non Arredato">❌ Non Arredato</option>
                     </select>
                   </div>
 
@@ -468,9 +467,9 @@
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Riscaldamento</label>
                     <select class="form-select form-select-lg" v-model="formData.Heating"
                       :disabled="!canModify && user.Role === 'Agent'">
-                      <option value="Nessuno">Nessuno</option>
-                      <option value="Autonomo">Autonomo</option>
-                      <option value="Centralizzato">Centralizzato</option>
+                      <option value="Autonomo">🏠 Autonomo</option>
+                        <option value="Centralizzato">🏢 Centralizzato</option>
+                        <option value="Inesistente">❌ Inesistente</option>
                     </select>
                   </div>
 
@@ -526,11 +525,12 @@
                     <el-form-item prop="StateOfTheProperty">
                       <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty"
                         :disabled="!canModify && user.Role === 'Agent'">
-                        <option value="">Seleziona lo Stato dell'immobile</option>
-                        <option value="Nuovo / In Costruzione">Nuovo / In Costruzione</option>
-                        <option value="Ottimo / Ristrutturato">Ottimo / Ristrutturato</option>
-                        <option value="Buono / Abitabile">Buono / Abitabile</option>
-                        <option value="Da Ristrutturare">Da Ristrutturare</option>
+                        <option value="0">🔒 Affittato</option>
+                  <option value="1">🏗️ In corso di costruzione</option>
+                  <option value="2">✅ Libero</option>
+                  <option value="3">📋 Libero al Rogito</option>
+                  <option value="4">🏛️ Nuda Proprietà</option>
+                  <option value="5">👥 Occupato</option>
                       </select>
                     </el-form-item>
                   </div>

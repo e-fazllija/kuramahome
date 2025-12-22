@@ -77,16 +77,16 @@ export class RequestTabelData {
   Typology: string;
   StateOfTheProperty?: string;
   AssignmentEnd?: string;
+  UpdateDate?: Date;
   Status: string;
   City: string;
   State?: string;
   Photos?: string | null;
   Auction:Boolean;
+  Sold?: boolean;
   AdminId?: string;
   UserId?: string;
   EffectiveCommission?: number;
-  Sold?: boolean;
-  UpdateDate?: Date | string;
 }
 
 export class InsertModel {
@@ -202,16 +202,16 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         Typology: item.Typology,
         StateOfTheProperty: item.StateOfTheProperty,
         AssignmentEnd: item.AssignmentEnd,
+        UpdateDate: item.UpdateDate,
         Status: item.Status,
         City: item.City,
         State: item.State,
         Photos: item.FirstPhotoUrl || null,
         Auction: item.Auction,
+        Sold: item.Sold,
         AdminId: item.AgencyId,
         UserId: item.AgentId,
-        EffectiveCommission: item.EffectiveCommission,
-        Sold: item.Sold,
-        UpdateDate: item.UpdateDate
+        EffectiveCommission: item.EffectiveCommission
       } as RequestTabelData));
     })
     .catch(({ response }) => {

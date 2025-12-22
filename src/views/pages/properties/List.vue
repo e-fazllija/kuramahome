@@ -333,10 +333,7 @@
         <template v-slot:AssignmentEnd="{ row: item }">
           <span v-if="item.Sold === true">
             <template v-if="item.UpdateDate">
-              {{ new Date(item.UpdateDate).toLocaleDateString('it-IT') }}
-            </template>
-            <template v-else-if="item.AssignmentEnd && item.AssignmentEnd !== '0001-01-01T00:00:00'">
-              {{ item.AssignmentEnd.substring(0, 10).split('-').reverse().join('-') }}
+              {{ new Date(item.UpdateDate).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}
             </template>
             <template v-else class="text-muted">-</template>
           </span>
@@ -410,7 +407,6 @@
   />
   <AddPropertyModal 
     @formAddSubmitted="getItems(agencyId, '')" 
-    @redirectToEdit="redirectToEdit"
     @limitExceeded="handleLimitExceeded"
   ></AddPropertyModal>
 
@@ -1131,10 +1127,6 @@ export default defineComponent({
       await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
     });
 
-    const redirectToEdit = (propertyId: number) => {
-      router.push({ name: "update-property", params: { id: propertyId } });
-    };
-
     // Funzione per formattare i numeri con separatore delle migliaia e 2 decimali
     const formatNumber = (value: number | undefined | null): string => {
       if (value === undefined || value === null || isNaN(value)) {
@@ -1176,7 +1168,6 @@ export default defineComponent({
         onProvinceChange,
         onCityChange,
         clearAllFilters,
-        redirectToEdit,
         handleNewPropertyClick,
         handleLimitExceeded,
         isCheckingLimit,

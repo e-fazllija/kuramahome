@@ -54,13 +54,16 @@
                     <span class="path1"></span>
                     <span class="path2"></span>
                   </i>
-                  <span>Agente</span>
+                  <span>Agente/Agenzia</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="AgentId">
                   <select class="form-select form-select-lg form-control-palette" v-model="formData.AgentId">
-                    <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">👤 {{ user.FirstName }} {{ user.LastName }}</option>
+                    <option value="">Seleziona agente o agenzia</option>
+                    <option v-for="(user, index) in inserModel.Users" :key="index" :value="user.Id">
+                      {{ user.Role === 'Agency' ? '🏢 Agenzia: ' : '👤 ' }}{{ user.FirstName }} {{ user.LastName }}
+                    </option>
                   </select>
                 </el-form-item>
                 <!--end::Input-->
