@@ -815,10 +815,10 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <select class="form-select form-select-lg" v-model="formData.Furniture">
-                    <option value="Arredato">✅ Arredato</option>
-                    <option value="Non Arredato">❌ Non Arredato</option>
-                    <option value="Parzialmente Arredato">🔄 Parzialmente Arredato</option>
-                    <option value="Arredato Solo Cucina">🍴 Arredato Solo Cucina</option>
+                    <option value="">🪑 Seleziona Arredamento</option>
+                  <option value="Arredato">✅ Arredato</option>
+                  <option value="Parzialmente Arredato">🟡 Parzialmente Arredato</option>
+                  <option value="Non Arredato">❌ Non Arredato</option>
                   </select>
                   <!--end::Input-->
                 </div>
@@ -876,9 +876,10 @@
                   <!--end::Label-->
                   <!--begin::Input-->
                   <select class="form-select form-select-lg" v-model="formData.Heating">
-                    <option value="Nessuno">❌ Nessuno</option>
-                    <option value="Autonomo">🏠 Autonomo</option>
-                    <option value="Centralizzato">🏢 Centralizzato</option>
+                    <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
+                        <option value="Autonomo">🏠 Autonomo</option>
+                        <option value="Centralizzato">🏢 Centralizzato</option>
+                        <option value="Inesistente">❌ Inesistente</option>
                   </select>
                   <!--end::Input-->
                 </div>
@@ -978,10 +979,13 @@
                   <!--begin::Input-->
                   <el-form-item prop="StateOfTheProperty">
                     <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty">
-                      <option value="Nuovo / In Costruzione">🏗️ Nuovo / In Costruzione</option>
-                      <option value="Ottimo / Ristrutturato">⭐ Ottimo / Ristrutturato</option>
-                      <option value="Buono / Abitabile">✅ Buono / Abitabile</option>
-                      <option value="Da Ristrutturare">🔧 Da Ristrutturare</option>
+                      <option value="">🏠 Seleziona Stato Immobile</option>
+                        <option value="0">🔒 Affittato</option>
+                        <option value="1">🏗️ In corso di costruzione</option>
+                        <option value="2">✅ Libero</option>
+                        <option value="3">📋 Libero al Rogito</option>
+                        <option value="4">🏛️ Nuda Proprietà</option>
+                        <option value="5">👥 Occupato</option>
                     </select>
                   </el-form-item>
                   <!--end::Input-->
@@ -1215,7 +1219,7 @@ import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getCityByCAP } 
 export default defineComponent({
   name: "add-property-modal",
   components: {Multiselect},
-  emits: ['formAddSubmitted', 'redirectToEdit', 'limitExceeded'],
+  emits: ['formAddSubmitted', 'limitExceeded'],
   setup(_, { emit }) {
     const formRef = ref<null | HTMLFormElement>(null);
     const addPropertyModalRef = ref<null | HTMLElement>(null);
@@ -1251,10 +1255,10 @@ export default defineComponent({
       WarehouseRooms: 0,
       Kitchens: 0,
       Bathrooms: 0,
-      Furniture: "Arredato",
+      Furniture: "",
       OtherFeatures: "",
       ParkingSpaces: 0,
-      Heating: "Nessuno",
+      Heating: "",
       Exposure: "",
       EnergyClass: "",
       TypeOfProperty: "",
@@ -1936,27 +1940,19 @@ export default defineComponent({
           const error = store.errors;
 
           if (!error && result) {
+            loading.value = false;
             Swal.fire({
-              text: "Immobile creato con successo! Vuoi aggiungere le immagini?",
+              text: "Immobile creato con successo.",
               icon: "success",
               buttonsStyling: false,
-              showCancelButton: true,
-              confirmButtonText: "Aggiungi immagini",
-              cancelButtonText: "Continua senza immagini",
+              confirmButtonText: "Ok",
               heightAuto: false,
               customClass: {
                 confirmButton: "btn fw-semobold btn-primary",
-                cancelButton: "btn fw-semobold btn-light-secondary",
               },
-            }).then(function (swalResult) {
-              loading.value = false;
+            }).then(() => {
               hideModal(addPropertyModalRef.value);
               emit('formAddSubmitted', formData.value);
-              
-              if (swalResult.isConfirmed) {
-                // Reindirizza alla pagina di modifica per aggiungere immagini
-                emit('redirectToEdit', result.Id);
-              }
             });
           } else {
             loading.value = false;

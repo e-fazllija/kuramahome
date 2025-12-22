@@ -481,54 +481,63 @@ export default defineComponent({
         columnLabel: "CustomerName",
         sortEnabled: true,
         columnWidth: 170,
+        textAlign: "center",
       },
       {
         columnName: "Contratto",
         columnLabel: "Contract",
         sortEnabled: true,
-        columnWidth: 110
+        columnWidth: 110,
+        textAlign: "center"
       },
       {
         columnName: "Data Richiesta",
         columnLabel: "StringDate",
         sortEnabled: true,
         columnWidth: 150,
+        textAlign: "center",
       },
       {
         columnName: "Email",
         columnLabel: "CustomerEmail",
         sortEnabled: true,
         columnWidth: 150,
+        textAlign: "center",
       },
       {
         columnName: "Telefono",
         columnLabel: "CustomerPhone",
         sortEnabled: true,
         columnWidth: 160,
+        textAlign: "center",
       },
       {
         columnName: "Prezzo Da",
         columnLabel: "PriceFrom",
         sortEnabled: true,
         columnWidth: 100,
+        textAlign: "center",
       },
       {
         columnName: "Prezzo A",
         columnLabel: "PriceTo",
         sortEnabled: true,
         columnWidth: 100,
+        textAlign: "center",
       },
       {
         columnName: "Stato",
         columnLabel: "Status",
         sortEnabled: true,
         columnWidth: 100,
+        textAlign: "center",
       },
       {
         columnName: "Azioni",
         columnLabel: "Actions",
         sortEnabled: false,
         columnWidth: 135,
+        textAlign: "center",
       },
     ]);
 

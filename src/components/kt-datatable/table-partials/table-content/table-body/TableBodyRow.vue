@@ -17,7 +17,7 @@
         </td>
         <template v-for="(properties, j) in header" :key="j">
           <td :class="{ 
-            'text-end': j === header.length - 1,
+            'text-end': j === header.length - 1 && properties.textAlign !== 'center',
             'text-center': properties.textAlign === 'center',
             'py-3': true,
             'px-3': true,

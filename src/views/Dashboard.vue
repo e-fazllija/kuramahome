@@ -246,15 +246,9 @@ import { getAssetPath } from "@/core/helpers/assets";
 import { 
   getMapData,
   getWidget3Data, 
-  processAgentsRanking, 
-  processCalendarEvents, 
-  processRequestsForChart, 
-  processAppointmentsForChart, 
-  processAgentsForChart, 
-  processCustomersForChart 
+
 } from "@/core/data/dashboard";
 import type { DashboardDetails, MapData, Widget3Data } from "@/core/data/dashboard";
-import { getRealEstatePropertiesList, type RequestTabelData } from "@/core/data/properties";
 import ApiService from "@/core/services/ApiService";
 import { useAuthStore, type User } from "@/stores/auth";
 import { isAgent as helperIsAgent } from "@/core/helpers/auth";
