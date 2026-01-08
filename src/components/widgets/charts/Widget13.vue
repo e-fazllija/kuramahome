@@ -17,8 +17,9 @@
               class="widget-13-filter-select"
               @change="onYearChange"
             >
+              <option :value="null">Corrente</option>
               <option 
-                v-for="year in availableYears" 
+                v-for="year in availableYears.filter(y => y !== null)" 
                 :key="year" 
                 :value="year"
               >
@@ -206,20 +207,20 @@ export default defineComponent({
     // Filters state
     const currentYear = new Date().getFullYear();
     const availableYears = computed(() => {
-      const years: number[] = [];
+      const years: (number | null)[] = [null]; // Prima opzione: "Corrente" (null)
       for (let i = 0; i < 6; i++) {
         years.push(currentYear - i);
       }
       return years;
     });
 
-    const selectedYear = ref<number>(currentYear);
+    const selectedYear = ref<number | null>(null); // Default: "Corrente"
     const selectedAgency = ref<string>('all');
 
-    // Filter change handlers (for now just emit events, logic will be implemented later)
+    // Filter change handlers
     const onYearChange = () => {
       emit('filter-change', {
-        year: selectedYear.value,
+        year: selectedYear.value, // null = "Corrente", number = anno specifico
         agency: selectedAgency.value
       });
     };

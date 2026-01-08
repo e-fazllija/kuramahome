@@ -218,14 +218,14 @@
         <!--begin::Card Header-->
         <div class="card-header border-0 pt-5 pb-3">
           <h3 class="card-title align-items-start flex-column">
-            <span class="card-label fw-bold fs-4 mb-1">Match Richieste</span>
+            <span class="card-label fw-bold fs-4 mb-1">Top Match Richieste</span>
             <span class="text-muted fw-semibold fs-7">Lista richieste matchate</span>
           </h3>
         </div>
         <!--end::Card Header-->
 
         <!--begin::Card Body-->
-        <div class="card-body py-1 px-2">
+        <div class="card-body py-3">
           <!--begin::Table Container-->
           <div class="table-responsive widget11-table-container">
             <!--begin::Table-->
@@ -233,47 +233,10 @@
               <!--begin::Table Head-->
               <thead>
                 <tr class="fw-bold text-muted bg-light">
-                  <th 
-                    class="text-center min-w-80px fw-bold fs-7 text-uppercase sortable-header" 
-                    @click="sortBy('customer')"
-                    :class="{ 'sort-active': sortColumn === 'customer' }"
-                  >
-                    Richieste
-                    <span v-if="sortColumn === 'customer'" class="ms-1">
-                      <i :class="sortDirection === 'asc' ? 'ki-outline ki-arrow-up fs-8' : 'ki-outline ki-arrow-down fs-8'"></i>
-                    </span>
-                  </th>
-                  <th 
-                    class="text-center min-w-70px fw-bold fs-7 text-uppercase sortable-header" 
-                    @click="sortBy('property')"
-                    :class="{ 'sort-active': sortColumn === 'property' }"
-                  >
-                    Immobili
-                    <span v-if="sortColumn === 'property'" class="ms-1">
-                      <i :class="sortDirection === 'asc' ? 'ki-outline ki-arrow-up fs-8' : 'ki-outline ki-arrow-down fs-8'"></i>
-                    </span>
-                  </th>
-                  <th 
-                    class="text-center min-w-80px fw-bold fs-7 text-uppercase sortable-header" 
-                    @click="sortBy('date')"
-                    :class="{ 'sort-active': sortColumn === 'date' }"
-                  >
-                    Data Inserimento
-                    <span v-if="sortColumn === 'date'" class="ms-1">
-                      <i :class="sortDirection === 'asc' ? 'ki-outline ki-arrow-up fs-8' : 'ki-outline ki-arrow-down fs-8'"></i>
-                    </span>
-                  </th>
-                  <th 
-                    class="text-center min-w-70px fw-bold fs-7 text-uppercase sortable-header" 
-                    @click="sortBy('match')"
-                    :class="{ 'sort-active': sortColumn === 'match' }"
-                  >
-                    Match
-                    <span v-if="sortColumn === 'match'" class="ms-1">
-                      <i :class="sortDirection === 'asc' ? 'ki-outline ki-arrow-up fs-8' : 'ki-outline ki-arrow-down fs-8'"></i>
-                    </span>
-                  </th>
-                  <th class="text-center min-w-70px fw-bold fs-7 text-uppercase">Azioni</th>
+                  <th class="ps-4 min-w-80px fw-bold fs-7 text-uppercase">Richieste</th>
+                  <th class="text-end min-w-80px fw-bold fs-7 text-uppercase">Immobili</th>
+                  <th class="text-end min-w-80px fw-bold fs-7 text-uppercase">Match</th>
+                  <th class="text-end pe-4 min-w-100px fw-bold fs-7 text-uppercase">Azioni</th>
                 </tr>
               </thead>
               <!--end::Table Head-->
@@ -281,12 +244,12 @@
               <!--begin::Table Body-->
               <tbody>
                 <tr v-if="loadingMatchedRequests">
-                  <td colspan="5" class="text-center py-5">
+                  <td colspan="4" class="text-center py-5">
                     <span class="text-muted">Caricamento...</span>
                   </td>
                 </tr>
                 <tr v-else-if="!tableRows || tableRows.length === 0">
-                  <td colspan="5" class="text-center py-5">
+                  <td colspan="4" class="text-center py-5">
                     <span class="text-muted">Nessuna richiesta matchata disponibile</span>
                   </td>
                 </tr>
@@ -301,9 +264,6 @@
                   </td>
                   <td class="text-end">
                     <span class="text-dark fw-bold d-block fs-6">{{ item.PropertyTitle }}</span>
-                  </td>
-                  <td class="text-end">
-                    <span class="text-dark fw-bold d-block fs-6">{{ formatDate(item.CreationDate) }}</span>
                   </td>
                   <td class="text-end">
                     <span class="text-dark fw-bold d-block fs-6">{{ item.MatchPercentage }}%</span>
@@ -716,65 +676,11 @@ export default defineComponent({
     };
 
     // Get table rows data from matched requests
-    // Sorting state
-    const sortColumn = ref<string | null>('match'); // Default: sort by match percentage
-    const sortDirection = ref<'asc' | 'desc'>('desc'); // Default: descending (highest match first)
-
-    // Sort function
-    const sortBy = (column: string) => {
-      if (sortColumn.value === column) {
-        // Toggle direction if same column
-        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
-      } else {
-        // New column, default to ascending
-        sortColumn.value = column;
-        sortDirection.value = 'asc';
-      }
-    };
-
     const tableRows = computed(() => {
       if (!matchedRequestsData.value || !matchedRequestsData.value.MatchedRequests) {
         return [];
       }
-      
-      let sorted = [...matchedRequestsData.value.MatchedRequests];
-      
-      if (!sortColumn.value) {
-        return sorted;
-      }
-
-      sorted.sort((a, b) => {
-        let comparison = 0;
-        
-        switch (sortColumn.value) {
-          case 'customer':
-            const aCustomer = `${a.CustomerLastName} ${a.CustomerName}`.toLowerCase();
-            const bCustomer = `${b.CustomerLastName} ${b.CustomerName}`.toLowerCase();
-            comparison = aCustomer.localeCompare(bCustomer, 'it');
-            break;
-          
-          case 'property':
-            comparison = a.PropertyTitle.localeCompare(b.PropertyTitle, 'it');
-            break;
-          
-          case 'date':
-            const aDate = new Date(a.CreationDate).getTime();
-            const bDate = new Date(b.CreationDate).getTime();
-            comparison = aDate - bDate;
-            break;
-          
-          case 'match':
-            comparison = a.MatchPercentage - b.MatchPercentage;
-            break;
-          
-          default:
-            return 0;
-        }
-        
-        return sortDirection.value === 'asc' ? comparison : -comparison;
-      });
-      
-      return sorted;
+      return matchedRequestsData.value.MatchedRequests;
     });
 
     // Get button color based on selected KPI
@@ -802,17 +708,6 @@ export default defineComponent({
     // Navigate to request detail
     const navigateToRequest = (requestId: number) => {
       router.push(`/dashboard/request/${requestId}`);
-    };
-
-    // Format date for display
-    const formatDate = (dateString: string) => {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('it-IT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
     };
 
     // Carica i dati iniziali
@@ -867,11 +762,7 @@ export default defineComponent({
       tableRows,
       getKPIButtonColor,
       getKPILabel,
-      navigateToRequest,
-      formatDate,
-      sortBy,
-      sortColumn,
-      sortDirection
+      navigateToRequest
     };
   }
 });

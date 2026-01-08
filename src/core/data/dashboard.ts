@@ -759,6 +759,8 @@ export interface Widget3Data {
     CommissionsMonthlyData: Record<string, number>;
     TotalCommissionsPortfolio: number;
     TotalCommissionsEarned: number;
+    TotalPortfolioValue: number;
+    TotalSoldValue: number;
 }
 
 export interface PropertiesData {
@@ -891,7 +893,6 @@ export interface MatchedRequestItem {
   CustomerLastName: string;
   CustomerName: string;
   PropertyTitle: string;
-  CreationDate: string;
   MatchPercentage: number;
 }
 

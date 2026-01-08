@@ -205,6 +205,70 @@
                 <!--end::Input group-->
               </div>
               <!--end::Campi Persona Giuridica-->
+
+              <!--begin::Separator-->
+              <div class="separator separator-content my-8">
+                <span class="w-250px fw-bold text-gray-700 fs-6">
+                  <i class="ki-duotone ki-credit-cart fs-2 text-info me-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Piano di Abbonamento <span class="text-muted fs-7 fw-normal">(Opzionale)</span>
+                </span>
+              </div>
+              <!--end::Separator-->
+
+              <!--begin::Input group - Piano Abbonamento-->
+              <div class="fv-row mb-7">
+                <!--begin::Label-->
+                <label class="fs-6 fw-bold mb-3 text-palette-primary">
+                  <i class="ki-duotone ki-credit-cart fs-5 me-2 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                  Seleziona Piano Abbonamento
+                </label>
+                <!--end::Label-->
+
+                <!--begin::Input-->
+                <el-form-item prop="subscriptionPlanId">
+                  <el-select
+                    v-model="formData.SubscriptionPlanId"
+                    placeholder="Nessun piano selezionato (opzionale)"
+                    size="large"
+                    clearable
+                    class="w-100"
+                    :loading="loadingPlans"
+                  >
+                    <el-option
+                      v-for="plan in subscriptionPlans"
+                      :key="plan.Id"
+                      :label="`${plan.Name} - €${plan.Price}/${plan.BillingPeriod === 'monthly' ? 'mese' : 'anno'}`"
+                      :value="plan.Id"
+                    >
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">{{ plan.Name }}</span>
+                        <span class="text-muted ms-2">
+                          €{{ plan.Price }}/{{ plan.BillingPeriod === 'monthly' ? 'mese' : 'anno' }}
+                        </span>
+                      </div>
+                      <div v-if="plan.Description" class="text-muted fs-7 mt-1">
+                        {{ plan.Description }}
+                      </div>
+                    </el-option>
+                  </el-select>
+                  <div class="form-text text-muted fs-7 mt-1">
+                    Seleziona un piano di abbonamento per l'agenzia. Se non selezioni un piano, l'agenzia non avrà abbonamento attivo.
+                  </div>
+                </el-form-item>
+                <!--end::Input-->
+              </div>
+              <!--end::Input group-->
+
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
@@ -695,7 +759,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, onMounted } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
 import { countries } from "@/core/data/countries";
@@ -704,6 +768,7 @@ import {createAgency, Agency } from "@/core/data/agencies";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
 import { getCAPByCity, getCityByCAP, provinceCities, getCitiesByProvince, getProvinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getSubscriptionPlans, type SubscriptionPlan } from "@/core/data/billing";
 
 export default defineComponent({
   name: "add-agency-modal",
@@ -712,11 +777,13 @@ export default defineComponent({
     const formRef = ref<null | HTMLFormElement>(null);
     const addAgencyModalRef = ref<null | HTMLElement>(null);
     const loading = ref<boolean>(false);
+    const loadingPlans = ref<boolean>(false);
     const store = useAuthStore();
     
     // Usa il composable per le province
     const { provinces } = useProvinces();
     const cities = ref<Array<{Id: string, Name: string, CAP?: string}>>([]);
+    const subscriptionPlans = ref<SubscriptionPlan[]>([]);
     const formData = ref<any>({
       FirstName: "",
       LastName: "",
@@ -738,7 +805,9 @@ export default defineComponent({
       FiscalCode: "",
       VATNumber: "",
       PEC: "",
-      SDICode: ""
+      SDICode: "",
+      // Piano Abbonamento
+      SubscriptionPlanId: null as number | null
     });
 
     // Opzioni colori predefinite
@@ -1081,12 +1150,33 @@ export default defineComponent({
       }
     };
 
+    // Funzione per caricare i piani di abbonamento disponibili
+    const loadSubscriptionPlans = async () => {
+      try {
+        loadingPlans.value = true;
+        const plans = await getSubscriptionPlans();
+        // Filtra solo i piani attivi
+        subscriptionPlans.value = plans.filter(plan => plan.Active);
+      } catch (error) {
+        console.error("Errore durante il caricamento dei piani di abbonamento:", error);
+        subscriptionPlans.value = [];
+      } finally {
+        loadingPlans.value = false;
+      }
+    };
+
+    // Carica i piani quando il componente viene montato
+    onMounted(() => {
+      loadSubscriptionPlans();
+    });
+
     return {
       formData,
       rules,
       submit,
       formRef,
       loading,
+      loadingPlans,
       addAgencyModalRef,
       getAssetPath,
       countries,
@@ -1094,6 +1184,7 @@ export default defineComponent({
       selectColor,
       provinces,
       cities,
+      subscriptionPlans,
       capitalizeFirstName,
       capitalizeLastName,
       capitalizeCompanyName,

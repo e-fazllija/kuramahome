@@ -41,6 +41,8 @@
             :soldChartData="soldChartData" 
             :totalCommissionsPortfolio="totalCommissionsPortfolio" 
             :totalCommissionsEarned="totalCommissionsEarned"
+            :totalPortfolioValue="totalPortfolioValue"
+            :totalSoldValue="totalSoldValue"
             :commissionsMonthlyData="commissionsMonthlyData" 
             chartType="bar"
             :class="{ 'opacity-75': !canViewChart3 }"
@@ -351,6 +353,8 @@ export default defineComponent({
             const totalCommissions = ref<number>(0);
             const totalCommissionsPortfolio = ref<number>(0);
             const totalCommissionsEarned = ref<number>(0);
+            const totalPortfolioValue = ref<number>(0);
+            const totalSoldValue = ref<number>(0);
             const commissionsMonthlyData = ref<Record<string, number>>({});
             // Admin profile details (for map positioning)
             const adminProfile = ref<Partial<User> | null>(null);
@@ -389,7 +393,8 @@ export default defineComponent({
             const currentYear = new Date().getFullYear();
             
             // Filtri per Widget3 (sincronizzati con mappa)
-            const selectedYearFilter = ref<number>(currentYear);
+            // null = "Corrente" (tutti gli attivi), numero = anno specifico
+            const selectedYearFilter = ref<number | undefined>(undefined); // Inizia con "Corrente"
             const selectedAgencyFilter = ref<string | undefined>(undefined);
             
             // Funzione per caricare i dati Widget3 con filtri
@@ -440,6 +445,10 @@ export default defineComponent({
                 totalCommissionsPortfolio.value = widget3Data?.TotalCommissionsPortfolio || 0;
                 totalCommissionsEarned.value = widget3Data?.TotalCommissionsEarned || 0;
                 totalCommissions.value = totalCommissionsPortfolio.value + totalCommissionsEarned.value;
+                
+                // Aggiorna totali valori immobili
+                totalPortfolioValue.value = widget3Data?.TotalPortfolioValue || 0;
+                totalSoldValue.value = widget3Data?.TotalSoldValue || 0;
                 
                 // Aggiorna provvigioni mensili
                 commissionsMonthlyData.value = widget3Data?.CommissionsMonthlyData || {};
@@ -654,10 +663,13 @@ export default defineComponent({
                 AdminId: profileSource?.AdminId || profileSource?.Id || null,
                 ZipCode: profileSource?.ZipCode || '',
                 City: profileSource?.City || '',
-                Province: profileSource?.Province || ''
+                Province: profileSource?.Province || '',
+                UserName: profileSource?.Username || ''
               };
 
-              const alreadyIncluded = mappedAgencies.some(agency => agency.id === loggedAgency.id);
+              const alreadyIncluded = mappedAgencies.some(agency => 
+                String(agency.id || (agency as any).Id) === String(loggedAgency.id)
+              );
               if (!alreadyIncluded) {
                 mappedAgencies.push(loggedAgency);
               }
@@ -678,7 +690,7 @@ export default defineComponent({
           }
         }
         
-        // Carica dati Widget3 iniziali
+        // Carica dati Widget3 iniziali (se undefined, è "Corrente" quindi passa undefined)
         await loadWidget3Data(selectedAgencyFilter.value, selectedYearFilter.value);
         
         // Processa i dati degli immobili usando GetList solo se premium (per altri widget che non usano le nuove API)
@@ -753,12 +765,13 @@ export default defineComponent({
 
 
     // Dashboard filter change handler - ricarica i dati della mappa e Widget3 con i nuovi filtri
-    const onDashboardFilterChange = async (filters: { year: number; agency: string }) => {
+    const onDashboardFilterChange = async (filters: { year: number | null; agency: string }) => {
       if (!canViewMap.value) return;
       
       try {
         // Aggiorna i filtri
-        selectedYearFilter.value = filters.year;
+        // Se year è null, significa "Corrente" - non filtra per anno
+        selectedYearFilter.value = filters.year ?? undefined;
         selectedAgencyFilter.value = filters.agency === 'all' ? undefined : filters.agency;
         
         // Passa l'ID completo con prefisso al backend (es: "agency_xxx" o "agent_xxx")
@@ -782,22 +795,36 @@ export default defineComponent({
         }));
 
         // Aggiungi l'admin stesso se è Admin e non è già nella lista
-        // Ma NON aggiungerlo se c'è un filtro attivo per un'agenzia/agente specifico
-        if (isAdmin.value && store.user && !agencyId) {
+        // Lo aggiunge anche se il filtro è attivo per l'admin stesso
+        if (isAdmin.value && store.user) {
           const profileSource = adminProfile.value || store.user;
-          const loggedAgency = {
-            ...profileSource,
-            name: profileSource?.Username || `${profileSource?.FirstName || ''} ${profileSource?.LastName || ''}`.trim(),
-            id: profileSource?.Id,
-            AdminId: profileSource?.AdminId || profileSource?.Id || null,
-            ZipCode: profileSource?.ZipCode || '',
-            City: profileSource?.City || '',
-            Province: profileSource?.Province || ''
-          };
+          const adminId = profileSource?.Id;
+          
+          // Verifica se il filtro è per l'admin stesso
+          const isFilterForAdmin = agencyId && (
+            agencyId === `agency_${adminId}` || 
+            agencyId === adminId
+          );
+          
+          // Aggiungi l'admin se: non c'è filtro OPPURE il filtro è per l'admin stesso
+          if (!agencyId || isFilterForAdmin) {
+            const loggedAgency = {
+              ...profileSource,
+              name: profileSource?.Username || `${profileSource?.FirstName || ''} ${profileSource?.LastName || ''}`.trim(),
+              id: adminId,
+              AdminId: profileSource?.AdminId || adminId || null,
+              ZipCode: profileSource?.ZipCode || '',
+              City: profileSource?.City || '',
+              Province: profileSource?.Province || '',
+              UserName: profileSource?.Username || ''
+            };
 
-          const alreadyIncluded = mappedAgencies.some(agency => agency.id === loggedAgency.id);
-          if (!alreadyIncluded) {
-            mappedAgencies.push(loggedAgency);
+            const alreadyIncluded = mappedAgencies.some(agency => 
+              String(agency.id || (agency as any).Id) === String(adminId)
+            );
+            if (!alreadyIncluded) {
+              mappedAgencies.push(loggedAgency);
+            }
           }
         }
 
@@ -812,7 +839,8 @@ export default defineComponent({
         };
         
         // Ricarica i dati del Widget3 con i nuovi filtri
-        await loadWidget3Data(agencyId, filters.year);
+        // Se filters.year è null, passa undefined per "Corrente"
+        await loadWidget3Data(agencyId, filters.year ?? undefined);
       } catch (error) {
         console.error('Errore nel caricamento dei dati con filtri:', error);
       }
@@ -862,6 +890,8 @@ export default defineComponent({
       totalCommissions,
       totalCommissionsPortfolio,
       totalCommissionsEarned,
+      totalPortfolioValue,
+      totalSoldValue,
       commissionsMonthlyData,
       onDashboardFilterChange,
       selectedYearFilter,
