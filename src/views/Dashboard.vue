@@ -82,7 +82,7 @@
     <!--end::Andamento Immobili-->
 
       <!--begin::Analytics Overview-->
-  <div v-if="!loading && (isAdmin || isAgency)" class="row mb-8">
+  <div v-if="!loading && isAdmin" class="row mb-8">
     <div class="col-xl-12">
       <div class="card position-relative">
         <Chart11 
@@ -125,7 +125,7 @@
   <!--end::Analytics Overview-->
 
   <!--begin::Widget1-->
-  <div v-if="!loading && (isAdmin || isAgency)" class="row mb-8">
+  <div v-if="!loading && isAdmin" class="row mb-8">
     <div class="col-xl-12">
       <div class="card position-relative">
         <Widget7 
@@ -315,19 +315,23 @@ export default defineComponent({
           return true; // Tutti possono vedere la mappa
         });
         
-        // Verifica se l'utente può vedere Chart3 (Admin e Agency con piano Pro o Premium)
+        // Verifica se l'utente può vedere Chart3 (Admin e Agency solo con piano Pro o Premium)
         const canViewChart3 = computed(() => {
-          return (isAdmin.value || isAgency.value) && hasProOrPremium.value;
+          // Admin e Agency possono vedere solo con Pro o Premium
+          if ((isAdmin.value || isAgency.value) && hasProOrPremium.value) {
+            return true;
+          }
+          return false;
         });
         
-        // Verifica se l'utente può vedere Chart11 (Admin e Agency solo con Premium)
+        // Verifica se l'utente può vedere Chart11 (solo Admin con Premium)
         const canViewChart11 = computed(() => {
-          return (isAdmin.value || isAgency.value) && isPremium.value;
+          return isAdmin.value && isPremium.value;
         });
         
-        // Verifica se l'utente può vedere Widget7 (Admin e Agency solo con Premium)
+        // Verifica se l'utente può vedere Widget7 (solo Admin con Premium)
         const canViewWidget7 = computed(() => {
-          return (isAdmin.value || isAgency.value) && isPremium.value;
+          return isAdmin.value && isPremium.value;
         });
         
         // Carica la subscription per verificare il piano premium

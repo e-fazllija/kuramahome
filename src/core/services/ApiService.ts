@@ -80,8 +80,15 @@ class ApiService {
             // Status 401 - effettua logout
             authStore.logout();
           } else if (status === 403) {
-            // Status 403 - marca sottoscrizione come scaduta
-            authStore.setSubscriptionExpired(true);
+            // Status 403 - verifica se è un problema di subscription o solo permessi
+            const errorMessage = error.response?.data?.Message || error.response?.data?.message || '';
+            // Marca come subscription expired solo se il messaggio indica un problema di subscription/premium
+            if (errorMessage.toLowerCase().includes('premium') || 
+                errorMessage.toLowerCase().includes('subscription') || 
+                errorMessage.toLowerCase().includes('abbonamento') ||
+                errorMessage.toLowerCase().includes('piano')) {
+              authStore.setSubscriptionExpired(true);
+            }
           }
         }
         
