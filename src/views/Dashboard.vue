@@ -22,6 +22,8 @@
         :admin-name="adminName"
         :is-agent="isAgent"
         :is-admin="isAdmin"
+        :is-agency="isAgency"
+        :initial-agency-filter="isAgency ? selectedAgencyFilter : undefined"
         @filter-change="onDashboardFilterChange"
       />
     </div>
@@ -637,11 +639,20 @@ export default defineComponent({
       try {
         await ensureAdminProfileLoaded();
         
+        // Se è Agency, imposta automaticamente il filtro sulla propria agenzia
+        if (isAgency.value && store.user?.Id) {
+          selectedAgencyFilter.value = `agency_${store.user.Id}`;
+        }
+        
         // 🚀 NUOVA API PER WIDGET13 (MAPPA) - Chiamata dedicata con cache
         // Tutti (Admin, Agency, Agent) vedono la mappa con gli stessi dati
         if (canViewMap.value) {
           try {
-            const mapData = await getMapData(undefined, currentYear);
+            // Se è Agency, passa l'ID dell'agenzia al filtro
+            const agencyIdForMap = isAgency.value && selectedAgencyFilter.value 
+              ? selectedAgencyFilter.value 
+              : undefined;
+            const mapData = await getMapData(agencyIdForMap, currentYear);
             
             // Mappa i dati delle agenzie per compatibilità con Widget13 (modello leggero)
             const mappedAgencies: any[] = mapData.Agencies.map((agency: any) => ({

@@ -37,6 +37,7 @@
             <select 
               v-model="selectedAgency" 
               class="widget-13-filter-select"
+              :disabled="isAgency"
               @change="onAgencyChange"
             >
               <option value="all">Tutti</option>
@@ -159,6 +160,14 @@ export default defineComponent({
     isAdmin: {
       type: Boolean,
       default: false
+    },
+    isAgency: {
+      type: Boolean,
+      default: false
+    },
+    initialAgencyFilter: {
+      type: String,
+      default: undefined
     }
   },
   emits: ['agency-select', 'filter-change'],
@@ -215,7 +224,8 @@ export default defineComponent({
     });
 
     const selectedYear = ref<number | null>(null); // Default: "Corrente"
-    const selectedAgency = ref<string>('all');
+    // Inizializza selectedAgency con initialAgencyFilter se fornito, altrimenti 'all'
+    const selectedAgency = ref<string>(props.initialAgencyFilter || 'all');
 
     // Filter change handlers
     const onYearChange = () => {
@@ -673,6 +683,18 @@ export default defineComponent({
       }
     }, { deep: true });
 
+    // Watch for changes in initialAgencyFilter to update selectedAgency
+    watch(() => props.initialAgencyFilter, (newValue) => {
+      if (newValue) {
+        selectedAgency.value = newValue;
+        // Emetti l'evento per aggiornare i dati se necessario
+        emit('filter-change', {
+          year: selectedYear.value,
+          agency: newValue
+        });
+      }
+    }, { immediate: false });
+
 
     return {
       mapContainer,
@@ -727,6 +749,12 @@ export default defineComponent({
 .widget-13-filter-select:focus {
   border-color: #0077CC;
   outline: none;
+}
+
+.widget-13-filter-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
 }
 
 [data-bs-theme="dark"] .widget-13-filter-badge {
