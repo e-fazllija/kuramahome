@@ -311,9 +311,10 @@
               class="badge badge-light-info" 
               :title="item.OwnerInfo ? getOwnerTooltip(item.OwnerInfo) : 'Solo lettura'"
             >
-              <i class="ki-duotone ki-eye fs-7">
+              <i class="ki-duotone ki-information-5 fs-7">
                 <span class="path1"></span>
                 <span class="path2"></span>
+                <span class="path3"></span>
               </i>
             </span>
             <span 
