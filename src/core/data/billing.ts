@@ -121,9 +121,7 @@ export interface UpgradeCreditCalculationResponse {
   CurrentPlanName?: string;
   NewPlanName?: string;
   Message: string;
-}
-
-/**
+}/**
  * Calcola il credito residuo e l'importo netto per un upgrade
  * @param planName Nome del piano selezionato
  * @returns Calcolo del credito e importo finale
@@ -142,4 +140,3 @@ export const calculateUpgradeCredit = async (
     throw error;
   }
 };
-

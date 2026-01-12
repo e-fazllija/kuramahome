@@ -87,6 +87,14 @@ export class RequestTabelData {
   AdminId?: string;
   UserId?: string;
   EffectiveCommission?: number;
+  AccessLevel?: number; // 1=completo, 2=solo lettura, 3=limitato
+  OwnerInfo?: {
+    Id: string;
+    FirstName: string;
+    LastName: string;
+    Role: string;
+    AgencyName?: string;
+  };
 }
 
 export class InsertModel {
@@ -211,7 +219,9 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
         Sold: item.Sold,
         AdminId: item.AgencyId,
         UserId: item.AgentId,
-        EffectiveCommission: item.EffectiveCommission
+        EffectiveCommission: item.EffectiveCommission,
+        AccessLevel: item.AccessLevel || 1, // Default a 1 se non presente
+        OwnerInfo: item.OwnerInfo
       } as RequestTabelData));
     })
     .catch(({ response }) => {
@@ -224,10 +234,24 @@ const getRealEstatePropertiesList = (agencyId: string, filterRequest: string, co
 const getRealEstateProperty = (id: number) => {
   return ApiService.get(`RealEstateProperty/GetById?id=${id}`, "")
     .then(({ data }) => {
+      // Se la risposta è un LimitedAccessResponse (AccessLevel === 3)
+      if (data.AccessLevel === 3 && data.OwnerInfo) {
+        // Restituisci un oggetto speciale che indica accesso limitato
+        return {
+          _isLimitedAccess: true,
+          Id: data.Id,
+          AccessLevel: data.AccessLevel,
+          OwnerInfo: data.OwnerInfo,
+          EntityType: data.EntityType,
+        } as any;
+      }
+      
+      // Risposta normale con dettagli completi
       const photos = data.Photos as Array<RealEstatePropertyPhotos>;
       const result = data as RealEstateProperty;
       result.Photos = photos;
       result.RealEstatePropertyNotes = data.RealEstatePropertyNotes;
+      result.AccessLevel = data.AccessLevel || 1; // Default a 1 se non presente
       if (result.UserId && !result.AgentId) {
         result.AgentId = result.UserId;
       }

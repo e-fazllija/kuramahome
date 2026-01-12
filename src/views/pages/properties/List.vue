@@ -298,7 +298,36 @@
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
         :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id" :loading="loading">
         <template v-slot:Id="{ row: item }">
-          <span class="clickable-row" @click="goToPropertyDetails(item.Id)" style="cursor: pointer; color: #3699ff; font-weight: 600;">{{ item.Id }}</span>
+          <div class="d-flex align-items-center gap-2">
+            <span 
+              class="clickable-row" 
+              @click="goToPropertyDetails(item.Id, item)" 
+              style="cursor: pointer; color: #3699ff; font-weight: 600;"
+            >
+              {{ item.Id }}
+            </span>
+            <span 
+              v-if="item.AccessLevel === AccessLevel.READ_ONLY" 
+              class="badge badge-light-info" 
+              :title="item.OwnerInfo ? getOwnerTooltip(item.OwnerInfo) : 'Solo lettura'"
+            >
+              <i class="ki-duotone ki-eye fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </span>
+            <span 
+              v-if="item.AccessLevel === AccessLevel.LIMITED" 
+              class="badge badge-light-warning" 
+              :title="item.OwnerInfo ? getOwnerTooltip(item.OwnerInfo) : 'Accesso limitato'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
+          </div>
         </template>
         <template v-slot:AssignmentStatus="{ row: item }">
           <span v-if="item.Sold === true" class="badge badge-light-success">
@@ -417,6 +446,14 @@
     :limitStatus="limitStatus"
     @close="showUpgradeModal = false"
   />
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_property"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Property"
+  />
 </template>
 
 <script lang="ts">
@@ -436,6 +473,8 @@ import { useAuthStore } from "@/stores/auth";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, shouldShowPopup, canViewDetails, getOwnerTooltip, type OwnerInfo } from "@/core/helpers/accessLevel";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import KTSpinner from "@/components/Spinner.vue";
 import { downloadBlobResponse } from "@/core/helpers/download";
@@ -452,6 +491,7 @@ export default defineComponent({
     AddPropertyModal,
     UpgradeRequiredModal,
     KTSpinner,
+    InfoPopup,
   },
   setup() {
     const authStore = useAuthStore();
@@ -525,6 +565,13 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const tableData = ref<Array<RequestTabelData>>([]);
     const rawItems = ref<Array<RequestTabelData>>([]);
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const initItems = ref([]);
     const user = authStore.user;
     let agencyId = ref("");
@@ -967,7 +1014,25 @@ export default defineComponent({
     };
 
     // Funzione per navigare ai dettagli della proprietà
-    const goToPropertyDetails = (id: number) => {
+    const goToPropertyDetails = (id: number, item?: RequestTabelData) => {
+      // Se l'item è fornito, controlla il livello di accesso
+      if (item && item.AccessLevel !== undefined) {
+        // Se livello 3, mostra popup invece di navigare
+        if (shouldShowPopup(item.AccessLevel)) {
+          if (item.OwnerInfo) {
+            selectedOwnerInfo.value = item.OwnerInfo;
+            infoPopupRef.value?.show();
+          }
+          return;
+        }
+        // Se livello 1-2, procedi con la navigazione normale
+        if (canViewDetails(item.AccessLevel)) {
+          const route = router.resolve({ name: 'property', params: { id: id.toString() } });
+          window.open(route.href, '_blank');
+          return;
+        }
+      }
+      // Default: naviga normalmente (per retrocompatibilità)
       const route = router.resolve({ name: 'property', params: { id: id.toString() } });
       window.open(route.href, '_blank');
     };
@@ -1174,6 +1239,10 @@ export default defineComponent({
         showUpgradeModal,
         limitStatus,
         goToPropertyDetails,
+        infoPopupRef,
+        selectedOwnerInfo,
+        AccessLevel,
+        getOwnerTooltip,
         exportModalId,
         exportFilters,
         propertyExportFields,

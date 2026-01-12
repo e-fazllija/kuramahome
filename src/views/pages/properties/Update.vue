@@ -18,7 +18,7 @@
             <div class="flex-grow-1">
               <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Aggiorna Immobile</h3>
               <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">
-                <span v-if="user.Role === 'Agent' && !canModify">Visualizzazione in sola lettura</span>
+                <span v-if="!canModify">Visualizzazione in sola lettura</span>
                 <span v-else>Modifica i dati dell'immobile</span>
               </span>
             </div>
@@ -91,7 +91,7 @@
           <div class="tab-pane fade show active" id="data-pane" role="tabpanel" aria-labelledby="data-tab">
             <!--begin::Card body-->
             <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9"
-              :class="{ 'opacity-50': !canModify && user.Role === 'Agent' }">
+              :class="{ 'opacity-50': !canModify }">
               <div class="mb-4 mb-md-5 mb-xl-6">
                 <div class="d-flex align-items-center mb-3">
                   <div class="me-3">
@@ -120,7 +120,7 @@
                     <el-form-item prop="Title">
                       <input class="form-control form-control-lg" v-model="formData.Title" type="text"
                         placeholder="Inserisci il titolo dell'immobile" required
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </el-form-item>
                   </div>
 
@@ -138,7 +138,7 @@
                           class="form-select form-select-lg" 
                           v-model="formData.AgentId" 
                           required
-                          :disabled="!canModify && user.Role === 'Agent'"
+                          :disabled="!canModify"
                         >
                           <option value="">Seleziona agente o agenzia</option>
                           <option
@@ -161,7 +161,7 @@
                         Stato vendita o affitto <span class="text-danger">*</span>
                       </label>
                       <el-form-item prop="Status">
-                        <select class="form-select form-select-lg" v-model="formData.Status" required :disabled="!canModify && user.Role === 'Agent'">
+                        <select class="form-select form-select-lg" v-model="formData.Status" required :disabled="!canModify">
                           <option value="">Scegli tra vendita e affitto</option>
                           <option value="Vendita">Vendita</option>
                           <option value="Affitto">Affitto</option>
@@ -180,7 +180,7 @@
                         Categoria <span class="text-danger">*</span>
                       </label>
                       <el-form-item prop="Category">
-                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify">
                           <option value="">Seleziona una Categoria...</option>
                           <option value="Residenziale">Residenziale</option>
                           <option value="Capannone">Capannone</option>
@@ -204,7 +204,7 @@
                       </label>
                       <el-form-item prop="Typology">
                         <select class="form-select form-select-lg" v-model="formData.Typology"
-                          :disabled="!canModify && user.Role === 'Agent'">
+                          :disabled="!canModify">
                           <option v-for="tipologia in typesavailable" :key="tipologia" :value="tipologia">
                             {{ tipologia }}
                           </option>
@@ -223,7 +223,7 @@
                         Categoria <span class="text-danger">*</span>
                       </label>
                       <el-form-item prop="Category">
-                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify && user.Role === 'Agent'">
+                        <select class="form-select form-select-lg" v-model="formData.Category" required :disabled="!canModify">
                           <option value="Residenziale">Residenziale</option>
                           <option value="Capannone">Capannone</option>
                           <option value="Negozi-Locale Commerciale">Negozi/Locale Commerciale</option>
@@ -246,7 +246,7 @@
                         </i>
                         Tipologia incarico
                       </label>
-                      <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify && user.Role === 'Agent'">
+                      <select class="form-select form-select-lg" v-model="formData.TypeOfAssignment" :disabled="!canModify">
                         <option value="Esclusivo">Esclusivo</option>
                         <option value="Non Esclusivo">Non Esclusivo</option>
                         <option value="Verbale">Verbale</option>
@@ -258,7 +258,7 @@
                     <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Disponibilità <span class="text-danger">*</span></label>
                       <el-form-item prop="Availability">
-                        <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify && user.Role === 'Agent'">
+                        <select class="form-select form-select-lg" v-model="formData.Availability" :disabled="!canModify">
                           <option value="">Seleziona la Disponibilità</option>
                           <option value="Libero">Libero</option>
                           <option value="Occupato">Occupato</option>
@@ -288,7 +288,7 @@
                     <label class="form-label required">Indirizzo</label>
                     <el-form-item prop="AddressLine">
                       <input class="form-control form-control-lg" v-model="formData.AddressLine" type="text" required
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </el-form-item>
                   </div>
 
@@ -298,7 +298,7 @@
                           class="text-danger">*</span></label>
                       <el-form-item prop="State">
                         <select class="form-select form-select-lg" v-model="formData.State" required
-                          :disabled="!canModify && user.Role === 'Agent'">
+                          :disabled="!canModify">
                           <option value="">🗺️ Seleziona provincia</option>
                           <option v-for="(province, index) in provinces" :key="index" :value="province.Id">
                             {{ province.Name }}
@@ -312,7 +312,7 @@
                           class="text-danger">*</span></label>
                       <el-form-item prop="City">
                         <select class="form-select form-select-lg" v-model="formData.City" required
-                          :disabled="!canModify && user.Role === 'Agent'">
+                          :disabled="!canModify">
                           <option value="">Seleziona città</option>
                           <option v-for="(city, index) in cities" :key="index" :value="city.Name">
                             {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
@@ -326,7 +326,7 @@
                     <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Località</label>
                       <input class="form-control form-control-lg" v-model="formData.Location" type="text"
-                        placeholder="Inserisci la località" :disabled="!canModify && user.Role === 'Agent'" />
+                        placeholder="Inserisci la località" :disabled="!canModify" />
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -335,7 +335,7 @@
                       <el-form-item prop="PostCode">
                         <input class="form-control form-control-lg" v-model="formData.PostCode" type="text"
                           placeholder="Inserisci il CAP" required
-                          :disabled="!canModify && user.Role === 'Agent'" />
+                          :disabled="!canModify" />
                       </el-form-item>
                     </div>
                   </div>
@@ -361,7 +361,7 @@
                       (m²) <span class="text-danger">*</span></label>
                     <el-form-item prop="CommercialSurfaceate">
                       <input class="form-control form-control-lg" v-model="formData.CommercialSurfaceate" type="number"
-                        required :disabled="!canModify && user.Role === 'Agent'" />
+                        required :disabled="!canModify" />
                     </el-form-item>
                   </div>
 
@@ -369,7 +369,7 @@
                     <div class="col-12 col-md-6 col-lg-4">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Piano</label>
                       <select class="form-select form-select-lg" v-model="formData.Floor"
-                        :disabled="!canModify && user.Role === 'Agent'">
+                        :disabled="!canModify">
                         <option value="Interrato -2">Interrato -2</option>
                         <option value="Interrato -1">Interrato -1</option>
                         <option value="Seminterrato">Seminterrato</option>
@@ -392,13 +392,13 @@
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Totale piani
                         edificio</label>
                       <input class="form-control form-control-lg" v-model="formData.TotalBuildingfloors" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-4">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Ascensori</label>
                       <input class="form-control form-control-lg" v-model="formData.Elevators" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </div>
                   </div>
 
@@ -406,7 +406,7 @@
                     <div class="col-12 col-md-6">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Giardino (mq)</label>
                       <input class="form-control form-control-lg" v-model="formData.MQGarden" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -414,7 +414,7 @@
                         condominiali</label>
                       <div class="input-group">
                         <input class="form-control form-control-lg" v-model="formData.CondominiumExpenses" type="number"
-                          placeholder="Inserisci importo" :disabled="!canModify && user.Role === 'Agent'" />
+                          placeholder="Inserisci importo" :disabled="!canModify" />
                         <span class="input-group-text">€</span>
                       </div>
                     </div>
@@ -424,32 +424,32 @@
                     <div class="col-12 col-md-6 col-lg-3">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Camere da letto</label>
                       <input class="form-control form-control-lg" v-model="formData.Bedrooms" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Locali</label>
                       <input class="form-control form-control-lg" v-model="formData.WarehouseRooms" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Cucine</label>
                       <input class="form-control form-control-lg" v-model="formData.Kitchens" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-3">
                       <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Bagni</label>
                       <input class="form-control form-control-lg" v-model="formData.Bathrooms" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </div>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Arredamento</label>
                     <select class="form-select form-select-lg" v-model="formData.Furniture"
-                      :disabled="!canModify && user.Role === 'Agent'">
+                      :disabled="!canModify">
                       <option value="">🪑 Seleziona Arredamento</option>
                   <option value="Arredato">✅ Arredato</option>
                   <option value="Parzialmente Arredato">🟡 Parzialmente Arredato</option>
@@ -460,13 +460,13 @@
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Posti auto</label>
                     <input class="form-control form-control-lg" v-model="formData.ParkingSpaces" type="number"
-                      :disabled="!canModify && user.Role === 'Agent'" />
+                      :disabled="!canModify" />
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Riscaldamento</label>
                     <select class="form-select form-select-lg" v-model="formData.Heating"
-                      :disabled="!canModify && user.Role === 'Agent'">
+                      :disabled="!canModify">
                       <option value="Autonomo">🏠 Autonomo</option>
                         <option value="Centralizzato">🏢 Centralizzato</option>
                         <option value="Inesistente">❌ Inesistente</option>
@@ -476,7 +476,7 @@
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Esposizione</label>
                     <select class="form-select form-select-lg" v-model="selectedExposures" multiple
-                      :disabled="!canModify && user.Role === 'Agent'"
+                      :disabled="!canModify"
                       style="min-height: 100px;">
                       <option value="Nord">Nord</option>
                       <option value="Sud">Sud</option>
@@ -493,7 +493,7 @@
                         class="text-danger">*</span></label>
                     <el-form-item prop="EnergyClass">
                       <select class="form-select form-select-lg" v-model="formData.EnergyClass"
-                        :disabled="!canModify && user.Role === 'Agent'">
+                        :disabled="!canModify">
                         <option value="">Seleziona il tipo di Classe energetica</option>
                         <option value="Proprietà Esente">Proprietà Esente</option>
                         <option value="Non classificabile">Non classificabile</option>
@@ -516,7 +516,7 @@
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Tipo di proprietà</label>
                     <input class="form-control form-control-lg" v-model="formData.TypeOfProperty" type="text"
-                      :disabled="!canModify && user.Role === 'Agent'" />
+                      :disabled="!canModify" />
                   </div>
 
                   <div class="mb-3">
@@ -524,7 +524,7 @@
                       <span class="text-danger">*</span></label>
                     <el-form-item prop="StateOfTheProperty">
                       <select class="form-select form-select-lg" v-model="formData.StateOfTheProperty"
-                        :disabled="!canModify && user.Role === 'Agent'">
+                        :disabled="!canModify">
                         <option value="0">🔒 Affittato</option>
                   <option value="1">🏗️ In corso di costruzione</option>
                   <option value="2">✅ Libero</option>
@@ -540,21 +540,21 @@
                         class="text-danger">*</span></label>
                     <el-form-item prop="YearOfConstruction">
                       <input class="form-control form-control-lg" v-model="formData.YearOfConstruction" type="number"
-                        :disabled="!canModify && user.Role === 'Agent'" />
+                        :disabled="!canModify" />
                     </el-form-item>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Altri dettagli</label>
                     <input class="form-control form-control-lg" v-model="formData.MoreDetails" type="text"
-                      :disabled="!canModify && user.Role === 'Agent'" />
+                      :disabled="!canModify" />
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Altre
                       caratteristiche</label>
                     <input class="form-control form-control-lg" v-model="formData.MoreFeatures" type="text"
-                      :disabled="!canModify && user.Role === 'Agent'" />
+                      :disabled="!canModify" />
                   </div>
                 </div>
               </div>
@@ -578,7 +578,7 @@
                       riservata</label>
                     <div class="form-check form-switch form-check-custom form-check-solid">
                       <input class="form-check-input" type="checkbox" id="toggle-private-deal"
-                        v-model="isTrattativaRiservata" :disabled="!canModify && user.Role === 'Agent'" />
+                        v-model="isTrattativaRiservata" :disabled="!canModify" />
                       <label class="form-check-label ms-3 fw-semibold" for="toggle-private-deal">
                         Nascondi il prezzo pubblico
                       </label>
@@ -593,7 +593,7 @@
                         <div class="input-group">
                           <input class="form-control form-control-lg" v-model="formData.Price" type="number"
                             placeholder="Inserisci il prezzo" required
-                            :disabled="!canModify && user.Role === 'Agent'" />
+                            :disabled="!canModify" />
                           <span class="input-group-text">€</span>
                         </div>
                       </el-form-item>
@@ -604,7 +604,7 @@
                         ribassato</label>
                       <div class="input-group">
                         <input class="form-control form-control-lg" v-model="formData.PriceReduced" type="number"
-                          placeholder="Inserisci il prezzo ribassato" :disabled="!canModify && user.Role === 'Agent'" />
+                          placeholder="Inserisci il prezzo ribassato" :disabled="!canModify" />
                         <span class="input-group-text">€</span>
                       </div>
                     </div>
@@ -617,7 +617,7 @@
                       <el-form-item prop="AgreedCommission">
                         <div class="input-group">
                           <input class="form-control form-control-lg" v-model="formData.AgreedCommission" type="number"
-                            placeholder="Inserisci percentuale" :disabled="!canModify && user.Role === 'Agent'" />
+                            placeholder="Inserisci percentuale" :disabled="!canModify" />
                           <span class="input-group-text">%</span>
                         </div>
                       </el-form-item>
@@ -630,7 +630,7 @@
                         <div class="input-group">
                           <input class="form-control form-control-lg" v-model.number="formData.FlatRateCommission"
                             type="number" placeholder="Inserisci importo"
-                            :disabled="!canModify && user.Role === 'Agent'" />
+                            :disabled="!canModify" />
                           <span class="input-group-text">€</span>
                         </div>
                       </el-form-item>
@@ -643,7 +643,7 @@
                         <div class="input-group">
                           <input class="form-control form-control-lg" v-model.number="formData.CommissionReversal"
                             type="number" placeholder="Inserisci importo"
-                            :disabled="!canModify && user.Role === 'Agent'" />
+                            :disabled="!canModify" />
                           <span class="input-group-text">€</span>
                         </div>
                       </el-form-item>
@@ -682,7 +682,7 @@
                     <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">Data fine
                       incarico</label>
                     <input class="form-control form-control-lg" v-model="formData.AssignmentEnd" type="date"
-                      placeholder="yyyy-MM-dd" :disabled="!canModify && user.Role === 'Agent'" />
+                      placeholder="yyyy-MM-dd" :disabled="!canModify" />
                   </div>
 
                   <div class="mb-3">
@@ -690,7 +690,7 @@
                         class="text-danger">*</span></label>
                     <el-form-item prop="Description">
                       <textarea class="form-control form-control-lg" v-model="formData.Description" rows="4"
-                        :disabled="!canModify && user.Role === 'Agent'"></textarea>
+                        :disabled="!canModify"></textarea>
                     </el-form-item>
                   </div>
                 </div>
@@ -724,7 +724,7 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-auction" v-model="formData.Auction"
-                          :disabled="!canModify && user.Role === 'Agent'" />
+                          :disabled="!canModify" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-auction">
                           Asta
                         </label>
@@ -736,7 +736,7 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-negotiation"
-                          v-model="formData.Negotiation" :disabled="!canModify && user.Role === 'Agent'" />
+                          v-model="formData.Negotiation" :disabled="!canModify" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-negotiation">
                           In trattativa
                         </label>
@@ -767,7 +767,7 @@
                     <div class="card p-3">
                       <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="toggle-archived" v-model="formData.Archived"
-                          :disabled="!canModify && user.Role === 'Agent'" />
+                          :disabled="!canModify" />
                         <label class="form-check-label ms-3 fw-semibold" for="toggle-archived">
                           Archiviato
                         </label>
@@ -800,7 +800,7 @@
                       URL Video
                     </label>
                     <input class="form-control form-control-lg" v-model="formData.VideoUrl" type="text"
-                      placeholder="https://" :disabled="!canModify && user.Role === 'Agent'" />
+                      placeholder="https://" :disabled="!canModify" />
                   </div>
                 </div>
 
@@ -835,7 +835,7 @@
                 </div>
                 <div class="d-flex align-items-center gap-2">
                   <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId)"
-                    type="button" @click="deleteItem()" class="btn btn-danger">
+                    type="button" @click="deleteItem()" :disabled="!canModify" class="btn btn-danger">
                     <span class="btn-icon">
                       <i class="ki-duotone ki-trash fs-3">
                         <span class="path1"></span>
@@ -849,7 +849,7 @@
                   </button>
                   <!--begin::Button-->
                   <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit"
-                    :disabled="loading">
+                    :disabled="loading || !canModify">
                     <span v-if="!loading" class="d-flex align-items-center">
                       <span class="btn-icon">
                         <i class="ki-duotone ki-check fs-3">
@@ -993,6 +993,14 @@
   </div>
 
   <!--end::Content-->
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_property_detail"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Property"
+  />
 </template>
 
 <script lang="ts">
@@ -1015,10 +1023,15 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import draggable from 'vuedraggable';
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, canModify as canModifyHelper, type OwnerInfo } from "@/core/helpers/accessLevel";
 
 export default defineComponent({
   name: "update",
-  components: { draggable },
+  components: { 
+    draggable,
+    InfoPopup,
+  },
   setup() {
     const store = useAuthStore();
     const user = store.user;
@@ -1127,6 +1140,14 @@ export default defineComponent({
 
 
 
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const propertyAccessLevel = ref<number>(1); // Default a 1
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const formData = ref<RealEstateProperty>({
       Title: "",
       Category: "Residenziale",
@@ -1506,7 +1527,34 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       firtLoad.value = true;
-      formData.value = await getRealEstateProperty(id)
+      const propertyData = await getRealEstateProperty(id);
+      
+      // Se la risposta è un LimitedAccessResponse (AccessLevel 3)
+      if ((propertyData as any)._isLimitedAccess) {
+        loading.value = false;
+        const limitedData = propertyData as any;
+        // Imposta le informazioni del proprietario
+        if (limitedData.OwnerInfo) {
+          selectedOwnerInfo.value = limitedData.OwnerInfo;
+        }
+        // Mostra il popup con le informazioni del proprietario
+        setTimeout(() => {
+          if (infoPopupRef.value) {
+            infoPopupRef.value.show();
+          }
+          // Torna alla lista quando il popup viene chiuso
+          const modalElement = document.getElementById("info_popup_property_detail");
+          if (modalElement) {
+            modalElement.addEventListener("hidden.bs.modal", () => {
+              router.push({ name: "properties" });
+            }, { once: true });
+          }
+        }, 100);
+        return;
+      }
+      
+      formData.value = propertyData as RealEstateProperty;
+      propertyAccessLevel.value = (formData.value as any).AccessLevel || 1;
       formData.value.AssignmentEnd = formData.value.AssignmentEnd.split('T')[0]
 
       // Preserva il UserId originale dell'immobile
@@ -2055,6 +2103,12 @@ export default defineComponent({
 
     // Verifica se l'utente può modificare l'immobile secondo le regole di accesso
     const canModify = computed(() => {
+      // Usa l'AccessLevel se disponibile (priorità)
+      if (propertyAccessLevel.value !== undefined) {
+        return canModifyHelper(propertyAccessLevel.value);
+      }
+      
+      // Fallback alla logica precedente per retrocompatibilità
       if (!formData.value || !formData.value.UserId) {
         return false;
       }
@@ -2192,6 +2246,10 @@ export default defineComponent({
       handleImageError,
       handleImageLoad,
       canModify,
+      infoPopupRef,
+      selectedOwnerInfo,
+      propertyAccessLevel,
+      AccessLevel,
       agentName,
       effectiveCommission,
       id,

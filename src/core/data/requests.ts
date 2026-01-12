@@ -90,6 +90,14 @@ export class RequestTabelData {
   PropertyType: string;
   Status:string;
   UserId?: string;
+  AccessLevel?: number; // 1=completo, 2=solo lettura, 3=limitato
+  OwnerInfo?: {
+    Id: string;
+    FirstName: string;
+    LastName: string;
+    Role: string;
+    AgencyName?: string;
+  };
 }
 
 export class InsertModel {
@@ -149,7 +157,9 @@ const getRequestsList = (filterRequest: string, userIdOverride?: string): Promis
         PriceFrom: item.PriceFrom,
         PropertyType: item.PropertyType,
         Status: item.Archived == true ? "Archviviata" : item.Closed == true ? "Chiusa" : "Aperta",
-        UserId: item.UserId
+        UserId: item.UserId,
+        AccessLevel: item.AccessLevel || 1, // Default a 1 se non presente
+        OwnerInfo: item.OwnerInfo
       } as RequestTabelData));
     })
     .catch(({ response }) => {
@@ -178,10 +188,24 @@ const getCustomerRequests = (customerId: number): Promise<Array<Request>> => {
 const getRequest = (id: number): Promise<Request> => {
   return ApiService.get(`Requests/GetById?id=${id}`, "")
     .then(({ data }) => {
+      // Se la risposta è un LimitedAccessResponse (AccessLevel === 3)
+      if (data.AccessLevel === 3 && data.OwnerInfo) {
+        // Restituisci un oggetto speciale che indica accesso limitato
+        return {
+          _isLimitedAccess: true,
+          Id: data.Id,
+          AccessLevel: data.AccessLevel,
+          OwnerInfo: data.OwnerInfo,
+          EntityType: data.EntityType,
+        } as any;
+      }
+      
+      // Risposta normale con dettagli completi
       const result = data as Request;
       result.Customer = data.Customer as Customer;
       result.RealEstateProperties = data.RealEstateProperties;
       result.RequestNotes = data.RequestNotes;
+      result.AccessLevel = data.AccessLevel || 1; // Default a 1 se non presente
       return result;
     })
     .catch(({ response }) => {

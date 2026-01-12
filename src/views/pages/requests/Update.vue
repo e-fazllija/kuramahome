@@ -33,7 +33,7 @@
     <!--begin::Form-->
     <form @submit.prevent="submit()">
       <!--begin::Card body-->
-      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9">
+      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModify }">
 
         <!--begin::Dati Principali-->
         <div class="mb-4 mb-md-5 mb-xl-6">
@@ -65,6 +65,7 @@
                 <select 
                   class="form-select form-select-lg" 
                   v-model="formData.CustomerId" 
+                  :disabled="!canModify"
                   required
                 >
                   <option :value="null">Seleziona il cliente</option>
@@ -85,7 +86,7 @@
                   </i>
                   Contratto <span class="text-danger">*</span>
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Contract" required>
+                <select class="form-select form-select-lg" v-model="formData.Contract" :disabled="!canModify" required>
                   <option value="">Seleziona tipo contratto</option>
                   <option value="Vendita">💰 Vendita</option>
                   <option value="Affitto">🏠 Affitto</option>
@@ -103,7 +104,7 @@
                 </i>
                 Tipologia Immobiliare <span class="text-danger">*</span>
               </label>
-              <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" required style="height: auto;">
+              <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" :disabled="!canModify" required style="height: auto;">
                 <option value="Appartamenti">🏢 Appartamenti</option>
                 <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
                 <option value="Box">🚗 Box</option>
@@ -146,7 +147,7 @@
                   </i>
                   Provincia <span class="text-danger">*</span>
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Province" required>
+                <select class="form-select form-select-lg" v-model="formData.Province" :disabled="!canModify" required>
                   <option value="">🗺️ Seleziona provincia</option>
                   <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
                 </select>
@@ -159,7 +160,7 @@
                   </i>
                   Comune <span class="text-danger">*</span>
                 </label>
-                <select class="form-select form-select-lg" multiple v-model="selectedCities" required>
+                <select class="form-select form-select-lg" multiple v-model="selectedCities" :disabled="!canModify" required>
                   <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }}</option>
                 </select>
               </div>
@@ -195,7 +196,7 @@
                   </i>
                   Canone - Prezzo: Da
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
+                <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" :disabled="!canModify" placeholder="Inserisci il prezzo minimo" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -205,7 +206,7 @@
                   </i>
                   Canone - Prezzo: A
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
+                <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" :disabled="!canModify" placeholder="Inserisci il prezzo massimo" />
               </div>
             </div>
             <!--end::Input group-->
@@ -237,6 +238,7 @@
                       type="checkbox"
                       id="toggle-archived"
                       v-model="formData.Archived"
+                      :disabled="!canModify"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-archived">
                       Archiviata
@@ -253,6 +255,7 @@
                       type="checkbox"
                       id="toggle-closed"
                       v-model="formData.Closed"
+                      :disabled="!canModify"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-closed">
                       Evasa
@@ -269,6 +272,7 @@
                       type="checkbox"
                       id="toggle-mortgage"
                       v-model="formData.MortgageAdviceRequired"
+                      :disabled="!canModify"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-mortgage">
                       Consulenza mutuo richiesta
@@ -306,7 +310,7 @@
                   </i>
                   Locali Da
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.RoomsFrom" type="number" placeholder="Numero minimo di locali" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.RoomsFrom" type="number" :disabled="!canModify" placeholder="Numero minimo di locali" min="0" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -316,7 +320,7 @@
                   </i>
                   Locali A
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.RoomsTo" type="number" placeholder="Numero massimo di locali" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.RoomsTo" type="number" :disabled="!canModify" placeholder="Numero massimo di locali" min="0" />
               </div>
             </div>
             <!--end::Input group-->
@@ -331,7 +335,7 @@
                   </i>
                   Bagni
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.Bathrooms" type="number" placeholder="Numero di bagni" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.Bathrooms" type="number" :disabled="!canModify" placeholder="Numero di bagni" min="0" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -341,7 +345,7 @@
                   </i>
                   Piano
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Floor">
+                <select class="form-select form-select-lg" v-model="formData.Floor" :disabled="!canModify">
                   <option value="">🏠 Seleziona Piano</option>
                   <option value="Interrato -2">Interrato -2</option>
                   <option value="Interrato -1">Interrato -1</option>
@@ -373,7 +377,7 @@
                   </i>
                   MQ Da
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" :disabled="!canModify" placeholder="Metri quadrati minimi" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -383,7 +387,7 @@
                   </i>
                   MQ A
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" :disabled="!canModify" placeholder="Metri quadrati massimi" />
               </div>
             </div>
             <!--end::Input group-->
@@ -398,7 +402,7 @@
                   </i>
                   Giardino Da (mq)
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" :disabled="!canModify" placeholder="Metri quadrati minimi" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -408,7 +412,7 @@
                   </i>
                   Giardino A (mq)
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" :disabled="!canModify" placeholder="Metri quadrati massimi" />
               </div>
             </div>
             <!--end::Input group-->
@@ -423,7 +427,7 @@
                   </i>
                   Stato dell'immobile
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.PropertyState">
+                <select class="form-select form-select-lg" v-model="formData.PropertyState" :disabled="!canModify">
                   <option value="0">🔒 Affittato</option>
                   <option value="1">🏗️ In corso di costruzione</option>
                   <option value="2">✅ Libero</option>
@@ -440,7 +444,7 @@
                   </i>
                   Riscaldamento
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Heating">
+                <select class="form-select form-select-lg" v-model="formData.Heating" :disabled="!canModify">
                   <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
                   <option value="Autonomo">🏠 Autonomo</option>
                   <option value="Centralizzato">🏢 Centralizzato</option>
@@ -460,7 +464,7 @@
                   </i>
                   Arredamento
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Furniture">
+                <select class="form-select form-select-lg" v-model="formData.Furniture" :disabled="!canModify">
                   <option value="">🪑 Seleziona Arredamento</option>
                   <option value="Arredato">✅ Arredato</option>
                   <option value="Parzialmente Arredato">🟡 Parzialmente Arredato</option>
@@ -475,7 +479,7 @@
                   </i>
                   Classe Energetica
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.EnergyClass">
+                <select class="form-select form-select-lg" v-model="formData.EnergyClass" :disabled="!canModify">
                   <option value="">⚡ Seleziona Classe Energetica</option>
                   <option value="A4">🟢 A4</option>
                   <option value="A3">🟢 A3</option>
@@ -502,7 +506,7 @@
                   </i>
                   Posti Auto
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" placeholder="Inserisci il numero di posti auto" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" :disabled="!canModify" placeholder="Inserisci il numero di posti auto" min="0" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -518,6 +522,7 @@
                     type="checkbox"
                     id="toggle-auction"
                     v-model="formData.Auction"
+                    :disabled="!canModify"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-auction">
                     Immobile in asta
@@ -560,7 +565,7 @@
                 </i>
                 Nota principale
               </label>
-              <textarea class="form-control form-control-lg" v-model="formData.Notes" rows="3" placeholder="Inserisci eventuali note..."></textarea>
+              <textarea class="form-control form-control-lg" v-model="formData.Notes" :disabled="!canModify" rows="3" placeholder="Inserisci eventuali note..."></textarea>
             </div>
             <!--end::Input group-->
 
@@ -591,7 +596,7 @@
         </div>
         <!--end::Media e Note-->
         <div class="d-flex align-items-end justify-content-end">
-          <button type="button" @click="deleteItem()" class="btn btn-danger me-2">
+          <button type="button" @click="deleteItem()" :disabled="!canModify" class="btn btn-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
                 <span class="path1"></span>
@@ -604,7 +609,7 @@
             <span class="btn-label">Elimina</span>
           </button>
           <!--begin::Button-->
-          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading || !canModify">
             <span v-if="!loading" class="d-flex align-items-center">
               <span class="btn-icon">
                 <i class="ki-duotone ki-check fs-3">
@@ -730,14 +735,24 @@
     </div>
   </div>
   <!--end::Content-->
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_request_detail"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Request"
+  />
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteRequest } from "@/core/data/requests";
 import { useRoute, useRouter } from "vue-router";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, canModify as canModifyHelper, type OwnerInfo } from "@/core/helpers/accessLevel";
 import { useAuthStore } from "@/stores/auth";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import KTSpinner from "@/components/Spinner.vue";
@@ -748,7 +763,11 @@ import type { RealEstateProperty } from "@/core/data/properties";
 import { MenuComponent } from "@/assets/ts/components";
 export default defineComponent({
   name: "update-request",
-  components: { Datatable, KTSpinner },
+  components: { 
+    Datatable, 
+    KTSpinner,
+    InfoPopup,
+  },
   setup() {
     const store = useAuthStore();
     const user = store.user;
@@ -761,6 +780,14 @@ export default defineComponent({
     const selectedPropertyTypes = ref<Array<string>>([]);
     const selectedIds = ref<Array<Number>>([]);
     const initItems = ref([]);
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const requestAccessLevel = ref<number>(1); // Default a 1
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const formData = ref<Request>({
       CustomerId: null,
       Contract: "",
@@ -889,7 +916,34 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       firtLoad.value = true;
-      formData.value = await getRequest(id);
+      const requestData = await getRequest(id);
+      
+      // Se la risposta è un LimitedAccessResponse (AccessLevel 3)
+      if ((requestData as any)._isLimitedAccess) {
+        loading.value = false;
+        const limitedData = requestData as any;
+        // Imposta le informazioni del proprietario
+        if (limitedData.OwnerInfo) {
+          selectedOwnerInfo.value = limitedData.OwnerInfo;
+        }
+        // Mostra il popup con le informazioni del proprietario
+        setTimeout(() => {
+          if (infoPopupRef.value) {
+            infoPopupRef.value.show();
+          }
+          // Torna alla lista quando il popup viene chiuso
+          const modalElement = document.getElementById("info_popup_request_detail");
+          if (modalElement) {
+            modalElement.addEventListener("hidden.bs.modal", () => {
+              router.push({ name: "requests" });
+            }, { once: true });
+          }
+        }, 100);
+        return;
+      }
+      
+      formData.value = requestData as Request;
+      requestAccessLevel.value = (formData.value as any).AccessLevel || 1;
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
       selectedCities.value = formData.value.City.split(",");
       inserModel.value = await getToInsert();
@@ -1111,10 +1165,17 @@ export default defineComponent({
       selectedIds.value = selectedItems;
     };
 
+    const canModify = computed(() => canModifyHelper(requestAccessLevel.value));
+    
     return {
       formData,
       submit,
       loading,
+      canModify,
+      infoPopupRef,
+      selectedOwnerInfo,
+      requestAccessLevel,
+      AccessLevel,
       getAssetPath,
       deleteItem,
       user,

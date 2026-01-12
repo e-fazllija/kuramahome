@@ -60,6 +60,14 @@ export class CustomerTabelData {
   Email: string;
   Phone: string;
   UserId?: string;
+  AccessLevel?: number; // 1=completo, 2=solo lettura, 3=limitato
+  OwnerInfo?: {
+    Id: string;
+    FirstName: string;
+    LastName: string;
+    Role: string;
+    AgencyName?: string;
+  };
 }
 
 export class Notes {
@@ -97,8 +105,22 @@ const getCustomers = (filterRequest: string) : Promise<Array<Customer>> => {
 const getCustomer = (id: number) : Promise<Customer> => {
   return ApiService.get(`Customers/GetById?id=${id}`, "")
     .then(({ data }) => {
+      // Se la risposta è un LimitedAccessResponse (AccessLevel === 3)
+      if (data.AccessLevel === 3 && data.OwnerInfo) {
+        // Restituisci un oggetto speciale che indica accesso limitato
+        return {
+          _isLimitedAccess: true,
+          Id: data.Id,
+          AccessLevel: data.AccessLevel,
+          OwnerInfo: data.OwnerInfo,
+          EntityType: data.EntityType,
+        } as any;
+      }
+      
+      // Risposta normale con dettagli completi
       const result = data as Customer;
       result.CustomerNotes = data.CustomerNotes;
+      result.AccessLevel = data.AccessLevel || 1; // Default a 1 se non presente
       return result;
     })
     .catch(({ response }) => {

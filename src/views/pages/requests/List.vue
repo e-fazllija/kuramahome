@@ -301,7 +301,8 @@
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
         :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id" :loading="loading">
         <template v-slot:CustomerName="{ row: request }">
-          <div class="d-flex align-items-center clickable-row" @click="goToRequestDetails(request.Id)" style="cursor: pointer;">
+          <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center clickable-row" @click="goToRequestDetails(request.Id, request)" style="cursor: pointer;">
             <!-- Avatar con iniziali -->
             <div class="symbol symbol-40px me-3">
               <div class="symbol-label" :style="{ 
@@ -314,8 +315,30 @@
               </div>
             </div>
             <div class="d-flex flex-column">
-              <span class="fw-bold">{{ request.CustomerName }} {{ request.CustomerLastName }}</span>
+              <span class="fw-bold text-hover-primary">{{ request.CustomerName }} {{ request.CustomerLastName }}</span>
             </div>
+          </div>
+            <span 
+              v-if="request.AccessLevel === AccessLevel.READ_ONLY" 
+              class="badge badge-light-info" 
+              :title="request.OwnerInfo ? getOwnerTooltip(request.OwnerInfo) : 'Solo lettura'"
+            >
+              <i class="ki-duotone ki-eye fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            </span>
+            <span 
+              v-if="request.AccessLevel === AccessLevel.LIMITED" 
+              class="badge badge-light-warning" 
+              :title="request.OwnerInfo ? getOwnerTooltip(request.OwnerInfo) : 'Accesso limitato'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
           </div>
         </template>
         <template v-slot:Contract="{ row: request }">
@@ -414,6 +437,14 @@
     :limitStatus="limitStatus"
     @close="showUpgradeModal = false"
   />
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_request"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Request"
+  />
 </template>
 
 <script lang="ts">
@@ -427,6 +458,8 @@ import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, shouldShowPopup, canViewDetails, getOwnerTooltip, type OwnerInfo } from "@/core/helpers/accessLevel";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import {
@@ -457,7 +490,8 @@ export default defineComponent({
     KTSpinner,
     UpgradeRequiredModal,
     Multiselect,
-    ExportDataModal
+    ExportDataModal,
+    InfoPopup,
   },
   setup() {
     const authStore = useAuthStore();
@@ -547,6 +581,13 @@ export default defineComponent({
     const tableData = ref<Array<RequestTabelData>>([]);
     const initItems = ref([]);
     let userId = ref("");
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
@@ -648,9 +689,8 @@ export default defineComponent({
       const results = await getRequestsList(filterRequest, effectiveFilterUserId);
       let fetchedData = results || [];
 
-      if (user.Role === "Agent") {
-        fetchedData = fetchedData.filter(item => item.UserId === user.Id);
-      }
+      // Il backend già filtra per cerchia, non serve filtrare ulteriormente qui
+      // Le richieste vengono mostrate con i loro AccessLevel appropriati
 
       tableData.value = fetchedData;
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
@@ -984,7 +1024,25 @@ export default defineComponent({
     };
 
     // Funzione per navigare ai dettagli della richiesta
-    const goToRequestDetails = (id: number) => {
+    const goToRequestDetails = (id: number, item?: RequestTabelData) => {
+      // Se l'item è fornito, controlla il livello di accesso
+      if (item && item.AccessLevel !== undefined) {
+        // Se livello 3, mostra popup invece di navigare
+        if (shouldShowPopup(item.AccessLevel)) {
+          if (item.OwnerInfo) {
+            selectedOwnerInfo.value = item.OwnerInfo;
+            infoPopupRef.value?.show();
+          }
+          return;
+        }
+        // Se livello 1-2, procedi con la navigazione normale
+        if (canViewDetails(item.AccessLevel)) {
+          const route = router.resolve({ name: 'request', params: { id: id.toString() } });
+          window.open(route.href, '_blank');
+          return;
+        }
+      }
+      // Default: naviga normalmente (per retrocompatibilità)
       const route = router.resolve({ name: 'request', params: { id: id.toString() } });
       window.open(route.href, '_blank');
     };
@@ -1117,6 +1175,10 @@ export default defineComponent({
       limitStatus,
       handleLimitExceeded,
       goToRequestDetails,
+      infoPopupRef,
+      selectedOwnerInfo,
+      AccessLevel,
+      getOwnerTooltip,
       optionsPropertyType,
       exportFilters,
       exportModalId,

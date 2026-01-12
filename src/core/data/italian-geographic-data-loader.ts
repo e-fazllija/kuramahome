@@ -188,9 +188,7 @@ export function getCityByCAP(provinceName: string, cap: string): string | undefi
   }
 
   // Normalizza il CAP a 5 cifre
-  const normalizedCAP = cap.toString().padStart(5, '0');
-
-  // Se i dati sono già in cache, usali direttamente
+  const normalizedCAP = cap.toString().padStart(5, '0');  // Se i dati sono già in cache, usali direttamente
   if (provinceCitiesCache && provinceCitiesCache[provinceName]) {
     const cities = provinceCitiesCache[provinceName];
     const city = cities.find(c => c.CAP === normalizedCAP);
@@ -204,4 +202,3 @@ export function getCityByCAP(provinceName: string, cap: string): string | undefi
   const city = cities.find(c => c.CAP === normalizedCAP);
   return city?.Name;
 }
-
