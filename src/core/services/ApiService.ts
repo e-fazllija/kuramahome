@@ -80,15 +80,23 @@ class ApiService {
             // Status 401 - effettua logout
             authStore.logout();
           } else if (status === 403) {
-            // Status 403 - verifica se è un problema di subscription o solo permessi
+            // Status 403 - verifica se è un problema di subscription scaduta o solo permessi/piano insufficiente
             const errorMessage = error.response?.data?.Message || error.response?.data?.message || '';
-            // Marca come subscription expired solo se il messaggio indica un problema di subscription/premium
-            if (errorMessage.toLowerCase().includes('premium') || 
-                errorMessage.toLowerCase().includes('subscription') || 
-                errorMessage.toLowerCase().includes('abbonamento') ||
-                errorMessage.toLowerCase().includes('piano')) {
+            const errorLower = errorMessage.toLowerCase();
+            
+            // Marca come subscription expired SOLO se il messaggio indica esplicitamente una scadenza
+            // NON impostare se indica solo piano insufficiente (es. "solo premium può accedere")
+            if (errorLower.includes('scaduto') || 
+                errorLower.includes('scaduta') ||
+                errorLower.includes('expired') ||
+                errorLower.includes('non attivo') ||
+                errorLower.includes('non attiva') ||
+                (errorLower.includes('abbonamento') && (errorLower.includes('non') || errorLower.includes('nessun')))) {
               authStore.setSubscriptionExpired(true);
             }
+            // NOTA: Non impostiamo isSubscriptionExpired per errori che indicano solo piano insufficiente
+            // (es. "solo Admin o Agency con piano Premium può accedere")
+            // perché l'abbonamento può essere attivo ma Basic/Pro invece di Premium
           }
         }
         

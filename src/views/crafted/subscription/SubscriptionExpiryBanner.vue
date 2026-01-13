@@ -13,7 +13,12 @@
         <!-- Content -->
         <div class="flex-grow-1">
           <span class="fw-semibold text-gray-800 fs-7">
-            Abbonamento in scadenza tra {{ daysRemaining }} {{ daysRemaining === 1 ? 'giorno' : 'giorni' }}
+            <span v-if="isTrialPeriod">
+              🎁 Periodo di prova: {{ daysRemaining }} {{ daysRemaining === 1 ? 'giorno' : 'giorni' }} rimanenti
+            </span>
+            <span v-else>
+              Abbonamento in scadenza tra {{ daysRemaining }} {{ daysRemaining === 1 ? 'giorno' : 'giorni' }}
+            </span>
           </span>
         </div>
 
@@ -22,7 +27,8 @@
           to="/dashboard/subscription/manage" 
           class="btn btn-sm btn-warning fw-bold ms-3"
         >
-          Rinnova
+          <span v-if="isTrialPeriod">Aggiorna</span>
+          <span v-else>Rinnova</span>
         </router-link>
 
         <!-- Close Button -->
@@ -49,6 +55,7 @@ export default defineComponent({
     const daysRemaining = ref<number>(0);
     const showBanner = ref<boolean>(false);
     const isDismissed = ref<boolean>(false);
+    const isTrialPeriod = ref<boolean>(false);
 
     // Controllo ruolo: solo Admin può vedere il banner
     const isAdmin = computed(() => {
@@ -82,8 +89,15 @@ export default defineComponent({
         
         daysRemaining.value = diffDays > 0 ? diffDays : 0;
 
-        // Mostra banner solo se mancano 5 giorni o meno (e non è stato dismissato)
-        showBanner.value = diffDays <= 5 && diffDays >= 0 && !isDismissed.value;
+        // Verifica se è un trial (piano Basic con durata di 10 giorni o meno)
+        isTrialPeriod.value = subscription.SubscriptionPlan?.Name?.toLowerCase() === 'basic' && 
+                        diffDays <= 10 && diffDays >= 0;
+
+        // Mostra banner se:
+        // 1. È un trial (sempre durante i 10 giorni)
+        // 2. OPPURE se mancano 5 giorni o meno alla scadenza normale
+        // E non è stato dismissato
+        showBanner.value = (isTrialPeriod.value || diffDays <= 5) && diffDays >= 0 && !isDismissed.value;
         
       } catch (error) {
         console.error('Errore nel controllo scadenza abbonamento:', error);
@@ -119,7 +133,8 @@ export default defineComponent({
       isAdmin,
       showBanner,
       daysRemaining,
-      dismissBanner
+      dismissBanner,
+      isTrialPeriod
     };
   },
 });

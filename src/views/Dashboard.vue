@@ -342,9 +342,34 @@ export default defineComponent({
             isLoadingSubscription.value = true;
             const sub = await getCurrentSubscription();
             subscription.value = sub;
+            
+            // Controlla se l'abbonamento è scaduto basandosi su EndDate e Status
+            if (!sub) {
+              // Nessun abbonamento trovato = scaduto
+              store.setSubscriptionExpired(true);
+            } else {
+              const status = sub.Status?.toLowerCase() || '';
+              const isExpiredByStatus = status === 'expired' || status === 'cancelled';
+              
+              // Verifica se la data di scadenza è passata
+              let isExpiredByDate = false;
+              if (sub.EndDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const endDate = new Date(sub.EndDate);
+                endDate.setHours(0, 0, 0, 0);
+                
+                isExpiredByDate = endDate < today;
+              }
+              
+              // Imposta isSubscriptionExpired solo se effettivamente scaduto
+              store.setSubscriptionExpired(isExpiredByStatus || isExpiredByDate);
+            }
           } catch (error) {
             console.error('Errore nel caricamento subscription:', error);
             subscription.value = null;
+            // In caso di errore, non impostiamo isSubscriptionExpired per evitare blocchi errati
           } finally {
             isLoadingSubscription.value = false;
           }
