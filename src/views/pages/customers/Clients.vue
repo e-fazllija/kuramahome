@@ -142,6 +142,20 @@
               <option value="Cliente gold">⭐ Cliente gold</option>
             </select>
           </div>
+
+          <!-- Filtro Agenzia -->
+          <div class="col-12 col-sm-6 col-md-auto">
+            <select 
+              class="form-select filter-select" 
+              v-model="agencyFilter"
+              @change="onAgencyFilterChange"
+            >
+              <option value="">🏢 Agenzie</option>
+              <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
+                {{ item.FirstName }} {{ item.LastName }}
+              </option>
+            </select>
+          </div>
           
           <!-- Filtro Proprietario -->
           <div v-if="user.Role !== 'Agent'" class="col-12 col-sm-6 col-md">
@@ -430,6 +444,7 @@ export default defineComponent({
     });
     const exportFilters = ref<CustomerExportPayload>(buildDefaultExportFilters());
     const ownerFilter = ref<string>("");
+    const agencyFilter = ref<string>("");
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
@@ -511,12 +526,15 @@ export default defineComponent({
     const applyFilters = () => {
       let items = [...rawItems.value];
 
-      // Per Admin e Agency, applica il filtro selezionato
-      if (user.Role !== "Agent" && ownerFilter.value) {
+      // Filtro agenzie (per tutti i ruoli: Admin, Agency, Agent)
+      if (agencyFilter.value) {
+        items = items.filter((item) => item.UserId === agencyFilter.value);
+      }
+      // Filtro proprietario (solo per Admin e Agency, non per Agent)
+      else if (user.Role !== "Agent" && ownerFilter.value) {
         items = items.filter((item) => item.UserId === ownerFilter.value);
       }
-      // Per gli Agent, mostra tutti i clienti della cerchia (già filtrati dal backend)
-      // Non applicare filtri aggiuntivi, così vedono anche i clienti dell'agency
+      // Per gli Agent senza filtri, mostra tutti i clienti della cerchia (già filtrati dal backend)
 
       if (contract.value) {
         items = items.filter((item) => {
@@ -600,9 +618,9 @@ export default defineComponent({
 
     onMounted(async () => {
       isSearching.value = true;
-      if (user.Role !== "Agent") {
-        defaultSearchItems.value = await getSearchItems(user.Id);
-      }
+      // Carica le agenzie per tutti i ruoli (Admin, Agency, Agent)
+      // in modo che possano filtrare i clienti per agenzia
+      defaultSearchItems.value = await getSearchItems(user.Id);
       await getItems("");
       isSearching.value = false;
       
@@ -696,6 +714,13 @@ export default defineComponent({
     const clearAllFilters = () => {
       search.value = "";
       contract.value = "";
+      ownerFilter.value = "";
+      agencyFilter.value = "";
+      applyFilters();
+    };
+
+    const onAgencyFilterChange = () => {
+      // Quando si seleziona un'agenzia, resetta ownerFilter e applica il filtro agenzie
       ownerFilter.value = "";
       applyFilters();
     };
@@ -898,6 +923,8 @@ export default defineComponent({
       contract,
       user,
       ownerFilter,
+      agencyFilter,
+      onAgencyFilterChange,
       defaultSearchItems,
       clearAllFilters,
       currentPlaceholder,

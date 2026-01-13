@@ -204,10 +204,11 @@
           </div>
 
           <!-- Filtro Agenzia -->
-          <div v-if="user.Role == 'Admin'" class="col-12 col-sm-6 col-md-4 col-lg-auto">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select 
               class="form-select filter-select" 
               v-model="userId"
+              @change="onAgencyFilterChange"
             >
               <option value="">🏢 Agenzie</option>
               <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
@@ -686,8 +687,8 @@ export default defineComponent({
     async function getItems(filterRequest: string) {
       loading.value = true;
       tableData.value = [];
-      const effectiveFilterUserId = userId.value || undefined;
-      const results = await getRequestsList(filterRequest, effectiveFilterUserId);
+      // Non passare userId al backend, useremo OwnerInfo per filtrare lato frontend
+      const results = await getRequestsList(filterRequest, undefined);
       let fetchedData = results || [];
 
       // Il backend già filtra per cerchia, non serve filtrare ulteriormente qui
@@ -768,6 +769,34 @@ export default defineComponent({
 
     const searchItems = async () => {
       await getItems("");
+
+      // Filtraggio per agenzia usando OwnerInfo (per tutti i ruoli)
+      if (userId.value) {
+        // Ottieni gli ID degli agenti dell'agenzia selezionata
+        const agencyAgentsIds = defaultSearchItems.value.Agents
+          .filter(agent => agent.AdminId === userId.value)
+          .map(agent => agent.Id);
+        
+        tableData.value = tableData.value.filter(item => {
+          // Se la richiesta ha OwnerInfo, usa OwnerInfo.Id
+          if (item.OwnerInfo && item.OwnerInfo.Id) {
+            // Controlla se OwnerInfo.Id corrisponde all'agenzia selezionata
+            if (item.OwnerInfo.Id === userId.value) {
+              return true;
+            }
+            // Controlla se OwnerInfo.Id corrisponde a un agente dell'agenzia
+            if (item.OwnerInfo.Role === "Agent" && agencyAgentsIds.includes(item.OwnerInfo.Id)) {
+              return true;
+            }
+            return false;
+          }
+          // Fallback: usa UserId e controlla se corrisponde all'agenzia o ai suoi agenti
+          if (item.UserId === userId.value) {
+            return true;
+          }
+          return agencyAgentsIds.includes(item.UserId || "");
+        });
+      }
 
       // Filtraggio per testo (search)
       if (search.value !== "") {
@@ -953,6 +982,7 @@ export default defineComponent({
       selectedProvince.value = "";
       selectedCity.value = "";
       selectedLocation.value = "";
+      userId.value = "";
       filteredCities.value = [];
       searchItems();
     };
@@ -1120,10 +1150,22 @@ export default defineComponent({
       }
     };
 
-    onMounted(async () => {
-      if (authStore.user.Role == "Admin") {
+    const onAgencyFilterChange = async () => {
+      // Quando si seleziona un'agenzia, ricarica gli agenti di quell'agenzia
+      // per poter filtrare correttamente usando OwnerInfo
+      if (userId.value) {
+        defaultSearchItems.value = await getSearchItems(authStore.user.Id, userId.value);
+      } else {
         defaultSearchItems.value = await getSearchItems(authStore.user.Id);
       }
+      // Ricarica i dati filtrati per quell'agenzia e applica anche gli altri filtri frontend
+      await searchItems();
+    };
+
+    onMounted(async () => {
+      // Carica le agenzie per tutti i ruoli (Admin, Agency, Agent)
+      // in modo che possano filtrare le richieste per agenzia
+      defaultSearchItems.value = await getSearchItems(authStore.user.Id);
       userId.value = "";
 
       // Carica i dati strutturati per i filtri
@@ -1153,6 +1195,7 @@ export default defineComponent({
         loading,
         user,
         userId,
+        onAgencyFilterChange,
         defaultSearchItems,
         removeLocation,
         removePropertyType,

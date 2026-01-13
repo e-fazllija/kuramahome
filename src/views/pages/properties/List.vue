@@ -241,6 +241,20 @@
             />
           </div>
 
+          <!-- Filtro Agenzia -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select 
+              class="form-select filter-select" 
+              v-model="agencyId"
+              @change="onAgencyFilterChange"
+            >
+              <option value="">🏢 Agenzie</option>
+              <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
+                {{ item.FirstName }} {{ item.LastName }}
+              </option>
+            </select>
+          </div>
+
           <!-- Filtro Proprietario -->
           <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select class="form-select filter-select" v-model="ownerFilter" @change="applyFilters">
@@ -811,7 +825,8 @@ export default defineComponent({
       const validPriceFrom = priceFrom !== undefined ? priceFrom : 0;
       const validPriceTo = priceTo !== undefined ? priceTo : 0;
 
-      const results = await getRealEstatePropertiesList(agencyId, filterRequest, contract, validPriceFrom, validPriceTo, category, typology, town);
+      // Non passare agencyId al backend, useremo OwnerInfo per filtrare lato frontend
+      const results = await getRealEstatePropertiesList("", filterRequest, contract, validPriceFrom, validPriceTo, category, typology, town);
       rawItems.value = results || [];
       initItems.value.splice(0, rawItems.value.length, ...rawItems.value);
       
@@ -845,8 +860,36 @@ export default defineComponent({
     const applyFilters = () => {
       let items = [...rawItems.value];
 
-      // Applica il filtro proprietario selezionato
-      if (ownerFilter.value) {
+      // Filtro agenzie usando OwnerInfo (per tutti i ruoli: Admin, Agency, Agent)
+      if (agencyId.value) {
+        // Ottieni gli ID degli agenti dell'agenzia selezionata
+        const agencyAgentsIds = defaultSearchItems.value.Agents
+          .filter(agent => agent.AdminId === agencyId.value)
+          .map(agent => agent.Id);
+        
+        items = items.filter((item) => {
+          // Se l'immobile ha OwnerInfo, usa OwnerInfo.Id
+          if (item.OwnerInfo && item.OwnerInfo.Id) {
+            // Controlla se OwnerInfo.Id corrisponde all'agenzia selezionata
+            if (item.OwnerInfo.Id === agencyId.value) {
+              return true;
+            }
+            // Controlla se OwnerInfo.Id corrisponde a un agente dell'agenzia
+            if (item.OwnerInfo.Role === "Agent" && agencyAgentsIds.includes(item.OwnerInfo.Id)) {
+              return true;
+            }
+            return false;
+          }
+          // Fallback: usa UserId e controlla se corrisponde all'agenzia o ai suoi agenti
+          if (item.UserId === agencyId.value) {
+            return true;
+          }
+          return agencyAgentsIds.includes(item.UserId || "");
+        });
+      }
+
+      // Applica il filtro proprietario selezionato (solo se non c'è filtro agenzie)
+      if (!agencyId.value && ownerFilter.value) {
         // Per tutti i ruoli: filtra per UserId
         // - "I miei immobili": item.UserId === user.Id
         // - "Immobili dell'agency" (solo Agent): item.UserId === user.AdminId (l'agency ha creato l'immobile, quindi UserId = agency.Id)
@@ -858,7 +901,7 @@ export default defineComponent({
           return itemUserId === filterValue;
         });
       }
-      // Se ownerFilter è vuoto, mostra tutti gli immobili della cerchia (già filtrati dal backend)
+      // Se entrambi i filtri sono vuoti, mostra tutti gli immobili della cerchia (già filtrati dal backend)
 
       // Applica il filtro stato incarico
       if (assignmentStatusFilter.value) {
@@ -1175,17 +1218,30 @@ export default defineComponent({
       filteredCities.value = [];
       ownerFilter.value = "";
       assignmentStatusFilter.value = "";
+      // Reset agencyId al valore iniziale (AdminId per Agency/Agent, "" per Admin)
+      agencyId.value = authStore.user.AdminId || "";
       searchItems();
     };
 
+    const onAgencyFilterChange = async () => {
+      // Quando si seleziona un'agenzia, ricarica gli agenti di quell'agenzia
+      // per poter filtrare correttamente usando OwnerInfo
+      if (agencyId.value) {
+        defaultSearchItems.value = await getSearchItems(authStore.user.Id, agencyId.value);
+      } else {
+        defaultSearchItems.value = await getSearchItems(authStore.user.Id);
+      }
+      // Applica i filtri (incluso il filtro agenzie usando OwnerInfo)
+      applyFilters();
+    };
+
     onMounted(async () => {
-      // if (authStore.user.Role == "Admin") {
-        agencyId.value = authStore.user.AdminId;
-        // Chiama getSearchItems come in Clients.vue (senza agencyId per vedere tutti gli agenti)
-        if (user.Role !== "Agent") {
-          defaultSearchItems.value = await getSearchItems(authStore.user.Id);
-        }
-      // }
+      // Imposta agencyId iniziale (AdminId per Agency/Agent, "" per Admin)
+      agencyId.value = authStore.user.AdminId || "";
+      
+      // Carica le agenzie per tutti i ruoli (Admin, Agency, Agent)
+      // in modo che possano filtrare gli immobili per agenzia
+      defaultSearchItems.value = await getSearchItems(authStore.user.Id);
 
       // Carica i dati strutturati per i filtri
       await loadStructuredData();
@@ -1223,6 +1279,7 @@ export default defineComponent({
         loading,
         user,
         agencyId,
+        onAgencyFilterChange,
         defaultSearchItems,
         typology,
         getLocationFilter,

@@ -83,7 +83,7 @@
               </button>
             </div>
             
-            <!-- Agency Filter (Admin only) -->
+            <!-- Agency Filter - Solo per Admin -->
             <div v-if="user.Role == 'Admin'" class="col-12 col-sm-6 col-lg-auto">
               <select class="form-select form-select-modern" v-model="agencyId">
                 <option value="">🏢 Tutte le agenzie</option>
@@ -271,7 +271,7 @@ export default defineComponent({
       fromDate: null,
       toDate: null,
       status: "",
-      agencyId: user.Role === "Admin" ? "" : user.Role === "Agency" ? user.Id : "",
+      agencyId: user.Role === "Admin" ? "" : "", // Solo Admin può filtrare per agenzia
       agentId: user.Role === "Agent" ? user.Id : "",
       filter: "",
     });
@@ -309,7 +309,8 @@ export default defineComponent({
           placeholder: "Titolo, descrizione, cliente...",
         },
       ];
-      if (user.Role === "Admin") {
+      // Filtro agenzie disponibile solo per Admin
+      if (user.Role === "Admin" && agencyOptions.value.length > 0) {
         fields.splice(1, 0, {
           key: "agencyId",
           label: "Agenzia",
@@ -407,9 +408,9 @@ export default defineComponent({
       for (const key in allEvents.value) {
         const event = allEvents.value[key];
         
-        // Filtro per Agency (solo per Admin)
-        // Se l'admin seleziona un'Agency, mostra eventi dell'Agency stessa + eventi degli Agent di quell'Agency
-        if (store.user.Role == "Admin" && agencyId.value) {
+        // Filtro per Agency (per tutti i ruoli)
+        // Se si seleziona un'Agency, mostra eventi dell'Agency stessa + eventi degli Agent di quell'Agency
+        if (agencyId.value) {
           const isAgencyEvent = event.UserId === agencyId.value; // Evento dell'Agency stessa
           const isAgentOfAgency = event.User.AdminId === agencyId.value; // Evento di un Agent di quell'Agency
           
@@ -463,11 +464,12 @@ export default defineComponent({
       loading.value = true;
       await loadAllEvents();
       
-      if (store.user.Role == "Agency" || store.user.Role == "Admin") {
-        searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
-        if (store.user.Role == "Admin") {
-          agencyId.value = ""; // Mostra tutti gli eventi per default
-        }
+      // Carica le agenzie per tutti i ruoli (Admin, Agency, Agent)
+      // in modo che possano filtrare gli eventi per agenzia
+      searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
+      
+      if (store.user.Role == "Admin") {
+        agencyId.value = ""; // Mostra tutti gli eventi per default
       }
       
       // Avvia animazione placeholder
@@ -480,9 +482,8 @@ export default defineComponent({
       // Evita chiamate duplicate se il valore non è cambiato realmente
       if (newVal === oldVal) return;
       
-      if (store.user.Role == "Admin") {
-        searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
-      }
+      // Aggiorna le agenzie e gli agenti quando cambia il filtro agenzie (per tutti i ruoli)
+      searchItems.value = await getSearchItems(store.user.Id, agencyId.value);
       applyFilters();
     })
 
@@ -550,6 +551,9 @@ export default defineComponent({
 
     const clearAllFilters = () => {
       search.value = "";
+      agencyId.value = "";
+      agentId.value = "";
+      statusFilter.value = "";
       searchItemsFunc();
     };
 
