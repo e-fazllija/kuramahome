@@ -241,6 +241,20 @@
             />
           </div>
 
+          <!-- Filtro Agenzia -->
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+            <select 
+              class="form-select filter-select" 
+              v-model="agencyId"
+              @change="onAgencyFilterChange"
+            >
+              <option value="">🏢 Agenzie</option>
+              <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
+                {{ item.FirstName }} {{ item.LastName }}
+              </option>
+            </select>
+          </div>
+
           <!-- Filtro Proprietario -->
           <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select class="form-select filter-select" v-model="ownerFilter" @change="applyFilters">
@@ -298,7 +312,37 @@
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
         :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id" :loading="loading">
         <template v-slot:Id="{ row: item }">
-          <span class="clickable-row" @click="goToPropertyDetails(item.Id)" style="cursor: pointer; color: #3699ff; font-weight: 600;">{{ item.Id }}</span>
+          <div class="d-flex align-items-center gap-2">
+            <span 
+              class="clickable-row" 
+              @click="goToPropertyDetails(item.Id, item)" 
+              style="cursor: pointer; color: #3699ff; font-weight: 600;"
+            >
+              {{ item.Id }}
+            </span>
+            <span 
+              v-if="item.AccessLevel === AccessLevel.READ_ONLY" 
+              class="badge badge-light-info" 
+              :title="item.OwnerInfo ? getOwnerTooltip(item.OwnerInfo) : 'Solo lettura'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
+            <span 
+              v-if="item.AccessLevel === AccessLevel.LIMITED" 
+              class="badge badge-light-warning" 
+              :title="item.OwnerInfo ? getOwnerTooltip(item.OwnerInfo) : 'Accesso limitato'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
+          </div>
         </template>
         <template v-slot:AssignmentStatus="{ row: item }">
           <span v-if="item.Sold === true" class="badge badge-light-success">
@@ -333,10 +377,7 @@
         <template v-slot:AssignmentEnd="{ row: item }">
           <span v-if="item.Sold === true">
             <template v-if="item.UpdateDate">
-              {{ new Date(item.UpdateDate).toLocaleDateString('it-IT') }}
-            </template>
-            <template v-else-if="item.AssignmentEnd && item.AssignmentEnd !== '0001-01-01T00:00:00'">
-              {{ item.AssignmentEnd.substring(0, 10).split('-').reverse().join('-') }}
+              {{ new Date(item.UpdateDate).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }) }}
             </template>
             <template v-else class="text-muted">-</template>
           </span>
@@ -410,7 +451,6 @@
   />
   <AddPropertyModal 
     @formAddSubmitted="getItems(agencyId, '')" 
-    @redirectToEdit="redirectToEdit"
     @limitExceeded="handleLimitExceeded"
   ></AddPropertyModal>
 
@@ -420,6 +460,14 @@
     :featureDisplayName="'Immobili'"
     :limitStatus="limitStatus"
     @close="showUpgradeModal = false"
+  />
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_property"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Property"
   />
 </template>
 
@@ -440,6 +488,8 @@ import { useAuthStore } from "@/stores/auth";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, shouldShowPopup, canViewDetails, getOwnerTooltip, type OwnerInfo } from "@/core/helpers/accessLevel";
 import { getAllProvinceNames, getCitiesByProvince } from "@/core/data/italian-geographic-data-loader";
 import KTSpinner from "@/components/Spinner.vue";
 import { downloadBlobResponse } from "@/core/helpers/download";
@@ -456,6 +506,7 @@ export default defineComponent({
     AddPropertyModal,
     UpgradeRequiredModal,
     KTSpinner,
+    InfoPopup,
   },
   setup() {
     const authStore = useAuthStore();
@@ -529,6 +580,13 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const tableData = ref<Array<RequestTabelData>>([]);
     const rawItems = ref<Array<RequestTabelData>>([]);
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const initItems = ref([]);
     const user = authStore.user;
     let agencyId = ref("");
@@ -767,7 +825,8 @@ export default defineComponent({
       const validPriceFrom = priceFrom !== undefined ? priceFrom : 0;
       const validPriceTo = priceTo !== undefined ? priceTo : 0;
 
-      const results = await getRealEstatePropertiesList(agencyId, filterRequest, contract, validPriceFrom, validPriceTo, category, typology, town);
+      // Non passare agencyId al backend, useremo OwnerInfo per filtrare lato frontend
+      const results = await getRealEstatePropertiesList("", filterRequest, contract, validPriceFrom, validPriceTo, category, typology, town);
       rawItems.value = results || [];
       initItems.value.splice(0, rawItems.value.length, ...rawItems.value);
       
@@ -801,8 +860,36 @@ export default defineComponent({
     const applyFilters = () => {
       let items = [...rawItems.value];
 
-      // Applica il filtro proprietario selezionato
-      if (ownerFilter.value) {
+      // Filtro agenzie usando OwnerInfo (per tutti i ruoli: Admin, Agency, Agent)
+      if (agencyId.value) {
+        // Ottieni gli ID degli agenti dell'agenzia selezionata
+        const agencyAgentsIds = defaultSearchItems.value.Agents
+          .filter(agent => agent.AdminId === agencyId.value)
+          .map(agent => agent.Id);
+        
+        items = items.filter((item) => {
+          // Se l'immobile ha OwnerInfo, usa OwnerInfo.Id
+          if (item.OwnerInfo && item.OwnerInfo.Id) {
+            // Controlla se OwnerInfo.Id corrisponde all'agenzia selezionata
+            if (item.OwnerInfo.Id === agencyId.value) {
+              return true;
+            }
+            // Controlla se OwnerInfo.Id corrisponde a un agente dell'agenzia
+            if (item.OwnerInfo.Role === "Agent" && agencyAgentsIds.includes(item.OwnerInfo.Id)) {
+              return true;
+            }
+            return false;
+          }
+          // Fallback: usa UserId e controlla se corrisponde all'agenzia o ai suoi agenti
+          if (item.UserId === agencyId.value) {
+            return true;
+          }
+          return agencyAgentsIds.includes(item.UserId || "");
+        });
+      }
+
+      // Applica il filtro proprietario selezionato (solo se non c'è filtro agenzie)
+      if (!agencyId.value && ownerFilter.value) {
         // Per tutti i ruoli: filtra per UserId
         // - "I miei immobili": item.UserId === user.Id
         // - "Immobili dell'agency" (solo Agent): item.UserId === user.AdminId (l'agency ha creato l'immobile, quindi UserId = agency.Id)
@@ -814,7 +901,7 @@ export default defineComponent({
           return itemUserId === filterValue;
         });
       }
-      // Se ownerFilter è vuoto, mostra tutti gli immobili della cerchia (già filtrati dal backend)
+      // Se entrambi i filtri sono vuoti, mostra tutti gli immobili della cerchia (già filtrati dal backend)
 
       // Applica il filtro stato incarico
       if (assignmentStatusFilter.value) {
@@ -971,7 +1058,25 @@ export default defineComponent({
     };
 
     // Funzione per navigare ai dettagli della proprietà
-    const goToPropertyDetails = (id: number) => {
+    const goToPropertyDetails = (id: number, item?: RequestTabelData) => {
+      // Se l'item è fornito, controlla il livello di accesso
+      if (item && item.AccessLevel !== undefined) {
+        // Se livello 3, mostra popup invece di navigare
+        if (shouldShowPopup(item.AccessLevel)) {
+          if (item.OwnerInfo) {
+            selectedOwnerInfo.value = item.OwnerInfo;
+            infoPopupRef.value?.show();
+          }
+          return;
+        }
+        // Se livello 1-2, procedi con la navigazione normale
+        if (canViewDetails(item.AccessLevel)) {
+          const route = router.resolve({ name: 'property', params: { id: id.toString() } });
+          window.open(route.href, '_blank');
+          return;
+        }
+      }
+      // Default: naviga normalmente (per retrocompatibilità)
       const route = router.resolve({ name: 'property', params: { id: id.toString() } });
       window.open(route.href, '_blank');
     };
@@ -1113,27 +1218,36 @@ export default defineComponent({
       filteredCities.value = [];
       ownerFilter.value = "";
       assignmentStatusFilter.value = "";
+      // Reset agencyId al valore iniziale (AdminId per Agency/Agent, "" per Admin)
+      agencyId.value = authStore.user.AdminId || "";
       searchItems();
     };
 
+    const onAgencyFilterChange = async () => {
+      // Quando si seleziona un'agenzia, ricarica gli agenti di quell'agenzia
+      // per poter filtrare correttamente usando OwnerInfo
+      if (agencyId.value) {
+        defaultSearchItems.value = await getSearchItems(authStore.user.Id, agencyId.value);
+      } else {
+        defaultSearchItems.value = await getSearchItems(authStore.user.Id);
+      }
+      // Applica i filtri (incluso il filtro agenzie usando OwnerInfo)
+      applyFilters();
+    };
+
     onMounted(async () => {
-      // if (authStore.user.Role == "Admin") {
-        agencyId.value = authStore.user.AdminId;
-        // Chiama getSearchItems come in Clients.vue (senza agencyId per vedere tutti gli agenti)
-        if (user.Role !== "Agent") {
-          defaultSearchItems.value = await getSearchItems(authStore.user.Id);
-        }
-      // }
+      // Imposta agencyId iniziale (AdminId per Agency/Agent, "" per Admin)
+      agencyId.value = authStore.user.AdminId || "";
+      
+      // Carica le agenzie per tutti i ruoli (Admin, Agency, Agent)
+      // in modo che possano filtrare gli immobili per agenzia
+      defaultSearchItems.value = await getSearchItems(authStore.user.Id);
 
       // Carica i dati strutturati per i filtri
       await loadStructuredData();
 
       await getItems(agencyId.value, search.value, contract.value, fromPrice.value, toPrice.value, category.value, typology.value, getLocationFilter());
     });
-
-    const redirectToEdit = (propertyId: number) => {
-      router.push({ name: "update-property", params: { id: propertyId } });
-    };
 
     // Funzione per formattare i numeri con separatore delle migliaia e 2 decimali
     const formatNumber = (value: number | undefined | null): string => {
@@ -1165,6 +1279,7 @@ export default defineComponent({
         loading,
         user,
         agencyId,
+        onAgencyFilterChange,
         defaultSearchItems,
         typology,
         getLocationFilter,
@@ -1176,13 +1291,16 @@ export default defineComponent({
         onProvinceChange,
         onCityChange,
         clearAllFilters,
-        redirectToEdit,
         handleNewPropertyClick,
         handleLimitExceeded,
         isCheckingLimit,
         showUpgradeModal,
         limitStatus,
         goToPropertyDetails,
+        infoPopupRef,
+        selectedOwnerInfo,
+        AccessLevel,
+        getOwnerTooltip,
         exportModalId,
         exportFilters,
         propertyExportFields,

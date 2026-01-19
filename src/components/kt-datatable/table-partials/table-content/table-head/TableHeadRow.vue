@@ -18,7 +18,7 @@
         <th
           scope="col"
           :class="{
-            'text-end': i === header.length - 1,
+            'text-end': i === header.length - 1 && column.textAlign !== 'center',
             'text-center': column.textAlign === 'center',
             'text-start': !column.textAlign && i !== header.length - 1,
             'py-3': true,

@@ -202,7 +202,7 @@
 
           <!--begin::Input group - Telefono-->
           <div class="fv-row mb-7">
-            <label class="form-label fw-bold text-gray-800 fs-6">Telefono</label>
+            <label class="form-label fw-bold text-gray-800 fs-6">Telefono *</label>
             <Field
               v-model="formData.phone"
               class="form-control form-control-lg form-control-solid"
@@ -262,7 +262,7 @@
 
           <!--begin::Input group - Telefono-->
           <div class="fv-row mb-7">
-            <label class="form-label fw-bold text-gray-800 fs-6">Telefono Aziendale</label>
+            <label class="form-label fw-bold text-gray-800 fs-6">Telefono Aziendale *</label>
             <Field
               v-model="formData.phone"
               class="form-control form-control-lg form-control-solid"
@@ -798,7 +798,7 @@ export default defineComponent({
       name: Yup.string().required("Il nome è obbligatorio").label("Nome"),
       lastName: Yup.string().required("Il cognome è obbligatorio").label("Cognome"),
       email: Yup.string().required("L'email è obbligatoria").email("Inserisci un'email valida").label("Email"),
-      phone: Yup.string().nullable().label("Telefono"),
+      phone: Yup.string().required("Il telefono è obbligatorio").label("Telefono"),
       // Campi per Persona Giuridica
       companyName: Yup.string().when('userType', {
         is: '2',

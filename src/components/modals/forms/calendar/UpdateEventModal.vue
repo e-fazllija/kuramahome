@@ -60,13 +60,46 @@
                 <!--end::Label-->
                 <!--begin::Input-->
                 <el-form-item prop="EventName">
-                  <el-input 
-                    v-model="targetData.EventName" 
-                    type="text" 
-                    name="EventName"
-                    placeholder="Inserisci il nome dell'evento"
-                    size="large"
-                  />
+                  <div class="position-relative">
+                    <input 
+                      class="form-control form-control-lg" 
+                      v-model="targetData.EventName" 
+                      type="text" 
+                      name="EventName"
+                      placeholder="Inserisci il nome dell'evento o seleziona un suggerimento"
+                      @blur="capitalizeEventName"
+                      @input="onEventNameInput"
+                      @focus="showSuggestions = true"
+                      @keydown.down.prevent="navigateSuggestions('down')"
+                      @keydown.up.prevent="navigateSuggestions('up')"
+                      @keydown.enter.prevent="selectSuggestion(selectedSuggestionIndex)"
+                      @keydown.escape="showSuggestions = false"
+                    />
+                    <!--begin::Suggestions dropdown-->
+                    <div 
+                      v-if="showSuggestions && filteredEventSuggestions.length > 0"
+                      class="position-absolute w-100 bg-white border border-gray-300 rounded shadow-lg mt-1"
+                      style="z-index: 1000; max-height: 300px; overflow-y: auto;"
+                    >
+                      <ul class="list-unstyled mb-0">
+                        <li
+                          v-for="(suggestion, index) in filteredEventSuggestions"
+                          :key="index"
+                          @click="selectSuggestion(index)"
+                          @mouseenter="selectedSuggestionIndex = index"
+                          class="px-4 py-3 cursor-pointer border-bottom border-gray-200"
+                          :class="{
+                            'bg-light-primary': selectedSuggestionIndex === index,
+                            'bg-light': selectedSuggestionIndex !== index
+                          }"
+                          style="transition: background-color 0.2s;"
+                        >
+                          <span class="text-gray-800 fw-semibold">{{ suggestion }}</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <!--end::Suggestions dropdown-->
+                  </div>
                 </el-form-item>
                 <!--end::Input-->
               </div>
@@ -458,8 +491,9 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, ref, onMounted, watch } from "vue";
+import { defineComponent, ref, onMounted, watch, computed } from "vue";
 import { hideModal } from "@/core/helpers/dom";
+import { toTitleCase } from "@/core/helpers/text";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import events, { TODAY, getToInsert, updateEvent, InsertModel, getEvent, Event, deleteEvent } from "@/core/data/events";
 import { useAuthStore } from "@/stores/auth";
@@ -475,6 +509,41 @@ export default defineComponent({
     const loading = ref<boolean>(false);
     const store = useAuthStore();
     const user = store.user;
+    
+    // Titoli predefiniti per gli appuntamenti
+    const eventNameSuggestions = [
+      "Primo contatto / incontro conoscitivo",
+      "Appuntamento di acquisizione",
+      "Valutazione immobile",
+      "Firma incarico di vendita",
+      "Firma incarico di locazione",
+      "Visita immobile",
+      "Open house",
+      "Seconda visita",
+      "Incontro di trattativa",
+      "Presentazione proposta",
+      "Firma proposta d'acquisto",
+      "Firma preliminare",
+      "Appuntamento in agenzia",
+      "Appuntamento dal notaio",
+      "Consegna documentazione",
+      "Chiusura trattativa"
+    ];
+    
+    const showSuggestions = ref<boolean>(false);
+    const selectedSuggestionIndex = ref<number>(-1);
+    
+    // Filtra i suggerimenti in base al testo digitato (contiene, case-insensitive)
+    const filteredEventSuggestions = computed(() => {
+      if (!targetData.value.EventName || targetData.value.EventName.trim() === '') {
+        return eventNameSuggestions;
+      }
+      const searchText = targetData.value.EventName.toLowerCase().trim();
+      return eventNameSuggestions.filter(suggestion => 
+        suggestion.toLowerCase().includes(searchText)
+      );
+    });
+    
     const colorOptions = [
   { name: '', hex: '#408441' },       
   { name: '', hex: '#3412F2' },           
@@ -725,6 +794,48 @@ export default defineComponent({
         }
       }
     };
+    
+    // Funzioni per gestire l'autocomplete del nome evento
+    const onEventNameInput = () => {
+      showSuggestions.value = true;
+      selectedSuggestionIndex.value = -1;
+    };
+    
+    const selectSuggestion = (index: number) => {
+      if (index >= 0 && index < filteredEventSuggestions.value.length) {
+        targetData.value.EventName = filteredEventSuggestions.value[index];
+        showSuggestions.value = false;
+        selectedSuggestionIndex.value = -1;
+      }
+    };
+    
+    const navigateSuggestions = (direction: 'up' | 'down') => {
+      if (filteredEventSuggestions.value.length === 0) return;
+      
+      if (direction === 'down') {
+        selectedSuggestionIndex.value = 
+          selectedSuggestionIndex.value < filteredEventSuggestions.value.length - 1
+            ? selectedSuggestionIndex.value + 1
+            : 0;
+      } else {
+        selectedSuggestionIndex.value = 
+          selectedSuggestionIndex.value > 0
+            ? selectedSuggestionIndex.value - 1
+            : filteredEventSuggestions.value.length - 1;
+      }
+    };
+    
+    // Funzione per capitalizzare il nome evento quando perde il focus
+    const capitalizeEventName = () => {
+      // Chiudi i suggerimenti quando perde il focus
+      setTimeout(() => {
+        showSuggestions.value = false;
+      }, 200);
+      
+      if (targetData.value.EventName && typeof targetData.value.EventName === 'string' && targetData.value.EventName.trim()) {
+        targetData.value.EventName = toTitleCase(targetData.value.EventName);
+      }
+    };
 
     return {
       formRef,
@@ -738,7 +849,15 @@ export default defineComponent({
       deleteItem,
       user,
       colorOptions,
-      selectColor
+      selectColor,
+      // Autocomplete event name
+      showSuggestions,
+      selectedSuggestionIndex,
+      filteredEventSuggestions,
+      onEventNameInput,
+      selectSuggestion,
+      navigateSuggestions,
+      capitalizeEventName
     };
   },
 });

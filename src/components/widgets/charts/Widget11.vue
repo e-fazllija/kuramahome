@@ -1,234 +1,299 @@
 <template>
   <!--begin::Analytics Dashboard Widget-->
-  <div class="card card-xl-stretch mb-xl-10">
-    <!--begin::Header-->
-    <div class="card-header border-0 pt-5 pb-3">
-      <h3 class="card-title align-items-start flex-column">
-        <span class="card-label fw-bold fs-3 mb-1">📊 Analytics Dashboard</span>
-        <span class="text-muted fw-semibold fs-7">Panoramica completa delle performance</span>
-      </h3>
-    </div>
-    <!--end::Header-->
-    
-    <!--begin::Body-->
-    <div class="card-body p-6 pt-2">
-      <div class="row g-4">
-        <!--begin::KPI Column (Left Side)-->
-        <div class="col-xl-4">
-          <div class="row g-4 h-100">
-            <!--begin::KPI Cards in 2x2 Grid-->
-            
-            <!--begin::KPI Card - Richieste-->
-            <div class="col-6">
-              <div 
-                @click="selectKPI('requests')"
-                :class="[
-                  'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
-                  selectedKPI === 'requests' ? 'border border-success border-3 shadow-sm' : 'border border-gray-200'
-                ]"
-                style="transition: all 0.3s ease; background: linear-gradient(135deg, #e8f8f5 0%, #ffffff 100%);"
-              >
-                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
-                  <div class="symbol symbol-45px mx-auto mb-2">
-                    <span class="symbol-label" style="background: linear-gradient(135deg, #1bc5bd 0%, #0bb7af 100%);">
-                      <i class="ki-duotone ki-chart-simple fs-3 text-white">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                  <span class="path4"></span>
-                </i>
-                    </span>
+  <div class="row g-4 mb-xl-10">
+    <!--begin::Chart Widget (7/12)-->
+    <div class="col-xl-7">
+      <div class="card card-xl-stretch widget11-chart-card">
+        <!--begin::Card Header-->
+        <div class="card-header border-0 pt-5 pb-3">
+          <h3 class="card-title align-items-start flex-column">
+            <span class="card-label fw-bold fs-4 mb-1">{{ currentChartTitle }}</span>
+            <span class="text-muted fw-semibold fs-7">{{ currentChartSubtitle }}</span>
+          </h3>
+        </div>
+        <!--end::Card Header-->
+
+        <!--begin::Card Body-->
+        <div class="card-body p-6 pt-2">
+          <div class="d-flex flex-column gap-4">
+            <!--begin::KPI Stack-->
+            <div class="row g-2">
+              <!--begin::KPI Card - Richieste-->
+              <div class="col-6 col-xl-3">
+                <div 
+                  @click="selectKPI('requests')"
+                  :class="[
+                    'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
+                    selectedKPI === 'requests' ? 'border border-success border-3 shadow-sm' : 'border border-gray-200'
+                  ]"
+                  style="transition: all 0.3s ease; background: linear-gradient(135deg, #e8f8f5 0%, #ffffff 100%);"
+                >
+                  <div class="card-body p-1 text-center d-flex flex-column justify-content-center">
+                    <div class="symbol symbol-24px mx-auto mb-1">
+                      <span class="symbol-label" style="background: linear-gradient(135deg, #1bc5bd 0%, #0bb7af 100%);">
+                        <i class="ki-duotone ki-chart-simple fs-5 text-white">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                  </i>
+                      </span>
+                    </div>
+                    <div class="fw-bold fs-5 text-success mb-1">{{ yearTotals.requests }}</div>
+                    <div class="text-gray-700 fs-9 fw-bold">Richieste</div>
                   </div>
-                  <div class="fw-bold fs-2 text-success mb-1">{{ yearTotals.requests }}</div>
-                  <div class="text-gray-700 fs-8 fw-bold">Richieste</div>
                 </div>
               </div>
-            </div>
-            <!--end::KPI Card - Richieste-->
+              <!--end::KPI Card - Richieste-->
 
-            <!--begin::KPI Card - Immobili-->
-            <div class="col-6">
-              <div 
-                @click="selectKPI('properties')"
-                :class="[
-                  'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
-                  selectedKPI === 'properties' ? 'border border-primary border-3 shadow-sm' : 'border border-gray-200'
-                ]"
-                style="transition: all 0.3s ease; background: linear-gradient(135deg, #e1f0ff 0%, #ffffff 100%);"
-              >
-                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
-                  <div class="symbol symbol-45px mx-auto mb-2">
-                    <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0080ff 100%);">
-                      <i class="ki-duotone ki-home-2 fs-3 text-white">
+              <!--begin::KPI Card - Immobili-->
+              <div class="col-6 col-xl-3">
+                <div 
+                  @click="selectKPI('properties')"
+                  :class="[
+                    'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
+                    selectedKPI === 'properties' ? 'border border-primary border-3 shadow-sm' : 'border border-gray-200'
+                  ]"
+                  style="transition: all 0.3s ease; background: linear-gradient(135deg, #e1f0ff 0%, #ffffff 100%);"
+                >
+                  <div class="card-body p-1 text-center d-flex flex-column justify-content-center">
+                    <div class="symbol symbol-24px mx-auto mb-1">
+                      <span class="symbol-label" style="background: linear-gradient(135deg, #3699ff 0%, #0080ff 100%);">
+                        <i class="ki-duotone ki-home-2 fs-5 text-white">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </span>
+                    </div>
+                    <div class="fw-bold fs-5 text-primary mb-1">{{ yearTotals.properties }}</div>
+                    <div class="text-gray-700 fs-9 fw-bold">Immobili</div>
+                  </div>
+                </div>
+              </div>
+              <!--end::KPI Card - Immobili-->
+
+              <!--begin::KPI Card - Clienti-->
+              <div class="col-6 col-xl-3">
+                <div 
+                  @click="selectKPI('customers')"
+                  :class="[
+                    'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
+                    selectedKPI === 'customers' ? 'border border-danger border-3 shadow-sm' : 'border border-gray-200'
+                  ]"
+                  style="transition: all 0.3s ease; background: linear-gradient(135deg, #ffe2e5 0%, #ffffff 100%);"
+                >
+                  <div class="card-body p-1 text-center d-flex flex-column justify-content-center">
+                    <div class="symbol symbol-24px mx-auto mb-1">
+                      <span class="symbol-label" style="background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);">
+                        <i class="ki-duotone ki-profile-user fs-5 text-white">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                        </i>
+                      </span>
+                    </div>
+                    <div class="fw-bold fs-5 text-danger mb-1">{{ yearTotals.customers }}</div>
+                    <div class="text-gray-700 fs-9 fw-bold">Clienti</div>
+                  </div>
+                </div>
+              </div>
+              <!--end::KPI Card - Clienti-->
+
+              <!--begin::KPI Card - Appuntamenti-->
+              <div class="col-6 col-xl-3">
+                <div 
+                  @click="selectKPI('appointments')"
+                  :class="[
+                    'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
+                    selectedKPI === 'appointments' ? 'border border-warning border-3 shadow-sm' : 'border border-gray-200'
+                  ]"
+                  style="transition: all 0.3s ease; background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);"
+                >
+                  <div class="card-body p-1 text-center d-flex flex-column justify-content-center">
+                    <div class="symbol symbol-24px mx-auto mb-1">
+                      <span class="symbol-label" style="background: linear-gradient(135deg, #ffa800 0%, #ff9500 100%);">
+                        <i class="ki-duotone ki-calendar fs-5 text-white">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </span>
+                    </div>
+                    <div class="fw-bold fs-5 text-warning mb-1">{{ yearTotals.appointments }}</div>
+                    <div class="text-gray-700 fs-9 fw-bold">Appuntamenti</div>
+                  </div>
+                </div>
+              </div>
+              <!--end::KPI Card - Appuntamenti-->
+            </div>
+            <!--end::KPI Stack-->
+
+            <!--begin::Chart + Info-->
+            <div class="card">
+              <div class="card-body pt-2">
+                <!--begin::Chart-->
+                <div v-if="!showInfoSection">
+                <apexchart
+                    :ref="chartRef"
+                    :key="chartKey"
+                  type="bar"
+                  :options="chartOptions"
+                  :series="chartSeries"
+                  height="350"
+                  />
+                </div>
+                <!--end::Chart-->
+
+                <!--begin::Info Section-->
+                <div v-if="showInfoSection" class="info-section-container">
+                  <!--begin::Requests Info-->
+                  <div v-if="selectedKPI === 'requests'" class="d-flex flex-column h-100">
+                    <div class="text-center py-5">
+                      <i class="ki-duotone ki-chart-simple fs-1 text-success mb-3">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                      </i>
+                      <h4 class="fw-bold fs-3 text-gray-800 mb-2">Richieste</h4>
+                      <p class="text-muted fs-6">Dettagli delle richieste disponibili nella sezione dedicata</p>
+                    </div>
+                  </div>
+                  <!--end::Requests Info-->
+                  
+                  <!--begin::Properties Info-->
+                  <div v-if="selectedKPI === 'properties'" class="d-flex flex-column h-100">
+                    <div class="text-center py-5">
+                      <i class="ki-duotone ki-home-2 fs-1 text-primary mb-3">
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-                    </span>
+                      <h4 class="fw-bold fs-3 text-gray-800 mb-2">Immobili</h4>
+                      <p class="text-muted fs-6">Dettagli degli immobili disponibili nella sezione dedicata</p>
+                    </div>
                   </div>
-                  <div class="fw-bold fs-2 text-primary mb-1">{{ yearTotals.properties }}</div>
-                  <div class="text-gray-700 fs-8 fw-bold">Immobili</div>
-                </div>
-              </div>
-            </div>
-            <!--end::KPI Card - Immobili-->
-
-            <!--begin::KPI Card - Clienti-->
-            <div class="col-6">
-              <div 
-                @click="selectKPI('customers')"
-                :class="[
-                  'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
-                  selectedKPI === 'customers' ? 'border border-danger border-3 shadow-sm' : 'border border-gray-200'
-                ]"
-                style="transition: all 0.3s ease; background: linear-gradient(135deg, #ffe2e5 0%, #ffffff 100%);"
-              >
-                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
-                  <div class="symbol symbol-45px mx-auto mb-2">
-                    <span class="symbol-label" style="background: linear-gradient(135deg, #f64e60 0%, #d63447 100%);">
-                      <i class="ki-duotone ki-profile-user fs-3 text-white">
+                  <!--end::Properties Info-->
+                  
+                  <!--begin::Customers Info-->
+                  <div v-if="selectedKPI === 'customers'" class="d-flex flex-column h-100">
+                    <div class="text-center py-5">
+                      <i class="ki-duotone ki-profile-user fs-1 text-danger mb-3">
                         <span class="path1"></span>
                         <span class="path2"></span>
                         <span class="path3"></span>
                       </i>
-                    </span>
+                      <h4 class="fw-bold fs-3 text-gray-800 mb-2">Clienti</h4>
+                      <p class="text-muted fs-6">Dettagli dei clienti disponibili nella sezione dedicata</p>
+                    </div>
                   </div>
-                  <div class="fw-bold fs-2 text-danger mb-1">{{ yearTotals.customers }}</div>
-                  <div class="text-gray-700 fs-8 fw-bold">Clienti</div>
-                </div>
-              </div>
-            </div>
-            <!--end::KPI Card - Clienti-->
-
-            <!--begin::KPI Card - Appuntamenti-->
-            <div class="col-6">
-              <div 
-                @click="selectKPI('appointments')"
-                :class="[
-                  'card cursor-pointer hover-elevate-up transition-all h-100 filtered-kpi-card',
-                  selectedKPI === 'appointments' ? 'border border-warning border-3 shadow-sm' : 'border border-gray-200'
-                ]"
-                style="transition: all 0.3s ease; background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);"
-              >
-                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
-                  <div class="symbol symbol-45px mx-auto mb-2">
-                    <span class="symbol-label" style="background: linear-gradient(135deg, #ffa800 0%, #ff9500 100%);">
-                      <i class="ki-duotone ki-calendar fs-3 text-white">
+                  <!--end::Customers Info-->
+                  
+                  <!--begin::Appointments Info-->
+                  <div v-if="selectedKPI === 'appointments'" class="d-flex flex-column h-100">
+                    <div class="text-center py-5">
+                      <i class="ki-duotone ki-calendar fs-1 text-warning mb-3">
                         <span class="path1"></span>
                         <span class="path2"></span>
                       </i>
-                    </span>
+                      <h4 class="fw-bold fs-3 text-gray-800 mb-2">Appuntamenti</h4>
+                      <p class="text-muted fs-6">Dettagli degli appuntamenti disponibili nella sezione dedicata</p>
+                    </div>
                   </div>
-                  <div class="fw-bold fs-2 text-warning mb-1">{{ yearTotals.appointments }}</div>
-                  <div class="text-gray-700 fs-8 fw-bold">Appuntamenti</div>
+                  <!--end::Appointments Info-->
                 </div>
+                <!--end::Info Section-->
               </div>
             </div>
-            <!--end::KPI Card - Appuntamenti-->
-
+            <!--end::Chart + Info-->
           </div>
         </div>
-        <!--end::KPI Column-->
-
-        <!--begin::Content Column (Right Side)-->
-        <div class="col-xl-8">
-          <div class="card h-100">
-            <div v-if="currentChartTitle || currentChartSubtitle" class="card-header border-0 pt-5 pb-3">
-              <h3 class="card-title align-items-start flex-column">
-                <span v-if="currentChartTitle" class="card-label fw-bold fs-3 mb-1">{{ currentChartTitle }}</span>
-                <span v-if="currentChartSubtitle" class="text-muted fw-semibold fs-7">{{ currentChartSubtitle }}</span>
-              </h3>
-              <div class="card-toolbar">
-                <a 
-                  :href="currentSectionRoute" 
-                  class="btn btn-sm btn-light fw-bold"
-                >
-                  <i class="ki-duotone ki-arrow-right fs-4 me-1">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-                  Vai nella sezione
-                </a>
-              </div>
-            </div>
-            <div class="card-body pt-2">
-              <!--begin::Chart-->
-              <div v-if="!showInfoSection">
-              <apexchart
-                  :ref="chartRef"
-                  :key="chartKey"
-                type="bar"
-                :options="chartOptions"
-                :series="chartSeries"
-                height="350"
-                />
-              </div>
-              <!--end::Chart-->
-
-              <!--begin::Info Section-->
-              <div v-if="showInfoSection" class="info-section-container">
-                <!--begin::Requests Info-->
-                <div v-if="selectedKPI === 'requests'" class="d-flex flex-column h-100">
-                  <div class="text-center py-5">
-                    <i class="ki-duotone ki-chart-simple fs-1 text-success mb-3">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                      <span class="path4"></span>
-                    </i>
-                    <h4 class="fw-bold fs-3 text-gray-800 mb-2">Richieste</h4>
-                    <p class="text-muted fs-6">Dettagli delle richieste disponibili nella sezione dedicata</p>
-                  </div>
-                </div>
-                <!--end::Requests Info-->
-                
-                <!--begin::Properties Info-->
-                <div v-if="selectedKPI === 'properties'" class="d-flex flex-column h-100">
-                  <div class="text-center py-5">
-                    <i class="ki-duotone ki-home-2 fs-1 text-primary mb-3">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <h4 class="fw-bold fs-3 text-gray-800 mb-2">Immobili</h4>
-                    <p class="text-muted fs-6">Dettagli degli immobili disponibili nella sezione dedicata</p>
-                  </div>
-                </div>
-                <!--end::Properties Info-->
-                
-                <!--begin::Customers Info-->
-                <div v-if="selectedKPI === 'customers'" class="d-flex flex-column h-100">
-                  <div class="text-center py-5">
-                    <i class="ki-duotone ki-profile-user fs-1 text-danger mb-3">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                    </i>
-                    <h4 class="fw-bold fs-3 text-gray-800 mb-2">Clienti</h4>
-                    <p class="text-muted fs-6">Dettagli dei clienti disponibili nella sezione dedicata</p>
-                  </div>
-                </div>
-                <!--end::Customers Info-->
-                
-                <!--begin::Appointments Info-->
-                <div v-if="selectedKPI === 'appointments'" class="d-flex flex-column h-100">
-                  <div class="text-center py-5">
-                    <i class="ki-duotone ki-calendar fs-1 text-warning mb-3">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <h4 class="fw-bold fs-3 text-gray-800 mb-2">Appuntamenti</h4>
-                    <p class="text-muted fs-6">Dettagli degli appuntamenti disponibili nella sezione dedicata</p>
-                  </div>
-                </div>
-                <!--end::Appointments Info-->
-              </div>
-              <!--end::Info Section-->
-            </div>
-          </div>
-        </div>
-        <!--end::Content Column-->
+        <!--end::Card Body-->
       </div>
     </div>
-    <!--end::Body-->
+    <!--end::Chart Widget-->
+
+    <!--begin::Match Requests Widget (5/12)-->
+    <div class="col-xl-5">
+      <!--begin::Table Card-->
+      <div class="card card-xl-stretch  widget11-table-card">
+        <!--begin::Card Header-->
+        <div class="card-header border-0 pt-5 pb-3">
+          <h3 class="card-title align-items-start flex-column">
+            <span class="card-label fw-bold fs-4 mb-1">Top Match Richieste</span>
+            <span class="text-muted fw-semibold fs-7">Lista richieste matchate</span>
+          </h3>
+        </div>
+        <!--end::Card Header-->
+
+        <!--begin::Card Body-->
+        <div class="card-body py-3">
+          <!--begin::Table Container-->
+          <div class="table-responsive widget11-table-container">
+            <!--begin::Table-->
+            <table class="table align-middle gs-0 gy-4">
+              <!--begin::Table Head-->
+              <thead>
+                <tr class="fw-bold text-muted bg-light">
+                  <th class="ps-4 min-w-80px fw-bold fs-7 text-uppercase">Richieste</th>
+                  <th class="text-end min-w-80px fw-bold fs-7 text-uppercase">Immobili</th>
+                  <th class="text-end min-w-80px fw-bold fs-7 text-uppercase">Match</th>
+                  <th class="text-end pe-4 min-w-100px fw-bold fs-7 text-uppercase">Azioni</th>
+                </tr>
+              </thead>
+              <!--end::Table Head-->
+
+              <!--begin::Table Body-->
+              <tbody>
+                <tr v-if="loadingMatchedRequests">
+                  <td colspan="4" class="text-center py-5">
+                    <span class="text-muted">Caricamento...</span>
+                  </td>
+                </tr>
+                <tr v-else-if="!tableRows || tableRows.length === 0">
+                  <td colspan="4" class="text-center py-5">
+                    <span class="text-muted">Nessuna richiesta matchata disponibile</span>
+                  </td>
+                </tr>
+                <tr
+                  v-else
+                  v-for="(item, index) in tableRows"
+                  :key="item.RequestId"
+                  class="table-row-hover"
+                >
+                  <td class="ps-4">
+                    <span class="text-dark fw-bold d-block fs-6">{{ item.CustomerLastName }} {{ item.CustomerName }}</span>
+                  </td>
+                  <td class="text-end">
+                    <span class="text-dark fw-bold d-block fs-6">{{ item.PropertyTitle }}</span>
+                  </td>
+                  <td class="text-end">
+                    <span class="text-dark fw-bold d-block fs-6">{{ item.MatchPercentage }}%</span>
+                  </td>
+                  <td class="text-end pe-4">
+                    <a
+                      href="#"
+                      @click.prevent="navigateToRequest(item.RequestId)"
+                      class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                      :class="getKPIButtonColor()"
+                    >
+                      <i class="ki-duotone ki-arrow-right fs-5">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                      </i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+              <!--end::Table Body-->
+            </table>
+            <!--end::Table-->
+          </div>
+          <!--end::Table Container-->
+        </div>
+        <!--end::Card Body-->
+      </div>
+      <!--end::Table Card-->
+    </div>
+    <!--end::Match Requests Widget-->
   </div>
   <!--end::Analytics Dashboard Widget-->
 </template>
@@ -238,7 +303,8 @@ import { defineComponent, ref, computed, onMounted, watch } from "vue";
 import type { PropType } from "vue";
 import type { ApexOptions } from "apexcharts";
 import type VueApexCharts from "vue3-apexcharts";
-import { getAnalyticsData, type AnalyticsData } from "@/core/data/dashboard";
+import { useRouter } from "vue-router";
+import { getAnalyticsData, getMatchedRequests, type AnalyticsData, type MatchedRequestsData } from "@/core/data/dashboard";
 type KPIType = 'requests' | 'properties' | 'customers' | 'appointments';
 
 export default defineComponent({
@@ -260,13 +326,16 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const router = useRouter();
     const chartRef = ref<typeof VueApexCharts | null>(null);
     const selectedKPI = ref<KPIType>('properties');
     const chartKey = ref<number>(0);
     
     // Dati API
     const analyticsData = ref<AnalyticsData | null>(null);
+    const matchedRequestsData = ref<MatchedRequestsData | null>(null);
     const loading = ref<boolean>(false);
+    const loadingMatchedRequests = ref<boolean>(false);
     
     // Year filter (synchronized with Widget13)
     const currentYear = new Date().getFullYear();
@@ -321,6 +390,31 @@ export default defineComponent({
         analyticsData.value = null;
       } finally {
         loading.value = false;
+      }
+    };
+
+    // Funzione per caricare i dati delle richieste matchate
+    const loadMatchedRequests = async () => {
+      // Non caricare i dati se non ha i permessi
+      if (!props.canLoadData) {
+        matchedRequestsData.value = null;
+        return;
+      }
+      
+      try {
+        loadingMatchedRequests.value = true;
+        const data = await getMatchedRequests();
+        matchedRequestsData.value = data;
+      } catch (error: any) {
+        // Se è un errore 403, non loggare come errore (è normale se non ha Premium)
+        if (error?.response?.status === 403) {
+          console.warn('Accesso negato: piano Premium richiesto per questa funzionalità');
+        } else {
+          console.error('Errore nel caricamento delle richieste matchate:', error);
+        }
+        matchedRequestsData.value = null;
+      } finally {
+        loadingMatchedRequests.value = false;
       }
     };
 
@@ -581,9 +675,45 @@ export default defineComponent({
       chartKey.value++;
     };
 
+    // Get table rows data from matched requests
+    const tableRows = computed(() => {
+      if (!matchedRequestsData.value || !matchedRequestsData.value.MatchedRequests) {
+        return [];
+      }
+      return matchedRequestsData.value.MatchedRequests;
+    });
+
+    // Get button color based on selected KPI
+    const getKPIButtonColor = () => {
+      const colorMap = {
+        requests: 'btn-active-color-success',
+        properties: 'btn-active-color-primary',
+        customers: 'btn-active-color-danger',
+        appointments: 'btn-active-color-warning'
+      };
+      return colorMap[selectedKPI.value] || 'btn-active-color-primary';
+    };
+
+    // Get KPI label in Italian
+    const getKPILabel = () => {
+      const labelMap = {
+        requests: 'Richieste',
+        properties: 'Immobili',
+        customers: 'Clienti',
+        appointments: 'Appuntamenti'
+      };
+      return labelMap[selectedKPI.value] || 'Dati';
+    };
+
+    // Navigate to request detail
+    const navigateToRequest = (requestId: number) => {
+      router.push(`/dashboard/request/${requestId}`);
+    };
+
     // Carica i dati iniziali
     onMounted(() => {
       loadAnalyticsData();
+      loadMatchedRequests();
     });
 
     // Watch per ricaricare quando cambiano year o agencyId (solo se può caricare)
@@ -601,8 +731,13 @@ export default defineComponent({
     
     // Watch per canLoadData: se diventa true, carica i dati
     watch(() => props.canLoadData, (newVal) => {
-      if (newVal && !analyticsData.value) {
-        loadAnalyticsData();
+      if (newVal) {
+        if (!analyticsData.value) {
+          loadAnalyticsData();
+        }
+        if (!matchedRequestsData.value) {
+          loadMatchedRequests();
+        }
       }
     });
 
@@ -621,7 +756,13 @@ export default defineComponent({
       yearTotals,
       selectedYear,
       availableYears,
-      loading
+      loading,
+      loadingMatchedRequests,
+      months,
+      tableRows,
+      getKPIButtonColor,
+      getKPILabel,
+      navigateToRequest
     };
   }
 });

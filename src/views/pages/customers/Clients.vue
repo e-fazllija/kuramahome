@@ -142,6 +142,20 @@
               <option value="Cliente gold">⭐ Cliente gold</option>
             </select>
           </div>
+
+          <!-- Filtro Agenzia -->
+          <div class="col-12 col-sm-6 col-md-auto">
+            <select 
+              class="form-select filter-select" 
+              v-model="agencyFilter"
+              @change="onAgencyFilterChange"
+            >
+              <option value="">🏢 Agenzie</option>
+              <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
+                {{ item.FirstName }} {{ item.LastName }}
+              </option>
+            </select>
+          </div>
           
           <!-- Filtro Proprietario -->
           <div v-if="user.Role !== 'Agent'" class="col-12 col-sm-6 col-md">
@@ -171,21 +185,45 @@
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
         :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id">
         <template v-slot:Name="{ row: customer }">
-          <div class="d-flex align-items-center clickable-row" @click="goToClientDetails(customer.Id)" style="cursor: pointer;">
-            <!-- Avatar con iniziali -->
-            <div class="symbol symbol-40px me-3">
-              <div class="symbol-label" :style="{ 
-                background: getCustomerColor(customer.Name),
-                color: '#ffffff',
-                fontWeight: 'bold',
-                fontSize: '14px'
-              }">
-                {{ getInitials(customer.Name) }}
+          <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center clickable-row" @click="goToClientDetails(customer.Id, customer)" style="cursor: pointer;">
+              <!-- Avatar con iniziali -->
+              <div class="symbol symbol-40px me-3">
+                <div class="symbol-label" :style="{ 
+                  background: getCustomerColor(customer.Name),
+                  color: '#ffffff',
+                  fontWeight: 'bold',
+                  fontSize: '14px'
+                }">
+                  {{ getInitials(customer.Name) }}
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                <span class="fw-bold text-hover-primary">{{ customer.Name }}</span>
               </div>
             </div>
-            <div class="d-flex flex-column">
-              <span class="fw-bold text-hover-primary">{{ customer.Name }}</span>
-            </div>
+            <span 
+              v-if="customer.AccessLevel === AccessLevel.READ_ONLY" 
+              class="badge badge-light-info" 
+              :title="customer.OwnerInfo ? getOwnerTooltip(customer.OwnerInfo) : 'Solo lettura'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
+            <span 
+              v-if="customer.AccessLevel === AccessLevel.LIMITED" 
+              class="badge badge-light-warning" 
+              :title="customer.OwnerInfo ? getOwnerTooltip(customer.OwnerInfo) : 'Accesso limitato'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
           </div>
         </template>
         <template v-slot:Type="{ row: customer }">
@@ -289,7 +327,15 @@
     :featureDisplayName="'Clienti'"
     :limitStatus="limitStatus"
     @close="showUpgradeModal = false"
-  /> 
+  />
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_customer"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Customer"
+  />
   </div>
 </template>
 
@@ -309,6 +355,8 @@ import Swal from "sweetalert2";
 import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, shouldShowPopup, canViewDetails, getOwnerTooltip, type OwnerInfo } from "@/core/helpers/accessLevel";
 import { useAuthStore, type User } from "@/stores/auth";
 import KTSpinner from "@/components/Spinner.vue";
 import { downloadBlobResponse } from "@/core/helpers/download";
@@ -325,7 +373,8 @@ export default defineComponent({
     ExportDataModal,
     AddCustomerModal,
     UpgradeRequiredModal,
-    KTSpinner
+    KTSpinner,
+    InfoPopup,
   },
   setup() {
     const router = useRouter();
@@ -367,6 +416,13 @@ export default defineComponent({
     const selectedId = ref(0);
     const tableData = ref<Array<CustomerTabelData>>([]);
     const rawItems = ref<Array<CustomerTabelData>>([]);
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const store = useAuthStore();
     const user = store.user;
     const contract = ref<string>("");
@@ -388,6 +444,7 @@ export default defineComponent({
     });
     const exportFilters = ref<CustomerExportPayload>(buildDefaultExportFilters());
     const ownerFilter = ref<string>("");
+    const agencyFilter = ref<string>("");
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
@@ -469,12 +526,15 @@ export default defineComponent({
     const applyFilters = () => {
       let items = [...rawItems.value];
 
-      // Per Admin e Agency, applica il filtro selezionato
-      if (user.Role !== "Agent" && ownerFilter.value) {
+      // Filtro agenzie (per tutti i ruoli: Admin, Agency, Agent)
+      if (agencyFilter.value) {
+        items = items.filter((item) => item.UserId === agencyFilter.value);
+      }
+      // Filtro proprietario (solo per Admin e Agency, non per Agent)
+      else if (user.Role !== "Agent" && ownerFilter.value) {
         items = items.filter((item) => item.UserId === ownerFilter.value);
       }
-      // Per gli Agent, mostra tutti i clienti della cerchia (già filtrati dal backend)
-      // Non applicare filtri aggiuntivi, così vedono anche i clienti dell'agency
+      // Per gli Agent senza filtri, mostra tutti i clienti della cerchia (già filtrati dal backend)
 
       if (contract.value) {
         items = items.filter((item) => {
@@ -514,6 +574,8 @@ export default defineComponent({
               Email: customer.Email ?? "",
               Phone: customer.Phone?.toString() ?? "",
               UserId: customer.UserId ?? "",
+              AccessLevel: (customer as any).AccessLevel || 1, // Default a 1 se non presente
+              OwnerInfo: (customer as any).OwnerInfo
             });
           });
         }
@@ -556,9 +618,9 @@ export default defineComponent({
 
     onMounted(async () => {
       isSearching.value = true;
-      if (user.Role !== "Agent") {
-        defaultSearchItems.value = await getSearchItems(user.Id);
-      }
+      // Carica le agenzie per tutti i ruoli (Admin, Agency, Agent)
+      // in modo che possano filtrare i clienti per agenzia
+      defaultSearchItems.value = await getSearchItems(user.Id);
       await getItems("");
       isSearching.value = false;
       
@@ -653,6 +715,13 @@ export default defineComponent({
       search.value = "";
       contract.value = "";
       ownerFilter.value = "";
+      agencyFilter.value = "";
+      applyFilters();
+    };
+
+    const onAgencyFilterChange = () => {
+      // Quando si seleziona un'agenzia, resetta ownerFilter e applica il filtro agenzie
+      ownerFilter.value = "";
       applyFilters();
     };
 
@@ -743,7 +812,25 @@ export default defineComponent({
     };
 
     // Funzione per navigare ai dettagli del cliente
-    const goToClientDetails = (id: number) => {
+    const goToClientDetails = (id: number, item?: CustomerTabelData) => {
+      // Se l'item è fornito, controlla il livello di accesso
+      if (item && item.AccessLevel !== undefined) {
+        // Se livello 3, mostra popup invece di navigare
+        if (shouldShowPopup(item.AccessLevel)) {
+          if (item.OwnerInfo) {
+            selectedOwnerInfo.value = item.OwnerInfo;
+            infoPopupRef.value?.show();
+          }
+          return;
+        }
+        // Se livello 1-2, procedi con la navigazione normale
+        if (canViewDetails(item.AccessLevel)) {
+          const route = router.resolve({ name: 'client', params: { id: id.toString() } });
+          window.open(route.href, '_blank');
+          return;
+        }
+      }
+      // Default: naviga normalmente (per retrocompatibilità)
       const route = router.resolve({ name: 'client', params: { id: id.toString() } });
       window.open(route.href, '_blank');
     };
@@ -836,6 +923,8 @@ export default defineComponent({
       contract,
       user,
       ownerFilter,
+      agencyFilter,
+      onAgencyFilterChange,
       defaultSearchItems,
       clearAllFilters,
       currentPlaceholder,
@@ -852,6 +941,10 @@ export default defineComponent({
       applyFilters,
       loading,
       goToClientDetails,
+      infoPopupRef,
+      selectedOwnerInfo,
+      AccessLevel,
+      getOwnerTooltip,
       canDeleteCustomer,
       exportModalId,
       exportFilters,

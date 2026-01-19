@@ -38,10 +38,27 @@
       </div>
       <div class="mb-10">
         <h2 class="text-success mb-3">Email Confermata!</h2>
-        <p class="text-gray-600 fs-6">
+        <p class="text-gray-600 fs-6 mb-4">
           Le tue credenziali sono state attivate con successo. 
           Ora puoi accedere al tuo account.
         </p>
+        <!--begin::Trial Message-->
+        <div class="alert alert-primary d-flex align-items-center p-5 mb-5">
+          <i class="ki-duotone ki-information-5 fs-2hx text-primary me-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+            <span class="path3"></span>
+          </i>
+          <div class="d-flex flex-column">
+            <h4 class="mb-1 text-primary">🎁 Periodo di Prova Gratuito</h4>
+            <span class="text-gray-700 fs-6">
+              Hai <strong>10 giorni gratuiti</strong> per usufruire delle funzionalità base del servizio!
+              <br>
+              Approfitta di questo periodo per esplorare le caratteristiche base di MiraiHome.
+            </span>
+          </div>
+        </div>
+        <!--end::Trial Message-->
       </div>
       <div class="text-center">
         <router-link to="/sign-in" class="btn btn-lg btn-primary">

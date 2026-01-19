@@ -81,7 +81,7 @@
             <div class="card border border-info border-2">
               <div class="card-body p-3">
                 <div class="d-flex flex-column align-items-center mb-3">
-                  <span class="text-muted fs-8">Portafoglio</span>
+                  <span class="text-muted fs-8">Provvigioni</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100">
                   <div class="d-flex flex-column align-items-start">
@@ -96,6 +96,26 @@
               </div>
             </div>
             <!--end::Provvigioni-->
+
+            <!--begin::Portafoglio-->
+            <div class="card border border-secondary border-2">
+              <div class="card-body p-3">
+                <div class="d-flex flex-column align-items-center mb-3">
+                  <span class="text-muted fs-8">Portafoglio</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <div class="d-flex flex-column align-items-start">
+                    <span class="text-muted fs-9 mb-1">Tot Portafoglio</span>
+                    <span class="fw-bold fs-3 text-secondary">€ {{ formatNumber(totalPortfolioValue) }}</span>
+                  </div>
+                  <div class="d-flex flex-column align-items-end">
+                    <span class="text-muted fs-9 mb-1">Venduti</span>
+                    <span class="fw-bold fs-3 text-secondary">€ {{ formatNumber(totalSoldValue) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Portafoglio-->
           </div>
         </div>
         <!--end::Totali Immobili-->
@@ -159,6 +179,14 @@ export default defineComponent({
       default: 0
     },
     totalCommissionsEarned: {
+      type: Number,
+      default: 0
+    },
+    totalPortfolioValue: {
+      type: Number,
+      default: 0
+    },
+    totalSoldValue: {
       type: Number,
       default: 0
     },
@@ -656,6 +684,8 @@ export default defineComponent({
       totalAuctionSold,
       totalCommissionsPortfolio: computed(() => props.totalCommissionsPortfolio),
       totalCommissionsEarned: computed(() => props.totalCommissionsEarned),
+      totalPortfolioValue: computed(() => props.totalPortfolioValue),
+      totalSoldValue: computed(() => props.totalSoldValue),
       seriesProperties,
       seriesCommissions,
       chartOptionsProperties,

@@ -759,6 +759,8 @@ export interface Widget3Data {
     CommissionsMonthlyData: Record<string, number>;
     TotalCommissionsPortfolio: number;
     TotalCommissionsEarned: number;
+    TotalPortfolioValue: number;
+    TotalSoldValue: number;
 }
 
 export interface PropertiesData {
@@ -884,6 +886,19 @@ export interface ExpiringAssignmentItem {
     City: string;
     AssignmentEnd: string;
     DaysUntilExpiry: number;
+}
+
+export interface MatchedRequestItem {
+  RequestId: number;
+  CustomerLastName: string;
+  CustomerName: string;
+  PropertyTitle: string;
+  MatchPercentage: number;
+}
+
+export interface MatchedRequestsData {
+  MatchedRequests: MatchedRequestItem[];
+  Total: number;
 }
 
 export interface ExpiringAssignmentsData {
@@ -1033,6 +1048,17 @@ const getExpiringAssignments = (daysThreshold?: number): Promise<ExpiringAssignm
         });
 };
 
+const getMatchedRequests = (): Promise<MatchedRequestsData> => {
+    return ApiService.get(`Dashboard/GetMatchedRequests`, "")
+        .then(({ data }) => {
+            return data as MatchedRequestsData;
+        })
+        .catch(({ response }) => {
+            store.setError(response?.data?.Message || 'Errore nel caricamento delle richieste matchate', response?.status);
+            throw new Error('Errore nel caricamento delle richieste matchate');
+        });
+};
+
 export { 
     // API dashboard
     getMapData,
@@ -1044,6 +1070,7 @@ export {
     getTopEarningsData,
     getAnalyticsData,
     getExpiringAssignments,
+    getMatchedRequests,
     
     // Funzioni di processing per grafici e statistiche
     processPropertiesForChart, 
