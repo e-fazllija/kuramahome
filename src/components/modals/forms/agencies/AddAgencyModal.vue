@@ -205,6 +205,7 @@
                 <!--end::Input group-->
               </div>
               <!--end::Campi Persona Giuridica-->
+
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
@@ -1080,6 +1081,7 @@ export default defineComponent({
         formData.value.Address = smartTitleCase(formData.value.Address);
       }
     };
+
 
     return {
       formData,

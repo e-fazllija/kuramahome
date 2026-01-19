@@ -20,7 +20,7 @@
             <div class="flex-grow-1">
               <h3 class="fw-bold m-0 text-palette-primary fs-4 fs-md-3">Aggiorna Cliente</h3>
               <span class="text-palette-secondary fs-8 fs-md-7 fw-semibold d-block mt-1">
-                <span v-if="user.Role === 'Agent' && !canModifyCustomer">Visualizzazione in sola lettura</span>
+                <span v-if="!canModifyCustomer">Visualizzazione in sola lettura</span>
                 <span v-else>Modifica i dati del cliente</span>
               </span>
             </div>
@@ -38,7 +38,7 @@
     <!--begin::Form-->
     <form @submit.prevent="submit()">
       <!--begin::Card body-->
-      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModifyCustomer && user.Role === 'Agent' }">
+      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModifyCustomer }">
 
         <!--begin::Dati Principali-->
         <div class="mb-4 mb-md-5 mb-xl-6">
@@ -71,6 +71,7 @@
                 v-model="formData.UserId"
                 class="form-select form-select-lg"
                 name="owner"
+                :disabled="!canModifyCustomer"
                 required
               >
                 <option value="">👤 Seleziona proprietario</option>
@@ -100,7 +101,7 @@
                   </i>
                   Nome <span class="text-danger">*</span>
                 </label>
-                <input class="form-control form-control-lg" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+                <input class="form-control form-control-lg" v-model="formData.FirstName" type="text" placeholder="Inserisci il nome" required :disabled="!canModifyCustomer" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -112,7 +113,7 @@
                   </i>
                   Cognome <span class="text-danger">*</span>
                 </label>
-                <input class="form-control form-control-lg" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+                <input class="form-control form-control-lg" v-model="formData.LastName" type="text" placeholder="Inserisci il cognome" required :disabled="!canModifyCustomer" />
               </div>
             </div>
             <!--end::Input group-->
@@ -127,7 +128,7 @@
                   </i>
                   Email
                 </label>
-                <input class="form-control form-control-lg" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+                <input class="form-control form-control-lg" v-model="formData.Email" type="email" placeholder="esempio@email.com" :disabled="!canModifyCustomer" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -137,7 +138,7 @@
                   </i>
                   Telefono <span class="text-danger">*</span>
                 </label>
-                <input class="form-control form-control-lg" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+                <input class="form-control form-control-lg" v-model="formData.Phone" type="tel" placeholder="3331234567" required :disabled="!canModifyCustomer" />
               </div>
             </div>
             <!--end::Input group-->
@@ -172,7 +173,7 @@
                       type="checkbox"
                       id="toggle-buyer"
                       v-model="formData.Buyer"
-                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                      :disabled="!canModifyCustomer"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-buyer">
                       Acquirente
@@ -189,7 +190,7 @@
                       type="checkbox"
                       id="toggle-seller"
                       v-model="formData.Seller"
-                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                      :disabled="!canModifyCustomer"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-seller">
                       Venditore
@@ -206,7 +207,7 @@
                       type="checkbox"
                       id="toggle-builder"
                       v-model="formData.Builder"
-                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                      :disabled="!canModifyCustomer"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-builder">
                       Costruttore
@@ -223,7 +224,7 @@
                       type="checkbox"
                       id="toggle-other"
                       v-model="formData.Other"
-                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                      :disabled="!canModifyCustomer"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-other">
                       Altro
@@ -240,7 +241,7 @@
                       type="checkbox"
                       id="toggle-gold"
                       v-model="formData.GoldCustomer"
-                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                      :disabled="!canModifyCustomer"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-gold">
                       Cliente Gold
@@ -257,7 +258,7 @@
                       type="checkbox"
                       id="toggle-acquisition"
                       v-model="formData.AcquisitionDone"
-                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                      :disabled="!canModifyCustomer"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-acquisition">
                       Acquisizione svolta
@@ -274,7 +275,7 @@
                       type="checkbox"
                       id="toggle-ongoing"
                       v-model="formData.OngoingAssignment"
-                      :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                      :disabled="!canModifyCustomer"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-ongoing">
                       Incarico in corso
@@ -311,7 +312,7 @@
                 </i>
                 Indirizzo
               </label>
-              <input class="form-control form-control-lg" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer && user.Role === 'Agent'" />
+              <input class="form-control form-control-lg" v-model="formData.Address" type="text" placeholder="Via, numero civico" :disabled="!canModifyCustomer" />
             </div>
             <!--end::Input group-->
 
@@ -329,7 +330,7 @@
                   v-model="formData.State"
                   class="form-select form-select-lg"
                   name="province"
-                  :disabled="!canModifyCustomer && user.Role === 'Agent'"
+                  :disabled="!canModifyCustomer"
                 >
                   <option value="">🗺️ Seleziona provincia</option>
                   <option v-for="(province, index) in provinces" :key="index" :value="province.Name">
@@ -345,7 +346,7 @@
                   </i>
                   Comune
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.City" :disabled="!canModifyCustomer && user.Role === 'Agent'">
+                <select class="form-select form-select-lg" v-model="formData.City" :disabled="!canModifyCustomer">
                   <option value="">🏙️ Seleziona comune</option>
                   <option v-for="(city, index) in cities" :key="index" :value="city.Name">
                     {{ city.Name }}{{ city.CAP ? ` (${city.CAP})` : '' }}
@@ -388,7 +389,7 @@
                 </i>
                 Note
               </label>
-              <textarea class="form-control form-control-lg" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer && user.Role === 'Agent'"></textarea>
+              <textarea class="form-control form-control-lg" v-model="formData.Description" rows="3" placeholder="Inserisci eventuali note..." :disabled="!canModifyCustomer"></textarea>
             </div>
             <!--end::Input group-->
 
@@ -419,7 +420,7 @@
         </div>
         <!--end::Media e Note-->
         <div v-if="canModifyCustomer" class="d-flex align-items-end justify-content-end">
-          <button type="button" @click="deleteItem()" class="btn btn-danger me-2">
+          <button type="button" @click="deleteItem()" :disabled="!canModifyCustomer" class="btn btn-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
                 <span class="path1"></span>
@@ -432,7 +433,7 @@
             <span class="btn-label">Elimina</span>
           </button>
           <!--begin::Button-->
-          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading || !canModifyCustomer">
             <span v-if="!loading" class="d-flex align-items-center">
               <span class="btn-icon">
                 <i class="ki-duotone ki-check fs-3">
@@ -548,6 +549,14 @@
     </div>
     <!--end::Card-->
   </div>
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_customer_detail"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Customer"
+  />
 </template>
 
 <script lang="ts">
@@ -557,6 +566,8 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import { updateCustomer, Customer, getCustomer, deleteCustomer } from "@/core/data/customers";
 import { Request, getCustomerRequests, RequestTabelData } from "@/core/data/requests";
 import { useRoute, useRouter } from "vue-router";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, canModify as canModifyHelper, type OwnerInfo } from "@/core/helpers/accessLevel";
 import { useAuthStore } from "@/stores/auth";
 import type { Sort } from "@/components/kt-datatable//table-partials/models";
 import arraySort from "array-sort";
@@ -569,7 +580,11 @@ import { getSearchItems, type SearchModel } from "@/core/data/events";
 
 export default defineComponent({
   name: "update-customer",
-  components: {Datatable, KTSpinner},
+  components: {
+    Datatable, 
+    KTSpinner,
+    InfoPopup,
+  },
   setup() {
     const store = useAuthStore();
     const user = store.user;
@@ -586,6 +601,14 @@ export default defineComponent({
     const ownerSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: []
+    });
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const customerAccessLevel = ref<number>(1); // Default a 1
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
     });
     const formData = ref<Customer>({
       Id: 0,
@@ -664,7 +687,34 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       const customerData = await getCustomer(id);
-      formData.value = customerData;
+      
+      // Se la risposta è un LimitedAccessResponse (AccessLevel 3)
+      if ((customerData as any)._isLimitedAccess) {
+        loading.value = false;
+        const limitedData = customerData as any;
+        // Imposta le informazioni del proprietario
+        if (limitedData.OwnerInfo) {
+          selectedOwnerInfo.value = limitedData.OwnerInfo;
+        }
+        // Mostra il popup con le informazioni del proprietario
+        setTimeout(() => {
+          if (infoPopupRef.value) {
+            infoPopupRef.value.show();
+          }
+          // Torna alla lista quando il popup viene chiuso
+          const modalElement = document.getElementById("info_popup_customer_detail");
+          if (modalElement) {
+            modalElement.addEventListener("hidden.bs.modal", () => {
+              router.push({ name: "clients" });
+            }, { once: true });
+          }
+        }, 100);
+        return;
+      }
+      
+      const customer = customerData as Customer;
+      customerAccessLevel.value = (customer as any).AccessLevel || 1;
+      formData.value = customer;
 
       // Preserva il UserId originale del cliente
       originalUserId.value = formData.value.UserId || "";
@@ -785,6 +835,12 @@ export default defineComponent({
 
     // Verifica se l'utente può modificare questo cliente
     const canModifyCustomer = computed(() => {
+      // Usa l'AccessLevel se disponibile (priorità)
+      if (customerAccessLevel.value !== undefined) {
+        return canModifyHelper(customerAccessLevel.value);
+      }
+      
+      // Fallback alla logica precedente per retrocompatibilità
       // Gli Agent possono modificare solo i propri clienti
       if (user.Role === "Agent") {
         return originalUserId.value === user.Id;
@@ -902,6 +958,10 @@ export default defineComponent({
       provinces,
       cities,
       canModifyCustomer,
+      infoPopupRef,
+      selectedOwnerInfo,
+      customerAccessLevel,
+      AccessLevel,
       ownerSearchItems
     };
   },

@@ -33,7 +33,7 @@
     <!--begin::Form-->
     <form @submit.prevent="submit()">
       <!--begin::Card body-->
-      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9">
+      <div class="card-body card-palette border rounded p-3 p-md-6 p-xl-9" :class="{ 'opacity-50': !canModify }">
 
         <!--begin::Dati Principali-->
         <div class="mb-4 mb-md-5 mb-xl-6">
@@ -65,6 +65,7 @@
                 <select 
                   class="form-select form-select-lg" 
                   v-model="formData.CustomerId" 
+                  :disabled="!canModify"
                   required
                 >
                   <option :value="null">Seleziona il cliente</option>
@@ -85,7 +86,7 @@
                   </i>
                   Contratto <span class="text-danger">*</span>
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Contract" required>
+                <select class="form-select form-select-lg" v-model="formData.Contract" :disabled="!canModify" required>
                   <option value="">Seleziona tipo contratto</option>
                   <option value="Vendita">💰 Vendita</option>
                   <option value="Affitto">🏠 Affitto</option>
@@ -103,7 +104,7 @@
                 </i>
                 Tipologia Immobiliare <span class="text-danger">*</span>
               </label>
-              <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" required style="height: auto;">
+              <select class="form-select form-select-lg" multiple v-model="selectedPropertyTypes" :disabled="!canModify" required style="height: auto;">
                 <option value="Appartamenti">🏢 Appartamenti</option>
                 <option value="AttivitaCommerciale">🏪 Attività Commerciale</option>
                 <option value="Box">🚗 Box</option>
@@ -146,7 +147,7 @@
                   </i>
                   Provincia <span class="text-danger">*</span>
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Province" required>
+                <select class="form-select form-select-lg" v-model="formData.Province" :disabled="!canModify" required>
                   <option value="">🗺️ Seleziona provincia</option>
                   <option v-for="(province, index) in provinces" :key="index" :value="province.Id">{{ province.Name }}</option>
                 </select>
@@ -159,7 +160,7 @@
                   </i>
                   Comune <span class="text-danger">*</span>
                 </label>
-                <select class="form-select form-select-lg" multiple v-model="selectedCities" required>
+                <select class="form-select form-select-lg" multiple v-model="selectedCities" :disabled="!canModify" required>
                   <option v-for="(city, index) in cities" :key="index" :value="city.Id">🏙️ {{ city.Name }}</option>
                 </select>
               </div>
@@ -195,7 +196,7 @@
                   </i>
                   Canone - Prezzo: Da
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" placeholder="Inserisci il prezzo minimo" />
+                <input class="form-control form-control-lg" v-model.number="formData.PriceFrom" type="number" :disabled="!canModify" placeholder="Inserisci il prezzo minimo" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -205,7 +206,7 @@
                   </i>
                   Canone - Prezzo: A
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" placeholder="Inserisci il prezzo massimo" />
+                <input class="form-control form-control-lg" v-model.number="formData.PriceTo" type="number" :disabled="!canModify" placeholder="Inserisci il prezzo massimo" />
               </div>
             </div>
             <!--end::Input group-->
@@ -237,6 +238,7 @@
                       type="checkbox"
                       id="toggle-archived"
                       v-model="formData.Archived"
+                      :disabled="!canModify"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-archived">
                       Archiviata
@@ -253,6 +255,7 @@
                       type="checkbox"
                       id="toggle-closed"
                       v-model="formData.Closed"
+                      :disabled="!canModify"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-closed">
                       Evasa
@@ -269,6 +272,7 @@
                       type="checkbox"
                       id="toggle-mortgage"
                       v-model="formData.MortgageAdviceRequired"
+                      :disabled="!canModify"
                     />
                     <label class="form-check-label ms-3 fw-semibold" for="toggle-mortgage">
                       Consulenza mutuo richiesta
@@ -306,7 +310,7 @@
                   </i>
                   Locali Da
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.RoomsFrom" type="number" placeholder="Numero minimo di locali" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.RoomsFrom" type="number" :disabled="!canModify" placeholder="Numero minimo di locali" min="0" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -316,7 +320,7 @@
                   </i>
                   Locali A
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.RoomsTo" type="number" placeholder="Numero massimo di locali" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.RoomsTo" type="number" :disabled="!canModify" placeholder="Numero massimo di locali" min="0" />
               </div>
             </div>
             <!--end::Input group-->
@@ -331,7 +335,7 @@
                   </i>
                   Bagni
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.Bathrooms" type="number" placeholder="Numero di bagni" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.Bathrooms" type="number" :disabled="!canModify" placeholder="Numero di bagni" min="0" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -341,7 +345,7 @@
                   </i>
                   Piano
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Floor">
+                <select class="form-select form-select-lg" v-model="formData.Floor" :disabled="!canModify">
                   <option value="">🏠 Seleziona Piano</option>
                   <option value="Interrato -2">Interrato -2</option>
                   <option value="Interrato -1">Interrato -1</option>
@@ -373,7 +377,7 @@
                   </i>
                   MQ Da
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" placeholder="Metri quadrati minimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.MQFrom" type="number" :disabled="!canModify" placeholder="Metri quadrati minimi" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -383,7 +387,7 @@
                   </i>
                   MQ A
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" placeholder="Metri quadrati massimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.MQTo" type="number" :disabled="!canModify" placeholder="Metri quadrati massimi" />
               </div>
             </div>
             <!--end::Input group-->
@@ -398,7 +402,7 @@
                   </i>
                   Giardino Da (mq)
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" placeholder="Metri quadrati minimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.GardenFrom" type="number" :disabled="!canModify" placeholder="Metri quadrati minimi" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -408,7 +412,7 @@
                   </i>
                   Giardino A (mq)
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" placeholder="Metri quadrati massimi" />
+                <input class="form-control form-control-lg" v-model.number="formData.GardenTo" type="number" :disabled="!canModify" placeholder="Metri quadrati massimi" />
               </div>
             </div>
             <!--end::Input group-->
@@ -423,8 +427,7 @@
                   </i>
                   Stato dell'immobile
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.PropertyState">
-                  <option value="">🏠 Seleziona Stato Immobile</option>
+                <select class="form-select form-select-lg" v-model="formData.PropertyState" :disabled="!canModify">
                   <option value="0">🔒 Affittato</option>
                   <option value="1">🏗️ In corso di costruzione</option>
                   <option value="2">✅ Libero</option>
@@ -441,7 +444,7 @@
                   </i>
                   Riscaldamento
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Heating">
+                <select class="form-select form-select-lg" v-model="formData.Heating" :disabled="!canModify">
                   <option value="">🔥 Seleziona Il Tipo Di Riscaldamento</option>
                   <option value="Autonomo">🏠 Autonomo</option>
                   <option value="Centralizzato">🏢 Centralizzato</option>
@@ -461,7 +464,7 @@
                   </i>
                   Arredamento
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.Furniture">
+                <select class="form-select form-select-lg" v-model="formData.Furniture" :disabled="!canModify">
                   <option value="">🪑 Seleziona Arredamento</option>
                   <option value="Arredato">✅ Arredato</option>
                   <option value="Parzialmente Arredato">🟡 Parzialmente Arredato</option>
@@ -476,7 +479,7 @@
                   </i>
                   Classe Energetica
                 </label>
-                <select class="form-select form-select-lg" v-model="formData.EnergyClass">
+                <select class="form-select form-select-lg" v-model="formData.EnergyClass" :disabled="!canModify">
                   <option value="">⚡ Seleziona Classe Energetica</option>
                   <option value="A4">🟢 A4</option>
                   <option value="A3">🟢 A3</option>
@@ -503,7 +506,7 @@
                   </i>
                   Posti Auto
                 </label>
-                <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" placeholder="Inserisci il numero di posti auto" min="0" />
+                <input class="form-control form-control-lg" v-model.number="formData.ParkingSpaces" type="number" :disabled="!canModify" placeholder="Inserisci il numero di posti auto" min="0" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label d-flex align-items-center gap-2 fw-semibold mb-2">
@@ -519,6 +522,7 @@
                     type="checkbox"
                     id="toggle-auction"
                     v-model="formData.Auction"
+                    :disabled="!canModify"
                   />
                   <label class="form-check-label ms-3 fw-semibold" for="toggle-auction">
                     Immobile in asta
@@ -561,7 +565,7 @@
                 </i>
                 Nota principale
               </label>
-              <textarea class="form-control form-control-lg" v-model="formData.Notes" rows="3" placeholder="Inserisci eventuali note..."></textarea>
+              <textarea class="form-control form-control-lg" v-model="formData.Notes" :disabled="!canModify" rows="3" placeholder="Inserisci eventuali note..."></textarea>
             </div>
             <!--end::Input group-->
 
@@ -592,7 +596,7 @@
         </div>
         <!--end::Media e Note-->
         <div class="d-flex align-items-end justify-content-end">
-          <button type="button" @click="deleteItem()" class="btn btn-danger me-2">
+          <button type="button" @click="deleteItem()" :disabled="!canModify" class="btn btn-danger me-2">
             <span class="btn-icon">
               <i class="ki-duotone ki-trash fs-3">
                 <span class="path1"></span>
@@ -605,7 +609,7 @@
             <span class="btn-label">Elimina</span>
           </button>
           <!--begin::Button-->
-          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading">
+          <button :data-kt-indicator="loading ? 'on' : null" class="btn btn-primary" type="submit" :disabled="loading || !canModify">
             <span v-if="!loading" class="d-flex align-items-center">
               <span class="btn-icon">
                 <i class="ki-duotone ki-check fs-3">
@@ -731,14 +735,24 @@
     </div>
   </div>
   <!--end::Content-->
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_request_detail"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Request"
+  />
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Request, InsertModel, getToInsert, getRequest, updateRequest, deleteRequest } from "@/core/data/requests";
 import { useRoute, useRouter } from "vue-router";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, canModify as canModifyHelper, type OwnerInfo } from "@/core/helpers/accessLevel";
 import { useAuthStore } from "@/stores/auth";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import KTSpinner from "@/components/Spinner.vue";
@@ -749,7 +763,11 @@ import type { RealEstateProperty } from "@/core/data/properties";
 import { MenuComponent } from "@/assets/ts/components";
 export default defineComponent({
   name: "update-request",
-  components: { Datatable, KTSpinner },
+  components: { 
+    Datatable, 
+    KTSpinner,
+    InfoPopup,
+  },
   setup() {
     const store = useAuthStore();
     const user = store.user;
@@ -762,6 +780,14 @@ export default defineComponent({
     const selectedPropertyTypes = ref<Array<string>>([]);
     const selectedIds = ref<Array<Number>>([]);
     const initItems = ref([]);
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const requestAccessLevel = ref<number>(1); // Default a 1
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const formData = ref<Request>({
       CustomerId: null,
       Contract: "",
@@ -848,197 +874,6 @@ export default defineComponent({
     const provinces = ref<Array<{Id: string, Name: string}>>([]);
     let selectedCities = ref<Array<string>>([]);
 
-    // Funzione per calcolare la percentuale di match tra richiesta e immobile
-    // NOTA: Questa funzione non è più utilizzata - il calcolo viene fatto dal backend
-    // Mantenuta per riferimento o per calcoli aggiuntivi se necessario
-    const calculateMatchPercentage = (request: Request, property: RealEstateProperty): number => {
-      let totalCriteria = 0;
-      let matchedCriteria = 0;
-
-      // 1. Contract (Status) - OBBLIGATORIO
-      totalCriteria++;
-      if (property.Status && request.Contract && property.Status === request.Contract) {
-        matchedCriteria++;
-      }
-
-      // 2. PropertyType (Typology) - se presente nella richiesta
-      if (request.PropertyType && request.PropertyType.trim() !== '') {
-        totalCriteria++;
-        const requestTypes = request.PropertyType.split(',').map(t => t.trim().toLowerCase());
-        if (property.Typology) {
-          const propertyTypeLower = property.Typology.toLowerCase();
-          if (requestTypes.some(type => propertyTypeLower.includes(type))) {
-            matchedCriteria++;
-          }
-        }
-      }
-
-      // 3. Province (State) - se presente nella richiesta
-      if (request.Province && request.Province.trim() !== '') {
-        totalCriteria++;
-        if (property.State && property.State.toLowerCase() === request.Province.toLowerCase()) {
-          matchedCriteria++;
-        }
-      }
-
-      // 4. City - se presente nella richiesta
-      if (request.City && request.City.trim() !== '') {
-        totalCriteria++;
-        const requestCities = request.City.split(',').map(c => c.trim().toLowerCase());
-        if (property.City) {
-          const propertyCityLower = property.City.toLowerCase();
-          if (requestCities.some(city => propertyCityLower.includes(city))) {
-            matchedCriteria++;
-          }
-        }
-      }
-
-      // 5. Price Range - se presente nella richiesta
-      if (request.PriceFrom > 0 || request.PriceTo > 0) {
-        totalCriteria++;
-        if (request.PriceFrom > 0 && request.PriceTo > 0) {
-          if (property.Price >= request.PriceFrom && property.Price <= request.PriceTo) {
-            matchedCriteria++;
-          }
-        } else if (request.PriceFrom > 0) {
-          if (property.Price >= request.PriceFrom) {
-            matchedCriteria++;
-          }
-        } else if (request.PriceTo > 0) {
-          if (property.Price <= request.PriceTo) {
-            matchedCriteria++;
-          }
-        }
-      }
-
-      // 6. MQ Range - se presente nella richiesta
-      if (request.MQFrom > 0 || request.MQTo > 0) {
-        totalCriteria++;
-        if (request.MQFrom > 0 && request.MQTo > 0) {
-          if (property.CommercialSurfaceate > request.MQFrom && property.CommercialSurfaceate < request.MQTo) {
-            matchedCriteria++;
-          }
-        } else if (request.MQFrom > 0) {
-          if (property.CommercialSurfaceate > request.MQFrom) {
-            matchedCriteria++;
-          }
-        } else if (request.MQTo > 0) {
-          if (property.CommercialSurfaceate < request.MQTo) {
-            matchedCriteria++;
-          }
-        }
-      }
-
-      // 7. Garden Range - se presente nella richiesta
-      if (request.GardenFrom > 0 || request.GardenTo > 0) {
-        totalCriteria++;
-        if (request.GardenFrom > 0 && request.GardenTo > 0) {
-          if (property.MQGarden >= request.GardenFrom && property.MQGarden <= request.GardenTo) {
-            matchedCriteria++;
-          }
-        } else if (request.GardenFrom > 0) {
-          if (property.MQGarden >= request.GardenFrom) {
-            matchedCriteria++;
-          }
-        } else if (request.GardenTo > 0) {
-          if (property.MQGarden <= request.GardenTo) {
-            matchedCriteria++;
-          }
-        }
-      }
-
-      // 8. PropertyState - se presente in entrambi
-      if (request.PropertyState && request.PropertyState.trim() !== '' && 
-          property.StateOfTheProperty && property.StateOfTheProperty.trim() !== '') {
-        totalCriteria++;
-        if (property.StateOfTheProperty === request.PropertyState) {
-          matchedCriteria++;
-        }
-      }
-
-      // 9. Heating - se presente in entrambi
-      if (request.Heating && request.Heating.trim() !== '' && 
-          property.Heating && property.Heating.trim() !== '') {
-        totalCriteria++;
-        if (property.Heating.toLowerCase() === request.Heating.toLowerCase()) {
-          matchedCriteria++;
-        }
-      }
-
-      // 10. ParkingSpaces - se presente nella richiesta
-      if (request.ParkingSpaces > 0) {
-        totalCriteria++;
-        if (property.ParkingSpaces >= request.ParkingSpaces) {
-          matchedCriteria++;
-        }
-      }
-
-      // 11. Rooms Range - se presente nella richiesta
-      if (request.RoomsFrom > 0 || request.RoomsTo > 0) {
-        totalCriteria++;
-        if (request.RoomsFrom > 0 && request.RoomsTo > 0) {
-          if (property.Bedrooms >= request.RoomsFrom && property.Bedrooms <= request.RoomsTo) {
-            matchedCriteria++;
-          }
-        } else if (request.RoomsFrom > 0) {
-          if (property.Bedrooms >= request.RoomsFrom) {
-            matchedCriteria++;
-          }
-        } else if (request.RoomsTo > 0) {
-          if (property.Bedrooms <= request.RoomsTo) {
-            matchedCriteria++;
-          }
-        }
-      }
-
-      // 12. Bathrooms - se presente nella richiesta
-      if (request.Bathrooms > 0) {
-        totalCriteria++;
-        if (property.Bathrooms >= request.Bathrooms) {
-          matchedCriteria++;
-        }
-      }
-
-      // 13. Floor - se presente in entrambi
-      if (request.Floor && request.Floor.trim() !== '' && 
-          property.Floor && property.Floor.trim() !== '') {
-        totalCriteria++;
-        if (property.Floor.toLowerCase() === request.Floor.toLowerCase()) {
-          matchedCriteria++;
-        }
-      }
-
-      // 14. Furniture - se presente in entrambi
-      if (request.Furniture && request.Furniture.trim() !== '' && 
-          property.Furniture && property.Furniture.trim() !== '') {
-        totalCriteria++;
-        if (property.Furniture.toLowerCase() === request.Furniture.toLowerCase()) {
-          matchedCriteria++;
-        }
-      }
-
-      // 15. EnergyClass - se presente in entrambi
-      if (request.EnergyClass && request.EnergyClass.trim() !== '' && 
-          property.EnergyClass && property.EnergyClass.trim() !== '') {
-        totalCriteria++;
-        if (property.EnergyClass === request.EnergyClass) {
-          matchedCriteria++;
-        }
-      }
-
-      // 16. Auction - se presente nella richiesta
-      if (request.Auction !== undefined) {
-        totalCriteria++;
-        if (property.Auction === request.Auction) {
-          matchedCriteria++;
-        }
-      }
-
-      // Calcola la percentuale
-      if (totalCriteria === 0) return 0;
-      return Math.round((matchedCriteria / totalCriteria) * 100);
-    };
-
     // Funzione per ottenere la classe CSS in base alla percentuale di match
     const getMatchPercentageClass = (percentage: number): string => {
       if (percentage >= 90) return 'badge badge-light-success';
@@ -1081,7 +916,34 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       firtLoad.value = true;
-      formData.value = await getRequest(id);
+      const requestData = await getRequest(id);
+      
+      // Se la risposta è un LimitedAccessResponse (AccessLevel 3)
+      if ((requestData as any)._isLimitedAccess) {
+        loading.value = false;
+        const limitedData = requestData as any;
+        // Imposta le informazioni del proprietario
+        if (limitedData.OwnerInfo) {
+          selectedOwnerInfo.value = limitedData.OwnerInfo;
+        }
+        // Mostra il popup con le informazioni del proprietario
+        setTimeout(() => {
+          if (infoPopupRef.value) {
+            infoPopupRef.value.show();
+          }
+          // Torna alla lista quando il popup viene chiuso
+          const modalElement = document.getElementById("info_popup_request_detail");
+          if (modalElement) {
+            modalElement.addEventListener("hidden.bs.modal", () => {
+              router.push({ name: "requests" });
+            }, { once: true });
+          }
+        }, 100);
+        return;
+      }
+      
+      formData.value = requestData as Request;
+      requestAccessLevel.value = (formData.value as any).AccessLevel || 1;
       selectedPropertyTypes.value = formData.value.PropertyType ? formData.value.PropertyType.split(',') : [];
       selectedCities.value = formData.value.City.split(",");
       inserModel.value = await getToInsert();
@@ -1303,10 +1165,17 @@ export default defineComponent({
       selectedIds.value = selectedItems;
     };
 
+    const canModify = computed(() => canModifyHelper(requestAccessLevel.value));
+    
     return {
       formData,
       submit,
       loading,
+      canModify,
+      infoPopupRef,
+      selectedOwnerInfo,
+      requestAccessLevel,
+      AccessLevel,
       getAssetPath,
       deleteItem,
       user,

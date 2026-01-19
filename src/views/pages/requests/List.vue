@@ -204,10 +204,11 @@
           </div>
 
           <!-- Filtro Agenzia -->
-          <div v-if="user.Role == 'Admin'" class="col-12 col-sm-6 col-md-4 col-lg-auto">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
             <select 
               class="form-select filter-select" 
               v-model="userId"
+              @change="onAgencyFilterChange"
             >
               <option value="">🏢 Agenzie</option>
               <option v-for="(item, index) in defaultSearchItems.Agencies" :key="index" :value="item.Id">
@@ -301,7 +302,8 @@
       <Datatable @on-sort="sort" @on-items-select="onItemSelect" :data="tableData" :header="tableHeader"
         :enable-items-per-page-dropdown="true" :checkbox-enabled="false" checkbox-label="Id" :loading="loading">
         <template v-slot:CustomerName="{ row: request }">
-          <div class="d-flex align-items-center clickable-row" @click="goToRequestDetails(request.Id)" style="cursor: pointer;">
+          <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center clickable-row" @click="goToRequestDetails(request.Id, request)" style="cursor: pointer;">
             <!-- Avatar con iniziali -->
             <div class="symbol symbol-40px me-3">
               <div class="symbol-label" :style="{ 
@@ -314,8 +316,31 @@
               </div>
             </div>
             <div class="d-flex flex-column">
-              <span class="fw-bold">{{ request.CustomerName }} {{ request.CustomerLastName }}</span>
+              <span class="fw-bold text-hover-primary">{{ request.CustomerName }} {{ request.CustomerLastName }}</span>
             </div>
+          </div>
+            <span 
+              v-if="request.AccessLevel === AccessLevel.READ_ONLY" 
+              class="badge badge-light-info" 
+              :title="request.OwnerInfo ? getOwnerTooltip(request.OwnerInfo) : 'Solo lettura'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
+            <span 
+              v-if="request.AccessLevel === AccessLevel.LIMITED" 
+              class="badge badge-light-warning" 
+              :title="request.OwnerInfo ? getOwnerTooltip(request.OwnerInfo) : 'Accesso limitato'"
+            >
+              <i class="ki-duotone ki-information-5 fs-7">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+            </span>
           </div>
         </template>
         <template v-slot:Contract="{ row: request }">
@@ -414,6 +439,14 @@
     :limitStatus="limitStatus"
     @close="showUpgradeModal = false"
   />
+  
+  <!-- Info Popup per livello 3 -->
+  <InfoPopup
+    ref="infoPopupRef"
+    modalId="info_popup_request"
+    :ownerInfo="selectedOwnerInfo"
+    entityType="Request"
+  />
 </template>
 
 <script lang="ts">
@@ -427,6 +460,8 @@ import UpgradeRequiredModal from "@/components/modals/UpgradeRequiredModal.vue";
 import ExportDataModal from "@/components/modals/export/ExportDataModal.vue";
 import { checkFeatureLimit, type SubscriptionLimitStatusResponse } from "@/core/data/subscription-limits";
 import { Modal } from "bootstrap";
+import InfoPopup from "@/components/modals/InfoPopup.vue";
+import { AccessLevel, shouldShowPopup, canViewDetails, getOwnerTooltip, type OwnerInfo } from "@/core/helpers/accessLevel";
 import arraySort from "array-sort";
 import { MenuComponent } from "@/assets/ts/components";
 import {
@@ -457,7 +492,8 @@ export default defineComponent({
     KTSpinner,
     UpgradeRequiredModal,
     Multiselect,
-    ExportDataModal
+    ExportDataModal,
+    InfoPopup,
   },
   setup() {
     const authStore = useAuthStore();
@@ -481,54 +517,63 @@ export default defineComponent({
         columnLabel: "CustomerName",
         sortEnabled: true,
         columnWidth: 170,
+        textAlign: "center",
       },
       {
         columnName: "Contratto",
         columnLabel: "Contract",
         sortEnabled: true,
-        columnWidth: 110
+        columnWidth: 110,
+        textAlign: "center"
       },
       {
         columnName: "Data Richiesta",
         columnLabel: "StringDate",
         sortEnabled: true,
         columnWidth: 150,
+        textAlign: "center",
       },
       {
         columnName: "Email",
         columnLabel: "CustomerEmail",
         sortEnabled: true,
         columnWidth: 150,
+        textAlign: "center",
       },
       {
         columnName: "Telefono",
         columnLabel: "CustomerPhone",
         sortEnabled: true,
         columnWidth: 160,
+        textAlign: "center",
       },
       {
         columnName: "Prezzo Da",
         columnLabel: "PriceFrom",
         sortEnabled: true,
         columnWidth: 100,
+        textAlign: "center",
       },
       {
         columnName: "Prezzo A",
         columnLabel: "PriceTo",
         sortEnabled: true,
         columnWidth: 100,
+        textAlign: "center",
       },
       {
         columnName: "Stato",
         columnLabel: "Status",
         sortEnabled: true,
         columnWidth: 100,
+        textAlign: "center",
       },
       {
         columnName: "Azioni",
         columnLabel: "Actions",
         sortEnabled: false,
         columnWidth: 135,
+        textAlign: "center",
       },
     ]);
 
@@ -538,6 +583,13 @@ export default defineComponent({
     const tableData = ref<Array<RequestTabelData>>([]);
     const initItems = ref([]);
     let userId = ref("");
+    const infoPopupRef = ref<InstanceType<typeof InfoPopup> | null>(null);
+    const selectedOwnerInfo = ref<OwnerInfo>({
+      Id: "",
+      FirstName: "",
+      LastName: "",
+      Role: "",
+    });
     const defaultSearchItems = ref<SearchModel>({
       Agencies: [],
       Agents: [],
@@ -635,13 +687,12 @@ export default defineComponent({
     async function getItems(filterRequest: string) {
       loading.value = true;
       tableData.value = [];
-      const effectiveFilterUserId = userId.value || undefined;
-      const results = await getRequestsList(filterRequest, effectiveFilterUserId);
+      // Non passare userId al backend, useremo OwnerInfo per filtrare lato frontend
+      const results = await getRequestsList(filterRequest, undefined);
       let fetchedData = results || [];
 
-      if (user.Role === "Agent") {
-        fetchedData = fetchedData.filter(item => item.UserId === user.Id);
-      }
+      // Il backend già filtra per cerchia, non serve filtrare ulteriormente qui
+      // Le richieste vengono mostrate con i loro AccessLevel appropriati
 
       tableData.value = fetchedData;
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
@@ -718,6 +769,34 @@ export default defineComponent({
 
     const searchItems = async () => {
       await getItems("");
+
+      // Filtraggio per agenzia usando OwnerInfo (per tutti i ruoli)
+      if (userId.value) {
+        // Ottieni gli ID degli agenti dell'agenzia selezionata
+        const agencyAgentsIds = defaultSearchItems.value.Agents
+          .filter(agent => agent.AdminId === userId.value)
+          .map(agent => agent.Id);
+        
+        tableData.value = tableData.value.filter(item => {
+          // Se la richiesta ha OwnerInfo, usa OwnerInfo.Id
+          if (item.OwnerInfo && item.OwnerInfo.Id) {
+            // Controlla se OwnerInfo.Id corrisponde all'agenzia selezionata
+            if (item.OwnerInfo.Id === userId.value) {
+              return true;
+            }
+            // Controlla se OwnerInfo.Id corrisponde a un agente dell'agenzia
+            if (item.OwnerInfo.Role === "Agent" && agencyAgentsIds.includes(item.OwnerInfo.Id)) {
+              return true;
+            }
+            return false;
+          }
+          // Fallback: usa UserId e controlla se corrisponde all'agenzia o ai suoi agenti
+          if (item.UserId === userId.value) {
+            return true;
+          }
+          return agencyAgentsIds.includes(item.UserId || "");
+        });
+      }
 
       // Filtraggio per testo (search)
       if (search.value !== "") {
@@ -903,6 +982,7 @@ export default defineComponent({
       selectedProvince.value = "";
       selectedCity.value = "";
       selectedLocation.value = "";
+      userId.value = "";
       filteredCities.value = [];
       searchItems();
     };
@@ -975,7 +1055,25 @@ export default defineComponent({
     };
 
     // Funzione per navigare ai dettagli della richiesta
-    const goToRequestDetails = (id: number) => {
+    const goToRequestDetails = (id: number, item?: RequestTabelData) => {
+      // Se l'item è fornito, controlla il livello di accesso
+      if (item && item.AccessLevel !== undefined) {
+        // Se livello 3, mostra popup invece di navigare
+        if (shouldShowPopup(item.AccessLevel)) {
+          if (item.OwnerInfo) {
+            selectedOwnerInfo.value = item.OwnerInfo;
+            infoPopupRef.value?.show();
+          }
+          return;
+        }
+        // Se livello 1-2, procedi con la navigazione normale
+        if (canViewDetails(item.AccessLevel)) {
+          const route = router.resolve({ name: 'request', params: { id: id.toString() } });
+          window.open(route.href, '_blank');
+          return;
+        }
+      }
+      // Default: naviga normalmente (per retrocompatibilità)
       const route = router.resolve({ name: 'request', params: { id: id.toString() } });
       window.open(route.href, '_blank');
     };
@@ -1052,10 +1150,22 @@ export default defineComponent({
       }
     };
 
-    onMounted(async () => {
-      if (authStore.user.Role == "Admin") {
+    const onAgencyFilterChange = async () => {
+      // Quando si seleziona un'agenzia, ricarica gli agenti di quell'agenzia
+      // per poter filtrare correttamente usando OwnerInfo
+      if (userId.value) {
+        defaultSearchItems.value = await getSearchItems(authStore.user.Id, userId.value);
+      } else {
         defaultSearchItems.value = await getSearchItems(authStore.user.Id);
       }
+      // Ricarica i dati filtrati per quell'agenzia e applica anche gli altri filtri frontend
+      await searchItems();
+    };
+
+    onMounted(async () => {
+      // Carica le agenzie per tutti i ruoli (Admin, Agency, Agent)
+      // in modo che possano filtrare le richieste per agenzia
+      defaultSearchItems.value = await getSearchItems(authStore.user.Id);
       userId.value = "";
 
       // Carica i dati strutturati per i filtri
@@ -1085,6 +1195,7 @@ export default defineComponent({
         loading,
         user,
         userId,
+        onAgencyFilterChange,
         defaultSearchItems,
         removeLocation,
         removePropertyType,
@@ -1108,6 +1219,10 @@ export default defineComponent({
       limitStatus,
       handleLimitExceeded,
       goToRequestDetails,
+      infoPopupRef,
+      selectedOwnerInfo,
+      AccessLevel,
+      getOwnerTooltip,
       optionsPropertyType,
       exportFilters,
       exportModalId,

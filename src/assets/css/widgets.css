@@ -62,6 +62,269 @@
   overflow: visible;
 }
 
+/* Widget11 Chart Card - First Widget */
+.widget11-chart-card {
+  border: 1px solid #e9ecef;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.widget11-chart-card:hover {
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.12);
+}
+
+.widget11-chart-card .card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Widget11 Table Card - Second Widget */
+.widget11-table-card {
+  border: 1px solid #d1ecf1;
+  box-shadow: 0 0.5rem 1.5rem rgba(27, 197, 189, 0.1);
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9fa 100%);
+  max-height: 50vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.widget11-table-card:hover {
+  box-shadow: 0 0.75rem 2rem rgba(27, 197, 189, 0.15);
+  border-color: #1bc5bd;
+}
+
+.widget11-table-card .card-header {
+  background: linear-gradient(135deg, #e8f8f5 0%, #ffffff 100%);
+  border-bottom: 2px solid #1bc5bd;
+}
+
+.widget11-table-card .card-header .card-label {
+  color: #0bb7af;
+}
+
+/* Widget11 Table Card Dark Mode */
+[data-bs-theme="dark"] .widget11-table-card {
+  border-color: rgba(27, 197, 189, 0.3);
+  background: linear-gradient(135deg, #1e1e2d 0%, #1a2d2d 100%);
+  box-shadow: 0 0.5rem 1.5rem rgba(27, 197, 189, 0.15);
+}
+
+[data-bs-theme="dark"] .widget11-table-card:hover {
+  box-shadow: 0 0.75rem 2rem rgba(27, 197, 189, 0.25);
+  border-color: rgba(27, 197, 189, 0.5);
+}
+
+[data-bs-theme="dark"] .widget11-table-card .card-header {
+  background: linear-gradient(135deg, rgba(27, 197, 189, 0.15) 0%, rgba(30, 30, 45, 0.95) 100%);
+  border-bottom-color: rgba(27, 197, 189, 0.4);
+}
+
+[data-bs-theme="dark"] .widget11-table-card .card-header .card-label {
+  color: #1bc5bd;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .card-header .text-muted {
+  color: rgba(27, 197, 189, 0.7) !important;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .card-body {
+  background-color: var(--bs-card-bg) !important;
+}
+
+.widget11-table-card .card-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Widget11 Table Styles */
+.widget11-table-card .table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #e9ecef;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .table {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.widget11-table-card .table thead tr {
+  background-color: #f9fafb;
+  border-bottom: 2px solid #e9ecef;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .table thead tr {
+  background-color: rgba(27, 197, 189, 0.1);
+  border-bottom-color: rgba(27, 197, 189, 0.2);
+}
+
+.widget11-table-card .table thead th {
+  padding: 0.75rem;
+  border-right: 1px solid #e9ecef;
+  font-weight: 600;
+}
+
+.widget11-table-card .table thead th.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.widget11-table-card .table thead th.sortable-header:hover {
+  background-color: rgba(27, 197, 189, 0.1);
+}
+
+.widget11-table-card .table thead th.sortable-header.sort-active {
+  background-color: rgba(27, 197, 189, 0.15);
+  color: #0bb7af;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .table thead th.sortable-header:hover {
+  background-color: rgba(27, 197, 189, 0.2);
+}
+
+[data-bs-theme="dark"] .widget11-table-card .table thead th.sortable-header.sort-active {
+  background-color: rgba(27, 197, 189, 0.25);
+  color: #1bc5bd;
+}
+
+.widget11-table-card .table thead th:first-child {
+  border-left: 1px solid #e9ecef;
+}
+
+.widget11-table-card .table thead th:last-child {
+  border-right: 1px solid #e9ecef;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .table thead th {
+  color: #e0e0e0 !important;
+  border-right-color: rgba(255, 255, 255, 0.1);
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+.table-row-hover {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table-row-hover:hover {
+  background-color: rgba(54, 153, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .table-row-hover {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="dark"] .table-row-hover:hover {
+  background-color: rgba(27, 197, 189, 0.1);
+}
+
+.widget11-table-card .table tbody tr {
+  border-bottom: 1px solid #dee2e6;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .table tbody tr {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.widget11-table-card .table tbody tr:last-child {
+  border-bottom: 1px solid #dee2e6;
+}
+[data-bs-theme="dark"] .widget11-table-card .table tbody tr:last-child {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.widget11-table-card .table tbody td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  border-right: 1px solid #e9ecef;
+}
+
+.widget11-table-card .table tbody td:first-child {
+  border-left: 1px solid #e9ecef;
+}
+
+.widget11-table-card .table tbody td:last-child {
+  border-right: 1px solid #e9ecef;
+}
+
+[data-bs-theme="dark"] .widget11-table-card .table tbody td {
+  color: #e0e0e0;
+  border-right-color: rgba(255, 255, 255, 0.1);
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Widget11 Table Container - Stessa altezza della card */
+.widget11-table-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.widget11-table-container table {
+  margin-bottom: 0;
+}
+
+.widget11-table-container thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f9fafb;
+}
+
+[data-bs-theme="dark"] .widget11-table-container thead {
+  background-color: rgba(27, 197, 189, 0.1);
+}
+
+/* Custom Scrollbar per la tabella Widget11 */
+.widget11-table-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.widget11-table-container::-webkit-scrollbar-track {
+  background: #f1f3f4;
+  border-radius: 3px;
+}
+
+.widget11-table-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.widget11-table-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox Scrollbar */
+.widget11-table-container {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f3f4;
+}
+
+/* Dark Mode Scrollbar */
+[data-bs-theme="dark"] .widget11-table-container::-webkit-scrollbar-track {
+  background: rgba(27, 197, 189, 0.1);
+}
+
+[data-bs-theme="dark"] .widget11-table-container::-webkit-scrollbar-thumb {
+  background: rgba(27, 197, 189, 0.3);
+}
+
+[data-bs-theme="dark"] .widget11-table-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(27, 197, 189, 0.5);
+}
+
+[data-bs-theme="dark"] .widget11-table-container {
+  scrollbar-color: rgba(27, 197, 189, 0.3) rgba(27, 197, 189, 0.1);
+}
+
 /* Agencies List Container per Widget11 */
 .agencies-list-container {
   display: flex;

@@ -1,8 +1,8 @@
 <template>
   <!--begin::Tables widget 7-->
-  <div class="card card-flush" :class="className">
+  <div class="card card-flush widget-7-mobile" :class="className">
     <!--begin::Header-->
-    <div class="card-header pt-5">
+    <div class="card-header pt-5 widget-7-header">
       <!--begin::Title-->
       <h3 class="card-title align-items-start flex-column">
         <span class="card-label fw-bold text-gray-800">📊 Classifiche & Distribuzioni</span>
@@ -13,15 +13,15 @@
     <!--end::Header-->
 
     <!--begin::Body-->
-    <div class="card-body pt-6">
+    <div class="card-body pt-6 widget-7-body">
       <!--begin::Nav-->
-      <ul class="nav nav-pills nav-pills-custom mb-3">
-        <template v-for="(item, i) in items" :key="item.index">
+      <ul class="nav nav-pills nav-pills-custom mb-3 flex-wrap">
+        <template v-for="(item, i) in items" :key="i">
           <!--begin::Item-->
-          <li class="nav-item mb-3 me-3 me-lg-6">
+          <li class="nav-item mb-3 me-2 me-md-3 me-lg-6">
             <!--begin::Link-->
             <a
-              class="nav-link btn btn-outline btn-flex btn-color-muted btn-active-color-primary flex-column overflow-hidden w-80px h-85px pt-5 pb-2"
+              class="nav-link btn btn-outline btn-flex btn-color-muted btn-active-color-primary flex-column overflow-hidden nav-tab-mobile pt-5 pb-2"
               :class="[i === activeTab && 'active']"
               :id="`kt_stats_widget_7_tab_link_${i}`"
               @click.prevent="setActiveTab(i)"
@@ -53,7 +53,7 @@
 
       <!--begin::Tab Content-->
       <div class="tab-content">
-        <template v-for="(item, i) in items" :key="item.index">
+        <template v-for="(item, i) in items" :key="i">
           <!--begin::Tap pane-->
           <div
             class="tab-pane fade"
@@ -61,14 +61,15 @@
             :id="`kt_stats_widget_7_tab_${i}`"
           >
             <!--begin::Top Agenzie Layout-->
-            <div v-if="item.index === '0' && !hideTopAgencies">
+            <div v-if="i === 0">
               <!--begin::Filtro Anno-->
-              <div class="d-flex justify-content-end align-items-center mb-4">
-                <label class="form-label text-muted fs-7 me-3 mb-0">Filtra per anno:</label>
+              <div class="d-flex flex-column flex-sm-row justify-content-sm-end align-items-sm-center align-items-start mb-4 gap-2">
+                <label class="form-label text-muted fs-7 mb-0">Filtra per anno:</label>
                 <select 
-                  v-model="selectedYearAgencies" 
+                  v-model.number="selectedYearAgencies" 
                   class="form-select form-select-sm w-auto"
                   style="min-width: 100px;"
+                  @change="handleYearAgenciesChange"
                 >
                   <option v-for="year in availableYears" :key="year" :value="year">
                     {{ year }}
@@ -76,7 +77,7 @@
                 </select>
               </div>
               <!--end::Filtro Anno-->
-              <div class="table-responsive">
+              <div class="table-responsive table-responsive-mobile">
                 <table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
                     <thead>
                       <tr class="fs-7 fw-bold text-gray-400 border-bottom-0">
@@ -163,8 +164,8 @@
                       </tr>
                     </thead>
                   <tbody>
-                    <template v-if="getTableData(parseInt(item.index)).length > 0">
-                      <tr v-for="(row, j) in getTableData(parseInt(item.index))" :key="row.id || j">
+                    <template v-if="getTableData(i).length > 0">
+                      <tr v-for="(row, j) in getTableData(i)" :key="row.id || j">
                         <td>
                           <div class="symbol symbol-40px me-3">
                             <span :class="[
@@ -231,14 +232,15 @@
             <!--end::Top Agenzie Layout-->
 
             <!--begin::Top Agenti Layout-->
-            <div v-else-if="item.index === '1'">
+            <div v-else-if="i === 1">
               <!--begin::Filtro Anno-->
-              <div class="d-flex justify-content-end align-items-center mb-4">
-                <label class="form-label text-muted fs-7 me-3 mb-0">Filtra per anno:</label>
+              <div class="d-flex flex-column flex-sm-row justify-content-sm-end align-items-sm-center align-items-start mb-4 gap-2">
+                <label class="form-label text-muted fs-7 mb-0">Filtra per anno:</label>
                 <select 
-                  v-model="selectedYearAgents" 
+                  v-model.number="selectedYearAgents" 
                   class="form-select form-select-sm w-auto"
                   style="min-width: 100px;"
+                  @change="handleYearAgentsChange"
                 >
                   <option v-for="year in availableYears" :key="year" :value="year">
                     {{ year }}
@@ -246,7 +248,7 @@
                 </select>
               </div>
               <!--end::Filtro Anno-->
-              <div class="table-responsive">
+              <div class="table-responsive table-responsive-mobile">
                 <table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
                   <thead>
                     <tr class="fs-7 fw-bold text-gray-400 border-bottom-0">
@@ -320,8 +322,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <template v-if="getTableData(parseInt(item.index)).length > 0">
-                      <tr v-for="(row, j) in getTableData(parseInt(item.index))" :key="row.id || j">
+                    <template v-if="getTableData(i).length > 0">
+                      <tr v-for="(row, j) in getTableData(i)" :key="row.id || j">
                         <td>
                           <div class="symbol symbol-40px me-3">
                             <span :class="[
@@ -383,7 +385,7 @@
             <!--end::Top Agenti Layout-->
 
             <!--begin::Top Zone Layout-->
-            <div v-else-if="item.index === '2'" class="row g-5">
+            <div v-else-if="i === 2" class="row g-5">
               <!--begin::Top Zone Immobili (Left)-->
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
@@ -394,14 +396,14 @@
                   <div class="card-body pt-2">
                     <div v-if="topZonesPropertiesData && topZonesPropertiesData.length > 0" class="d-flex flex-column">
                       <div v-for="(zone, index) in topZonesPropertiesData.slice(0, 5)" :key="index" 
-                           class="d-flex align-items-center mb-3 p-3 rounded-3 bg-light-primary border border-primary border-opacity-25">
-                        <div class="symbol symbol-35px me-3">
+                           class="d-flex align-items-center mb-3 p-3 rounded-3 bg-light-primary border border-primary border-opacity-25 zone-item-mobile">
+                        <div class="symbol symbol-35px me-3 flex-shrink-0">
                           <span class="symbol-label bg-primary text-white fw-bold fs-7">{{ index + 1 }}</span>
                         </div>
-                        <div class="d-flex flex-column flex-grow-1">
-                          <span class="fw-bold fs-7 text-gray-800">{{ zone.name }}</span>
+                        <div class="d-flex flex-column flex-grow-1 min-w-0">
+                          <span class="fw-bold fs-7 text-gray-800 text-truncate">{{ zone.name }}</span>
                         </div>
-                        <div class="text-end">
+                        <div class="text-end flex-shrink-0 ms-2">
                           <span class="fw-bold fs-6 text-primary">{{ zone.count }} immobili</span>
                         </div>
                       </div>
@@ -424,14 +426,14 @@
                   <div class="card-body pt-2">
                     <div v-if="topZonesRequestsData && topZonesRequestsData.length > 0" class="d-flex flex-column">
                       <div v-for="(zone, index) in topZonesRequestsData.slice(0, 5)" :key="index" 
-                           class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 bg-light-success border border-success border-opacity-25">
-                        <div class="d-flex align-items-center">
-                          <div class="symbol symbol-35px me-3">
-                            <span class="symbol-label bg-success text-white fw-bold fs-7">{{ index + 1 }}</span>
-                          </div>
-                          <span class="fw-bold fs-7 text-gray-800">{{ zone.name }}</span>
+                           class="d-flex align-items-center mb-3 p-3 rounded-3 bg-light-success border border-success border-opacity-25 zone-item-mobile">
+                        <div class="symbol symbol-35px me-3 flex-shrink-0">
+                          <span class="symbol-label bg-success text-white fw-bold fs-7">{{ index + 1 }}</span>
                         </div>
-                        <div class="text-end">
+                        <div class="d-flex flex-column flex-grow-1 min-w-0">
+                          <span class="fw-bold fs-7 text-gray-800 text-truncate">{{ zone.name }}</span>
+                        </div>
+                        <div class="text-end flex-shrink-0 ms-2">
                           <span class="fw-bold fs-6 text-success">{{ zone.count }} {{ zone.count === 1 ? 'richiesta' : 'richieste' }}</span>
                         </div>
                       </div>
@@ -447,7 +449,7 @@
             <!--end::Top Zone Layout-->
 
             <!--begin::Tipologie Layout-->
-            <div v-else-if="item.index === '3'" class="row g-5">
+            <div v-else-if="i === 3" class="row g-5">
               <!--begin::Top Categorie Portafoglio (Left)-->
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
@@ -458,14 +460,14 @@
                   <div class="card-body pt-2">
                     <div v-if="topCategoriesData && topCategoriesData.length > 0" class="d-flex flex-column">
                       <div v-for="(category, index) in topCategoriesData.slice(0, 5)" :key="index" 
-                           class="d-flex align-items-center mb-3 p-3 rounded-3 bg-light-primary border border-primary border-opacity-25">
-                        <div class="symbol symbol-35px me-3">
+                           class="d-flex align-items-center mb-3 p-3 rounded-3 bg-light-primary border border-primary border-opacity-25 zone-item-mobile">
+                        <div class="symbol symbol-35px me-3 flex-shrink-0">
                           <span class="symbol-label bg-primary text-white fw-bold fs-7">{{ index + 1 }}</span>
                         </div>
-                        <div class="d-flex flex-column flex-grow-1">
-                          <span class="fw-bold fs-7 text-gray-800">{{ category.name }}</span>
+                        <div class="d-flex flex-column flex-grow-1 min-w-0">
+                          <span class="fw-bold fs-7 text-gray-800 text-truncate">{{ category.name }}</span>
                         </div>
-                        <div class="text-end">
+                        <div class="text-end flex-shrink-0 ms-2">
                           <span class="fw-bold fs-6 text-primary">{{ category.count }} immobili</span>
                         </div>
                       </div>
@@ -488,14 +490,14 @@
                   <div class="card-body pt-2">
                     <div v-if="topTypologiesRequestsData && topTypologiesRequestsData.length > 0" class="d-flex flex-column">
                       <div v-for="(typology, index) in topTypologiesRequestsData.slice(0, 5)" :key="index" 
-                           class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 bg-light-success border border-success border-opacity-25">
-                        <div class="d-flex align-items-center">
-                          <div class="symbol symbol-35px me-3">
-                            <span class="symbol-label bg-success text-white fw-bold fs-7">{{ index + 1 }}</span>
-                          </div>
-                          <span class="fw-bold fs-7 text-gray-800">{{ typology.name }}</span>
+                           class="d-flex align-items-center mb-3 p-3 rounded-3 bg-light-success border border-success border-opacity-25 zone-item-mobile">
+                        <div class="symbol symbol-35px me-3 flex-shrink-0">
+                          <span class="symbol-label bg-success text-white fw-bold fs-7">{{ index + 1 }}</span>
                         </div>
-                        <div class="text-end">
+                        <div class="d-flex flex-column flex-grow-1 min-w-0">
+                          <span class="fw-bold fs-7 text-gray-800 text-truncate">{{ typology.name }}</span>
+                        </div>
+                        <div class="text-end flex-shrink-0 ms-2">
                           <span class="fw-bold fs-6 text-success">{{ typology.count }} {{ typology.count === 1 ? 'richiesta' : 'richieste' }}</span>
                         </div>
                       </div>
@@ -511,7 +513,7 @@
             <!--end::Tipologie Layout-->
 
             <!--begin::Guadagni Layout-->
-            <div v-else-if="item.index === '4'" class="row g-5">
+            <div v-else-if="i === 4" class="row g-5">
               <!--begin::Top Portafoglio Provvigioni (Left)-->
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
@@ -530,19 +532,17 @@
                     <!-- Lista -->
                     <div v-if="topEarningsPortfolio && topEarningsPortfolio.length > 0" class="d-flex flex-column">
                       <div v-for="(item, index) in topEarningsPortfolio.slice(0, 5)" :key="item.Id || index"
-                           class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 bg-light-primary border border-primary border-opacity-25">
-                        <div class="d-flex align-items-center">
-                          <div class="symbol symbol-35px me-3">
-                            <span class="symbol-label bg-primary text-white fw-bold fs-7">{{ index + 1 }}</span>
-                          </div>
-                          <div class="d-flex flex-column">
-                            <span class="fw-bold fs-7 text-gray-800">{{ item.Title }}</span>
-                            <span class="text-muted fs-8">{{ item.AddressLine }}{{ item.City ? ', ' + item.City : '' }}</span>
-                            <span class="text-muted fs-9">Cod.: {{ item.Id }}</span>
-                            <span class="text-muted fs-9">Gestore: {{ item.UserFirstName }}</span>
-                          </div>
+                           class="d-flex align-items-start mb-3 p-3 rounded-3 bg-light-primary border border-primary border-opacity-25 earnings-item-mobile">
+                        <div class="symbol symbol-35px me-3 flex-shrink-0">
+                          <span class="symbol-label bg-primary text-white fw-bold fs-7">{{ index + 1 }}</span>
                         </div>
-                        <div class="text-end">
+                        <div class="d-flex flex-column flex-grow-1 min-w-0">
+                          <span class="fw-bold fs-7 text-gray-800">{{ item.Title }}</span>
+                          <span class="text-muted fs-8">{{ item.AddressLine }}{{ item.City ? ', ' + item.City : '' }}</span>
+                          <span class="text-muted fs-9">Cod.: {{ item.Id }}</span>
+                          <span class="text-muted fs-9">Gestore: {{ item.UserFirstName }}</span>
+                        </div>
+                        <div class="text-end flex-shrink-0 ms-2">
                           <div class="fw-bold fs-7 text-gray-800">Prezzo: {{ formatCurrency(item.Price) }}</div>
                           <div class="fw-bold fs-6 text-primary">Provv.: {{ formatCurrency(item.EffectiveCommission) }}</div>
                         </div>
@@ -560,14 +560,14 @@
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
                   <div class="card-header border-0 pt-4 pb-2">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center align-items-start mb-2 gap-2">
                       <div class="flex-grow-1">
                         <h4 class="card-title fw-bold fs-5 mb-1">🎯 Top Vendite Anno Corrente</h4>
                         <span class="text-muted fs-7">Vendite chiuse nell'anno</span>
                       </div>
-                      <div class="d-flex align-items-center gap-3">
+                      <div class="d-flex flex-column flex-sm-row align-items-sm-center align-items-start gap-2">
                         <!-- Totale Vendite Anno -->
-                        <div class="text-end">
+                        <div class="text-start text-sm-end">
                           <div class="fw-bold fs-4 text-success mb-0">
                             {{ formatCurrency(totalYearSalesCommissions) }}
                           </div>
@@ -575,9 +575,10 @@
                         </div>
                         <!-- Filtro Anno -->
                         <select 
-                          v-model="selectedYearSales" 
-                          class="form-select form-select-sm w-auto ms-20"
+                          v-model.number="selectedYearSales" 
+                          class="form-select form-select-sm w-auto"
                           style="min-width: 100px;"
+                          @change="handleYearSalesChange"
                         >
                           <option v-for="year in availableYears" :key="year" :value="year">
                             {{ year }}
@@ -589,19 +590,17 @@
                   <div class="card-body pt-2">
                     <div v-if="topEarningsSalesYear && topEarningsSalesYear.length > 0" class="d-flex flex-column">
                       <div v-for="(item, index) in topEarningsSalesYear.slice(0, 5)" :key="item.Id || index"
-                           class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 bg-light-success border border-success border-opacity-25">
-                        <div class="d-flex align-items-center">
-                          <div class="symbol symbol-35px me-3">
-                            <span class="symbol-label bg-success text-white fw-bold fs-7">{{ index + 1 }}</span>
-                          </div>
-                          <div class="d-flex flex-column">
-                            <span class="fw-bold fs-7 text-gray-800">{{ item.Title }}</span>
-                            <span class="text-muted fs-8">{{ item.AddressLine }}{{ item.City ? ', ' + item.City : '' }}</span>
-                            <span class="text-muted fs-9">Cod.: {{ item.Id }}</span>
-                            <span class="text-muted fs-9">Gestore: {{ item.UserFirstName }}</span>
-                          </div>
+                           class="d-flex align-items-start mb-3 p-3 rounded-3 bg-light-success border border-success border-opacity-25 earnings-item-mobile">
+                        <div class="symbol symbol-35px me-3 flex-shrink-0">
+                          <span class="symbol-label bg-success text-white fw-bold fs-7">{{ index + 1 }}</span>
                         </div>
-                        <div class="text-end">
+                        <div class="d-flex flex-column flex-grow-1 min-w-0">
+                          <span class="fw-bold fs-7 text-gray-800">{{ item.Title }}</span>
+                          <span class="text-muted fs-8">{{ item.AddressLine }}{{ item.City ? ', ' + item.City : '' }}</span>
+                          <span class="text-muted fs-9">Cod.: {{ item.Id }}</span>
+                          <span class="text-muted fs-9">Gestore: {{ item.UserFirstName }}</span>
+                        </div>
+                        <div class="text-end flex-shrink-0 ms-2">
                           <div class="fw-bold fs-7 text-gray-800">Prezzo: {{ formatCurrency(item.Price) }}</div>
                           <div class="fw-bold fs-6 text-success">Provv.: {{ formatCurrency(item.EffectiveCommission) }}</div>
                         </div>
@@ -617,137 +616,9 @@
             </div>
             <!--end::Guadagni Layout-->
 
-            <!--begin::Scadenze Incarichi Layout-->
-            <div v-else-if="item.index === '5'">
-              <div class="card h-100">
-                <div class="card-header border-0 pt-4 pb-2">
-                  <h4 class="card-title fw-bold fs-5 mb-1">⏰ Scadenze Incarichi</h4>
-                  <span class="text-muted fs-7">Immobili con incarico in scadenza e scaduti</span>
-                </div>
-                <div class="card-body pt-2">
-                  <div v-if="loadingExpiringAssignments" class="text-center py-10">
-                    <div class="spinner-border text-primary" role="status">
-                      <span class="visually-hidden">Caricamento...</span>
-                    </div>
-                    <p class="text-muted fs-7 mt-3">Caricamento scadenze...</p>
-                  </div>
-                  <div v-else class="row g-4">
-                    <!-- Colonna Sinistra: In Scadenza -->
-                    <div class="col-12 col-lg-6">
-                      <div class="d-flex align-items-center mb-3">
-                        <h5 class="fw-bold fs-6 mb-0 text-warning">
-                          <i class="ki-duotone ki-calendar fs-5 me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          In Scadenza ({{ expiringProperties.length }})
-                        </h5>
-                      </div>
-                      <div v-if="expiringProperties && expiringProperties.length > 0" class="expiring-properties-list" style="max-height: 500px; overflow-y: auto;">
-                        <div 
-                          v-for="(property, index) in expiringProperties" 
-                          :key="property.Id || index"
-                          @click="goToProperty(property.Id)"
-                          class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 cursor-pointer property-item bg-light-warning border border-warning border-opacity-25"
-                          style="transition: all 0.2s ease;"
-                        >
-                          <div class="d-flex align-items-center flex-grow-1">
-                            <div class="symbol symbol-40px me-3">
-                              <span class="symbol-label text-white fw-bold fs-7 bg-warning">
-                                {{ index + 1 }}
-                              </span>
-                            </div>
-                            <div class="d-flex flex-column flex-grow-1">
-                              <span class="fw-bold fs-7 text-gray-800 mb-1">
-                                {{ property.Title || property.AddressLine || `Immobile ${property.Id}` }}
-                              </span>
-                              <span class="text-muted fs-8">
-                                {{ property.AddressLine }}{{ property.City ? ', ' + property.City : '' }}
-                              </span>
-                              <span class="text-muted fs-9">Cod.: {{ property.Id }}</span>
-                            </div>
-                          </div>
-                          <div class="text-end ms-3">
-                            <div class="fw-bold fs-6 mb-1 text-warning">
-                              {{ property.DaysUntilExpiry }} {{ property.DaysUntilExpiry === 1 ? 'giorno' : 'giorni' }}
-                            </div>
-                            <div class="text-muted fs-8">
-                              Scade: {{ formatDate(property.AssignmentEnd) }}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div v-else class="text-center py-8">
-                        <i class="ki-duotone ki-check-circle fs-2x text-success mb-3">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        <p class="text-muted fs-7 mb-0">Nessuna scadenza imminente</p>
-                      </div>
-                    </div>
-
-                    <!-- Colonna Destra: Scaduti -->
-                    <div class="col-12 col-lg-6">
-                      <div class="d-flex align-items-center mb-3">
-                        <h5 class="fw-bold fs-6 mb-0 text-danger">
-                          <i class="ki-duotone ki-cross-circle fs-5 me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                          Scaduti ({{ expiredProperties.length }})
-                        </h5>
-                      </div>
-                      <div v-if="expiredProperties && expiredProperties.length > 0" class="expiring-properties-list" style="max-height: 500px; overflow-y: auto;">
-                        <div 
-                          v-for="(property, index) in expiredProperties" 
-                          :key="property.Id || index"
-                          @click="goToProperty(property.Id)"
-                          class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 cursor-pointer property-item bg-light-danger border border-danger border-opacity-50"
-                          style="transition: all 0.2s ease;"
-                        >
-                          <div class="d-flex align-items-center flex-grow-1">
-                            <div class="symbol symbol-40px me-3">
-                              <span class="symbol-label text-white fw-bold fs-7 bg-danger">
-                                {{ index + 1 }}
-                              </span>
-                            </div>
-                            <div class="d-flex flex-column flex-grow-1">
-                              <span class="fw-bold fs-7 text-gray-800 mb-1">
-                                {{ property.Title || property.AddressLine || `Immobile ${property.Id}` }}
-                              </span>
-                              <span class="text-muted fs-8">
-                                {{ property.AddressLine }}{{ property.City ? ', ' + property.City : '' }}
-                              </span>
-                              <span class="text-muted fs-9">Cod.: {{ property.Id }}</span>
-                            </div>
-                          </div>
-                          <div class="text-end ms-3">
-                            <div class="fw-bold fs-6 mb-1 text-danger">
-                              {{ getDaysSinceExpiry(property.AssignmentEnd) }} {{ getDaysSinceExpiry(property.AssignmentEnd) === 1 ? 'giorno fa' : 'giorni fa' }}
-                            </div>
-                            <div class="text-muted fs-8">
-                              Scaduto: {{ formatDate(property.AssignmentEnd) }}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div v-else class="text-center py-8">
-                        <i class="ki-duotone ki-check-circle fs-2x text-success mb-3">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        <p class="text-muted fs-7 mb-0">Nessun immobile scaduto</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--end::Scadenze Incarichi Layout-->
-
             <!--begin::Default Table Layout (Other Tabs)-->
             <div v-else>
-            <div class="table-responsive">
+            <div class="table-responsive table-responsive-mobile">
               <table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
                 <thead>
                   <tr class="fs-7 fw-bold text-gray-400 border-bottom-0">
@@ -760,8 +631,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <template v-if="getTableData(parseInt(item.index)).length > 0">
-                    <tr v-for="(row, j) in getTableData(parseInt(item.index))" :key="j">
+                  <template v-if="getTableData(i).length > 0">
+                    <tr v-for="(row, j) in getTableData(i)" :key="j">
                       <td>
                         <div class="symbol symbol-40px me-3">
                           <span :class="[
@@ -846,7 +717,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch } from "vue";
-import { getTopAgenciesData, getTopAgentsData, getTopZonesData, getTopTypologiesData, getTopEarningsData, getExpiringAssignments, type TopAgencyItem, type TopAgentItem, type TopZoneItem, type TopTypologyItem, type TopEarningItem, type ExpiringAssignmentItem } from "@/core/data/dashboard";
+import { getTopAgenciesData, getTopAgentsData, getTopZonesData, getTopTypologiesData, getTopEarningsData, type TopAgencyItem, type TopAgentItem, type TopZoneItem, type TopTypologyItem, type TopEarningItem } from "@/core/data/dashboard";
 
 export default defineComponent({
   name: "default-dashboard-widget-7",
@@ -860,9 +731,6 @@ export default defineComponent({
     allSoldProperties: { type: Array, default: () => [] },
     allProperties: { type: Array, default: () => [] },
     calendarEvents: { type: Array, default: () => [] },
-    selectedYear: { type: Number, default: () => new Date().getFullYear() },
-    hideTopAgencies: { type: Boolean, default: false },
-    canLoadData: { type: Boolean, default: true },
   },
   setup(props) {
     const activeTab = ref<number>(0);
@@ -905,11 +773,6 @@ export default defineComponent({
       totalSalesYearCommission: 0,
     });
     const loadingEarnings = ref<boolean>(false);
-
-    // Dati API per Scadenze Incarichi
-    const expiringAssignmentsData = ref<ExpiringAssignmentItem[]>([]);
-    const expiredAssignmentsData = ref<ExpiringAssignmentItem[]>([]);
-    const loadingExpiringAssignments = ref<boolean>(false);
     
     // Stato per ordinamento Top Agenzie
     const sortByAgencies = ref<string>('soldProperties'); // Default: ordina per vendite (lowercase per matchare backend)
@@ -929,7 +792,7 @@ export default defineComponent({
       return years;
     });
 
-    const allItems = [
+    const items = [
       {
         title: "Top Agenzie",
         icon: "office-bag",
@@ -955,31 +818,7 @@ export default defineComponent({
         icon: "dollar",
         index: "4",
       },
-      {
-        title: "Scadenze",
-        icon: "calendar",
-        index: "5",
-      },
     ];
-    
-    // Filtra gli items: nascondi "Top Agenzie" se hideTopAgencies è true
-    const items = computed(() => {
-      if (props.hideTopAgencies) {
-        return allItems.filter(item => item.title !== "Top Agenzie");
-      }
-      return allItems;
-    });
-    
-    // Se "Top Agenzie" viene nascosto e activeTab punta a Top Agenzie, passa al primo tab disponibile
-    watch(() => props.hideTopAgencies, (hide) => {
-      if (hide) {
-        // Se il tab attivo è "Top Agenzie" (index 0), passa al primo tab disponibile (Top Agenti, index 1)
-        const currentItem = items.value[activeTab.value];
-        if (currentItem && currentItem.index === '0') {
-          activeTab.value = 0; // Il primo tab ora sarà "Top Agenti" (che ha index 1)
-        }
-      }
-    }, { immediate: true });
 
     const setActiveTab = (index: number) => {
       activeTab.value = index;
@@ -1001,11 +840,6 @@ export default defineComponent({
 
     // Funzione per caricare i dati dei Top Agenti dall'API
     const loadTopAgentsData = async (year?: number, sortBy?: string, sortOrder?: string) => {
-      if (!props.canLoadData) {
-        loadingAgents.value = false;
-        topAgentsData.value = [];
-        return;
-      }
       try {
         loadingAgents.value = true;
         const data = await getTopAgentsData(year, sortBy, sortOrder);
@@ -1040,8 +874,6 @@ export default defineComponent({
 
     // Funzione per gestire il click su una colonna per ordinare
     const handleSortAgencies = (column: string) => {
-      if (props.hideTopAgencies) return; // Non gestire ordinamento se Top Agenzie è nascosto
-      
       if (sortByAgencies.value === column) {
         // Se clicchi sulla stessa colonna, inverte l'ordine
         sortOrderAgencies.value = sortOrderAgencies.value === 'desc' ? 'asc' : 'desc';
@@ -1056,11 +888,6 @@ export default defineComponent({
 
     // Funzione per caricare i dati delle Top Agenzie dall'API
     const loadTopAgenciesData = async (year?: number, sortBy?: string, sortOrder?: string) => {
-      if (!props.canLoadData) {
-        loadingAgencies.value = false;
-        topAgenciesData.value = [];
-        return;
-      }
       try {
         loadingAgencies.value = true;
         const data = await getTopAgenciesData(year, sortBy, sortOrder);
@@ -1166,14 +993,6 @@ export default defineComponent({
 
     // Funzione per caricare i dati delle Top Zone dall'API
     const loadTopZonesData = async () => {
-      if (!props.canLoadData) {
-        loadingZones.value = false;
-        topZonesData.value = {
-          propertiesZones: [],
-          requestsZones: []
-        };
-        return;
-      }
       try {
         loadingZones.value = true;
         const data = await getTopZonesData();
@@ -1218,14 +1037,6 @@ export default defineComponent({
 
     // Funzione per caricare i dati delle Top Tipologie dall'API
     const loadTopTypologiesData = async () => {
-      if (!props.canLoadData) {
-        loadingTypologies.value = false;
-        topTypologiesData.value = {
-          categoriesPortfolio: [],
-          categoriesRequests: []
-        };
-        return;
-      }
       try {
         loadingTypologies.value = true;
         const data = await getTopTypologiesData();
@@ -1246,16 +1057,6 @@ export default defineComponent({
 
     // Funzione per caricare i dati Top Guadagni (portafoglio + vendite anno)
     const loadTopEarningsData = async (year?: number) => {
-      if (!props.canLoadData) {
-        loadingEarnings.value = false;
-        topEarningsData.value = {
-          portfolio: [],
-          salesYear: [],
-          totalPortfolioCommission: 0,
-          totalSalesYearCommission: 0,
-        };
-        return;
-      }
       try {
         loadingEarnings.value = true;
         const data = await getTopEarningsData(year);
@@ -1315,120 +1116,58 @@ export default defineComponent({
     const totalPortfolioCommissions = computed(() => topEarningsData.value.totalPortfolioCommission || 0);
     const totalYearSalesCommissions = computed(() => topEarningsData.value.totalSalesYearCommission || 0);
 
-    // Funzione helper per calcolare i giorni rimanenti (per compatibilità con template)
-    const getDaysUntilExpiry = (assignmentEnd: string | undefined | null): number => {
-      if (!assignmentEnd || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '') {
-        return 999; // Senza scadenza = sempre valido
-      }
-      const endDate = new Date(assignmentEnd);
-      const now = new Date();
-      const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      return daysUntilExpiry;
-    };
-
-    // Funzione per formattare la data
-    const formatDate = (dateString: string | undefined | null): string => {
-      if (!dateString || dateString === '0001-01-01T00:00:00' || dateString === '') {
-        return 'Senza scadenza';
-      }
-      const date = new Date(dateString);
-      return date.toLocaleDateString('it-IT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    };
-
-    // Funzione per caricare i dati delle scadenze incarichi dall'API
-    const loadExpiringAssignments = async (daysThreshold?: number) => {
-      if (!props.canLoadData) {
-        loadingExpiringAssignments.value = false;
-        expiringAssignmentsData.value = [];
-        expiredAssignmentsData.value = [];
-        return;
-      }
-      try {
-        loadingExpiringAssignments.value = true;
-        const data = await getExpiringAssignments(daysThreshold);
-        expiringAssignmentsData.value = data.Properties || [];
-        expiredAssignmentsData.value = data.ExpiredProperties || [];
-      } catch (error) {
-        console.error('Errore nel caricamento delle scadenze incarichi:', error);
-        expiringAssignmentsData.value = [];
-        expiredAssignmentsData.value = [];
-      } finally {
-        loadingExpiringAssignments.value = false;
-      }
-    };
-
-    // Immobili in scadenza (usa dati API)
-    const expiringProperties = computed(() => {
-      return expiringAssignmentsData.value || [];
-    });
-
-    // Immobili scaduti (usa dati API)
-    const expiredProperties = computed(() => {
-      return expiredAssignmentsData.value || [];
-    });
-
-    // Funzione per calcolare i giorni trascorsi dalla scadenza (per scaduti)
-    const getDaysSinceExpiry = (assignmentEnd: string | undefined | null): number => {
-      if (!assignmentEnd || assignmentEnd === '0001-01-01T00:00:00' || assignmentEnd === '') {
-        return 0;
-      }
-      const endDate = new Date(assignmentEnd);
-      const now = new Date();
-      const daysSinceExpiry = Math.ceil((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
-      return daysSinceExpiry;
-    };
-
-    // Funzione per navigare all'immobile in nuova scheda
-    const goToProperty = (propertyId: number | undefined) => {
-      if (!propertyId) return;
-      const route = `/dashboard/property/${propertyId}`;
-      window.open(route, '_blank', 'noopener,noreferrer');
-    };
-
     // Carica i dati iniziali
     onMounted(() => {
-      if (!props.canLoadData) {
-        // Non caricare dati, ma evita spinner infiniti
-        loadingAgencies.value = false;
-        loadingAgents.value = false;
-        loadingZones.value = false;
-        loadingTypologies.value = false;
-        loadingEarnings.value = false;
-        loadingExpiringAssignments.value = false;
-        return;
-      }
-      if (!props.hideTopAgencies) {
-        loadTopAgenciesData(selectedYearAgencies.value, sortByAgencies.value, sortOrderAgencies.value);
-      }
+      loadTopAgenciesData(selectedYearAgencies.value, sortByAgencies.value, sortOrderAgencies.value);
       loadTopAgentsData(selectedYearAgents.value, sortByAgents.value, sortOrderAgents.value);
       loadTopZonesData();
       loadTopTypologiesData();
       loadTopEarningsData(selectedYearSales.value);
-      loadExpiringAssignments(30); // Carica scadenze con soglia di 30 giorni
     });
 
-    // Watch per ricaricare quando cambia l'anno
+    // Handler espliciti per il cambio anno (più affidabili dei watch)
+    const handleYearAgenciesChange = () => {
+      const year = Number(selectedYearAgencies.value);
+      if (!isNaN(year)) {
+        loadTopAgenciesData(year, sortByAgencies.value, sortOrderAgencies.value);
+      }
+    };
+
+    const handleYearAgentsChange = () => {
+      const year = Number(selectedYearAgents.value);
+      if (!isNaN(year)) {
+        loadTopAgentsData(year, sortByAgents.value, sortOrderAgents.value);
+      }
+    };
+
+    const handleYearSalesChange = () => {
+      const year = Number(selectedYearSales.value);
+      if (!isNaN(year)) {
+        loadTopEarningsData(year);
+      }
+    };
+
+    // Watch per ricaricare quando cambia l'anno (backup)
     watch(selectedYearAgencies, (newYear) => {
-      if (!props.hideTopAgencies && props.canLoadData) {
-        loadTopAgenciesData(newYear, sortByAgencies.value, sortOrderAgencies.value);
+      const year = Number(newYear);
+      if (!isNaN(year)) {
+        loadTopAgenciesData(year, sortByAgencies.value, sortOrderAgencies.value);
       }
     });
 
     // Watch per ricaricare quando cambia l'anno per Top Agenti
     watch(selectedYearAgents, (newYear) => {
-      if (props.canLoadData) {
-        loadTopAgentsData(newYear, sortByAgents.value, sortOrderAgents.value);
+      const year = Number(newYear);
+      if (!isNaN(year)) {
+        loadTopAgentsData(year, sortByAgents.value, sortOrderAgents.value);
       }
     });
 
     // Watch per ricaricare vendite anno per Guadagni
     watch(selectedYearSales, (newYear) => {
-      if (props.canLoadData) {
-        loadTopEarningsData(newYear);
+      const year = Number(newYear);
+      if (!isNaN(year)) {
+        loadTopEarningsData(year);
       }
     });
 
@@ -1461,19 +1200,15 @@ export default defineComponent({
       loadingEarnings,
       handleSortAgencies,
       handleSortAgents,
+      handleYearAgenciesChange,
+      handleYearAgentsChange,
+      handleYearSalesChange,
       sortByAgencies,
       sortOrderAgencies,
       sortByAgents,
       sortOrderAgents,
       loadTopTypologiesData,
       loadTopEarningsData,
-      expiringProperties,
-      expiredProperties,
-      getDaysUntilExpiry,
-      getDaysSinceExpiry,
-      formatDate,
-      goToProperty,
-      loadingExpiringAssignments,
     };
   },
 });
@@ -1502,38 +1237,369 @@ export default defineComponent({
   gap: 0.25rem;
 }
 
-.property-item {
-  cursor: pointer;
+/* Table responsive with horizontal scroll */
+.table-responsive-mobile {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  overflow-y: visible;
+  position: relative;
 }
 
-.property-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Scroll indicator hint on mobile - more subtle */
+@media (max-width: 768px) {
+  .table-responsive-mobile {
+    position: relative;
+  }
+  
+  /* Optional: subtle gradient hint for scroll */
+  .table-responsive-mobile::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .table-responsive-mobile:hover::before {
+    opacity: 1;
+  }
 }
 
-[data-bs-theme="dark"] .property-item:hover {
-  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+.table-responsive-mobile::-webkit-scrollbar {
+  height: 10px;
 }
 
-.expiring-properties-list {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+.table-responsive-mobile::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+  margin: 0 1rem;
 }
 
-.expiring-properties-list::-webkit-scrollbar {
-  width: 6px;
+.table-responsive-mobile::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
 }
 
-.expiring-properties-list::-webkit-scrollbar-track {
-  background: transparent;
+.table-responsive-mobile::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
-.expiring-properties-list::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+/* Mobile optimizations */
+.nav-tab-mobile {
+  width: 80px;
+  height: 85px;
 }
 
-[data-bs-theme="dark"] .expiring-properties-list::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
+@media (max-width: 576px) {
+  /* Card padding adjustments */
+  .widget-7-mobile .widget-7-header {
+    padding: 0.75rem 0.75rem 0.5rem 0.75rem !important;
+  }
+  
+  .widget-7-mobile .widget-7-body {
+    padding: 0.75rem !important;
+  }
+  
+  .widget-7-mobile .card-header {
+    padding: 0.75rem 0.75rem 0.5rem 0.75rem !important;
+  }
+  
+  .widget-7-mobile .card-body {
+    padding: 0.75rem !important;
+  }
+  
+  .card-title {
+    font-size: 0.95rem !important;
+  }
+  
+  .card-label {
+    font-size: 0.9rem !important;
+  }
+  
+  /* Nav tabs mobile */
+  .nav-tab-mobile {
+    width: 65px;
+    height: 70px;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.4rem !important;
+  }
+  
+  .nav-tab-mobile .nav-icon {
+    margin-bottom: 0.4rem !important;
+  }
+  
+  .nav-tab-mobile .nav-icon .fs-1 {
+    font-size: 1.1rem !important;
+  }
+  
+  .nav-tab-mobile .nav-text {
+    font-size: 0.65rem !important;
+    line-height: 1.1 !important;
+  }
+  
+  /* Table optimizations - keep all columns with scroll */
+  .table-responsive-mobile {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .table-responsive-mobile table {
+    font-size: 0.8rem;
+    min-width: 800px; /* Force horizontal scroll */
+  }
+  
+  .table-responsive-mobile table thead th {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.3rem;
+    white-space: nowrap;
+  }
+  
+  .table-responsive-mobile table tbody td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  
+  .table-responsive-mobile table th.min-w-50px,
+  .table-responsive-mobile table td:first-child {
+    min-width: 40px;
+    width: 40px;
+  }
+  
+  .table-responsive-mobile table th.min-w-200px,
+  .table-responsive-mobile table td:nth-child(2) {
+    min-width: 150px;
+  }
+  
+  .table-responsive-mobile table th.min-w-100px {
+    min-width: 80px;
+  }
+  
+  .table-responsive-mobile table th.min-w-120px {
+    min-width: 100px;
+  }
+  
+  /* Card adjustments */
+  .card-body .fw-bold.fs-2 {
+    font-size: 1.3rem !important;
+  }
+  
+  .card-body .fw-bold.fs-4 {
+    font-size: 1.1rem !important;
+  }
+  
+  .card-body .fw-bold.fs-5 {
+    font-size: 0.95rem !important;
+  }
+  
+  .card-body .fw-bold.fs-6 {
+    font-size: 0.85rem !important;
+  }
+  
+  .card-body .fw-bold.fs-7 {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Adjust spacing in cards */
+  .card-body .d-flex.flex-column > div {
+    padding: 0.4rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+  
+  /* Card sections in Top Zone, Tipologie, Guadagni */
+  .widget-7-mobile .card {
+    margin-bottom: 0.75rem;
+  }
+  
+  .widget-7-mobile .card .card-header {
+    padding: 0.75rem 0.75rem 0.5rem 0.75rem !important;
+  }
+  
+  .widget-7-mobile .card .card-body {
+    padding: 0.75rem !important;
+  }
+  
+  /* Row gaps */
+  .widget-7-mobile .row.g-5 {
+    --bs-gutter-y: 0.75rem;
+    --bs-gutter-x: 0.75rem;
+  }
+  
+  /* Zone items - prevent text overlap */
+  .zone-item-mobile {
+    gap: 0.5rem !important;
+    flex-wrap: nowrap !important;
+    padding: 0.75rem !important;
+  }
+  
+  .zone-item-mobile .min-w-0 {
+    min-width: 0 !important;
+    overflow: hidden;
+    flex: 1 1 auto;
+  }
+  
+  .zone-item-mobile .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+  
+  .zone-item-mobile .flex-shrink-0 {
+    flex-shrink: 0 !important;
+  }
+  
+  .zone-item-mobile .text-end {
+    flex-shrink: 0 !important;
+    white-space: nowrap;
+  }
+  
+  /* Earnings items - better layout on mobile */
+  .earnings-item-mobile {
+    gap: 0.5rem !important;
+    flex-wrap: wrap !important;
+    padding: 0.75rem !important;
+    align-items: flex-start !important;
+  }
+  
+  .earnings-item-mobile > .flex-grow-1 {
+    min-width: 0 !important;
+    flex: 1 1 60%;
+    max-width: 100%;
+  }
+  
+  .earnings-item-mobile > .text-end {
+    flex-shrink: 0 !important;
+    flex: 0 0 auto;
+    min-width: fit-content;
+    margin-left: 0.5rem;
+  }
+  
+  /* Ensure text doesn't wrap inappropriately */
+  .earnings-item-mobile .d-flex.flex-column > span {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.3;
+  }
+  
+  .earnings-item-mobile .text-end > div {
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+  
+  /* Smaller symbols on mobile */
+  .zone-item-mobile .symbol-35px,
+  .earnings-item-mobile .symbol-35px {
+    width: 24px !important;
+    height: 24px !important;
+    margin-right: 0.5rem !important;
+  }
+  
+  .zone-item-mobile .symbol-label,
+  .earnings-item-mobile .symbol-label {
+    font-size: 0.65rem !important;
+  }
+  
+  /* Make symbol smaller on mobile */
+  .symbol-40px {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .symbol-35px {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .symbol-40px .symbol-label,
+  .symbol-35px .symbol-label {
+    font-size: 0.7rem !important;
+  }
+  
+  /* Filter adjustments */
+  .form-select-sm {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* Tab content padding */
+  .tab-content {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Medium screens */
+  .widget-7-mobile .widget-7-header {
+    padding: 1rem 1rem 0.75rem 1rem !important;
+  }
+  
+  .widget-7-mobile .widget-7-body {
+    padding: 1rem !important;
+  }
+  
+  .widget-7-mobile .card-header {
+    padding: 1rem 1rem 0.75rem 1rem !important;
+  }
+  
+  .widget-7-mobile .card-body {
+    padding: 1rem !important;
+  }
+  
+  .table-responsive-mobile {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .table-responsive-mobile table {
+    font-size: 0.85rem;
+    min-width: 900px;
+  }
+  
+  .table-responsive-mobile table thead th {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.4rem;
+  }
+  
+  .table-responsive-mobile table tbody td {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.8rem;
+  }
+  
+  .nav-tab-mobile {
+    width: 75px;
+    height: 80px;
+  }
+  
+  /* Card sections */
+  .widget-7-mobile .card {
+    margin-bottom: 1rem;
+  }
+  
+  .widget-7-mobile .row.g-5 {
+    --bs-gutter-y: 1rem;
+    --bs-gutter-x: 1rem;
+  }
+  
+  /* Zone and earnings items on tablet */
+  .zone-item-mobile,
+  .earnings-item-mobile {
+    gap: 0.75rem;
+  }
+  
+  .earnings-item-mobile {
+    flex-wrap: nowrap;
+  }
 }
 </style>
