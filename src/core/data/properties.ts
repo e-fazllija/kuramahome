@@ -65,6 +65,7 @@ export class RealEstateProperty {
   EffectiveCommission?: number;
   MatchPercentage?: number;
   AgencyName?: string;
+  AccessLevel?: number; // 1=completo, 2=solo lettura, 3=limitato
 }
 
 export class RequestTabelData {

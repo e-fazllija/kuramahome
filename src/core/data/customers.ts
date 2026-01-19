@@ -51,6 +51,7 @@ export class Customer{
   UserId?: string;
   label?: string;
   AdminId?: string;
+  AccessLevel?: number; // 1=completo, 2=solo lettura, 3=limitato
 }
 
 export class CustomerTabelData {
