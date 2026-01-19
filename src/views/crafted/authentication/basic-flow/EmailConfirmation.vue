@@ -52,9 +52,9 @@
           <div class="d-flex flex-column">
             <h4 class="mb-1 text-primary">🎁 Periodo di Prova Gratuito</h4>
             <span class="text-gray-700 fs-6">
-              Hai <strong>10 giorni gratuiti</strong> per usufruire di tutte le funzionalità del servizio!
+              Hai <strong>10 giorni gratuiti</strong> per usufruire delle funzionalità base del servizio!
               <br>
-              Approfitta di questo periodo per esplorare tutte le caratteristiche di KuramaHome.
+              Approfitta di questo periodo per esplorare le caratteristiche base di MiraiHome.
             </span>
           </div>
         </div>

@@ -304,7 +304,8 @@ export default defineComponent({
       isLoadingPlans.value = true;
       try {
         const activePlans = await getActivePlans();
-        plans.value = activePlans;
+        // Escludi il piano Free - è solo per trial automatici, non selezionabile
+        plans.value = activePlans.filter(plan => plan.Name.toLowerCase() !== 'free');
       } catch (error) {
         console.error('Errore nel caricamento dei piani:', error);
         Swal.fire({
@@ -443,51 +444,68 @@ export default defineComponent({
         return;
       }
 
-      // Se è un downgrade ma l'abbonamento è scaduto, verifica i requisiti
-      // Se è un upgrade, procedi sempre
-      try {
-        Swal.fire({
-          title: "Verifica compatibilità...",
-          text: "Stiamo verificando se il cambio piano è possibile",
-          icon: "info",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showConfirmButton: false,
-          heightAuto: false,
-          didOpen: () => {
-            Swal.showLoading();
+      // Verifica i requisiti del piano in questi casi:
+      // 1. Se l'abbonamento è scaduto (indipendentemente da upgrade/downgrade)
+      // 2. Se è un downgrade (anche se l'abbonamento è ancora attivo, ma questo caso è già gestito sopra)
+      // Se è un upgrade e l'abbonamento è attivo, non serve verificare (i limiti aumentano)
+      const needsCompatibilityCheck = isSubscriptionExpired.value || isDowngradeAttempt;
+      
+      if (needsCompatibilityCheck) {
+        try {
+          Swal.fire({
+            title: "Verifica compatibilità...",
+            text: "Stiamo verificando se il cambio piano è possibile",
+            icon: "info",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            heightAuto: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
+          const compatibility = await checkDowngradeCompatibility(selectedPlanObj.Id);
+
+          Swal.close();
+
+          // Se i requisiti non sono rispettati, mostra la modale di warning
+          if (!compatibility.canDowngrade) {
+            showDowngradeWarningModal(compatibility, selectedPlanObj);
+            return;
           }
-        });
 
-        const compatibility = await checkDowngradeCompatibility(selectedPlanObj.Id);
-
-        Swal.close();
-
-        // Se il downgrade non è possibile (requisiti non rispettati), mostra la modale di warning
-        if (!compatibility.canDowngrade) {
-          showDowngradeWarningModal(compatibility, selectedPlanObj);
-          return;
+          // Se i requisiti sono rispettati, procedi normalmente
+          selectedPlan.value = plan;
+          
+          // Calcola il credito per upgrade (se applicabile)
+          await calculateCreditForPlan(plan);
+          
+          // Initialize Stripe after plan selection
+          setTimeout(async () => {
+            await initializeStripe();
+          }, 100);
+        } catch (error: any) {
+          Swal.close();
+          console.error('Errore nella verifica compatibilità:', error);
+          // In caso di errore, procedi comunque (non bloccare l'utente)
+          selectedPlan.value = plan;
+          
+          // Calcola il credito per upgrade (se applicabile)
+          await calculateCreditForPlan(plan);
+          
+          setTimeout(async () => {
+            await initializeStripe();
+          }, 100);
         }
-
-        // Se il downgrade è possibile o è un upgrade, procedi normalmente
+      } else {
+        // Upgrade con abbonamento attivo: procedi senza verifiche (i limiti aumentano)
         selectedPlan.value = plan;
         
         // Calcola il credito per upgrade (se applicabile)
         await calculateCreditForPlan(plan);
         
         // Initialize Stripe after plan selection
-        setTimeout(async () => {
-          await initializeStripe();
-        }, 100);
-      } catch (error: any) {
-        Swal.close();
-        console.error('Errore nella verifica compatibilità:', error);
-        // In caso di errore, procedi comunque (non bloccare l'utente)
-        selectedPlan.value = plan;
-        
-        // Calcola il credito per upgrade (se applicabile)
-        await calculateCreditForPlan(plan);
-        
         setTimeout(async () => {
           await initializeStripe();
         }, 100);
@@ -522,19 +540,30 @@ export default defineComponent({
       
       featuresHtml += '</div>';
 
+      // Determina il titolo in base allo stato dell'abbonamento
+      const isExpired = isSubscriptionExpired.value;
+      const titleText = isExpired 
+        ? 'Requisiti Non Rispettati' 
+        : 'Downgrade Non Possibile';
+      const mainMessage = isExpired
+        ? `Non puoi sottoscrivere il piano <strong>${plan.Name}</strong> perché hai ${compatibility.exceededLimitsCount} limite/i superato/i rispetto ai requisiti del piano.`
+        : `Non puoi passare al piano <strong>${plan.Name}</strong> perché hai ${compatibility.exceededLimitsCount} limite/i superato/i.`;
+
       Swal.fire({
-        title: '<div class="text-danger"><i class="ki-duotone ki-information-5 fs-2x me-2"><span class="path1"></span><span class="path2"></span></i> Downgrade Non Possibile</div>',
+        title: `<div class="text-danger"><i class="ki-duotone ki-information-5 fs-2x me-2"><span class="path1"></span><span class="path2"></span></i> ${titleText}</div>`,
         html: `
           <div class="text-start">
             <p class="mb-4 pricing-text-primary">
-              Non puoi passare al piano <strong>${plan.Name}</strong> perché hai ${compatibility.exceededLimitsCount} limite/i superato/i.
+              ${mainMessage}
             </p>
             <p class="mb-4 pricing-text-secondary">
               <strong>Elimina alcune risorse prima di procedere:</strong>
             </p>
             ${featuresHtml}
             <p class="mt-4 pricing-text-secondary fs-7">
-              ${compatibility.message || 'Riduci il numero di risorse utilizzate per poter fare il downgrade.'}
+              ${compatibility.message || (isExpired 
+                ? 'Riduci il numero di risorse utilizzate per poter sottoscrivere questo piano.' 
+                : 'Riduci il numero di risorse utilizzate per poter fare il downgrade.')}
             </p>
           </div>
         `,

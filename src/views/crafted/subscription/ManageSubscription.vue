@@ -86,8 +86,8 @@
 
                 <div class="separator separator-dashed my-5"></div>
 
-                <!-- Pulsante Rinnova -->
-                <div class="text-center">
+                <!-- Pulsante Rinnova (non mostrato per piano Free) -->
+                <div v-if="!isFreePlan" class="text-center">
                   <button 
                     @click="renewSubscription" 
                     class="btn w-100"
@@ -102,6 +102,36 @@
                   </button>
                   <p class="text-muted fs-9 mt-3 mb-0">
                     {{ !subscription ? 'Sottoscrivi il tuo primo abbonamento' : `Prolunga il tuo piano ${subscription.SubscriptionPlan?.Name || ''}` }}
+                  </p>
+                </div>
+
+                <!-- Messaggio per piano Free (non rinnovabile) -->
+                <div v-else class="text-center">
+                  <div class="alert alert-info d-flex align-items-center p-4 mb-3">
+                    <i class="ki-duotone ki-information-5 fs-2x text-info me-3">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                    </i>
+                    <div class="text-start">
+                      <div class="fw-bold text-gray-900 mb-1">Piano di Prova Gratuito</div>
+                      <div class="fs-8 text-gray-700">
+                        Il piano Free non può essere rinnovato. Scegli un piano a pagamento per continuare dopo la scadenza.
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    @click="openPricingModal" 
+                    class="btn btn-primary w-100"
+                  >
+                    <i class="ki-duotone ki-rocket fs-2 me-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Scegli un Piano
+                  </button>
+                  <p class="text-muted fs-9 mt-3 mb-0">
+                    Passa a un piano a pagamento per continuare
                   </p>
                 </div>
               </div>
@@ -329,6 +359,11 @@ export default defineComponent({
 
     const currentPlanName = computed(() => {
       return subscription.value?.SubscriptionPlan?.Name?.toLowerCase() || '';
+    });
+
+    // Verifica se il piano corrente è Free (non rinnovabile)
+    const isFreePlan = computed(() => {
+      return subscription.value?.SubscriptionPlan?.Name?.toLowerCase() === 'free';
     });
 
     // Determina se selezionare automaticamente il piano corrente
@@ -593,6 +628,7 @@ export default defineComponent({
       currentPlanName,
       shouldAutoSelectPlan,
       shouldAutoSelectPlanForRenewal,
+      isFreePlan,
       statusBadgeClass,
       statusText,
       planFeatures,
