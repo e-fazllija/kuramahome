@@ -98,7 +98,7 @@ router.beforeEach((to, from, next) => {
   const configStore = useConfigStore();
 
   // current page view title
-  document.title = `${to.meta.pageTitle} - KuramaHome`;
+  document.title = `${to.meta.pageTitle} - MiraiHome`;
 
   // reset config to initial state
   configStore.resetLayoutConfig();

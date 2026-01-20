@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
         name: "landing",
         component: () => import("@/views/LandingPage.vue"),
         meta: {
-          pageTitle: "KuramaHome - Gestione Immobiliare",
+          pageTitle: "MiraiHome - Gestione Immobiliare",
         },
       },
       {
@@ -286,7 +286,7 @@ router.beforeEach(async (to, from, next) => {
   const configStore = useConfigStore();
 
   // current page view title
-  document.title = `${to.meta.pageTitle} - KuramaHome`;
+  document.title = `${to.meta.pageTitle} - MiraiHome`;
 
   // reset config to initial state
   configStore.resetLayoutConfig();

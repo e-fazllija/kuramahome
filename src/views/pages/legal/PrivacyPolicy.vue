@@ -32,7 +32,7 @@
           <div class="mb-8">
             <h4 class="fw-bold text-gray-900 mb-4">1. Introduzione</h4>
             <p class="text-gray-700 fs-6 lh-lg">
-              La presente Informativa sulla Privacy descrive come KuramaHome ("noi", "nostro" o "la nostra società") 
+              La presente Informativa sulla Privacy descrive come MiraiHome ("noi", "nostro" o "la nostra società") 
               raccoglie, utilizza, conserva e protegge le informazioni personali degli utenti del nostro servizio di 
               gestione immobiliare.
             </p>
@@ -55,8 +55,8 @@
                 </i>
                 <div>
                   <strong class="fw-bold text-gray-900">Titolare del Trattamento:</strong><br>
-                  <span class="text-gray-700">KuramaHome S.r.l.</span><br>
-                  <span class="text-gray-600 fs-7">Email: privacy@kuramahome.it</span>
+                  <span class="text-gray-700">MiraiHome S.r.l.</span><br>
+                  <span class="text-gray-600 fs-7">Email: privacy@miraihome.it</span>
                 </div>
               </div>
             </div>
@@ -332,7 +332,7 @@
                       </div>
                       <div>
                         <h6 class="fw-bold text-gray-900 mb-1">Email Privacy</h6>
-                        <span class="text-gray-600 fs-7">privacy@kuramahome.it</span>
+                        <span class="text-gray-600 fs-7">privacy@miraihome.it</span>
                       </div>
                     </div>
                   </div>

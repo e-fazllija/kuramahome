@@ -187,7 +187,7 @@
             <div class="subscription-logo-bg"></div>
             <img 
               :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-              alt="KuramaHome Logo"
+              alt="MiraiHome Logo"
               class="subscription-logo"
             />
           </div>

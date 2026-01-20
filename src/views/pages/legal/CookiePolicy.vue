@@ -455,7 +455,7 @@
                       </div>
                       <div>
                         <h6 class="fw-bold text-gray-900 mb-1">Email Privacy</h6>
-                        <span class="text-gray-600 fs-7">privacy@kuramahome.it</span>
+                        <span class="text-gray-600 fs-7">privacy@miraihome.it</span>
                       </div>
                     </div>
                   </div>

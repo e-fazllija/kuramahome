@@ -11,21 +11,21 @@
             (themeMode === 'dark' && layout === 'light-sidebar')) &&
             !isSidebarMinimized
           "
-          alt="KuramaHome Logo"
+          alt="MiraiHome Logo"
           :src="getAssetPath('media/logos/TH-6.jpg')"
           class="logo-image logo-default"
         />
         <!-- Logo per light theme -->
         <img
           v-if="themeMode === 'light' && layout === 'light-sidebar' && !isSidebarMinimized"
-          alt="KuramaHome Logo"
+          alt="MiraiHome Logo"
           :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
           class="logo-image logo-default"
         />
         <!-- Logo minimizzato -->
         <img
           v-if="isSidebarMinimized"
-          alt="KuramaHome Logo"
+          alt="MiraiHome Logo"
           :src="getAssetPath('media/logos/default-small.svg')"
           class="logo-image logo-minimize"
         />

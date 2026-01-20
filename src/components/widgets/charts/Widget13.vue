@@ -360,7 +360,7 @@ export default defineComponent({
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&limit=1`,
           {
             headers: {
-              'User-Agent': 'KuramaHome Dashboard'
+              'User-Agent': 'MiraiHome Dashboard'
             }
           }
         );
