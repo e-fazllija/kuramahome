@@ -16,7 +16,7 @@
             </div>
             <div>
               <h3 class="fw-bold m-0 text-gray-900 fs-3">Domande Frequenti (FAQ)</h3>
-              <span class="text-muted fs-7 fw-semibold">Trova le risposte alle domande più comuni su KuramaHome</span>
+              <span class="text-muted fs-7 fw-semibold">Trova le risposte alle domande più comuni su MiraiHome</span>
             </div>
           </div>
         </div>
@@ -290,7 +290,7 @@
                     </p>
                   </div>
                   <div class="ms-4">
-                    <a href="mailto:support@kuramahome.it" class="btn btn-primary">
+                    <a href="mailto:support@miraihome.it" class="btn btn-primary">
                       <i class="ki-duotone ki-sms fs-2 me-2">
                         <span class="path1"></span>
                         <span class="path2"></span>
@@ -328,16 +328,16 @@ export default defineComponent({
     const allFAQs = {
       general: [
         {
-          question: "Cos'è KuramaHome?",
-          answer: "KuramaHome è una piattaforma completa per la gestione immobiliare che ti permette di gestire immobili, clienti, agenti, richieste e documentazione in un unico sistema integrato. È progettato per agenzie immobiliari e agenti che vogliono ottimizzare il loro workflow e migliorare la gestione del loro portafoglio immobiliare."
+          question: "Cos'è MiraiHome?",
+          answer: "MiraiHome è una piattaforma completa per la gestione immobiliare che ti permette di gestire immobili, clienti, agenti, richieste e documentazione in un unico sistema integrato. È progettato per agenzie immobiliari e agenti che vogliono ottimizzare il loro workflow e migliorare la gestione del loro portafoglio immobiliare."
         },
         {
-          question: "Come posso iniziare a usare KuramaHome?",
+          question: "Come posso iniziare a usare MiraiHome?",
           answer: "Per iniziare, registrati creando un account. Una volta completata la registrazione e verificata la tua email, potrai accedere alla dashboard e iniziare a utilizzare tutte le funzionalità disponibili. Ti consigliamo di iniziare aggiungendo i tuoi primi clienti e immobili per familiarizzare con la piattaforma."
         },
         {
           question: "Quali browser sono supportati?",
-          answer: "KuramaHome è compatibile con tutti i browser moderni, inclusi Google Chrome, Mozilla Firefox, Microsoft Edge, Safari e Opera. Ti consigliamo di utilizzare l'ultima versione del browser per garantire le migliori prestazioni e sicurezza."
+          answer: "MiraiHome è compatibile con tutti i browser moderni, inclusi Google Chrome, Mozilla Firefox, Microsoft Edge, Safari e Opera. Ti consigliamo di utilizzare l'ultima versione del browser per garantire le migliori prestazioni e sicurezza."
         },
         {
           question: "I miei dati sono sicuri?",
@@ -387,7 +387,7 @@ export default defineComponent({
       subscription: [
         {
           question: "Come funziona il sistema di abbonamenti?",
-          answer: "KuramaHome offre diversi piani di abbonamento con funzionalità e limiti diversi. Puoi visualizzare tutti i piani disponibili nella sezione 'Gestisci Abbonamento' e scegliere quello più adatto alle tue esigenze. Ogni piano include funzionalità specifiche come numero massimo di immobili, clienti, agenti, ecc."
+          answer: "MiraiHome offre diversi piani di abbonamento con funzionalità e limiti diversi. Puoi visualizzare tutti i piani disponibili nella sezione 'Gestisci Abbonamento' e scegliere quello più adatto alle tue esigenze. Ogni piano include funzionalità specifiche come numero massimo di immobili, clienti, agenti, ecc."
         },
         {
           question: "Come posso cambiare piano di abbonamento?",
@@ -425,7 +425,7 @@ export default defineComponent({
         },
         {
           question: "Come funziona il sistema di ruoli e permessi?",
-          answer: "KuramaHome offre tre ruoli principali: Admin, Agency e Agent. Gli Admin hanno accesso completo a tutte le funzionalità. Le Agenzie possono gestire i propri agenti e immobili. Gli Agenti hanno accesso alle funzionalità base per gestire clienti e immobili assegnati. I permessi vengono gestiti automaticamente in base al ruolo."
+          answer: "MiraiHome offre tre ruoli principali: Admin, Agency e Agent. Gli Admin hanno accesso completo a tutte le funzionalità. Le Agenzie possono gestire i propri agenti e immobili. Gli Agenti hanno accesso alle funzionalità base per gestire clienti e immobili assegnati. I permessi vengono gestiti automaticamente in base al ruolo."
         },
         {
           question: "Posso cambiare il tema (dark/light mode)?",

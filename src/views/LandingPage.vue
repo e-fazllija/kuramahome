@@ -12,7 +12,7 @@
             <div class="hero-content">
               <h1 class="hero-title">
                 Gestisci la tua Agenzia Immobiliare con 
-                <span class="text-primary">KuramaHome</span>
+                <span class="text-primary">MiraiHome</span>
               </h1>
               <p class="hero-description">
                 La piattaforma completa per gestire immobili, clienti, agenti e tutte le operazioni 
@@ -41,7 +41,7 @@
                     <span class="control"></span>
                     <span class="control"></span>
                   </div>
-                  <div class="preview-title">KuramaHome Dashboard</div>
+                  <div class="preview-title">MiraiHome Dashboard</div>
                 </div>
                 <div class="preview-content">
                   <div class="preview-widget"></div>
@@ -92,7 +92,7 @@
           <div class="col-lg-8 mx-auto text-center mb-8">
             <h2 class="section-title">Tutto quello che ti serve per gestire la tua agenzia</h2>
             <p class="section-description">
-              KuramaHome è la soluzione completa per agenzie immobiliari moderne che vogliono
+              MiraiHome è la soluzione completa per agenzie immobiliari moderne che vogliono
               automatizzare i processi e aumentare le vendite.
             </p>
           </div>
@@ -212,7 +212,7 @@
         <div class="row align-items-center">
           <div class="col-lg-6">
             <div class="benefits-content">
-              <h2 class="section-title">Perché scegliere KuramaHome?</h2>
+              <h2 class="section-title">Perché scegliere MiraiHome?</h2>
               <div class="benefit-item">
                 <div class="benefit-icon">
                   <i class="ki-duotone ki-rocket fs-2 text-success">
@@ -249,7 +249,7 @@
                 </div>
                 <div class="benefit-text">
                   <h5>Accessibile Ovunque</h5>
-                  <p>Usa KuramaHome da computer, tablet o smartphone, sempre sincronizzato.</p>
+                  <p>Usa MiraiHome da computer, tablet o smartphone, sempre sincronizzato.</p>
                 </div>
               </div>
             </div>
@@ -349,7 +349,7 @@
           <div class="col-lg-8 mx-auto text-center mb-8">
             <h2 class="section-title">Come Funziona</h2>
             <p class="section-description">
-              Inizia a usare KuramaHome in pochi semplici passaggi
+              Inizia a usare MiraiHome in pochi semplici passaggi
             </p>
           </div>
         </div>
@@ -377,7 +377,7 @@
           <div class="col-lg-8 mx-auto text-center mb-8">
             <h2 class="section-title">Cosa dicono i nostri clienti</h2>
             <p class="section-description">
-              Centinaia di agenzie immobiliari si fidano di KuramaHome per gestire il loro business
+              Centinaia di agenzie immobiliari si fidano di MiraiHome per gestire il loro business
             </p>
           </div>
         </div>
@@ -415,7 +415,7 @@
           <div class="col-lg-8 mx-auto text-center mb-8">
             <h2 class="section-title">Domande Frequenti</h2>
             <p class="section-description">
-              Trova risposte alle domande più comuni su KuramaHome
+              Trova risposte alle domande più comuni su MiraiHome
             </p>
           </div>
         </div>
@@ -461,7 +461,7 @@
           <div class="col-lg-8 mx-auto text-center">
             <h2 class="cta-title">Pronto a trasformare la tua agenzia immobiliare?</h2>
             <p class="cta-description">
-              Unisciti a centinaia di agenzie che hanno già scelto KuramaHome per gestire
+              Unisciti a centinaia di agenzie che hanno già scelto MiraiHome per gestire
               il loro business in modo più efficiente e professionale.
             </p>
             <div class="cta-buttons">
@@ -593,7 +593,7 @@ export default defineComponent({
     const testimonials = ref([
       {
         id: 1,
-        text: "KuramaHome ha rivoluzionato il modo in cui gestiamo la nostra agenzia. Tutto è più organizzato e efficiente.",
+        text: "MiraiHome ha rivoluzionato il modo in cui gestiamo la nostra agenzia. Tutto è più organizzato e efficiente.",
         name: "Marco Rossi",
         role: "Titolare, Immobiliare Rossi",
         initials: "MR"
@@ -632,8 +632,8 @@ export default defineComponent({
         answer: "Sì, offriamo supporto via email per tutti i piani. I piani Pro e Premium includono supporto prioritario con tempi di risposta più rapidi. Il piano Premium include anche supporto 24/7."
       },
       {
-        question: "Posso provare KuramaHome gratuitamente?",
-        answer: "Sì, puoi registrarti e iniziare a usare KuramaHome senza impegno. Non richiediamo carta di credito per la registrazione. Puoi esplorare tutte le funzionalità e decidere se passare a un piano a pagamento quando sei pronto."
+        question: "Posso provare MiraiHome gratuitamente?",
+        answer: "Sì, puoi registrarti e iniziare a usare MiraiHome senza impegno. Non richiediamo carta di credito per la registrazione. Puoi esplorare tutte le funzionalità e decidere se passare a un piano a pagamento quando sei pronto."
       },
       {
         question: "Come funziona l'export dei dati?",

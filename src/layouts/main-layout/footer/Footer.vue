@@ -16,7 +16,7 @@
           href="https://keenthemes.com"
           target="_blank"
           class="text-gray-800 text-hover-primary"
-          >KuramaHome</a
+          >MiraiHome</a
         >
       </div>
       <!--end::Copyright-->
