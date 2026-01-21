@@ -53,10 +53,10 @@
               <h3 class="fw-bold mb-2 pricing-text-primary">Caricamento piani di abbonamento...</h3>
             </div>
 
-            <!-- Pricing Cards -->
-            <div v-else-if="!selectedPlan" class="row g-5 mb-10">
+            <!-- Pricing Cards - Solo piani mensili base -->
+            <div v-else-if="!selectedPlan && !showMultiMonthGrid" class="row g-5 mb-10">
               <!-- Dynamic Plan Cards -->
-              <div v-for="(plan, index) in plans" :key="plan.Id" class="col-lg-4">
+              <div v-for="(plan, index) in monthlyBasePlans" :key="plan.Id" class="col-lg-4">
                 <div class="card pricing-card h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
                   <!-- Badge "Consigliato" solo per il secondo piano -->
                   <div v-if="index === 1" class="pricing-badge">
@@ -117,6 +117,66 @@
               </div>
             </div>
 
+            <!-- Multi-Month Grid (mostrata quando si seleziona un piano mensile) -->
+            <div v-else-if="showMultiMonthGrid" class="row g-4 mb-10">
+              <div class="col-12 mb-6">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h3 class="fw-bold pricing-text-primary mb-0">
+                    Scegli la durata per {{ selectedBasePlanName }}
+                  </h3>
+                  <button 
+                    @click="cancelMultiMonthSelection" 
+                    class="btn btn-sm btn-light"
+                  >
+                    <i class="ki-duotone ki-arrow-left fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Indietro
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Grid con 4 card: 1 mese, 3 mesi, 6 mesi, 12 mesi -->
+              <div v-for="(durationPlan, index) in multiMonthPlans" :key="durationPlan.Id" class="col-lg-3 col-md-6">
+                <div 
+                  class="card pricing-card h-100 shadow-sm hover-elevate-up cursor-pointer"
+                  :class="{ 'pricing-card-featured shadow-lg border-primary': selectedDurationPlan?.Id === durationPlan.Id }"
+                  @click="selectDurationPlan(durationPlan)"
+                  style="transition: all 0.3s ease;"
+                >
+                  <!-- Badge sconto se presente -->
+                  <div v-if="durationPlan.discountPercent > 0" class="pricing-badge">
+                    <span class="badge badge-success">Risparmia {{ durationPlan.discountPercent }}%</span>
+                  </div>
+                  
+                  <div class="card-body d-flex flex-column p-6 text-center">
+                    <h4 class="fw-bold mb-3 pricing-text-primary">{{ durationPlan.durationLabel }}</h4>
+                    <div class="pricing-price mb-3">
+                      <span class="fs-2x fw-bolder pricing-text-primary">€{{ durationPlan.Price }}</span>
+                      <span v-if="durationPlan.months === 1" class="fs-6 fw-semibold pricing-text-secondary">/mese</span>
+                    </div>
+                    <div v-if="durationPlan.months > 1" class="mb-3">
+                      <span class="fs-7 pricing-text-secondary">
+                        €{{ (durationPlan.Price / durationPlan.months).toFixed(2) }}/mese
+                      </span>
+                    </div>
+                    <div v-if="durationPlan.originalPrice && durationPlan.originalPrice > durationPlan.Price" class="mb-2">
+                      <span class="fs-7 text-muted text-decoration-line-through">
+                        €{{ durationPlan.originalPrice.toFixed(2) }}
+                      </span>
+                    </div>
+                    <button 
+                      class="btn btn-lg w-100 mt-auto"
+                      :class="selectedDurationPlan?.Id === durationPlan.Id ? 'btn-primary' : 'btn-light-primary'"
+                    >
+                      <span class="fw-bold">Seleziona</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Payment Section -->
             <div class="row" v-if="selectedPlan">
               <div class="col-12">
@@ -145,6 +205,42 @@
                     </div>
                   </div>
                   <div class="card-body p-8">
+                    <!-- Toggle Pagamento Ricorrente (solo per piano mensile 1 mese) -->
+                    <div v-if="isMonthlyPlanSelected" class="mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                          <h5 class="fw-bold pricing-text-primary mb-2">Modalità di pagamento</h5>
+                          <p class="fs-7 pricing-text-secondary mb-0">
+                            Scegli come vuoi pagare il tuo abbonamento mensile
+                          </p>
+                        </div>
+                        <div class="form-check form-switch form-check-custom form-check-solid">
+                          <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            :checked="isRecurringPayment"
+                            @change="isRecurringPayment = !isRecurringPayment"
+                            id="recurring-payment-toggle"
+                            style="width: 3rem; height: 1.5rem;"
+                          />
+                          <label class="form-check-label fw-semibold pricing-text-primary ms-3" for="recurring-payment-toggle">
+                            {{ isRecurringPayment ? 'Pagamento Ricorrente Mensile' : 'Pagamento Una Tantum' }}
+                          </label>
+                        </div>
+                      </div>
+                      <div v-if="isRecurringPayment" class="mt-4 p-4 bg-light-info rounded">
+                        <p class="fs-7 mb-0 pricing-text-primary">
+                          <i class="ki-duotone ki-information-5 fs-5 text-info me-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                          </i>
+                          Con il pagamento ricorrente, i dati della tua carta verranno salvati e verrai addebitato automaticamente ogni mese. 
+                          Puoi disdire in qualsiasi momento senza vincoli.
+                        </p>
+                      </div>
+                    </div>
+
                     <!-- Upgrade Credit Breakdown -->
                     <div v-if="selectedPlan && upgradeCreditCalculation" class="payment-summary mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
                       <div v-if="upgradeCreditCalculation.CreditAmount > 0" class="mb-2">
@@ -294,10 +390,113 @@ export default defineComponent({
     const plans = ref<SubscriptionPlan[]>([]);
     const currentSubscription = ref<UserSubscription | null>(null);
     const upgradeCreditCalculation = ref<UpgradeCreditCalculationResponse | null>(null);
+    const showMultiMonthGrid = ref(false);
+    const selectedBasePlanName = ref<string>('');
+    const selectedDurationPlan = ref<SubscriptionPlan | null>(null);
+    const isRecurringPayment = ref(false);
     let stripe: Stripe | null = null;
     let elements: StripeElements | null = null;
 
     const displayEmail = computed(() => props.email || 'utente');
+
+    // Filtra solo i piani mensili base (Basic, Pro, Premium) - esclude i prepagati
+    const monthlyBasePlans = computed(() => {
+      return plans.value.filter(plan => {
+        const name = plan.Name.toLowerCase();
+        const isBasePlan = (name === 'basic' || name === 'pro' || name === 'premium');
+        const isMonthly = plan.BillingPeriod?.toLowerCase() === 'monthly';
+        return isBasePlan && isMonthly;
+      });
+    });
+
+    // Trova i piani correlati (base + prepagati) per un piano mensile
+    const getRelatedPlans = (basePlanName: string): SubscriptionPlan[] => {
+      const baseName = basePlanName.toLowerCase();
+      return plans.value.filter(plan => {
+        const planName = plan.Name.toLowerCase();
+        // Match esatto o che inizia con il nome base seguito da spazio e numero
+        return planName === baseName || 
+               planName.startsWith(baseName + ' ') ||
+               (baseName === 'basic' && planName.startsWith('basic')) ||
+               (baseName === 'pro' && planName.startsWith('pro') && !planName.startsWith('premium')) ||
+               (baseName === 'premium' && planName.startsWith('premium'));
+      });
+    };
+
+    // Prepara i piani multi-mese per la griglia
+    const multiMonthPlans = computed(() => {
+      if (!selectedBasePlanName.value) return [];
+      
+      const relatedPlans = getRelatedPlans(selectedBasePlanName.value);
+      const basePlan = relatedPlans.find(p => p.Name.toLowerCase() === selectedBasePlanName.value.toLowerCase() && p.BillingPeriod === 'monthly');
+      
+      if (!basePlan) return [];
+
+      const monthlyPrice = basePlan.Price;
+      const result: Array<SubscriptionPlan & { months: number; durationLabel: string; discountPercent: number; originalPrice?: number }> = [];
+
+      // 1 mese (piano base mensile)
+      result.push({
+        ...basePlan,
+        months: 1,
+        durationLabel: '1 Mese',
+        discountPercent: 0,
+        originalPrice: undefined
+      });
+
+      // 3 mesi
+      const plan3Months = relatedPlans.find(p => 
+        p.Name.toLowerCase().includes('3 months') || 
+        (p.BillingPeriod === 'quarterly' && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
+      );
+      if (plan3Months) {
+        const originalPrice = monthlyPrice * 3;
+        const discount = ((originalPrice - plan3Months.Price) / originalPrice) * 100;
+        result.push({
+          ...plan3Months,
+          months: 3,
+          durationLabel: '3 Mesi',
+          discountPercent: Math.round(discount),
+          originalPrice: originalPrice
+        });
+      }
+
+      // 6 mesi
+      const plan6Months = relatedPlans.find(p => 
+        p.Name.toLowerCase().includes('6 months') || 
+        (p.BillingPeriod === 'semiannual' && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
+      );
+      if (plan6Months) {
+        const originalPrice = monthlyPrice * 6;
+        const discount = ((originalPrice - plan6Months.Price) / originalPrice) * 100;
+        result.push({
+          ...plan6Months,
+          months: 6,
+          durationLabel: '6 Mesi',
+          discountPercent: Math.round(discount),
+          originalPrice: originalPrice
+        });
+      }
+
+      // 12 mesi
+      const plan12Months = relatedPlans.find(p => 
+        p.Name.toLowerCase().includes('12 months') || 
+        ((p.BillingPeriod === 'annual' || p.BillingPeriod === 'yearly') && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
+      );
+      if (plan12Months) {
+        const originalPrice = monthlyPrice * 12;
+        const discount = ((originalPrice - plan12Months.Price) / originalPrice) * 100;
+        result.push({
+          ...plan12Months,
+          months: 12,
+          durationLabel: '12 Mesi',
+          discountPercent: Math.round(discount),
+          originalPrice: originalPrice
+        });
+      }
+
+      return result;
+    });
 
     // Carica i piani dal database
     const loadPlans = async () => {
@@ -391,6 +590,65 @@ export default defineComponent({
         return;
       }
 
+      // Se è un piano mensile base (Basic, Pro, Premium), mostra la griglia multi-mese
+      const isMonthlyBase = selectedPlanObj.BillingPeriod === 'monthly' && 
+                            (selectedPlanObj.Name.toLowerCase() === 'basic' || 
+                             selectedPlanObj.Name.toLowerCase() === 'pro' || 
+                             selectedPlanObj.Name.toLowerCase() === 'premium');
+      
+      if (isMonthlyBase) {
+        selectedBasePlanName.value = selectedPlanObj.Name;
+        showMultiMonthGrid.value = true;
+        selectedDurationPlan.value = null;
+        isRecurringPayment.value = false;
+        return;
+      }
+
+      // Per i piani prepagati o altri piani, procedi direttamente al pagamento
+      await proceedWithPlanSelection(plan, selectedPlanObj);
+    };
+
+    const selectDurationPlan = async (plan: SubscriptionPlan & { months?: number; durationLabel?: string; discountPercent?: number; originalPrice?: number }) => {
+      selectedDurationPlan.value = plan;
+      
+      // Trova il piano completo dall'array plans (per avere tutte le proprietà corrette)
+      const fullPlan = plans.value.find(p => p.Id === plan.Id);
+      if (!fullPlan) {
+        Swal.fire({
+          text: "Piano selezionato non trovato",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+        });
+        return;
+      }
+      
+      // Se è il piano 1 mese, l'utente può scegliere pagamento ricorrente
+      // Altrimenti procedi direttamente al pagamento
+      const planMonths = (plan as any).months;
+      if (planMonths === 1) {
+        // Mostra la sezione payment con toggle ricorrente
+        selectedPlan.value = fullPlan.Name.toLowerCase();
+        showMultiMonthGrid.value = false;
+        await proceedWithPlanSelection(fullPlan.Name.toLowerCase(), fullPlan);
+      } else {
+        // Per 3/6/12 mesi, procedi direttamente (sempre pagamento una tantum)
+        selectedPlan.value = fullPlan.Name.toLowerCase();
+        showMultiMonthGrid.value = false;
+        isRecurringPayment.value = false; // I prepagati sono sempre una tantum
+        await proceedWithPlanSelection(fullPlan.Name.toLowerCase(), fullPlan);
+      }
+    };
+
+    const cancelMultiMonthSelection = () => {
+      showMultiMonthGrid.value = false;
+      selectedBasePlanName.value = '';
+      selectedDurationPlan.value = null;
+      isRecurringPayment.value = false;
+    };
+
+    const proceedWithPlanSelection = async (plan: string, selectedPlanObj: SubscriptionPlan) => {
       // Carica l'abbonamento corrente se non è già caricato
       if (!currentSubscription.value) {
         await loadCurrentSubscription();
@@ -598,6 +856,10 @@ export default defineComponent({
     const cancelPayment = () => {
       selectedPlan.value = null;
       upgradeCreditCalculation.value = null;
+      showMultiMonthGrid.value = false;
+      selectedBasePlanName.value = '';
+      selectedDurationPlan.value = null;
+      isRecurringPayment.value = false;
       stripe = null;
       elements = null;
     };
@@ -625,6 +887,24 @@ export default defineComponent({
     const getPlanByName = (planName: string): SubscriptionPlan | undefined => {
       return plans.value.find(p => p.Name.toLowerCase() === planName.toLowerCase());
     };
+
+    // Verifica se il piano selezionato è mensile (per mostrare toggle ricorrente)
+    const isMonthlyPlanSelected = computed(() => {
+      if (!selectedPlan.value) return false;
+      const plan = getPlanByName(selectedPlan.value);
+      if (!plan) return false;
+      
+      // Verifica se è un piano mensile base (Basic, Pro, Premium) con durata 1 mese
+      const isBaseMonthly = plan.BillingPeriod === 'monthly' && 
+                            (plan.Name.toLowerCase() === 'basic' || 
+                             plan.Name.toLowerCase() === 'pro' || 
+                             plan.Name.toLowerCase() === 'premium');
+      
+      // Oppure se è stato selezionato dalla griglia multi-mese con durata 1 mese
+      const isSelectedFromGrid = (selectedDurationPlan.value as any)?.months === 1;
+      
+      return isBaseMonthly || isSelectedFromGrid;
+    });
 
 
     const initializeStripe = async () => {
@@ -771,6 +1051,10 @@ export default defineComponent({
       } else {
         selectedPlan.value = null;
         upgradeCreditCalculation.value = null;
+        showMultiMonthGrid.value = false;
+        selectedBasePlanName.value = '';
+        selectedDurationPlan.value = null;
+        isRecurringPayment.value = false;
         isProcessing.value = false;
         stripe = null;
         elements = null;
@@ -795,7 +1079,16 @@ export default defineComponent({
       plans,
       displayEmail,
       upgradeCreditCalculation,
+      monthlyBasePlans,
+      showMultiMonthGrid,
+      selectedBasePlanName,
+      selectedDurationPlan,
+      multiMonthPlans,
+      isRecurringPayment,
+      isMonthlyPlanSelected,
       selectPlan,
+      selectDurationPlan,
+      cancelMultiMonthSelection,
       cancelPayment,
       handleClose,
       getPlanPrice,

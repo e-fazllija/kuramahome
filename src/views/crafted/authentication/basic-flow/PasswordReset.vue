@@ -90,33 +90,50 @@ export default defineComponent({
 
     //Form submit function
     const onSubmitForgotPassword = async (values: any) => {
-      values = values as string;
+      const email = values.email as string;
 
       // eslint-disable-next-line
       submitButton.value!.disabled = true;
       // Activate loading indicator
       submitButton.value?.setAttribute("data-kt-indicator", "on");
 
-      // dummy delay
-      // Send login request
-      await store.forgotPassword(values);
+      try {
+        // Send forgot password request
+        const response = await store.forgotPassword(email);
 
-      const error = store.errors;
-
-      if (!error) {
+        // Controlla direttamente la risposta invece di store.errors
+        if (response?.data?.Status === "Success") {
+          Swal.fire({
+            text: response.data.Message || "Se l'email esiste, riceverai un link per il reset della password.",
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "OK",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-primary",
+            },
+          }).then(() => {
+            // Redirect to sign in after successful request
+            window.location.href = "/sign-in";
+          });
+        } else {
+          // Se la risposta non è Success, mostra errore
+          const errorMsg = response?.data?.Message || store.errors || "Si è verificato un errore durante l'invio della richiesta.";
+          Swal.fire({
+            text: errorMsg as string,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Riprova!",
+            heightAuto: false,
+            customClass: {
+              confirmButton: "btn fw-semobold btn-light-danger",
+            },
+          });
+        }
+      } catch (error) {
+        const errorMsg = store.errors || "Si è verificato un errore durante l'invio della richiesta.";
         Swal.fire({
-          text: "You have successfully logged in!",
-          icon: "success",
-          buttonsStyling: false,
-          confirmButtonText: "Continua!",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn fw-semobold btn-light-primary",
-          },
-        });
-      } else {
-        Swal.fire({
-          text: error as string,
+          text: errorMsg as string,
           icon: "error",
           buttonsStyling: false,
           confirmButtonText: "Riprova!",
