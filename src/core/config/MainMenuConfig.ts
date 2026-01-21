@@ -41,7 +41,7 @@ const MainMenuConfig: Array<MenuItem> = [
         roleEnabled: ["Admin", "Agency", "Agent"],
       },
       {
-        heading: "Modulistica",
+        heading: "Archivio",
         route: "/dashboard/documentations",
         keenthemesIcon: "document",
         bootstrapIcon: "bi-file-text",

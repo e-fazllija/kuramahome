@@ -123,8 +123,8 @@ const routes: Array<RouteRecordRaw> = [
         name: "documentations",
         component: () => import("@/views/pages/documentations/Documentations.vue"),
         meta: {
-          pageTitle: "Modulistica",
-          breadcrumbs: ["Modulistica"],
+          pageTitle: "Archivio",
+          breadcrumbs: ["Archivio"],
         },
       },
       {
@@ -215,6 +215,16 @@ const routes: Array<RouteRecordRaw> = [
           import("@/views/crafted/authentication/basic-flow/EmailConfirmation.vue"),
         meta: {
           pageTitle: "Password reset",
+          middleware: "no-auth",
+        },
+      },
+      {
+        path: "/new-password/:email/:token(.*)",
+        name: "new-password",
+        component: () =>
+          import("@/views/crafted/authentication/basic-flow/NewPassword.vue"),
+        meta: {
+          pageTitle: "Nuova Password",
           middleware: "no-auth",
         },
       },
