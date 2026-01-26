@@ -205,42 +205,6 @@
                     </div>
                   </div>
                   <div class="card-body p-8">
-                    <!-- Toggle Pagamento Ricorrente (solo per piano mensile 1 mese) -->
-                    <div v-if="isMonthlyPlanSelected" class="mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
-                      <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                          <h5 class="fw-bold pricing-text-primary mb-2">Modalità di pagamento</h5>
-                          <p class="fs-7 pricing-text-secondary mb-0">
-                            Scegli come vuoi pagare il tuo abbonamento mensile
-                          </p>
-                        </div>
-                        <div class="form-check form-switch form-check-custom form-check-solid">
-                          <input 
-                            class="form-check-input" 
-                            type="checkbox" 
-                            :checked="isRecurringPayment"
-                            @change="isRecurringPayment = !isRecurringPayment"
-                            id="recurring-payment-toggle"
-                            style="width: 3rem; height: 1.5rem;"
-                          />
-                          <label class="form-check-label fw-semibold pricing-text-primary ms-3" for="recurring-payment-toggle">
-                            {{ isRecurringPayment ? 'Pagamento Ricorrente Mensile' : 'Pagamento Una Tantum' }}
-                          </label>
-                        </div>
-                      </div>
-                      <div v-if="isRecurringPayment" class="mt-4 p-4 bg-light-info rounded">
-                        <p class="fs-7 mb-0 pricing-text-primary">
-                          <i class="ki-duotone ki-information-5 fs-5 text-info me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                          </i>
-                          Con il pagamento ricorrente, i dati della tua carta verranno salvati e verrai addebitato automaticamente ogni mese. 
-                          Puoi disdire in qualsiasi momento senza vincoli.
-                        </p>
-                      </div>
-                    </div>
-
                     <!-- Upgrade Credit Breakdown -->
                     <div v-if="selectedPlan && upgradeCreditCalculation" class="payment-summary mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
                       <div v-if="upgradeCreditCalculation.CreditAmount > 0" class="mb-2">
@@ -393,7 +357,6 @@ export default defineComponent({
     const showMultiMonthGrid = ref(false);
     const selectedBasePlanName = ref<string>('');
     const selectedDurationPlan = ref<SubscriptionPlan | null>(null);
-    const isRecurringPayment = ref(false);
     let stripe: Stripe | null = null;
     let elements: StripeElements | null = null;
 
@@ -600,7 +563,6 @@ export default defineComponent({
         selectedBasePlanName.value = selectedPlanObj.Name;
         showMultiMonthGrid.value = true;
         selectedDurationPlan.value = null;
-        isRecurringPayment.value = false;
         return;
       }
 
@@ -624,28 +586,17 @@ export default defineComponent({
         return;
       }
       
-      // Se è il piano 1 mese, l'utente può scegliere pagamento ricorrente
-      // Altrimenti procedi direttamente al pagamento
+      // Procedi direttamente al pagamento
       const planMonths = (plan as any).months;
-      if (planMonths === 1) {
-        // Mostra la sezione payment con toggle ricorrente
-        selectedPlan.value = fullPlan.Name.toLowerCase();
-        showMultiMonthGrid.value = false;
-        await proceedWithPlanSelection(fullPlan.Name.toLowerCase(), fullPlan);
-      } else {
-        // Per 3/6/12 mesi, procedi direttamente (sempre pagamento una tantum)
-        selectedPlan.value = fullPlan.Name.toLowerCase();
-        showMultiMonthGrid.value = false;
-        isRecurringPayment.value = false; // I prepagati sono sempre una tantum
-        await proceedWithPlanSelection(fullPlan.Name.toLowerCase(), fullPlan);
-      }
+      selectedPlan.value = fullPlan.Name.toLowerCase();
+      showMultiMonthGrid.value = false;
+      await proceedWithPlanSelection(fullPlan.Name.toLowerCase(), fullPlan);
     };
 
     const cancelMultiMonthSelection = () => {
       showMultiMonthGrid.value = false;
       selectedBasePlanName.value = '';
       selectedDurationPlan.value = null;
-      isRecurringPayment.value = false;
     };
 
     const proceedWithPlanSelection = async (plan: string, selectedPlanObj: SubscriptionPlan) => {
@@ -859,7 +810,6 @@ export default defineComponent({
       showMultiMonthGrid.value = false;
       selectedBasePlanName.value = '';
       selectedDurationPlan.value = null;
-      isRecurringPayment.value = false;
       stripe = null;
       elements = null;
     };
@@ -888,23 +838,6 @@ export default defineComponent({
       return plans.value.find(p => p.Name.toLowerCase() === planName.toLowerCase());
     };
 
-    // Verifica se il piano selezionato è mensile (per mostrare toggle ricorrente)
-    const isMonthlyPlanSelected = computed(() => {
-      if (!selectedPlan.value) return false;
-      const plan = getPlanByName(selectedPlan.value);
-      if (!plan) return false;
-      
-      // Verifica se è un piano mensile base (Basic, Pro, Premium) con durata 1 mese
-      const isBaseMonthly = plan.BillingPeriod === 'monthly' && 
-                            (plan.Name.toLowerCase() === 'basic' || 
-                             plan.Name.toLowerCase() === 'pro' || 
-                             plan.Name.toLowerCase() === 'premium');
-      
-      // Oppure se è stato selezionato dalla griglia multi-mese con durata 1 mese
-      const isSelectedFromGrid = (selectedDurationPlan.value as any)?.months === 1;
-      
-      return isBaseMonthly || isSelectedFromGrid;
-    });
 
 
     const initializeStripe = async () => {
@@ -1054,7 +987,6 @@ export default defineComponent({
         showMultiMonthGrid.value = false;
         selectedBasePlanName.value = '';
         selectedDurationPlan.value = null;
-        isRecurringPayment.value = false;
         isProcessing.value = false;
         stripe = null;
         elements = null;
@@ -1084,8 +1016,6 @@ export default defineComponent({
       selectedBasePlanName,
       selectedDurationPlan,
       multiMonthPlans,
-      isRecurringPayment,
-      isMonthlyPlanSelected,
       selectPlan,
       selectDurationPlan,
       cancelMultiMonthSelection,
