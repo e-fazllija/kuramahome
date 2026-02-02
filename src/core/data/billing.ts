@@ -19,6 +19,7 @@ export interface CreatePaymentIntentRequest {
   amount: number;
   currency?: string;
   email?: string;
+  isRecurringPayment?: boolean; // true = Subscription, false/null = Payment Intent
 }
 
 export interface SubscriptionStatus {
@@ -111,6 +112,20 @@ export const confirmPayment = async (
   }
 };
 
+/**
+ * Sincronizza la subscription in pending dell'utente (dopo pagamento ricorrente).
+ * Usato dopo "Pagamento completato" per ricorrenti, così l'abbonamento diventa attivo subito senza attendere il webhook invoice.paid.
+ */
+export const syncMyPendingSubscription = async (): Promise<{ Success: boolean; Message: string; PaymentId?: number }> => {
+  try {
+    const response = await ApiService.post("/billing/sync-my-pending-subscription", {}, "json");
+    return response.data;
+  } catch (error: any) {
+    if (error?.response?.status === 401) return { Success: false, Message: "Non autorizzato" };
+    return { Success: false, Message: error?.response?.data?.message || error?.message || "Sync fallito" };
+  }
+};
+
 export interface UpgradeCreditCalculationResponse {
   IsUpgrade: boolean;
   HasActiveSubscription: boolean;
@@ -139,4 +154,26 @@ export const calculateUpgradeCredit = async (
     console.error("Error calculating upgrade credit:", error);
     throw error;
   }
+};
+
+/** Risposta create-setup-intent: clientSecret per Stripe Elements (SetupIntent). API restituisce camelCase. */
+export interface CreateSetupIntentResponse {
+  clientSecret: string;
+}
+
+/**
+ * Crea un SetupIntent per aggiornare il metodo di pagamento (carta) senza uscire dall'app.
+ * Richiede utente autenticato con abbonamento attivo su Stripe.
+ */
+export const createSetupIntent = async (): Promise<CreateSetupIntentResponse> => {
+  const response = await ApiService.post("/billing/create-setup-intent", {}, "json");
+  return response.data;
+};
+
+/**
+ * Imposta il metodo di pagamento (carta) appena salvato come predefinito per customer e subscription.
+ * Da chiamare dopo conferma SetupIntent dal frontend.
+ */
+export const setDefaultPaymentMethod = async (paymentMethodId: string): Promise<void> => {
+  await ApiService.post("/billing/set-default-payment-method", { PaymentMethodId: paymentMethodId });
 };

@@ -82,6 +82,41 @@
                     </i>
                     <span class="fs-7 fw-bold text-gray-900">{{ subscription ? formatDate(subscription.EndDate) : '-' }}</span>
                   </div>
+                  
+                  <!-- Toggle Pagamento Ricorrente (true = rinnovo automatico, false = rinnovo manuale) -->
+                  <div v-if="subscription" class="mt-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center">
+                        <i 
+                          class="ki-duotone fs-4 me-2" 
+                          :class="subscription.AutoRenew ? 'ki-check-circle text-success' : 'ki-information-5 text-muted'"
+                          data-bs-toggle="tooltip"
+                          :title="subscription.AutoRenew ? 'Pagamento ricorrente attivo - Il tuo abbonamento verrà rinnovato automaticamente alla scadenza' : 'Pagamento ricorrente disattivato - Dovrai rinnovare manualmente'"
+                        >
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span v-if="subscription.AutoRenew" class="path3"></span>
+                        </i>
+                        <span class="fs-8" :class="subscription.AutoRenew ? 'text-success fw-semibold' : 'text-muted'">
+                          {{ subscription.AutoRenew ? 'Rinnovo automatico attivo' : 'Rinnovo manuale' }}
+                        </span>
+                      </div>
+                      <!-- Switch booleano: attiva/disattiva ricorrente -->
+                      <div class="form-check form-switch form-check-custom form-check-solid">
+                        <input
+                          :id="'autorenew-switch-' + subscription.Id"
+                          class="form-check-input"
+                          type="checkbox"
+                          :checked="subscription.AutoRenew === true"
+                          :disabled="isTogglingAutoRenew"
+                          @change="toggleAutoRenew($event)"
+                        />
+                        <label class="form-check-label fs-8 text-muted" :for="'autorenew-switch-' + subscription.Id">
+                          {{ subscription.AutoRenew ? 'Attivo' : 'Inattivo' }}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="separator separator-dashed my-5"></div>
@@ -164,13 +199,13 @@
                           <label class="form-label text-muted fs-8 fw-semibold mb-3 d-block">PIANO ATTUALE</label>
                           <div v-if="subscription">
                             <div class="plan-name-large mb-3">
-                              <span class="fs-1 fw-bolder text-primary">{{ subscription.SubscriptionPlan.Name }}</span>
+                              <span class="fs-1 fw-bolder text-primary">{{ subscription.SubscriptionPlan?.Name ?? '—' }}</span>
                             </div>
                             <div class="d-flex align-items-baseline mb-3">
-                              <span class="fs-4 fw-bold text-gray-900">€{{ subscription.SubscriptionPlan.Price }}</span>
+                              <span class="fs-4 fw-bold text-gray-900">€{{ subscription.SubscriptionPlan?.Price ?? '—' }}</span>
                               <span class="text-muted fs-6 ms-2">/mese</span>
                             </div>
-                            <div class="text-muted fs-7">{{ subscription.SubscriptionPlan.Description }}</div>
+                            <div class="text-muted fs-7">{{ subscription.SubscriptionPlan?.Description ?? '—' }}</div>
                           </div>
                           <div v-else>
                             <div class="plan-name-large mb-3">
@@ -333,7 +368,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
-import { getCurrentSubscription, type UserSubscription } from '@/core/data/subscription';
+import { getCurrentSubscription, updateAutoRenew, type UserSubscription } from '@/core/data/subscription';
 import PricingModal from '@/components/modals/PricingModal.vue';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
@@ -352,6 +387,7 @@ export default defineComponent({
     });
     
     const isLoading = ref(true);
+    const isTogglingAutoRenew = ref(false);
     const subscription = ref<UserSubscription | null>(null);
     const showPricingModal = ref(false);
     const pricingMode = ref<'new' | 'upgrade'>('upgrade');
@@ -586,6 +622,77 @@ export default defineComponent({
       }, 2000); // Attendi 2 secondi per il webhook
     };
 
+    const toggleAutoRenew = async (event: Event) => {
+      if (!subscription.value) return;
+      const newValue = (event.target as HTMLInputElement).checked;
+
+      const result = await Swal.fire({
+        title: newValue ? 'Riattivare il rinnovo automatico?' : 'Disattivare il rinnovo automatico?',
+        html: newValue
+          ? `
+          <div class="text-start">
+            <p class="mb-3">Se riattivi il rinnovo automatico, il tuo abbonamento verrà rinnovato automaticamente alla scadenza.</p>
+            <p class="mb-0 text-muted fs-7">Potrai disattivarlo di nuovo in qualsiasi momento da qui.</p>
+          </div>
+        `
+          : `
+          <div class="text-start">
+            <p class="mb-3">Se disattivi il rinnovo automatico, dovrai rinnovare manualmente il tuo abbonamento alla scadenza.</p>
+            <p class="mb-0 text-muted fs-7">Potrai riattivarlo in qualsiasi momento con l'interruttore qui sopra.</p>
+          </div>
+        `,
+        icon: newValue ? 'question' : 'warning',
+        showCancelButton: true,
+        confirmButtonText: newValue ? 'Sì, riattiva' : 'Sì, disattiva',
+        cancelButtonText: 'Annulla',
+        buttonsStyling: false,
+        heightAuto: false,
+        customClass: {
+          confirmButton: newValue ? 'btn btn-success fw-bold' : 'btn btn-danger fw-bold',
+          cancelButton: 'btn btn-light fw-bold',
+        },
+      });
+
+      if (!result.isConfirmed) return;
+
+      isTogglingAutoRenew.value = true;
+      try {
+        const updated = await updateAutoRenew(subscription.value.Id, newValue);
+        subscription.value = {
+          ...updated,
+          SubscriptionPlan: updated.SubscriptionPlan ?? subscription.value?.SubscriptionPlan,
+        };
+        Swal.fire({
+          title: newValue ? 'Rinnovo automatico riattivato' : 'Rinnovo automatico disattivato',
+          text: newValue
+            ? 'Il tuo abbonamento verrà rinnovato automaticamente alla scadenza.'
+            : 'Il tuo abbonamento non verrà più rinnovato automaticamente. Potrai rinnovarlo manualmente alla scadenza.',
+          icon: 'success',
+          buttonsStyling: false,
+          confirmButtonText: 'Ok',
+          heightAuto: false,
+          customClass: {
+            confirmButton: 'btn btn-primary fw-bold',
+          },
+        });
+      } catch (error: any) {
+        console.error('Errore durante l\'aggiornamento del rinnovo automatico:', error);
+        Swal.fire({
+          title: 'Errore',
+          text: error?.response?.data?.message || 'Impossibile aggiornare il rinnovo automatico. Riprova più tardi.',
+          icon: 'error',
+          buttonsStyling: false,
+          confirmButtonText: 'Ok',
+          heightAuto: false,
+          customClass: {
+            confirmButton: 'btn btn-danger fw-bold',
+          },
+        });
+      } finally {
+        isTogglingAutoRenew.value = false;
+      }
+    };
+
     const contactSupport = () => {
       const planName = subscription.value?.SubscriptionPlan?.Name || 'Nessun piano attivo';
       const planPrice = subscription.value?.SubscriptionPlan?.Price || 0;
@@ -622,6 +729,7 @@ export default defineComponent({
       user,
       isAdmin,
       isLoading,
+      isTogglingAutoRenew,
       subscription,
       showPricingModal,
       pricingMode,
@@ -640,6 +748,7 @@ export default defineComponent({
       closePricingModal,
       renewSubscription,
       handleUpgradeSuccess,
+      toggleAutoRenew,
       contactSupport,
     };
   },
