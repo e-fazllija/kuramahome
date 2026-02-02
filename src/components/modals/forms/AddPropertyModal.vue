@@ -1785,8 +1785,17 @@ export default defineComponent({
       if (inserModel.value.Customers.length > 0) {
         formData.value.CustomerId = inserModel.value.Customers[0].Id;
       }
+      // Se l'utente è Admin, non impostare automaticamente l'AgentId con il suo ID
+      // Seleziona il primo agente/agenzia disponibile se presente
       if (inserModel.value.Users.length > 0) {
-        formData.value.AgentId = store.user.Id;
+        const isAdmin = store.user?.Role === 'Admin';
+        if (isAdmin) {
+          // Per admin: seleziona il primo agente/agenzia disponibile
+          formData.value.AgentId = inserModel.value.Users[0].Id;
+        } else {
+          // Per agent/agency: usa il proprio ID
+          formData.value.AgentId = store.user.Id;
+        }
       }
       
       // Carica le province dal database

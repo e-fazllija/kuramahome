@@ -30,6 +30,7 @@ export interface UserSubscription {
   EndDate: string;
   AutoRenew: boolean;
   StripeSubscriptionId?: string;
+  StripeCustomerId?: string;
   LastPaymentId?: number;
   CreationDate: string;
   UpdateDate: string;
@@ -118,6 +119,17 @@ export const cancelSubscription = async (subscriptionId: number): Promise<void> 
  */
 export const reactivateSubscription = async (subscriptionId: number): Promise<void> => {
   await ApiService.post(`subscription/reactivate/${subscriptionId}`, {});
+};
+
+/**
+ * Aggiorna lo stato di AutoRenew per un abbonamento
+ * PUT /api/UserSubscription/{id}/autorenew
+ */
+export const updateAutoRenew = async (subscriptionId: number, autoRenew: boolean): Promise<UserSubscription> => {
+  const response = await ApiService.put(`UserSubscription/${subscriptionId}/autorenew`, {
+    AutoRenew: autoRenew
+  });
+  return response.data;
 };
 
 

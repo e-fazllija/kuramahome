@@ -112,12 +112,35 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function forgotPassword(email: string) {
-    return ApiService.post("forgot_password", email)
-      .then(() => {
-        setError({});
+    // Pulisci eventuali errori precedenti all'inizio
+    setError("");
+    
+    return ApiService.post("auth/forgot_password", { Email: email })
+      .then((response) => {
+        // Verifica se la risposta ha Status: "Success"
+        if (response?.data?.Status === "Success") {
+          // Assicurati che non ci siano errori residui
+          setError("");
+          // Tutto ok, nessun errore
+          return response;
+        } else if (response?.data?.Status === "Error") {
+          // C'è un errore nella risposta
+          setError(response.data.Message || "Si è verificato un errore durante l'invio della richiesta.");
+          throw new Error(response.data.Message);
+        } else {
+          // Se non c'è Status, considera come errore
+          setError("Risposta non valida dal server.");
+          throw new Error("Risposta non valida dal server.");
+        }
       })
-      .catch(({ response }) => {
-        setError(response.data.Message);
+      .catch((error) => {
+        // Gestisci errori di rete o altri errori
+        const errorMessage = error?.response?.data?.Message || 
+                            error?.response?.data?.message || 
+                            error?.message ||
+                            "Si è verificato un errore durante l'invio della richiesta.";
+        setError(errorMessage);
+        throw error;
       });
   }
 

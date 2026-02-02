@@ -53,10 +53,10 @@
               <h3 class="fw-bold mb-2 pricing-text-primary">Caricamento piani di abbonamento...</h3>
             </div>
 
-            <!-- Pricing Cards -->
-            <div v-else-if="!selectedPlan" class="row g-5 mb-10">
+            <!-- Pricing Cards - Solo piani mensili base -->
+            <div v-else-if="!selectedPlan && !showMultiMonthGrid" class="row g-5 mb-10">
               <!-- Dynamic Plan Cards -->
-              <div v-for="(plan, index) in plans" :key="plan.Id" class="col-lg-4">
+              <div v-for="(plan, index) in monthlyBasePlans" :key="plan.Id" class="col-lg-4">
                 <div class="card pricing-card h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
                   <!-- Badge "Consigliato" solo per il secondo piano -->
                   <div v-if="index === 1" class="pricing-badge">
@@ -117,6 +117,66 @@
               </div>
             </div>
 
+            <!-- Multi-Month Grid (mostrata quando si seleziona un piano mensile) -->
+            <div v-else-if="showMultiMonthGrid" class="row g-4 mb-10">
+              <div class="col-12 mb-6">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h3 class="fw-bold pricing-text-primary mb-0">
+                    Scegli la durata per {{ selectedBasePlanName }}
+                  </h3>
+                  <button 
+                    @click="cancelMultiMonthSelection" 
+                    class="btn btn-sm btn-light"
+                  >
+                    <i class="ki-duotone ki-arrow-left fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    Indietro
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Grid con 4 card: 1 mese, 3 mesi, 6 mesi, 12 mesi -->
+              <div v-for="(durationPlan, index) in multiMonthPlans" :key="durationPlan.Id" class="col-lg-3 col-md-6">
+                <div 
+                  class="card pricing-card h-100 shadow-sm hover-elevate-up cursor-pointer"
+                  :class="{ 'pricing-card-featured shadow-lg border-primary': selectedDurationPlan?.Id === durationPlan.Id }"
+                  @click="selectDurationPlan(durationPlan)"
+                  style="transition: all 0.3s ease;"
+                >
+                  <!-- Badge sconto se presente -->
+                  <div v-if="durationPlan.discountPercent > 0" class="pricing-badge">
+                    <span class="badge badge-success">Risparmia {{ durationPlan.discountPercent }}%</span>
+                  </div>
+                  
+                  <div class="card-body d-flex flex-column p-6 text-center">
+                    <h4 class="fw-bold mb-3 pricing-text-primary">{{ durationPlan.durationLabel }}</h4>
+                    <div class="pricing-price mb-3">
+                      <span class="fs-2x fw-bolder pricing-text-primary">€{{ durationPlan.Price }}</span>
+                      <span v-if="durationPlan.months === 1" class="fs-6 fw-semibold pricing-text-secondary">/mese</span>
+                    </div>
+                    <div v-if="durationPlan.months > 1" class="mb-3">
+                      <span class="fs-7 pricing-text-secondary">
+                        €{{ (durationPlan.Price / durationPlan.months).toFixed(2) }}/mese
+                      </span>
+                    </div>
+                    <div v-if="durationPlan.originalPrice && durationPlan.originalPrice > durationPlan.Price" class="mb-2">
+                      <span class="fs-7 text-muted text-decoration-line-through">
+                        €{{ durationPlan.originalPrice.toFixed(2) }}
+                      </span>
+                    </div>
+                    <button 
+                      class="btn btn-lg w-100 mt-auto"
+                      :class="selectedDurationPlan?.Id === durationPlan.Id ? 'btn-primary' : 'btn-light-primary'"
+                    >
+                      <span class="fw-bold">Seleziona</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Payment Section -->
             <div class="row" v-if="selectedPlan">
               <div class="col-12">
@@ -145,6 +205,21 @@
                     </div>
                   </div>
                   <div class="card-body p-8">
+                    <!-- Abbonamento mensile: sempre ricorrente, disdettabile in qualsiasi momento -->
+                    <div v-if="isMonthlyPlanSelected" class="mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
+                      <div class="p-4 bg-light-info rounded">
+                        <p class="fs-7 mb-0 pricing-text-primary">
+                          <i class="ki-duotone ki-information-5 fs-5 text-info me-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                          </i>
+                          <strong>Abbonamento ricorrente mensile.</strong> Verrai addebitato automaticamente ogni mese. 
+                          Puoi disdire in qualsiasi momento da "Gestisci abbonamento", senza vincoli.
+                        </p>
+                      </div>
+                    </div>
+
                     <!-- Upgrade Credit Breakdown -->
                     <div v-if="selectedPlan && upgradeCreditCalculation" class="payment-summary mb-8 p-6 rounded" style="background: linear-gradient(135deg, rgba(0, 119, 204, 0.1) 0%, rgba(0, 119, 204, 0.05) 100%);">
                       <div v-if="upgradeCreditCalculation.CreditAmount > 0" class="mb-2">
@@ -194,7 +269,7 @@
                       <button 
                         id="submit-button-modal" 
                         @click="handleSubmit"
-                        :disabled="isProcessing"
+                        :disabled="isProcessing || !isPaymentElementComplete"
                         class="btn btn-lg btn-primary w-100"
                         style="background: linear-gradient(135deg, #0077CC 0%, #0077CC 100%); border: none;"
                       >
@@ -238,7 +313,7 @@
 import { defineComponent, ref, watch, computed, onMounted } from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe, StripeElements } from '@stripe/stripe-js';
-import { createPaymentIntent, calculateUpgradeCredit, type UpgradeCreditCalculationResponse } from '@/core/data/billing';
+import { createPaymentIntent, calculateUpgradeCredit, syncMyPendingSubscription, type UpgradeCreditCalculationResponse } from '@/core/data/billing';
 import { getActivePlans, type SubscriptionPlan } from '@/core/data/subscription-plans';
 import { checkDowngradeCompatibility, type DowngradeCompatibilityResponse } from '@/core/data/subscription-limits';
 import { getCurrentSubscription, type UserSubscription } from '@/core/data/subscription';
@@ -294,10 +369,119 @@ export default defineComponent({
     const plans = ref<SubscriptionPlan[]>([]);
     const currentSubscription = ref<UserSubscription | null>(null);
     const upgradeCreditCalculation = ref<UpgradeCreditCalculationResponse | null>(null);
+    const showMultiMonthGrid = ref(false);
+    const selectedBasePlanName = ref<string>('');
+    const selectedDurationPlan = ref<SubscriptionPlan | null>(null);
+    const isRecurringPayment = ref(false);
+    const isPaymentElementComplete = ref(false);
     let stripe: Stripe | null = null;
     let elements: StripeElements | null = null;
+    let currentPaymentIntentIsRecurring = false;
+    let currentPaymentIntentId: string | null = null;
+    let lastClientSecret: string | null = null;
+    /** Guardia sincrona anti-doppio invio: blocca un secondo click prima che isProcessing aggiorni il DOM */
+    let submitInProgress = false;
 
     const displayEmail = computed(() => props.email || 'utente');
+
+    // Filtra solo i piani mensili base (Basic, Pro, Premium) - esclude i prepagati
+    const monthlyBasePlans = computed(() => {
+      return plans.value.filter(plan => {
+        const name = plan.Name.toLowerCase();
+        const isBasePlan = (name === 'basic' || name === 'pro' || name === 'premium');
+        const isMonthly = plan.BillingPeriod?.toLowerCase() === 'monthly';
+        return isBasePlan && isMonthly;
+      });
+    });
+
+    // Trova i piani correlati (base + prepagati) per un piano mensile
+    const getRelatedPlans = (basePlanName: string): SubscriptionPlan[] => {
+      const baseName = basePlanName.toLowerCase();
+      return plans.value.filter(plan => {
+        const planName = plan.Name.toLowerCase();
+        // Match esatto o che inizia con il nome base seguito da spazio e numero
+        return planName === baseName || 
+               planName.startsWith(baseName + ' ') ||
+               (baseName === 'basic' && planName.startsWith('basic')) ||
+               (baseName === 'pro' && planName.startsWith('pro') && !planName.startsWith('premium')) ||
+               (baseName === 'premium' && planName.startsWith('premium'));
+      });
+    };
+
+    // Prepara i piani multi-mese per la griglia
+    const multiMonthPlans = computed(() => {
+      if (!selectedBasePlanName.value) return [];
+      
+      const relatedPlans = getRelatedPlans(selectedBasePlanName.value);
+      const basePlan = relatedPlans.find(p => p.Name.toLowerCase() === selectedBasePlanName.value.toLowerCase() && p.BillingPeriod === 'monthly');
+      
+      if (!basePlan) return [];
+
+      const monthlyPrice = basePlan.Price;
+      const result: Array<SubscriptionPlan & { months: number; durationLabel: string; discountPercent: number; originalPrice?: number }> = [];
+
+      // 1 mese (piano base mensile)
+      result.push({
+        ...basePlan,
+        months: 1,
+        durationLabel: '1 Mese',
+        discountPercent: 0,
+        originalPrice: undefined
+      });
+
+      // 3 mesi
+      const plan3Months = relatedPlans.find(p => 
+        p.Name.toLowerCase().includes('3 months') || 
+        (p.BillingPeriod === 'quarterly' && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
+      );
+      if (plan3Months) {
+        const originalPrice = monthlyPrice * 3;
+        const discount = ((originalPrice - plan3Months.Price) / originalPrice) * 100;
+        result.push({
+          ...plan3Months,
+          months: 3,
+          durationLabel: '3 Mesi',
+          discountPercent: Math.round(discount),
+          originalPrice: originalPrice
+        });
+      }
+
+      // 6 mesi
+      const plan6Months = relatedPlans.find(p => 
+        p.Name.toLowerCase().includes('6 months') || 
+        (p.BillingPeriod === 'semiannual' && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
+      );
+      if (plan6Months) {
+        const originalPrice = monthlyPrice * 6;
+        const discount = ((originalPrice - plan6Months.Price) / originalPrice) * 100;
+        result.push({
+          ...plan6Months,
+          months: 6,
+          durationLabel: '6 Mesi',
+          discountPercent: Math.round(discount),
+          originalPrice: originalPrice
+        });
+      }
+
+      // 12 mesi
+      const plan12Months = relatedPlans.find(p => 
+        p.Name.toLowerCase().includes('12 months') || 
+        ((p.BillingPeriod === 'annual' || p.BillingPeriod === 'yearly') && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
+      );
+      if (plan12Months) {
+        const originalPrice = monthlyPrice * 12;
+        const discount = ((originalPrice - plan12Months.Price) / originalPrice) * 100;
+        result.push({
+          ...plan12Months,
+          months: 12,
+          durationLabel: '12 Mesi',
+          discountPercent: Math.round(discount),
+          originalPrice: originalPrice
+        });
+      }
+
+      return result;
+    });
 
     // Carica i piani dal database
     const loadPlans = async () => {
@@ -334,6 +518,25 @@ export default defineComponent({
     };
 
     // Verifica se l'abbonamento è scaduto
+    // Verifica se il piano selezionato è mensile (per mostrare toggle ricorrente)
+    const isMonthlyPlanSelected = computed(() => {
+      if (!selectedPlan.value) return false;
+      
+      const plan = getPlanByName(selectedPlan.value);
+      if (!plan) return false;
+      
+      // Verifica se è un piano mensile base (Basic, Pro, Premium) con durata 1 mese
+      const isBaseMonthly = plan.BillingPeriod === 'monthly' && 
+                            (plan.Name.toLowerCase() === 'basic' || 
+                             plan.Name.toLowerCase() === 'pro' || 
+                             plan.Name.toLowerCase() === 'premium');
+      
+      // Oppure se è stato selezionato dalla griglia multi-mese con durata 1 mese
+      const isSelectedFromGrid = (selectedDurationPlan.value as any)?.months === 1;
+      
+      return isBaseMonthly || isSelectedFromGrid;
+    });
+
     const isSubscriptionExpired = computed(() => {
       if (!currentSubscription.value || !currentSubscription.value.EndDate) {
         return true; // Se non c'è abbonamento o data scadenza, considera scaduto
@@ -391,9 +594,100 @@ export default defineComponent({
         return;
       }
 
+      // Se è un piano mensile base (Basic, Pro, Premium), mostra la griglia multi-mese
+      const isMonthlyBase = selectedPlanObj.BillingPeriod === 'monthly' && 
+                            (selectedPlanObj.Name.toLowerCase() === 'basic' || 
+                             selectedPlanObj.Name.toLowerCase() === 'pro' || 
+                             selectedPlanObj.Name.toLowerCase() === 'premium');
+      
+      if (isMonthlyBase) {
+        selectedBasePlanName.value = selectedPlanObj.Name;
+        showMultiMonthGrid.value = true;
+        selectedDurationPlan.value = null;
+        return;
+      }
+
+      // Per i piani prepagati o altri piani, procedi direttamente al pagamento
+      await proceedWithPlanSelection(plan, selectedPlanObj);
+    };
+
+    const selectDurationPlan = async (plan: SubscriptionPlan & { months?: number; durationLabel?: string; discountPercent?: number; originalPrice?: number }) => {
+      selectedDurationPlan.value = plan;
+      
+      // Trova il piano completo dall'array plans (per avere tutte le proprietà corrette)
+      const fullPlan = plans.value.find(p => p.Id === plan.Id);
+      if (!fullPlan) {
+        Swal.fire({
+          text: "Piano selezionato non trovato",
+          icon: "error",
+          buttonsStyling: false,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+        });
+        return;
+      }
+      
+      // Procedi direttamente al pagamento
+      const planMonths = (plan as any).months;
+      selectedPlan.value = fullPlan.Name.toLowerCase();
+      showMultiMonthGrid.value = false;
+      
+      // Abbonamenti mensili (1 mese): ricorrente come prima scelta; il cliente può disattivarlo dal toggle.
+      // Prepagate (3/6/12 mesi): sempre una tantum.
+      if (planMonths === 1) {
+        isRecurringPayment.value = true; // Default ricorrente per il mensile
+      } else {
+        isRecurringPayment.value = false; // Prepagate sempre una tantum
+      }
+      
+      await proceedWithPlanSelection(fullPlan.Name.toLowerCase(), fullPlan);
+    };
+
+    const cancelMultiMonthSelection = () => {
+      showMultiMonthGrid.value = false;
+      selectedBasePlanName.value = '';
+      selectedDurationPlan.value = null;
+      isRecurringPayment.value = false;
+    };
+
+    const proceedWithPlanSelection = async (plan: string, selectedPlanObj: SubscriptionPlan) => {
       // Carica l'abbonamento corrente se non è già caricato
       if (!currentSubscription.value) {
         await loadCurrentSubscription();
+      }
+
+      // Se l'utente ha AutoRenew = true (pagamento ricorrente attivo), non permettere il rinnovo manuale
+      // Permettere solo upgrade (piano diverso)
+      if (currentSubscription.value?.AutoRenew === true) {
+        const currentPlanId = currentSubscription.value.SubscriptionPlanId;
+        const selectedPlanId = selectedPlanObj.Id;
+        
+        // Se è lo stesso piano = rinnovo manuale → BLOCCA
+        if (currentPlanId === selectedPlanId) {
+          Swal.fire({
+            title: '<div class="text-info"><i class="ki-duotone ki-information-5 fs-2x me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> Rinnovo Automatico Attivo</div>',
+            html: `
+              <div class="text-start">
+                <p class="mb-4 pricing-text-primary">
+                  Il tuo abbonamento è configurato per il rinnovo automatico. Non è necessario rinnovarlo manualmente.
+                </p>
+                <div class="bg-light-info p-4 rounded mb-4">
+                  <div class="fw-bold pricing-text-primary mb-2">Il tuo abbonamento verrà rinnovato automaticamente alla scadenza.</div>
+                  <div class="fs-7 pricing-text-secondary">Puoi fare upgrade a un piano superiore se desideri.</div>
+                </div>
+              </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'Ho capito',
+            buttonsStyling: false,
+            heightAuto: false,
+            customClass: {
+              confirmButton: 'btn btn-primary fw-bold',
+            },
+          });
+          return;
+        }
+        // Se è un piano diverso = upgrade → PERMETTI (continua il flusso)
       }
 
       // Verifica se è un downgrade
@@ -598,6 +892,12 @@ export default defineComponent({
     const cancelPayment = () => {
       selectedPlan.value = null;
       upgradeCreditCalculation.value = null;
+      showMultiMonthGrid.value = false;
+      selectedBasePlanName.value = '';
+      selectedDurationPlan.value = null;
+      isRecurringPayment.value = false;
+      currentPaymentIntentId = null;
+      currentPaymentIntentIsRecurring = false;
       stripe = null;
       elements = null;
     };
@@ -626,6 +926,11 @@ export default defineComponent({
       return plans.value.find(p => p.Name.toLowerCase() === planName.toLowerCase());
     };
 
+    const toggleRecurringPayment = (event: Event) => {
+      isRecurringPayment.value = (event.target as HTMLInputElement).checked;
+    };
+
+
 
     const initializeStripe = async () => {
       try {
@@ -639,28 +944,7 @@ export default defineComponent({
           return;
         }
 
-        const clientSecret = await fetchClientSecret();
-        
-        const appearance = {
-          theme: 'stripe' as const,
-          variables: {
-            colorPrimary: '#0077CC', // accent_principale
-            colorBackground: '#FFFFFF', // sfondo_principale light
-            colorText: '#333333', // testo_principale light
-            colorDanger: '#f1416c',
-            fontFamily: 'Inter, sans-serif',
-            spacingUnit: '4px',
-            borderRadius: '8px',
-          },
-        };
-
-        elements = stripe.elements({ 
-          clientSecret,
-          appearance 
-        });
-
-        const paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element-modal');
+        await createPaymentElements(isRecurringPayment.value);
 
       } catch (error) {
         console.error('Error initializing Stripe:', error);
@@ -668,20 +952,74 @@ export default defineComponent({
       }
     };
 
-    const fetchClientSecret = async (): Promise<string> => {
+    const createPaymentElements = async (isRecurring: boolean) => {
+      if (!stripe) return;
+
+      if (elements) {
+        const paymentElement = elements.getElement('payment');
+        if (paymentElement) {
+          paymentElement.unmount();
+        }
+        elements = null;
+      }
+
+      const clientSecret = await fetchClientSecretWithValue(isRecurring);
+      
+      currentPaymentIntentIsRecurring = isRecurring;
+      
+      const appearance = {
+        theme: 'stripe' as const,
+        variables: {
+          colorPrimary: '#0077CC',
+          colorBackground: '#FFFFFF',
+          colorText: '#333333',
+          colorDanger: '#f1416c',
+          fontFamily: 'Inter, sans-serif',
+          spacingUnit: '4px',
+          borderRadius: '8px',
+        },
+        rules: {
+          '.Input': {
+            border: '1px solid #E4E6EF',
+            borderRadius: '8px',
+          },
+          '.Input:focus': {
+            border: '1px solid #0077CC',
+          },
+        },
+      };
+
+      elements = stripe.elements({
+        clientSecret,
+        appearance 
+      });
+
+      const paymentElement = elements.create('payment');
+      isPaymentElementComplete.value = false;
+
+      const container = document.querySelector('#payment-element-modal');
+      if (!container) throw new Error('Container pagamento non trovato');
+      paymentElement.mount('#payment-element-modal');
+      paymentElement.on('change', (event: { complete?: boolean }) => {
+        isPaymentElementComplete.value = !!event.complete;
+      });
+      await new Promise(resolve => setTimeout(resolve, 300));
+    };
+
+    const fetchClientSecretWithValue = async (isRecurring: boolean): Promise<string> => {
       try {
-        const paymentIntent = await createPaymentIntent({
+        const res = await createPaymentIntent({
           plan: selectedPlan.value as string,
           amount: getPlanPrice(selectedPlan.value as string) * 100,
           currency: 'eur',
-          email: props.email
+          email: props.email,
+          isRecurringPayment: isRecurring
         });
-        
-        if (!paymentIntent || !paymentIntent.ClientSecret) {
-          throw new Error('Risposta non valida dal server');
-        }
-        
-        return paymentIntent.ClientSecret;
+        if (!res?.ClientSecret) throw new Error('Risposta non valida dal server');
+        lastClientSecret = res.ClientSecret;
+        currentPaymentIntentId = res.PaymentIntentId;
+        currentPaymentIntentIsRecurring = isRecurring;
+        return res.ClientSecret;
       } catch (error: any) {
         console.error('Error fetching client secret:', error);
         const errorMessage = error?.response?.data?.message || error?.message || 'Impossibile creare il pagamento';
@@ -690,56 +1028,111 @@ export default defineComponent({
       }
     };
 
+    const showPaymentSuccess = async (isRecurring: boolean) => {
+      isProcessing.value = false;
+      Swal.fire({
+        title: "Pagamento completato!",
+        text: "Stiamo aggiornando il tuo abbonamento...",
+        icon: "success",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        heightAuto: false,
+        didOpen: () => Swal.showLoading()
+      });
+      if (isRecurring) {
+        try {
+          await syncMyPendingSubscription();
+          await new Promise(r => setTimeout(r, 2000));
+        } catch (_) { /* ignora */ }
+      } else {
+        await new Promise(r => setTimeout(r, 1500));
+      }
+      try { await authStore.refreshToken(); } catch (_) {}
+      Swal.close();
+      emit('success');
+    };
+
     const handleSubmit = async () => {
-      if (!stripe || !elements) {
+      if (submitInProgress) return;
+      if (!stripe || isProcessing.value) {
+        if (!stripe) showMessage('Stripe non è stato inizializzato. Riprova.');
         return;
       }
-
+      submitInProgress = true;
       isProcessing.value = true;
 
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          receipt_email: props.email,
-        },
-        redirect: 'if_required' // Evita il redirect automatico
-      });
+      try {
+        // Per ricorrente: crea elements solo se non ne abbiamo già uno per lo stesso tipo (evita di creare una seconda subscription)
+        const needsRecreate = isRecurringPayment.value && !currentPaymentIntentIsRecurring;
+        const hasNoElements = !elements || !elements.getElement('payment');
+        if (needsRecreate || hasNoElements) {
+          await createPaymentElements(isRecurringPayment.value);
+          await new Promise(resolve => setTimeout(resolve, 600));
+        }
 
-      if (error) {
-        showMessage(error.message || 'Si è verificato un errore durante il pagamento.');
-        isProcessing.value = false;
-      } else {
-        // Pagamento completato con successo
-        isProcessing.value = false;
-        
-        // Mostra messaggio di aggiornamento in corso
-        Swal.fire({
-          title: "Pagamento completato!",
-          text: "Stiamo aggiornando il tuo abbonamento, attendi qualche secondo...",
-          icon: "success",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showConfirmButton: false,
-          heightAuto: false,
-          didOpen: () => {
-            Swal.showLoading();
-          }
+        if (!elements?.getElement('payment')) {
+          showMessage('Il form di pagamento non è pronto. Attendi e riprova.');
+          return;
+        }
+
+        const { error, paymentIntent } = await stripe.confirmPayment({
+          elements: elements!,
+          confirmParams: { receipt_email: props.email },
+          redirect: 'if_required'
         });
 
-        // Attendi che il webhook processi il pagamento e aggiorna il token
-        setTimeout(async () => {
+        let finalStatus: string | undefined = paymentIntent?.status;
+        let finalPaymentIntent = paymentIntent;
+
+        if (!finalPaymentIntent && lastClientSecret) {
           try {
-            await authStore.refreshToken();
-          } catch (error) {
-            console.warn('Errore durante l\'aggiornamento del token:', error);
-            // Non bloccare il flow anche se l'aggiornamento del token fallisce
+            const retrieved = await stripe.retrievePaymentIntent(lastClientSecret);
+            if (retrieved?.paymentIntent) {
+              finalPaymentIntent = retrieved.paymentIntent;
+              finalStatus = finalPaymentIntent.status;
+            }
+          } catch (_) { /* ignore */ }
+        }
+
+        if (error && lastClientSecret) {
+          try {
+            const retrieved = await stripe.retrievePaymentIntent(lastClientSecret);
+            if (retrieved?.paymentIntent && (retrieved.paymentIntent.status === 'succeeded' || retrieved.paymentIntent.status === 'processing')) {
+              await showPaymentSuccess(currentPaymentIntentIsRecurring);
+              return;
+            }
+          } catch (_) { /* ignore */ }
+        }
+
+        const ok = finalStatus === 'succeeded' || finalStatus === 'processing' || finalStatus === 'requires_action';
+        if (finalPaymentIntent && ok) {
+          await showPaymentSuccess(currentPaymentIntentIsRecurring);
+          return;
+        }
+
+        if (error) {
+          const validationErrors = ['validation_error', 'incomplete_number', 'incomplete_expiry', 'incomplete_cvc', 'incomplete_zip', 'invalid_number', 'invalid_expiry', 'invalid_cvc', 'invalid_zip'];
+          if (error.type === 'validation_error' || validationErrors.includes(error.code || '')) {
+            showMessage(error.message || 'Completa tutti i dati della carta.');
+          } else if (finalStatus === 'requires_payment_method') {
+            // Stripe mette il PaymentIntent in requires_payment_method quando: carta rifiutata dalla banca, fondi insufficienti, 3DS fallita, ecc.
+            // Per ricorrenti abbiamo già provato confirm-payment sul backend; se siamo qui il backend non ha confermato (es. invoice non ancora "paid").
+            const msg = error.message || (currentPaymentIntentIsRecurring
+              ? 'Pagamento non confermato. Se l\'addebito è andato a buon fine, l\'abbonamento si aggiornerà a breve. Altrimenti verifica i dati della carta o riprova.'
+              : 'Carta rifiutata. Verifica i dati e riprova.');
+            showMessage(msg);
+          } else {
+            showMessage(error.message || 'Errore durante il pagamento. Riprova.');
           }
-          
-          // Chiudi il loading - i componenti si aggiorneranno automaticamente
-          Swal.close();
-        }, 3000);
-        
-        emit('success');
+        } else if (!finalPaymentIntent) {
+          showMessage('Impossibile verificare il pagamento. Riprova o controlla il tuo account.');
+        }
+      } catch (err: any) {
+        console.error('Errore pagamento:', err);
+        showMessage(err?.message || 'Si è verificato un errore. Riprova.');
+      } finally {
+        submitInProgress = false;
+        isProcessing.value = false;
       }
     };
 
@@ -771,9 +1164,15 @@ export default defineComponent({
       } else {
         selectedPlan.value = null;
         upgradeCreditCalculation.value = null;
+        showMultiMonthGrid.value = false;
+        selectedBasePlanName.value = '';
+        selectedDurationPlan.value = null;
+        isRecurringPayment.value = false;
+        isPaymentElementComplete.value = false;
         isProcessing.value = false;
         stripe = null;
         elements = null;
+        lastClientSecret = null;
       }
     });
 
@@ -795,7 +1194,18 @@ export default defineComponent({
       plans,
       displayEmail,
       upgradeCreditCalculation,
+      monthlyBasePlans,
+      showMultiMonthGrid,
+      selectedBasePlanName,
+      selectedDurationPlan,
+      multiMonthPlans,
+      isRecurringPayment,
+      isPaymentElementComplete,
+      isMonthlyPlanSelected,
+      toggleRecurringPayment,
       selectPlan,
+      selectDurationPlan,
+      cancelMultiMonthSelection,
       cancelPayment,
       handleClose,
       getPlanPrice,

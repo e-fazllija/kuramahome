@@ -247,6 +247,12 @@ export default defineComponent({
         isTrialPeriod.value = subscription.SubscriptionPlan?.Name?.toLowerCase() === 'free' && 
                         diffDays <= 10 && diffDays >= 0;
 
+        // Se AutoRenew è true, non mostrare il banner (il rinnovo è automatico)
+        if (subscription.AutoRenew === true) {
+          showBanner.value = false;
+          return;
+        }
+
         // Mostra banner se:
         // 1. È un trial (sempre durante i 10 giorni)
         // 2. OPPURE se mancano 5 giorni o meno alla scadenza normale

@@ -64,7 +64,7 @@ const messages = {
     gettingStarted: "Getting Started",
     properties: "Immobili",
     clients: "Clienti",
-    documentations:"Modulistica",
+    documentations:"Archivio",
     agents:"Agenti",
     customersListing: "Customers Listing",
     customerDetails: "Customers Details",
