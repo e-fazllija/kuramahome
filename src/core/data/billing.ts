@@ -118,7 +118,7 @@ export const confirmPayment = async (
  */
 export const syncMyPendingSubscription = async (): Promise<{ Success: boolean; Message: string; PaymentId?: number }> => {
   try {
-    const response = await ApiService.post("/billing/sync-my-pending-subscription", {}, "json");
+    const response = await ApiService.post("/billing/sync-my-pending-subscription", {});
     return response.data;
   } catch (error: any) {
     if (error?.response?.status === 401) return { Success: false, Message: "Non autorizzato" };
@@ -166,7 +166,7 @@ export interface CreateSetupIntentResponse {
  * Richiede utente autenticato con abbonamento attivo su Stripe.
  */
 export const createSetupIntent = async (): Promise<CreateSetupIntentResponse> => {
-  const response = await ApiService.post("/billing/create-setup-intent", {}, "json");
+  const response = await ApiService.post("/billing/create-setup-intent", {});
   return response.data;
 };
 
