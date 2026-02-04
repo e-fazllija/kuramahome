@@ -491,7 +491,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, reactive } from "vue";
 import { getAssetPath } from "@/core/helpers/assets";
-import { getActivePlans, type SubscriptionPlan } from "@/core/data/subscription-plans";
+import { getSubscriptionPlans } from "@/core/data/billing";
 import PublicPropertySearchForm from "@/components/property/PublicPropertySearchForm.vue";
 import LandingNavbar from "@/components/landing/LandingNavbar.vue";
 import LandingFooter from "@/components/landing/LandingFooter.vue";
@@ -669,11 +669,11 @@ export default defineComponent({
     onMounted(async () => {
       // Try to load real plans from API, fallback to static data
       try {
-        const activePlans = await getActivePlans();
+        const activePlans = await getSubscriptionPlans();
         if (activePlans && activePlans.length > 0) {
           // Map API plans to our format
           pricingPlans.value = activePlans.slice(0, 3).map((plan, index) => {
-            const features = plan.Features?.slice(0, 8).map(f => f.Description || f.FeatureName) || [];
+            const features = (plan as { Features?: Array<{ Description?: string; FeatureName: string }> }).Features?.slice(0, 8).map(f => f.Description || f.FeatureName) || [];
             return {
               id: plan.Id,
               name: plan.Name,

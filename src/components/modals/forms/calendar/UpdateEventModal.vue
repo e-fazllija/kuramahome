@@ -602,14 +602,14 @@ export default defineComponent({
       EventStartDate: [
         {
           required: true,
-          message: "Inserisci la data",
+          message: "Inserisci la data e ora di inizio",
           trigger: "blur",
         },
       ],
       EventEndDate: [
         {
           required: true,
-          message: "Inserisci la data",
+          message: "Inserisci la data e ora di fine",
           trigger: "blur",
         },
       ],
@@ -669,20 +669,18 @@ export default defineComponent({
         return;
       }
 
-      formRef.value.validate(async (valid: boolean) => {
+      formRef.value.validate(async (valid: boolean, invalidFields?: Record<string, { message?: string }[]>) => {
         if (valid) {
           loading.value = true;
-          
-          // Prepara i dati per l'API convertendo le date in formato UTC
+          store.setError("");
+
           const eventData = { ...targetData.value };
           eventData.EventStartDate = formatDateForApi(eventData.EventStartDate);
           eventData.EventEndDate = formatDateForApi(eventData.EventEndDate);
 
-          await updateEvent(eventData);
-
-          const error = store.errors;
-
-          if (!error) {
+          try {
+            await updateEvent(eventData);
+            store.setError(""); // successo: azzera eventuale errore globale
             Swal.fire({
               text: "Operazione completata!",
               icon: "success",
@@ -695,12 +693,13 @@ export default defineComponent({
             }).then(function () {
               loading.value = false;
               hideModal(updateTargetModalRef.value);
-              emit('formUpdateSubmitted', targetData.value);
+              emit("formUpdateSubmitted", targetData.value);
             });
-          } else {
+          } catch {
             loading.value = false;
+            const errorMessage = store.errors || "Errore durante l'aggiornamento dell'evento. Riprova.";
             Swal.fire({
-              text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+              text: errorMessage,
               icon: "error",
               buttonsStyling: false,
               confirmButtonText: "Ok, capito!",
@@ -714,8 +713,21 @@ export default defineComponent({
 
         } else {
           loading.value = false;
+          const messages: string[] = [];
+          if (invalidFields && typeof invalidFields === "object") {
+            for (const key of Object.keys(invalidFields)) {
+              const items = invalidFields[key];
+              if (Array.isArray(items))
+                items.forEach((item: { message?: string }) => {
+                  if (item?.message) messages.push(item.message);
+                });
+            }
+          }
+          const validationMessage = messages.length
+            ? messages.join(" ")
+            : "Compila correttamente i campi obbligatori (nome evento, data e ora inizio, data e ora fine).";
           Swal.fire({
-            text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+            text: validationMessage,
             icon: "error",
             buttonsStyling: false,
             confirmButtonText: "Ok, capito!",

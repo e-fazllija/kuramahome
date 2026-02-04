@@ -117,6 +117,12 @@ export class Notes {
   Id?: number;
   UserId: string;
   Text: string;
+  CreationDate?: string;
+  Calendar?: {
+    EventStartDate: string;
+    EventEndDate?: string;
+    EventName?: string;
+  };
 }
 
 export class SearchModel {
