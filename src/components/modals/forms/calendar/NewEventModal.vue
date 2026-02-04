@@ -104,84 +104,7 @@
                 <!--end::Input-->
               </div>
               <!--end::Input group-->
-
-              <!--begin::Input group-->
-              <div class="fv-row mb-7">
-                <!--begin::Label-->
-                <label class="fs-6 fw-bold mb-3 text-gray-800">
-                  <i class="ki-duotone ki-palette fs-5 me-2 text-primary">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                    <span class="path4"></span>
-                    <span class="path5"></span>
-                  </i>
-                  <span>Colore</span>
-                </label>
-                <!--end::Label-->
-                <!--begin::Input-->
-                <el-form-item prop="Color">
-                  <div class="dropdown">
-                    <button 
-                      class="btn btn-light btn-active-light-primary d-flex align-items-center justify-content-between w-100 p-3 border border-gray-300 rounded"
-                      type="button" 
-                      id="colorDropdown"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <span class="d-flex align-items-center gap-3">
-                        <span 
-                          class="rounded border border-2 border-gray-300 shadow-sm"
-                          :style="{ 
-                            width: '40px', 
-                            height: '40px', 
-                            backgroundColor: targetData.Color || '#e0e0e0'
-                          }"
-                        ></span>
-                        <span class="fw-semibold text-gray-800">
-                          {{ targetData.Color ? 'Colore selezionato' : 'Seleziona un colore' }}
-                        </span>
-                      </span>
-                      <i class="ki-duotone ki-down fs-3 text-gray-600">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end w-100 p-3 shadow-lg" aria-labelledby="colorDropdown" style="max-height: 400px; overflow-y: auto;">
-                      <div class="row g-2">
-                        <div 
-                          v-for="(color, index) in colorOptions" 
-                          :key="index"
-                          class="col-3 col-md-4"
-                        >
-                          <button
-                            type="button"
-                            class="btn btn-outline btn-outline-dashed w-100 d-flex align-items-center justify-content-center p-2 rounded position-relative"
-                            :class="targetData.Color === color.hex ? 'btn-active-light-primary border-primary shadow-sm' : 'border-gray-300'"
-                            @click="selectColor(color.hex)"
-                            :title="color.hex"
-                          >
-                            <span 
-                              class="rounded border border-2 border-gray-300 shadow-sm"
-                              :style="{ 
-                                width: '50px', 
-                                height: '50px', 
-                                backgroundColor: color.hex
-                              }"
-                            ></span>
-                            <i v-if="targetData.Color === color.hex" class="ki-duotone ki-check fs-3 text-white position-absolute" style="z-index: 10;">
-                              <span class="path1"></span>
-                              <span class="path2"></span>
-                            </i>
-                          </button>
-                        </div>
-                      </div>
-                    </ul>
-                  </div>
-                </el-form-item>
-                <!--end::Input-->
-              </div>
-              <!--end::Input group-->
+              <!-- Il colore è assegnato automaticamente (chi crea l'appuntamento / agente selezionato) -->
               <!--begin::Input group-->
               <div class="fv-row mb-7">
                 <!--begin::Label-->
@@ -485,28 +408,7 @@ export default defineComponent({
       );
     });
     
-    const colorOptions = [
-      { name: '', hex: '#408441' },       
-      { name: '', hex: '#3412F2' },           
-      { name: '', hex: '#FBC8FF' },          
-      { name: '', hex: '#23D8F4' },        
-      { name: '', hex: '#E70F86' },         
-      { name: '', hex: '#8973AE' },           
-      { name: '', hex: '#559F6D' },     
-      { name: '', hex: '#D6D00C' },          
-      { name: '', hex: '#676769' },          
-      { name: '', hex: '#8B1AD7' },          
-      { name: '', hex: '#F5730F' },      
-      { name: '', hex: '#FF5733' },          
-      { name: '', hex: '#C70039' },     
-      { name: '', hex: '#900C3F' },        
-      { name: '', hex: '#581845' },         
-      { name: '', hex: '#D5A6BD' },    
-      { name: '', hex: '#FF8C00' },   
-      { name: '', hex: '#FF0000' },     
-      { name: '', hex: '#800080' },     
-      { name: '', hex: '#00FF00' }       
-    ];
+    // Colore assegnato automaticamente: chi crea l'appuntamento (o agente selezionato se Agency/Admin)
     const targetData = ref<Event>({
       UserId: "",
       EventName: "",
@@ -518,7 +420,7 @@ export default defineComponent({
       EventStartDate: todayDate.format("YYYY-MM-DD"),
       EventEndDate: todayDate.format("YYYY-MM-DD"),
       Type: "Appuntamento",
-      Color: store.user.Color,
+      Color: props.Color || store.user?.Color || "#3699ff",
       Confirmed: false,
       Cancelled: false,
       Postponed: false
@@ -546,10 +448,8 @@ export default defineComponent({
       }
     })
 
-    watch(() => props.Color, async (first, second) => {
-      if (first) {
-        targetData.value.Color = first;
-      }
+    watch(() => props.Color, (newColor) => {
+      targetData.value.Color = newColor || store.user?.Color || "#3699ff";
     })
 
     const rules = ref({
@@ -563,14 +463,14 @@ export default defineComponent({
       EventStartDate: [
         {
           required: true,
-          message: "Inserisci la data",
+          message: "Inserisci la data e ora di inizio",
           trigger: "blur",
         },
       ],
       EventEndDate: [
         {
           required: true,
-          message: "Inserisci la data",
+          message: "Inserisci la data e ora di fine",
           trigger: "blur",
         },
       ],
@@ -619,29 +519,27 @@ export default defineComponent({
         return;
       }
 
-      formRef.value.validate(async (valid: boolean) => {
+      formRef.value.validate(async (valid: boolean, invalidFields?: Record<string, { message?: string }[]>) => {
         if (valid) {
           loading.value = true;
-          targetData.value.UserId = props.UserId
-          // Converti le date nel formato corretto per gli input datetime-local
+          store.setError("");
+          targetData.value.UserId = props.UserId;
           targetData.value.EventStartDate = formatDateForApi(targetData.value.EventStartDate);
           targetData.value.EventEndDate = formatDateForApi(targetData.value.EventEndDate);
 
-          await createEvent(targetData.value);
-
-          const error = store.errors;
-
-          if (!error) {
-            targetData.value.UserId= "";
-            targetData.value.EventName= "";
-            targetData.value.EventDescription= "";
-            targetData.value.Color="";
-            targetData.value.EventLocation= "";
-            targetData.value.CustomerId= null;
-            targetData.value.RequestId= null;
-            targetData.value.RealEstatePropertyId= null;
-            targetData.value.EventStartDate= todayDate.format("YYYY-MM-DD");
-            targetData.value.EventEndDate= todayDate.format("YYYY-MM-DD");
+          try {
+            await createEvent(targetData.value);
+            store.setError(""); // successo: azzera eventuale errore globale
+            targetData.value.UserId = "";
+            targetData.value.EventName = "";
+            targetData.value.EventDescription = "";
+            targetData.value.Color = props.Color || store.user?.Color || "#3699ff";
+            targetData.value.EventLocation = "";
+            targetData.value.CustomerId = null;
+            targetData.value.RequestId = null;
+            targetData.value.RealEstatePropertyId = null;
+            targetData.value.EventStartDate = todayDate.format("YYYY-MM-DD");
+            targetData.value.EventEndDate = todayDate.format("YYYY-MM-DD");
             targetData.value.Type = "Appuntamento";
             Swal.fire({
               text: "Operazione completata!",
@@ -655,12 +553,13 @@ export default defineComponent({
             }).then(function () {
               loading.value = false;
               hideModal(newTargetModalRef.value);
-              emit('formAddSubmitted', targetData.value.UserId);
+              emit("formAddSubmitted", targetData.value.UserId);
             });
-          } else {
+          } catch {
             loading.value = false;
+            const errorMessage = store.errors || "Errore durante la creazione dell'evento. Riprova.";
             Swal.fire({
-              text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+              text: errorMessage,
               icon: "error",
               buttonsStyling: false,
               confirmButtonText: "Ok, capito!",
@@ -674,8 +573,21 @@ export default defineComponent({
 
         } else {
           loading.value = false;
+          const messages: string[] = [];
+          if (invalidFields && typeof invalidFields === "object") {
+            for (const key of Object.keys(invalidFields)) {
+              const items = invalidFields[key];
+              if (Array.isArray(items))
+                items.forEach((item: { message?: string }) => {
+                  if (item?.message) messages.push(item.message);
+                });
+            }
+          }
+          const validationMessage = messages.length
+            ? messages.join(" ")
+            : "Compila correttamente i campi obbligatori (nome evento, data e ora inizio, data e ora fine).";
           Swal.fire({
-            text: "Siamo spiacenti, sembra che siano stati rilevati alcuni errori, riprova.",
+            text: validationMessage,
             icon: "error",
             buttonsStyling: false,
             confirmButtonText: "Ok, capito!",
@@ -689,19 +601,6 @@ export default defineComponent({
       });
     };
 
-    // Funzione per selezionare un colore
-    const selectColor = (color: string) => {
-      targetData.value.Color = color;
-      // Chiudi il dropdown dopo la selezione
-      const dropdownElement = document.getElementById('colorDropdown');
-      if (dropdownElement) {
-        const dropdown = (window as any).bootstrap?.Dropdown?.getInstance(dropdownElement);
-        if (dropdown) {
-          dropdown.hide();
-        }
-      }
-    };
-    
     // Funzioni per gestire l'autocomplete del nome evento
     const onEventNameInput = () => {
       showSuggestions.value = true;
@@ -766,8 +665,6 @@ export default defineComponent({
       getAssetPath,
       inserModel,
       removeModalBackdrop,
-      colorOptions,
-      selectColor,
       capitalizeEventName,
       capitalizeEventDescription,
       capitalizeEventLocation,

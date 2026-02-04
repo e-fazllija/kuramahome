@@ -805,9 +805,27 @@
                 </div>
 
                 <div v-if="formData.RealEstatePropertyNotes && formData.RealEstatePropertyNotes.length"
-                  class="row g-3 mt-4">
-                  <div v-for="(note, index) in formData.RealEstatePropertyNotes" :key="index" class="col-12">
-                    <div class="card p-3" v-html="note.Text"></div>
+                  class="mt-4">
+                  <div class="notes-scroll-container">
+                    <div class="row g-3">
+                      <div v-for="(note, index) in formData.RealEstatePropertyNotes" :key="note.Id ?? index" class="col-12">
+                        <div class="card border-0 shadow-sm overflow-hidden">
+                          <div class="card-body p-0">
+                            <div class="d-flex align-items-center justify-content-between px-3 py-2 bg-light border-bottom flex-wrap gap-1">
+                              <span class="fw-semibold text-body small">Nota</span>
+                              <span v-if="note.Calendar?.EventStartDate" class="text-muted small">
+                                <i class="ki-duotone ki-calendar fs-6 me-1">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                </i>
+                                {{ formatNoteAppointmentDate(note.Calendar.EventStartDate) }}
+                              </span>
+                            </div>
+                            <div class="p-3 note-text" v-html="note.Text"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -834,7 +852,7 @@
                   </router-link>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                  <button v-if="user.Role === 'Admin' || (user.Role === 'Agency' && user.Id === formData.User.AdminId)"
+                  <button v-if="canModify"
                     type="button" @click="deleteItem()" :disabled="!canModify" class="btn btn-danger">
                     <span class="btn-icon">
                       <i class="ki-duotone ki-trash fs-3">
@@ -1462,6 +1480,26 @@ export default defineComponent({
         day: '2-digit',
         month: '2-digit',
         year: 'numeric'
+      });
+    };
+
+    const getNoteTitle = (text: string | undefined, index: number): string => {
+      if (!text || !text.trim()) return `Nota ${index + 1}`;
+      const plain = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      const max = 45;
+      return plain.length <= max ? plain : plain.slice(0, max) + '…';
+    };
+
+    const formatNoteAppointmentDate = (dateStr: string): string => {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     };
 
@@ -2254,6 +2292,8 @@ export default defineComponent({
       effectiveCommission,
       id,
       selectedExposures,
+      getNoteTitle,
+      formatNoteAppointmentDate,
     };
   },
 });
@@ -2292,5 +2332,12 @@ export default defineComponent({
 
 .sortable-chosen {
   cursor: grabbing;
+}
+
+/* Altezza per ~5 note, poi scroll */
+.notes-scroll-container {
+  max-height: 22rem;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>

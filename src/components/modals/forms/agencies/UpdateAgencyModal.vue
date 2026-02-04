@@ -684,7 +684,7 @@ export default defineComponent({
       City: "",
       ZipCode: "",
       Province: "",
-      Color: "#00FFFF", // Default: Ciano
+      Color: "#60A5FA", // Default: Blu morbido
       AgencyId: "",
       EmailConfirmed: false,
       UpdateDate: new Date(),
@@ -697,18 +697,20 @@ export default defineComponent({
       SDICode: ""
     });
 
-    // Opzioni colori predefinite
+    // Solo colori leggeri/morbidi (no bianco, nero, rossi/verdi scuri)
     const colorOptions = ref([
-      { name: "Ciano", value: "#00FFFF" },
-      { name: "Magenta", value: "#FF00FF" },
-      { name: "Oro", value: "#FFD700" },
-      { name: "Azzurro", value: "#007FFF" },
-      { name: "Verde Lime", value: "#00FF00" },
-      { name: "Indaco", value: "#4B0082" },
-      { name: "Turchese", value: "#40E0D0" },
-      { name: "Salmone", value: "#FA8072" },
-      { name: "Oliva", value: "#808000" },
-      { name: "Lavanda", value: "#E6E6FA" }
+      { name: "Azzurro chiaro", value: "#93C5FD" },
+      { name: "Blu morbido", value: "#60A5FA" },
+      { name: "Verde menta", value: "#6EE7B7" },
+      { name: "Verde salvia", value: "#86EFAC" },
+      { name: "Lavanda", value: "#C4B5FD" },
+      { name: "Viola chiaro", value: "#E9D5FF" },
+      { name: "Rosa chiaro", value: "#FBCFE8" },
+      { name: "Pesca", value: "#FDBA74" },
+      { name: "Giallo chiaro", value: "#FDE68A" },
+      { name: "Turchese chiaro", value: "#99F6E4" },
+      { name: "Salmone", value: "#FDA4AF" },
+      { name: "Celeste", value: "#7DD3FC" }
     ]);
 
     // Funzione per selezionare un colore

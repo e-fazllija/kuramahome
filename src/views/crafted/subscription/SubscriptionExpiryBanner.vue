@@ -138,7 +138,8 @@
 import { defineComponent, ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { getCurrentSubscription } from '@/core/data/subscription';
-import { getActivePlans, type SubscriptionPlan } from '@/core/data/subscription-plans';
+import { getSubscriptionPlans } from '@/core/data/billing';
+import type { SubscriptionPlan } from '@/core/data/subscription-plans';
 
 export default defineComponent({
   name: 'subscription-expiry-banner',
@@ -156,12 +157,11 @@ export default defineComponent({
       return authStore.user?.Role === 'Admin';
     });
 
-    // Carica i piani
+    // Carica i piani (endpoint pubblico; cast: il backend ritorna lo stesso shape di subscription-plans)
     const loadPlans = async () => {
       try {
-        plans.value = await getActivePlans();
-        // Escludi il piano Free se presente
-        plans.value = plans.value.filter(p => p.Name.toLowerCase() !== 'free');
+        const all = (await getSubscriptionPlans()) as SubscriptionPlan[];
+        plans.value = all.filter(p => p.Name.toLowerCase() !== 'free');
       } catch (error) {
         console.error('Errore nel caricamento dei piani:', error);
       }

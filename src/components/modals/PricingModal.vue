@@ -313,8 +313,9 @@
 import { defineComponent, ref, watch, computed, onMounted } from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe, StripeElements } from '@stripe/stripe-js';
-import { createPaymentIntent, calculateUpgradeCredit, syncMyPendingSubscription, type UpgradeCreditCalculationResponse } from '@/core/data/billing';
-import { getActivePlans, type SubscriptionPlan } from '@/core/data/subscription-plans';
+import { createPaymentIntent, calculateUpgradeCredit, syncMyPendingSubscription, getSubscriptionPlans, type UpgradeCreditCalculationResponse } from '@/core/data/billing';
+import type { SubscriptionPlan } from '@/core/data/subscription-plans';
+// getSubscriptionPlans ritorna lo stesso shape del backend (SubscriptionPlanSelectModel con Features, ecc.)
 import { checkDowngradeCompatibility, type DowngradeCompatibilityResponse } from '@/core/data/subscription-limits';
 import { getCurrentSubscription, type UserSubscription } from '@/core/data/subscription';
 import { useAuthStore } from '@/stores/auth';
@@ -384,7 +385,7 @@ export default defineComponent({
 
     const displayEmail = computed(() => props.email || 'utente');
 
-    // Filtra solo i piani mensili base (Basic, Pro, Premium) - esclude i prepagati
+    // Filtra i piani base (Basic, Pro, Premium) mensili
     const monthlyBasePlans = computed(() => {
       return plans.value.filter(plan => {
         const name = plan.Name.toLowerCase();
@@ -414,7 +415,6 @@ export default defineComponent({
       
       const relatedPlans = getRelatedPlans(selectedBasePlanName.value);
       const basePlan = relatedPlans.find(p => p.Name.toLowerCase() === selectedBasePlanName.value.toLowerCase() && p.BillingPeriod === 'monthly');
-      
       if (!basePlan) return [];
 
       const monthlyPrice = basePlan.Price;
@@ -483,13 +483,13 @@ export default defineComponent({
       return result;
     });
 
-    // Carica i piani dal database
+    // Carica i piani dall'endpoint pubblico (tutti gli utenti vedono i piani attivi)
     const loadPlans = async () => {
       isLoadingPlans.value = true;
       try {
-        const activePlans = await getActivePlans();
+        const activePlans = await getSubscriptionPlans();
         // Escludi il piano Free - è solo per trial automatici, non selezionabile
-        plans.value = activePlans.filter(plan => plan.Name.toLowerCase() !== 'free');
+        plans.value = activePlans.filter(plan => plan.Name.toLowerCase() !== 'free') as SubscriptionPlan[];
       } catch (error) {
         console.error('Errore nel caricamento dei piani:', error);
         Swal.fire({
@@ -525,7 +525,7 @@ export default defineComponent({
       const plan = getPlanByName(selectedPlan.value);
       if (!plan) return false;
       
-      // Verifica se è un piano mensile base (Basic, Pro, Premium) con durata 1 mese
+      // Verifica se è un piano base mensile (Basic, Pro, Premium) con durata 1 mese
       const isBaseMonthly = plan.BillingPeriod === 'monthly' && 
                             (plan.Name.toLowerCase() === 'basic' || 
                              plan.Name.toLowerCase() === 'pro' || 
@@ -594,7 +594,7 @@ export default defineComponent({
         return;
       }
 
-      // Se è un piano mensile base (Basic, Pro, Premium), mostra la griglia multi-mese
+      // Se è un piano mensile base (Basic, Pro, Premium), mostra la griglia
       const isMonthlyBase = selectedPlanObj.BillingPeriod === 'monthly' && 
                             (selectedPlanObj.Name.toLowerCase() === 'basic' || 
                              selectedPlanObj.Name.toLowerCase() === 'pro' || 
@@ -632,10 +632,10 @@ export default defineComponent({
       selectedPlan.value = fullPlan.Name.toLowerCase();
       showMultiMonthGrid.value = false;
       
-      // Abbonamenti mensili (1 mese): ricorrente come prima scelta; il cliente può disattivarlo dal toggle.
+      // Abbonamenti mensili (1 mese): ricorrente; il cliente può disattivarlo dal toggle.
       // Prepagate (3/6/12 mesi): sempre una tantum.
       if (planMonths === 1) {
-        isRecurringPayment.value = true; // Default ricorrente per il mensile
+        isRecurringPayment.value = true;
       } else {
         isRecurringPayment.value = false; // Prepagate sempre una tantum
       }

@@ -58,16 +58,17 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function setError(error: any, status?: number) {
-    if(status == 400){
-      errors.value = "Si è verificato un errore. Assicurati di aver inserito i campi obbligatori!";
+    const message = typeof error === "string" ? error : error?.Message ?? error?.message ?? "";
+    if (status == 400) {
+      errors.value = message?.trim() || "Assicurati di aver inserito tutti i campi obbligatori.";
     } else if (status == 403) {
-      errors.value = error || "Non hai i permessi per eseguire questa operazione. Puoi modificare o eliminare solo elementi di tua proprietà o della tua cerchia.";
+      errors.value = message || "Non hai i permessi per eseguire questa operazione. Puoi modificare o eliminare solo elementi di tua proprietà o della tua cerchia.";
     } else if (status == 404) {
-      errors.value = error || "Elemento non trovato";
+      errors.value = message || "Elemento non trovato";
     } else if (status == 500) {
-      errors.value = error;
+      errors.value = message || "Errore interno del server. Riprova più tardi.";
     } else {
-      errors.value = "Si è verificato un errore";
+      errors.value = message || "Si è verificato un errore. Riprova.";
     }
     
   }

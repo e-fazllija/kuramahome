@@ -1949,10 +1949,12 @@ export default defineComponent({
           try {
           const result = await createRealEstateProperty(formData.value);
 
-          const error = store.errors;
-
-          if (!error && result) {
+          // Successo se la API ha restituito l'immobile creato (id presente). Non dipendere da store.errors
+          // perché può essere rimasto impostato da una richiesta precedente.
+          const hasValidResult = result && (result.Id != null || (result as any).id != null);
+          if (hasValidResult) {
             loading.value = false;
+            store.setError(""); // azzera eventuale errore residuo così non confonde altre UI
             Swal.fire({
               text: "Immobile creato con successo.",
               icon: "success",
