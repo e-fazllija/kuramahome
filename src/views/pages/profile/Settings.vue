@@ -220,13 +220,77 @@
           <!--begin::Input group-->
           <div class="row mb-6">
             <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semobold fs-6">Colore</label>
+            <label class="col-lg-4 col-form-label fw-semobold fs-6">
+              <i class="ki-duotone ki-palette fs-5 me-2 text-primary">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+              Colore
+            </label>
             <!--end::Label-->
 
             <!--begin::Col-->
             <div class="col-lg-8 fv-row">
-              <Field type="color" name="Color" class="form-control form-control-lg form-control-solid"
-                placeholder="Colore" v-model="profileDetails.Color" />
+              <div class="dropdown">
+                <button
+                  class="btn btn-light btn-active-light-primary d-flex align-items-center justify-content-between w-100 p-3 border border-gray-300 rounded"
+                  type="button"
+                  id="colorDropdownSettings"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span class="d-flex align-items-center gap-3">
+                    <span
+                      class="rounded border border-2 border-gray-300 shadow-sm"
+                      :style="{
+                        width: '40px',
+                        height: '40px',
+                        backgroundColor: profileDetails.Color || '#e0e0e0'
+                      }"
+                    ></span>
+                    <span class="fw-semibold text-gray-800">
+                      {{ profileDetails.Color ? 'Colore selezionato' : 'Seleziona un colore' }}
+                    </span>
+                  </span>
+                  <i class="ki-duotone ki-down fs-3 text-gray-600">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end w-100 p-3 shadow-lg" aria-labelledby="colorDropdownSettings" style="max-height: 400px; overflow-y: auto;">
+                  <div class="row g-2">
+                    <div
+                      v-for="color in colorOptions"
+                      :key="color.value"
+                      class="col-3 col-md-4"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-outline btn-outline-dashed w-100 d-flex align-items-center justify-content-center p-2 rounded position-relative"
+                        :class="profileDetails.Color === color.value ? 'btn-active-light-primary border-primary shadow-sm' : 'border-gray-300'"
+                        @click="selectColor(color.value)"
+                        :title="color.value"
+                      >
+                        <span
+                          class="rounded border border-2 border-gray-300 shadow-sm"
+                          :style="{
+                            width: '50px',
+                            height: '50px',
+                            backgroundColor: color.value
+                          }"
+                        ></span>
+                        <i v-if="profileDetails.Color === color.value" class="ki-duotone ki-check fs-3 text-white position-absolute" style="z-index: 10;">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </button>
+                    </div>
+                  </div>
+                </ul>
+              </div>
               <div class="fv-plugins-message-container">
                 <div class="fv-help-block">
                   <ErrorMessage name="Color" />
@@ -940,10 +1004,22 @@ export default defineComponent({
       City: Yup.string().label("City"),
       ZipCode: Yup.string().label("ZipCode"),
       Province: Yup.string().label("Province"),
-      Color: Yup.string().label("Color"),
-      ClientId: Yup.string().label("Client ID"),
-      ClientSecret: Yup.string().label("Client Secret"),
+      Color: Yup.string().label("Colore"),
       SyncToIdealista: Yup.boolean().label("Sincronizzazione Idealista"),
+      ClientId: Yup.string()
+        .label("Client ID")
+        .when("SyncToIdealista", {
+          is: true,
+          then: (schema) => schema.required("Il campo Client ID è obbligatorio per la sincronizzazione con Idealista"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      ClientSecret: Yup.string()
+        .label("Client Secret")
+        .when("SyncToIdealista", {
+          is: true,
+          then: (schema) => schema.required("Il campo Client Secret è obbligatorio per la sincronizzazione con Idealista"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
     });
 
     const changeEmail = Yup.object().shape({
@@ -1169,6 +1245,33 @@ export default defineComponent({
       storeTheme.setThemeMode(configMode);
     };
 
+    // Colori predefiniti (stessi di agenzie e agenti)
+    const colorOptions = ref([
+      { name: "Azzurro chiaro", value: "#93C5FD" },
+      { name: "Blu morbido", value: "#60A5FA" },
+      { name: "Verde menta", value: "#6EE7B7" },
+      { name: "Verde salvia", value: "#86EFAC" },
+      { name: "Lavanda", value: "#C4B5FD" },
+      { name: "Viola chiaro", value: "#E9D5FF" },
+      { name: "Rosa chiaro", value: "#FBCFE8" },
+      { name: "Pesca", value: "#FDBA74" },
+      { name: "Giallo chiaro", value: "#FDE68A" },
+      { name: "Turchese chiaro", value: "#99F6E4" },
+      { name: "Salmone", value: "#FDA4AF" },
+      { name: "Celeste", value: "#7DD3FC" }
+    ]);
+
+    const selectColor = (color: string) => {
+      profileDetails.Color = color;
+      const dropdownElement = document.getElementById("colorDropdownSettings");
+      if (dropdownElement) {
+        const dropdown = (window as any).bootstrap?.Dropdown?.getInstance(dropdownElement);
+        if (dropdown) {
+          dropdown.hide();
+        }
+      }
+    };
+
     // Handler per il cambio del checkbox di sincronizzazione
     const handleSyncChange = () => {
       // Usa nextTick per permettere al checkbox di cambiare stato prima del controllo
@@ -1235,6 +1338,8 @@ export default defineComponent({
       cities,
       themeMode,
       setThemeMode,
+      colorOptions,
+      selectColor,
       showClientId,
       showClientSecret,
       handleSyncChange

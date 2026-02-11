@@ -1,8 +1,10 @@
 import ApiService from "@/core/services/ApiService";
 
 export interface PaymentIntent {
-  ClientSecret: string;
-  PaymentIntentId: string;
+  ClientSecret?: string | null;
+  PaymentIntentId?: string | null;
+  /** True quando la prima invoice ha importo 0 (credito) e non serve pagare. */
+  NoPaymentRequired?: boolean;
 }
 
 export interface SubscriptionPlan {

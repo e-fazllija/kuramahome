@@ -284,11 +284,19 @@ export default defineComponent({
         // Verifica se l'utente ha piano premium
         const subscription = ref<any>(null);
         const isLoadingSubscription = ref<boolean>(true);
+        // Helper: ricava il tier dal nome piano (stessa logica di PricingModal, così ricorrenti e prepagati hanno le stesse regole)
+        const getPlanTierFromName = (name: string): 'basic' | 'pro' | 'premium' | null => {
+          const n = (name || '').toLowerCase();
+          if (n.startsWith('premium')) return 'premium';
+          if (n.startsWith('pro')) return 'pro';
+          if (n.startsWith('basic')) return 'basic';
+          return null;
+        };
         const isPremium = computed(() => {
           if (!subscription.value) return false;
           const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
           const status = subscription.value.Status?.toLowerCase() || '';
-          return planName === 'premium' && status === 'active';
+          return getPlanTierFromName(planName) === 'premium' && status === 'active';
         });
         
         // Verifica se l'utente ha piano pro
@@ -296,7 +304,7 @@ export default defineComponent({
           if (!subscription.value) return false;
           const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
           const status = subscription.value.Status?.toLowerCase() || '';
-          return planName === 'pro' && status === 'active';
+          return getPlanTierFromName(planName) === 'pro' && status === 'active';
         });
         
         // Verifica se l'utente ha piano basic
@@ -304,7 +312,7 @@ export default defineComponent({
           if (!subscription.value) return false;
           const planName = subscription.value.SubscriptionPlan?.Name?.toLowerCase() || '';
           const status = subscription.value.Status?.toLowerCase() || '';
-          return planName === 'basic' && status === 'active';
+          return getPlanTierFromName(planName) === 'basic' && status === 'active';
         });
         
         // Verifica se l'utente ha piano pro o premium (piani che permettono di vedere Chart3)

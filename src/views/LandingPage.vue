@@ -553,8 +553,8 @@ export default defineComponent({
         description: "Per grandi agenzie e gruppi immobiliari",
         icon: "ki-duotone ki-shield-tick",
         features: [
-          "Agenzie illimitate",
-          "Agenti illimitati",
+          "Fino a 10 agenzie",
+          "Fino a 50 agenti",
           "Immobili illimitati",
           "Clienti illimitati",
           "Richieste illimitate",

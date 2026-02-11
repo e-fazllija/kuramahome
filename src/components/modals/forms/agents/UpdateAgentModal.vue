@@ -719,9 +719,9 @@
             </button>
             <!--end::Button-->
 
-            <!--begin::Button Elimina-->
+            <!--begin::Button Elimina (Admin: sempre; Agency: solo per i propri agenti)-->
             <button 
-              v-if="user.Role == 'Admin'" 
+              v-if="canDeleteAgentInModal" 
               type="button" 
               @click="deleteItem" 
               class="btn btn-danger me-3"
@@ -739,8 +739,9 @@
             </button>
             <!--end::Button-->
 
-            <!--begin::Button-->
+            <!--begin::Button Salva (nascosto se l'utente non può modificare l'agente, es. Agency su agente di altra agenzia)-->
             <button 
+              v-if="canEditAgentInModal"
               :data-kt-indicator="loading ? 'on' : null" 
               class="btn btn-primary" 
               type="submit"
@@ -773,7 +774,7 @@
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
 import { toTitleCase, smartTitleCase } from "@/core/helpers/text";
-import { defineComponent, ref, watch, nextTick } from "vue";
+import { defineComponent, ref, watch, nextTick, computed } from "vue";
 import { hideModal } from "@/core/helpers/dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Tooltip } from "bootstrap";
@@ -1258,11 +1259,23 @@ export default defineComponent({
       }
     };
 
+    // Admin: sempre; Agency: solo se l'agente appartiene alla propria agenzia (non si può modificare/eliminare agente di altra agenzia)
+    const canModifyAgentInModal = computed(() => {
+      if (user?.Role === "Admin") return true;
+      if (user?.Role === "Agency") {
+        const agentAgencyId = formData.value?.AdminId ?? formData.value?.AgencyId ?? "";
+        return agentAgencyId === (user?.Id ?? "");
+      }
+      return false;
+    });
+
     return {
       formData,
       rules,
       submit,
       deleteItem,
+      canDeleteAgentInModal: canModifyAgentInModal,
+      canEditAgentInModal: canModifyAgentInModal,
       formRef,
       loading,
       updateAgentModalRef,

@@ -699,7 +699,7 @@ export default defineComponent({
             loading.value = false;
             const errorMessage = store.errors || "Errore durante l'aggiornamento dell'evento. Riprova.";
             Swal.fire({
-              text: errorMessage,
+              html: errorMessage.replace(/\r?\n/g, "<br>"),
               icon: "error",
               buttonsStyling: false,
               confirmButtonText: "Ok, capito!",
