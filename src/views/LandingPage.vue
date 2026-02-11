@@ -6,6 +6,8 @@
 
     <!--begin::Hero Section-->
     <section class="hero-section">
+      <!-- Logo decorativo in sfondo -->
+      <div class="hero-logo-bg" :style="{ backgroundImage: `url('${getAssetPath('media/logos/kurama-home-logos/logo-menu.png')}')` }"></div>
       <div class="container">
         <div class="row align-items-center min-vh-100">
           <div class="col-lg-6">
@@ -205,6 +207,85 @@
       </div>
     </section>
     <!--end::Features Section-->
+
+    <!--begin::Featured Properties Section-->
+    <section id="featured-properties" class="featured-properties-section">
+      <div class="container">
+        <div class="featured-properties-banner">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-4">
+              <div class="featured-properties-cta">
+                <span class="badge badge-light-primary text-uppercase mb-3">In evidenza</span>
+                <h2 class="featured-properties-title">Scopri gli immobili disponibili</h2>
+                <p class="featured-properties-text">
+                  Migliaia di annunci dalle migliori agenzie. Trova la casa dei tuoi sogni tra le proposte dei nostri soci.
+                </p>
+                <router-link to="/immobili" class="btn btn-primary btn-lg">
+                  <i class="ki-duotone ki-home-2 me-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  Esplora gli immobili di tutti i nostri soci
+                </router-link>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="featured-properties-carousel">
+                <template v-if="displayedProperties.length > 0">
+                  <Transition name="carousel-fade" mode="out-in">
+                    <div class="row g-4" :key="carouselIndex">
+                      <div
+                        class="col-md-4"
+                        v-for="property in displayedProperties"
+                        :key="property.Id"
+                      >
+                        <div class="property-card">
+                          <div class="property-card-image">
+                            <img :src="property.MainPhotoUrl || placeholderImage" :alt="property.Title" />
+                            <span class="badge badge-primary property-badge" v-if="property.Highlighted">In evidenza</span>
+                            <span class="badge badge-warning property-badge" v-if="property.Auction">Asta</span>
+                          </div>
+                          <div class="property-card-body">
+                            <div class="property-card-header">
+                              <h4 class="property-card-title">{{ property.Title }}</h4>
+                              <div class="property-price">{{ formatPrice(property.Price) }}</div>
+                            </div>
+                            <div class="property-location text-muted mb-2">
+                              <i class="ki-duotone ki-geolocation me-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                              </i>
+                              {{ property.City }}, {{ property.State }}
+                            </div>
+                            <div class="property-card-footer">
+                              <router-link :to="`/immobili/${property.Id}`" class="btn btn-outline-primary w-100">
+                                Dettagli
+                              </router-link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Transition>
+                </template>
+                <div v-else-if="featuredPropertiesLoading" class="featured-properties-loading text-center py-5">
+                  <div class="spinner-border text-primary" role="status"></div>
+                  <p class="mt-2 text-muted">Caricamento...</p>
+                </div>
+                <div v-else class="featured-properties-empty text-center py-5">
+                  <i class="ki-duotone ki-home-2 fs-1 text-muted">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  <p class="mt-2 text-muted">Nessun immobile al momento</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--end::Featured Properties Section-->
 
     <!--begin::Benefits Section-->
     <section id="benefits" class="benefits-section">
@@ -489,13 +570,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, reactive } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref, reactive, computed } from "vue";
 import { getAssetPath } from "@/core/helpers/assets";
 import { getSubscriptionPlans } from "@/core/data/billing";
+import { searchPublicProperties, type PublicPropertyCard, type PublicPropertySearchFilters } from "@/core/data/properties";
 import PublicPropertySearchForm from "@/components/property/PublicPropertySearchForm.vue";
 import LandingNavbar from "@/components/landing/LandingNavbar.vue";
 import LandingFooter from "@/components/landing/LandingFooter.vue";
-import type { PublicPropertySearchFilters } from "@/core/data/properties";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -507,6 +588,30 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const featuredProperties = ref<PublicPropertyCard[]>([]);
+    const featuredPropertiesLoading = ref(false);
+    const carouselIndex = ref(0);
+    const placeholderImage = getAssetPath("media/stock/600x400/img-1.jpg");
+    let carouselInterval: ReturnType<typeof setInterval> | null = null;
+
+    const displayedProperties = computed(() => {
+      const list = featuredProperties.value;
+      if (list.length === 0) return [];
+      const size = 3;
+      const totalGroups = Math.ceil(list.length / size) || 1;
+      const start = (carouselIndex.value % totalGroups) * size;
+      const chunk = list.slice(start, start + size);
+      if (chunk.length < size && list.length >= size) {
+        return chunk.concat(list.slice(0, size - chunk.length));
+      }
+      return chunk;
+    });
+
+    const formatPrice = (value?: number) => {
+      if (!value || value <= 0) return "Su richiesta";
+      return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+    };
+
     const pricingPlans = ref([
       {
         id: 1,
@@ -666,7 +771,26 @@ export default defineComponent({
       });
     };
 
+    const fetchFeaturedProperties = async () => {
+      featuredPropertiesLoading.value = true;
+      try {
+        const result = await searchPublicProperties({ page: 1, pageSize: 9 });
+        featuredProperties.value = result.Data || [];
+        // Avvia rotazione carousel ogni 4 secondi
+        if (featuredProperties.value.length > 3) {
+          carouselInterval = setInterval(() => {
+            carouselIndex.value = (carouselIndex.value + 1) % Math.ceil(featuredProperties.value.length / 3);
+          }, 4000);
+        }
+      } catch {
+        featuredProperties.value = [];
+      } finally {
+        featuredPropertiesLoading.value = false;
+      }
+    };
+
     onMounted(async () => {
+      fetchFeaturedProperties();
       // Try to load real plans from API, fallback to static data
       try {
         const activePlans = await getSubscriptionPlans();
@@ -690,13 +814,24 @@ export default defineComponent({
       }
     });
 
+    onUnmounted(() => {
+      if (carouselInterval) clearInterval(carouselInterval);
+    });
+
     return {
+      getAssetPath,
       pricingPlans,
       howItWorksSteps,
       testimonials,
       faqs,
       landingSearchDefaults,
       handleLandingSearch,
+      featuredProperties,
+      displayedProperties,
+      featuredPropertiesLoading,
+      carouselIndex,
+      placeholderImage,
+      formatPrice,
     };
   },
 });
