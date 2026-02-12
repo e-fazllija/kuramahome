@@ -150,8 +150,8 @@ const routes: Array<RouteRecordRaw> = [
         name: "profile_details",
         component: () => import("@/views/pages/profile/Details.vue"),
         meta: {
-          pageTitle: "Richieste",
-          breadcrumbs: ["Richieste"],
+          pageTitle: "Impostazioni Profilo",
+          breadcrumbs: ["Impostazioni Profilo"],
         },
       },
       {

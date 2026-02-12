@@ -53,6 +53,16 @@
           </li>
           <li class="nav-item nav-divider"></li>
           <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="showWorkInProgress">
+              <span class="nav-link-text">Registrazione</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click.prevent="showWorkInProgress">
+              <span class="nav-link-text">Accedi</span>
+            </a>
+          </li>
+          <li class="nav-item">
             <button 
               class="btn-theme-switcher" 
               @click="toggleTheme"
@@ -76,7 +86,7 @@
           </li>
           <li class="nav-item">
             <router-link class="nav-link nav-link-login" to="/sign-in">
-              <span class="nav-link-text">Accedi</span>
+              <span class="nav-link-text">Portale Agenzia</span>
             </router-link>
           </li>
         </ul>
@@ -90,6 +100,7 @@ import { defineComponent, ref, onMounted, onUnmounted, nextTick, computed } from
 import { useRoute, useRouter } from "vue-router";
 import { getAssetPath } from "@/core/helpers/assets";
 import { useThemeStore } from "@/stores/theme";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default defineComponent({
   name: "landing-navbar",
@@ -164,12 +175,22 @@ export default defineComponent({
       themeStore.setThemeMode(newTheme);
     };
 
+    const showWorkInProgress = () => {
+      Swal.fire({
+        icon: "info",
+        title: "In arrivo",
+        text: "Questa funzionalità è attualmente in fase di sviluppo. Tornerà presto disponibile!",
+        confirmButtonText: "Ok",
+      });
+    };
+
     return {
       getAssetPath,
       isScrolled,
       handleAnchorClick,
       currentTheme,
       toggleTheme,
+      showWorkInProgress,
     };
   },
 });

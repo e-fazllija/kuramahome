@@ -307,7 +307,7 @@
                         </i>
                         <div class="flex-grow-1">
                           <div class="text-gray-700 fs-8 fw-semibold">Email</div>
-                          <div class="text-muted fs-9">support@kurama.com</div>
+                          <div class="text-muted fs-9">Info@MiraiHome.it</div>
                         </div>
                         <button 
                           @click="contactSupport"
@@ -319,16 +319,6 @@
                           </i>
                           Contatta Supporto
                         </button>
-                      </div>
-                      <div class="info-item mb-3">
-                        <i class="ki-duotone ki-phone fs-3 text-primary me-2">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        <div>
-                          <div class="text-gray-700 fs-8 fw-semibold">Telefono</div>
-                          <div class="text-muted fs-9">+39 123 456 7890</div>
-                        </div>
                       </div>
                       <div class="info-item">
                         <i class="ki-duotone ki-clock fs-3 text-primary me-2">
@@ -369,6 +359,7 @@
 import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { getCurrentSubscription, updateAutoRenew, type UserSubscription } from '@/core/data/subscription';
+import { syncMyPendingSubscription } from '@/core/data/billing';
 import PricingModal from '@/components/modals/PricingModal.vue';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
@@ -400,6 +391,11 @@ export default defineComponent({
     // Verifica se il piano corrente è Free (non rinnovabile)
     const isFreePlan = computed(() => {
       return subscription.value?.SubscriptionPlan?.Name?.toLowerCase() === 'free';
+    });
+
+    // Verifica se il piano è prepagato (senza Stripe Subscription: 3/6/12 mesi, pagamento una tantum)
+    const isPrepaidPlan = computed(() => {
+      return subscription.value && !subscription.value.StripeSubscriptionId;
     });
 
     // Determina se selezionare automaticamente il piano corrente
@@ -542,7 +538,15 @@ export default defineComponent({
       isLoading.value = true;
       try {
         subscription.value = await getCurrentSubscription();
-        
+
+        // Recupera eventuale Payment mancante (es. bonifico confermato su Stripe ma webhook invoice.paid non ricevuto)
+        try {
+          const syncResult = await syncMyPendingSubscription();
+          if (syncResult.Success && syncResult.PaymentId) {
+            subscription.value = await getCurrentSubscription();
+          }
+        } catch (_) { /* ignora errori sync */ }
+
         if (!subscription.value) {
           pricingMode.value = 'new';
         }
@@ -625,6 +629,27 @@ export default defineComponent({
     const toggleAutoRenew = async (event: Event) => {
       if (!subscription.value) return;
       const newValue = (event.target as HTMLInputElement).checked;
+
+      // Per i piani prepagati (3/6/12 mesi) non è previsto il pagamento ricorrente
+      if (newValue && isPrepaidPlan.value) {
+        await Swal.fire({
+          title: 'Pagamento ricorrente non disponibile',
+          html: `
+            <div class="text-start">
+              <p class="mb-3">Per i piani prepagati (3, 6 o 12 mesi) non è previsto il pagamento ricorrente.</p>
+              <p class="mb-0 text-muted fs-7">Il rinnovo automatico è disponibile solo per gli abbonamenti mensili da 1 mese.</p>
+            </div>
+          `,
+          icon: 'info',
+          confirmButtonText: 'Ho capito',
+          buttonsStyling: false,
+          heightAuto: false,
+          customClass: {
+            confirmButton: 'btn btn-primary fw-bold',
+          },
+        });
+        return;
+      }
 
       const result = await Swal.fire({
         title: newValue ? 'Riattivare il rinnovo automatico?' : 'Disattivare il rinnovo automatico?',

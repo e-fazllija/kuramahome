@@ -9,7 +9,7 @@ body:has(.auth-background-container) {
   height: 100vh;
 }
 
-/* Auth Background Container */
+/* Auth Background Container - stesso sfondo della landing (blu #3699FF e nero #0a0a0a) */
 .auth-background-container {
   min-height: 100vh;
   height: 100vh;
@@ -17,21 +17,19 @@ body:has(.auth-background-container) {
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #016974 0%, #014d56 100%);
+  /* Default light: gradiente blu come hero landing */
+  background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
   padding: 20px;
   overflow: hidden;
 }
 
-/* Background Image Overlay */
+[data-bs-theme="dark"] .auth-background-container {
+  background: linear-gradient(145deg, #0a0a0a 0%, #0d1520 30%, #0f1a28 100%);
+}
+
+/* Background Image Overlay - nascosto, usiamo il gradiente della landing */
 .auth-background-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
+  display: none;
 }
 
 /* Auth Card */
@@ -177,25 +175,19 @@ body:has(.auth-background-container) {
   color: #0095e8;
 }
 
-/* Background decorative elements (optional) */
+/* Background decorative elements - blu come hero landing */
 .auth-background-container::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(1, 105, 116, 0.2) 0%, transparent 70%);
-  animation: rotate 30s linear infinite;
+  top: -30%;
+  right: -15%;
+  width: 50%;
+  height: 160%;
+  background: radial-gradient(ellipse, rgba(54, 153, 255, 0.12) 0%, transparent 60%);
+  transform: rotate(-10deg);
   z-index: 0;
 }
 
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+[data-bs-theme="dark"] .auth-background-container::before {
+  background: radial-gradient(ellipse, rgba(54, 153, 255, 0.08) 0%, transparent 60%);
 }
-

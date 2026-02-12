@@ -1,24 +1,28 @@
+/* Stesso sfondo della hero landing - blu #3699FF e nero #0a0a0a */
 .property-search-section {
   padding: 60px 0;
-  background: linear-gradient(135deg, var(--bs-body-bg) 0%, rgba(0, 119, 204, 0.08) 100%);
+  background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
 }
 
 [data-bs-theme="dark"] .property-search-section {
-  background: linear-gradient(135deg, #1a1a1a 0%, rgba(0, 119, 204, 0.15) 100%);
+  background: linear-gradient(145deg, #0a0a0a 0%, #0d1520 30%, #0f1a28 100%);
 }
 
+/* Card coerente con lo sfondo landing - blu e nero */
 .property-search-card {
-  background: var(--bs-body-bg);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 119, 204, 0.08);
+  box-shadow: 0 25px 70px rgba(54, 153, 255, 0.12);
+  border: 1px solid rgba(54, 153, 255, 0.2);
 }
 
 [data-bs-theme="dark"] .property-search-card {
-  background: #1f1f1f;
-  border-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  background: rgba(15, 26, 40, 0.9);
+  border-color: rgba(54, 153, 255, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
 }
 
 .property-search-copy .badge {

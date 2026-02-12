@@ -249,6 +249,7 @@
               </i>
             </button>
             <button
+              v-if="canDeleteAgent(agent)"
               type="button"
               class="btn btn-action btn-action-danger"
               @click.stop="deleteItem(agent)"
@@ -434,9 +435,9 @@ export default defineComponent({
     });
     const exportFilters = ref<AgentExportPayload>(buildDefaultExportFilters());
 
-    async function getItems(agencyFilter: string, filterRequest: string) {
+    async function getItems(agencyFilterParam: string, filterRequest: string) {
       try {
-        const result = await getAgents(agencyFilter, filterRequest);
+        const result = await getAgents(agencyFilterParam, filterRequest);
         tableData.value = result || [];
       } catch (error) {
         console.error('Error fetching agents:', error);
@@ -449,7 +450,7 @@ export default defineComponent({
       if (store.user.Role == "Admin") {
         defaultSearchItems.value = await getSearchItems(store.user.Id, "");
       }
-      // Imposta filtro su "Tutti gli agenti" all'apertura
+      // Agency e Admin: "Tutti gli agenti" all'apertura (il backend filtra per cerchia/ stesso Admin)
       agencyFilter.value = "";
       await getItems(agencyFilter.value, "");
       initItems.value.splice(0, tableData.value.length, ...tableData.value);
@@ -508,6 +509,13 @@ export default defineComponent({
           }
         }
       }
+      return false;
+    };
+
+    // L'Agency può eliminare solo i propri agenti; l'Admin può eliminare tutti quelli in lista (propri + delle sue Agency)
+    const canDeleteAgent = (agent: Agent): boolean => {
+      if (user.Role === "Admin") return true;
+      if (user.Role === "Agency") return (agent.AdminId ?? "") === (user.Id ?? "");
       return false;
     };
 
@@ -830,6 +838,7 @@ export default defineComponent({
       getInitials,
       getAgentColor,
       getAgentDisplayName,
+      canDeleteAgent,
       copyToClipboard,
       canCreateAgent,
       handleNewAgentClick,

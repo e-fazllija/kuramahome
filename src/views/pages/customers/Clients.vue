@@ -801,13 +801,17 @@ export default defineComponent({
       }
     };
 
-    // Funzione per verificare se un cliente può essere eliminato
+    // Funzione per verificare se un cliente può essere eliminato (pulsante Elimina visibile solo con accesso completo)
     const canDeleteCustomer = (customer: CustomerTabelData): boolean => {
+      // Mostra Elimina solo se si ha accesso completo (FULL); mai per sola lettura o accesso limitato
+      if (customer.AccessLevel !== undefined && customer.AccessLevel !== AccessLevel.FULL) {
+        return false;
+      }
       // Gli Agent possono eliminare solo i propri clienti
       if (user.Role === "Agent") {
         return customer.UserId === user.Id;
       }
-      // Admin e Agency possono eliminare tutti i clienti della loro cerchia
+      // Admin e Agency: Elimina visibile solo per i clienti della propria cerchia (AccessLevel FULL)
       return true;
     };
 

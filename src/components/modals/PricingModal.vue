@@ -41,6 +41,13 @@
                   </i>
                 </span>
               </div>
+              <div class="landing-trial-badge mb-3 mx-auto" style="max-width: 360px;">
+                <i class="ki-duotone ki-gift fs-4 text-success me-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                <strong>10 giorni gratuiti</strong> – nessuna carta richiesta per iniziare
+              </div>
               <h1 class="fw-bolder mb-3 fs-2x pricing-text-primary">Scegli il piano perfetto per te</h1>
               <p class="fs-5 fw-semibold pricing-text-secondary">Benvenuto <span class="text-primary">{{ displayEmail }}</span>! Seleziona il piano che meglio si adatta alle tue esigenze</p>
             </div>
@@ -53,61 +60,61 @@
               <h3 class="fw-bold mb-2 pricing-text-primary">Caricamento piani di abbonamento...</h3>
             </div>
 
-            <!-- Pricing Cards - Solo piani mensili base -->
-            <div v-else-if="!selectedPlan && !showMultiMonthGrid" class="row g-5 mb-10">
-              <!-- Dynamic Plan Cards -->
+            <!-- Pricing Cards - Più piccole con prepagate sotto -->
+            <div v-else-if="!selectedPlan && !showMultiMonthGrid" class="row g-4 mb-8">
               <div v-for="(plan, index) in monthlyBasePlans" :key="plan.Id" class="col-lg-4">
-                <div class="card pricing-card h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
-                  <!-- Badge "Consigliato" solo per il secondo piano -->
+                <div class="card pricing-card pricing-card-compact h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
                   <div v-if="index === 1" class="pricing-badge">
                     <span class="badge badge-primary">Consigliato</span>
                   </div>
-                  
-                  <div class="card-body d-flex flex-column p-8">
-                    <div class="text-center mb-7">
-                      <div class="pricing-icon-wrapper mb-5">
-                        <!-- Icone dinamiche basate sull'indice -->
-                        <i v-if="index === 0" class="ki-duotone ki-rocket fs-3x text-primary">
+                  <div class="card-body d-flex flex-column p-5">
+                    <div class="text-center mb-4">
+                      <div class="pricing-icon-wrapper pricing-icon-compact mb-3">
+                        <i v-if="index === 0" class="ki-duotone ki-rocket fs-2x text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        <i v-else-if="index === 1" class="ki-duotone ki-crown fs-3x text-primary">
+                        <i v-else-if="index === 1" class="ki-duotone ki-crown fs-2x text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        <i v-else class="ki-duotone ki-shield-tick fs-3x text-primary">
+                        <i v-else class="ki-duotone ki-shield-tick fs-2x text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
-                      <h3 class="fw-bold mb-2 pricing-text-primary">{{ plan.Name }}</h3>
-                      <div class="pricing-price mb-3">
-                        <span class="fs-2x fw-bolder pricing-text-primary">€{{ plan.Price }}</span>
-                        <span class="fs-6 fw-semibold pricing-text-secondary">/{{ plan.BillingPeriod === 'monthly' ? 'mese' : 'anno' }}</span>
+                      <h3 class="fw-bold mb-1 fs-5 pricing-text-primary">{{ plan.Name }}</h3>
+                      <div class="pricing-price mb-2">
+                        <span class="fs-3 fw-bolder pricing-text-primary">€{{ Math.round(Number(plan.Price)) }}</span>
+                        <span class="fs-7 fw-semibold pricing-text-secondary">/mese</span>
                       </div>
-                      <p class="fs-7 mb-0 pricing-text-secondary" style="min-height: 60px; line-height: 1.5;">
-                        {{ plan.Description ? plan.Description.substring(0, 100) + (plan.Description.length > 100 ? '...' : '') : 'Piano di abbonamento' }}
+                      <p class="small mb-0 pricing-text-secondary" style="min-height: 36px; line-height: 1.4; font-size: 0.8rem;">
+                        {{ plan.Description ? plan.Description.substring(0, 70) + (plan.Description.length > 70 ? '...' : '') : 'Piano di abbonamento' }}
                       </p>
                     </div>
-                    
-                    <div class="flex-grow-1 mb-7">
+                    <div class="flex-grow-1 mb-4">
                       <div class="pricing-features">
-                        <!-- Features dinamiche dal database -->
-                        <div v-for="feature in plan.Features" :key="feature.Id" class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
+                        <div v-for="(feature, fi) in (plan.Features || []).slice(0, 5)" :key="feature.Id" class="pricing-feature pricing-feature-compact mb-2">
+                          <i class="ki-duotone ki-check-circle fs-4 text-success me-2">
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold pricing-text-primary">
-                            {{ feature.Description }}
-                          </span>
+                          <span class="fw-semibold pricing-text-primary small">{{ feature.Description }}</span>
                         </div>
                       </div>
                     </div>
-
+                    <!-- Prepagate 3, 6, 12 mesi -->
+                    <div v-if="getPrepaidOptionsForPlan(plan.Name).length" class="prepaid-options-block mb-3">
+                      <div class="prepaid-options-label text-muted small mb-1">Prepagare</div>
+                      <div class="prepaid-options-row d-flex flex-wrap gap-2 justify-content-center">
+                        <span v-for="opt in getPrepaidOptionsForPlan(plan.Name)" :key="opt.months" class="prepaid-option-badge">
+                          {{ opt.months }} mesi €{{ opt.price }} <span class="text-success">-{{ opt.discountPercent }}%</span>
+                        </span>
+                      </div>
+                    </div>
                     <button 
                       @click="selectPlan(plan.Name.toLowerCase())"
-                      class="btn btn-lg w-100 pricing-btn"
+                      class="btn btn-sm w-100 pricing-btn"
                       :class="index === 1 ? 'btn-primary' : 'btn-light-primary'"
                     >
                       <span class="fw-bold">Seleziona {{ plan.Name }}</span>
@@ -153,17 +160,17 @@
                   <div class="card-body d-flex flex-column p-6 text-center">
                     <h4 class="fw-bold mb-3 pricing-text-primary">{{ durationPlan.durationLabel }}</h4>
                     <div class="pricing-price mb-3">
-                      <span class="fs-2x fw-bolder pricing-text-primary">€{{ durationPlan.Price }}</span>
+                      <span class="fs-2x fw-bolder pricing-text-primary">€{{ Math.round(Number(durationPlan.Price)) }}</span>
                       <span v-if="durationPlan.months === 1" class="fs-6 fw-semibold pricing-text-secondary">/mese</span>
                     </div>
                     <div v-if="durationPlan.months > 1" class="mb-3">
                       <span class="fs-7 pricing-text-secondary">
-                        €{{ (durationPlan.Price / durationPlan.months).toFixed(2) }}/mese
+                        €{{ Math.round(Number(durationPlan.Price) / durationPlan.months) }}/mese
                       </span>
                     </div>
                     <div v-if="durationPlan.originalPrice && durationPlan.originalPrice > durationPlan.Price" class="mb-2">
                       <span class="fs-7 text-muted text-decoration-line-through">
-                        €{{ durationPlan.originalPrice.toFixed(2) }}
+                        €{{ Math.round(Number(durationPlan.originalPrice)) }}
                       </span>
                     </div>
                     <button 
@@ -225,7 +232,7 @@
                       <div v-if="upgradeCreditCalculation.CreditAmount > 0" class="mb-2">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                           <span class="pricing-text-secondary">Prezzo nuovo piano:</span>
-                          <span class="fw-semibold pricing-text-primary">€{{ upgradeCreditCalculation.OriginalAmount?.toFixed(2) || getPlanPrice(selectedPlan).toFixed(2) }}</span>
+                          <span class="fw-semibold pricing-text-primary">€{{ Math.round(upgradeCreditCalculation.OriginalAmount ?? getPlanPrice(selectedPlan)) }}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                           <span class="pricing-text-secondary">
@@ -235,17 +242,17 @@
                             </i>
                             Credito residuo ({{ upgradeCreditCalculation.DaysRemaining }} giorni):
                           </span>
-                          <span class="fw-semibold text-success">-€{{ upgradeCreditCalculation.CreditAmount?.toFixed(2) || '0.00' }}</span>
+                          <span class="fw-semibold text-success">-€{{ Math.round(upgradeCreditCalculation.CreditAmount ?? 0) }}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                           <span class="fw-bold pricing-text-primary">Totale da pagare:</span>
-                          <span class="fs-3 fw-bolder text-primary">€{{ upgradeCreditCalculation.FinalAmount?.toFixed(2) || getPlanPrice(selectedPlan).toFixed(2) }}</span>
+                          <span class="fs-3 fw-bolder text-primary">€{{ Math.round(upgradeCreditCalculation.FinalAmount ?? getPlanPrice(selectedPlan)) }}</span>
                         </div>
                       </div>
                       <div v-else class="mb-2">
                         <div class="d-flex justify-content-between align-items-center">
                           <span class="fw-bold pricing-text-primary">Totale da pagare:</span>
-                          <span class="fs-3 fw-bolder text-primary">€{{ getPlanPrice(selectedPlan).toFixed(2) }}</span>
+                          <span class="fs-3 fw-bolder text-primary">€{{ Math.round(getPlanPrice(selectedPlan)) }}</span>
                         </div>
                       </div>
                       <p v-if="upgradeCreditCalculation.CreditAmount > 0" class="fs-8 text-muted mb-0 mt-3">
@@ -254,7 +261,7 @@
                           <span class="path2"></span>
                           <span class="path3"></span>
                         </i>
-                        Il credito del tuo abbonamento attuale è stato applicato all'importo.
+                        Il credito (giorni non goduti) è stato sottratto dal nuovo piano. La scadenza parte da oggi per la durata scelta (es. 12 mesi se hai scelto annuale).
                       </p>
                     </div>
 
@@ -409,6 +416,23 @@ export default defineComponent({
       });
     };
 
+    // Opzioni prepagate per un piano base (da mostrare sotto ogni card)
+    const getPrepaidOptionsForPlan = (basePlanName: string): Array<{ months: number; price: number; discountPercent: number }> => {
+      const relatedPlans = getRelatedPlans(basePlanName);
+      const basePlan = relatedPlans.find(p => p.Name.toLowerCase() === basePlanName.toLowerCase() && p.BillingPeriod === 'monthly');
+      if (!basePlan) return [];
+      const monthlyPrice = basePlan.Price;
+      const PREPAID_DISCOUNTS = { months3: 5, months6: 10, months12: 15 } as const;
+      const result: Array<{ months: number; price: number; discountPercent: number }> = [];
+      const plan3 = relatedPlans.find(p => p.Name.toLowerCase().includes('3 months') || (p.BillingPeriod === 'quarterly' && p.Name.toLowerCase().startsWith(basePlanName.toLowerCase())));
+      const plan6 = relatedPlans.find(p => p.Name.toLowerCase().includes('6 months') || (p.BillingPeriod === 'semiannual' && p.Name.toLowerCase().startsWith(basePlanName.toLowerCase())));
+      const plan12 = relatedPlans.find(p => p.Name.toLowerCase().includes('12 months') || ((p.BillingPeriod === 'annual' || p.BillingPeriod === 'yearly') && p.Name.toLowerCase().startsWith(basePlanName.toLowerCase())));
+      if (plan3) result.push({ months: 3, price: Math.round(plan3.Price * 100) / 100, discountPercent: PREPAID_DISCOUNTS.months3 });
+      if (plan6) result.push({ months: 6, price: Math.round(plan6.Price * 100) / 100, discountPercent: PREPAID_DISCOUNTS.months6 });
+      if (plan12) result.push({ months: 12, price: Math.round(plan12.Price * 100) / 100, discountPercent: PREPAID_DISCOUNTS.months12 });
+      return result;
+    };
+
     // Prepara i piani multi-mese per la griglia
     const multiMonthPlans = computed(() => {
       if (!selectedBasePlanName.value) return [];
@@ -429,53 +453,59 @@ export default defineComponent({
         originalPrice: undefined
       });
 
-      // 3 mesi
+      // Sconti fissi prepagate: 3 mesi 5%, 6 mesi 10%, 12 mesi 15%
+      const PREPAID_DISCOUNTS = { months3: 5, months6: 10, months12: 15 } as const;
+
+      // 3 mesi (sconto 5%)
       const plan3Months = relatedPlans.find(p => 
         p.Name.toLowerCase().includes('3 months') || 
         (p.BillingPeriod === 'quarterly' && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
       );
       if (plan3Months) {
-        const originalPrice = monthlyPrice * 3;
-        const discount = ((originalPrice - plan3Months.Price) / originalPrice) * 100;
+        const originalPrice = Math.round(monthlyPrice * 3 * 100) / 100;
+        const priceWithDiscount = Math.round(originalPrice * (1 - PREPAID_DISCOUNTS.months3 / 100) * 100) / 100;
         result.push({
           ...plan3Months,
+          Price: priceWithDiscount,
           months: 3,
           durationLabel: '3 Mesi',
-          discountPercent: Math.round(discount),
+          discountPercent: PREPAID_DISCOUNTS.months3,
           originalPrice: originalPrice
         });
       }
 
-      // 6 mesi
+      // 6 mesi (sconto 10%)
       const plan6Months = relatedPlans.find(p => 
         p.Name.toLowerCase().includes('6 months') || 
         (p.BillingPeriod === 'semiannual' && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
       );
       if (plan6Months) {
-        const originalPrice = monthlyPrice * 6;
-        const discount = ((originalPrice - plan6Months.Price) / originalPrice) * 100;
+        const originalPrice = Math.round(monthlyPrice * 6 * 100) / 100;
+        const priceWithDiscount = Math.round(originalPrice * (1 - PREPAID_DISCOUNTS.months6 / 100) * 100) / 100;
         result.push({
           ...plan6Months,
+          Price: priceWithDiscount,
           months: 6,
           durationLabel: '6 Mesi',
-          discountPercent: Math.round(discount),
+          discountPercent: PREPAID_DISCOUNTS.months6,
           originalPrice: originalPrice
         });
       }
 
-      // 12 mesi
+      // 12 mesi (sconto 15%)
       const plan12Months = relatedPlans.find(p => 
         p.Name.toLowerCase().includes('12 months') || 
         ((p.BillingPeriod === 'annual' || p.BillingPeriod === 'yearly') && p.Name.toLowerCase().startsWith(selectedBasePlanName.value.toLowerCase()))
       );
       if (plan12Months) {
-        const originalPrice = monthlyPrice * 12;
-        const discount = ((originalPrice - plan12Months.Price) / originalPrice) * 100;
+        const originalPrice = Math.round(monthlyPrice * 12 * 100) / 100;
+        const priceWithDiscount = Math.round(originalPrice * (1 - PREPAID_DISCOUNTS.months12 / 100) * 100) / 100;
         result.push({
           ...plan12Months,
+          Price: priceWithDiscount,
           months: 12,
           durationLabel: '12 Mesi',
-          discountPercent: Math.round(discount),
+          discountPercent: PREPAID_DISCOUNTS.months12,
           originalPrice: originalPrice
         });
       }
@@ -551,16 +581,37 @@ export default defineComponent({
       return endDate < today || currentSubscription.value.Status?.toLowerCase() === 'expired';
     });
 
-    // Verifica se è un downgrade (nuovo piano costa meno del corrente)
+    // Ordine del livello dei piani (per ricorrenti e prepagate: non si può passare a un piano più basso)
+    const PLAN_TIER_ORDER: Record<string, number> = {
+      free: 0,
+      basic: 1,
+      pro: 2,
+      premium: 3,
+    };
+    const getPlanTier = (planName: string): number => {
+      const name = (planName || '').toLowerCase();
+      if (name.startsWith('premium')) return PLAN_TIER_ORDER.premium;
+      if (name.startsWith('pro')) return PLAN_TIER_ORDER.pro;
+      if (name.startsWith('basic')) return PLAN_TIER_ORDER.basic;
+      if (name.startsWith('free')) return PLAN_TIER_ORDER.free;
+      return 0;
+    };
+
+    // Verifica se è un downgrade: piano più basso (livello o prezzo). Vale per ricorrenti e prepagate.
     const isDowngrade = (newPlan: SubscriptionPlan): boolean => {
       if (!currentSubscription.value?.SubscriptionPlan) {
         return false; // Se non c'è abbonamento corrente, non è un downgrade
       }
-      
-      const currentPlanPrice = currentSubscription.value.SubscriptionPlan.Price || 0;
+      const currentPlan = currentSubscription.value.SubscriptionPlan;
+      const currentPlanPrice = currentPlan.Price || 0;
       const newPlanPrice = newPlan.Price || 0;
-      
-      return newPlanPrice < currentPlanPrice;
+      const currentTier = getPlanTier(currentPlan.Name || '');
+      const newTier = getPlanTier(newPlan.Name || '');
+      // Livello più basso (es. da Pro a Basic) = downgrade
+      if (newTier < currentTier) return true;
+      // Stesso livello ma prezzo minore (es. Basic 3 mesi → Basic mensile) = downgrade
+      if (newTier === currentTier && newPlanPrice < currentPlanPrice) return true;
+      return false;
     };
 
     onMounted(async () => {
@@ -690,11 +741,13 @@ export default defineComponent({
         // Se è un piano diverso = upgrade → PERMETTI (continua il flusso)
       }
 
-      // Verifica se è un downgrade
+      // Verifica se è un downgrade (nuovo piano costa meno del corrente)
       const isDowngradeAttempt = isDowngrade(selectedPlanObj);
-      
-      // Se è un downgrade E l'abbonamento è ancora attivo (non scaduto), blocca
-      if (isDowngradeAttempt && !isSubscriptionExpired.value) {
+      // Abbonamento "attivo" = non scaduto (vale per ricorrenti e prepagate)
+      const isSubscriptionActive = !isSubscriptionExpired.value;
+
+      // Se è un downgrade E l'abbonamento è ancora attivo (mensile o prepagato), blocca
+      if (isDowngradeAttempt && isSubscriptionActive) {
         const currentPlanName = currentSubscription.value?.SubscriptionPlan?.Name || 'attuale';
         const endDate = currentSubscription.value?.EndDate 
           ? new Date(currentSubscription.value.EndDate).toLocaleDateString('it-IT')
@@ -705,7 +758,7 @@ export default defineComponent({
           html: `
             <div class="text-start">
               <p class="mb-4 pricing-text-primary">
-                Non puoi fare il downgrade mentre il tuo abbonamento è ancora attivo.
+                Non puoi fare il downgrade mentre il tuo abbonamento è ancora attivo (mensile o prepagato).
               </p>
               <div class="bg-light-warning p-4 rounded mb-4">
                 <div class="d-flex align-items-center mb-2">
@@ -964,9 +1017,12 @@ export default defineComponent({
       }
 
       const clientSecret = await fetchClientSecretWithValue(isRecurring);
-      
+      if (clientSecret === '__NO_PAYMENT_REQUIRED__') {
+        await showPaymentSuccess(isRecurring);
+        emit('success');
+        return;
+      }
       currentPaymentIntentIsRecurring = isRecurring;
-      
       const appearance = {
         theme: 'stripe' as const,
         variables: {
@@ -1008,16 +1064,32 @@ export default defineComponent({
 
     const fetchClientSecretWithValue = async (isRecurring: boolean): Promise<string> => {
       try {
+        const planName = selectedPlan.value as string;
+        if (!planName) {
+          const msg = 'Nessun piano selezionato. Seleziona un piano prima di procedere al pagamento.';
+          showMessage(msg);
+          throw new Error(msg);
+        }
+        const amountCents = Math.round(getPlanPrice(planName) * 100);
+        if (amountCents <= 0) {
+          const msg = 'Impossibile procedere: il prezzo del piano non è disponibile o è zero. Ricarica la pagina o scegli un altro piano.';
+          showMessage(msg);
+          throw new Error(msg);
+        }
         const res = await createPaymentIntent({
-          plan: selectedPlan.value as string,
-          amount: getPlanPrice(selectedPlan.value as string) * 100,
+          plan: planName,
+          amount: amountCents,
           currency: 'eur',
           email: props.email,
           isRecurringPayment: isRecurring
         });
+        if (res?.NoPaymentRequired) {
+          currentPaymentIntentIsRecurring = isRecurring;
+          return '__NO_PAYMENT_REQUIRED__';
+        }
         if (!res?.ClientSecret) throw new Error('Risposta non valida dal server');
         lastClientSecret = res.ClientSecret;
-        currentPaymentIntentId = res.PaymentIntentId;
+        currentPaymentIntentId = res.PaymentIntentId ?? null;
         currentPaymentIntentIsRecurring = isRecurring;
         return res.ClientSecret;
       } catch (error: any) {
@@ -1213,6 +1285,7 @@ export default defineComponent({
       getPlanById,
       getPlanByName,
       handleSubmit,
+      getPrepaidOptionsForPlan,
     };
   },
 });
