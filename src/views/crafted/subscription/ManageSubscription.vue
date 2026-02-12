@@ -307,7 +307,7 @@
                         </i>
                         <div class="flex-grow-1">
                           <div class="text-gray-700 fs-8 fw-semibold">Email</div>
-                          <div class="text-muted fs-9">support@kurama.com</div>
+                          <div class="text-muted fs-9">Info@MiraiHome.it</div>
                         </div>
                         <button 
                           @click="contactSupport"
@@ -319,16 +319,6 @@
                           </i>
                           Contatta Supporto
                         </button>
-                      </div>
-                      <div class="info-item mb-3">
-                        <i class="ki-duotone ki-phone fs-3 text-primary me-2">
-                          <span class="path1"></span>
-                          <span class="path2"></span>
-                        </i>
-                        <div>
-                          <div class="text-gray-700 fs-8 fw-semibold">Telefono</div>
-                          <div class="text-muted fs-9">+39 123 456 7890</div>
-                        </div>
                       </div>
                       <div class="info-item">
                         <i class="ki-duotone ki-clock fs-3 text-primary me-2">

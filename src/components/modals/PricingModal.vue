@@ -41,6 +41,13 @@
                   </i>
                 </span>
               </div>
+              <div class="landing-trial-badge mb-3 mx-auto" style="max-width: 360px;">
+                <i class="ki-duotone ki-gift fs-4 text-success me-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                <strong>10 giorni gratuiti</strong> – nessuna carta richiesta per iniziare
+              </div>
               <h1 class="fw-bolder mb-3 fs-2x pricing-text-primary">Scegli il piano perfetto per te</h1>
               <p class="fs-5 fw-semibold pricing-text-secondary">Benvenuto <span class="text-primary">{{ displayEmail }}</span>! Seleziona il piano che meglio si adatta alle tue esigenze</p>
             </div>
@@ -53,61 +60,61 @@
               <h3 class="fw-bold mb-2 pricing-text-primary">Caricamento piani di abbonamento...</h3>
             </div>
 
-            <!-- Pricing Cards - Solo piani mensili base -->
-            <div v-else-if="!selectedPlan && !showMultiMonthGrid" class="row g-5 mb-10">
-              <!-- Dynamic Plan Cards -->
+            <!-- Pricing Cards - Più piccole con prepagate sotto -->
+            <div v-else-if="!selectedPlan && !showMultiMonthGrid" class="row g-4 mb-8">
               <div v-for="(plan, index) in monthlyBasePlans" :key="plan.Id" class="col-lg-4">
-                <div class="card pricing-card h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
-                  <!-- Badge "Consigliato" solo per il secondo piano -->
+                <div class="card pricing-card pricing-card-compact h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
                   <div v-if="index === 1" class="pricing-badge">
                     <span class="badge badge-primary">Consigliato</span>
                   </div>
-                  
-                  <div class="card-body d-flex flex-column p-8">
-                    <div class="text-center mb-7">
-                      <div class="pricing-icon-wrapper mb-5">
-                        <!-- Icone dinamiche basate sull'indice -->
-                        <i v-if="index === 0" class="ki-duotone ki-rocket fs-3x text-primary">
+                  <div class="card-body d-flex flex-column p-5">
+                    <div class="text-center mb-4">
+                      <div class="pricing-icon-wrapper pricing-icon-compact mb-3">
+                        <i v-if="index === 0" class="ki-duotone ki-rocket fs-2x text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        <i v-else-if="index === 1" class="ki-duotone ki-crown fs-3x text-primary">
+                        <i v-else-if="index === 1" class="ki-duotone ki-crown fs-2x text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
-                        <i v-else class="ki-duotone ki-shield-tick fs-3x text-primary">
+                        <i v-else class="ki-duotone ki-shield-tick fs-2x text-primary">
                           <span class="path1"></span>
                           <span class="path2"></span>
                         </i>
                       </div>
-                      <h3 class="fw-bold mb-2 pricing-text-primary">{{ plan.Name }}</h3>
-                      <div class="pricing-price mb-3">
-                        <span class="fs-2x fw-bolder pricing-text-primary">€{{ Math.round(Number(plan.Price)) }}</span>
-                        <span class="fs-6 fw-semibold pricing-text-secondary">/{{ plan.BillingPeriod === 'monthly' ? 'mese' : 'anno' }}</span>
+                      <h3 class="fw-bold mb-1 fs-5 pricing-text-primary">{{ plan.Name }}</h3>
+                      <div class="pricing-price mb-2">
+                        <span class="fs-3 fw-bolder pricing-text-primary">€{{ Math.round(Number(plan.Price)) }}</span>
+                        <span class="fs-7 fw-semibold pricing-text-secondary">/mese</span>
                       </div>
-                      <p class="fs-7 mb-0 pricing-text-secondary" style="min-height: 60px; line-height: 1.5;">
-                        {{ plan.Description ? plan.Description.substring(0, 100) + (plan.Description.length > 100 ? '...' : '') : 'Piano di abbonamento' }}
+                      <p class="small mb-0 pricing-text-secondary" style="min-height: 36px; line-height: 1.4; font-size: 0.8rem;">
+                        {{ plan.Description ? plan.Description.substring(0, 70) + (plan.Description.length > 70 ? '...' : '') : 'Piano di abbonamento' }}
                       </p>
                     </div>
-                    
-                    <div class="flex-grow-1 mb-7">
+                    <div class="flex-grow-1 mb-4">
                       <div class="pricing-features">
-                        <!-- Features dinamiche dal database -->
-                        <div v-for="feature in plan.Features" :key="feature.Id" class="pricing-feature mb-4">
-                          <i class="ki-duotone ki-check-circle fs-2 text-success me-2">
+                        <div v-for="(feature, fi) in (plan.Features || []).slice(0, 5)" :key="feature.Id" class="pricing-feature pricing-feature-compact mb-2">
+                          <i class="ki-duotone ki-check-circle fs-4 text-success me-2">
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
-                          <span class="fw-semibold pricing-text-primary">
-                            {{ feature.Description }}
-                          </span>
+                          <span class="fw-semibold pricing-text-primary small">{{ feature.Description }}</span>
                         </div>
                       </div>
                     </div>
-
+                    <!-- Prepagate 3, 6, 12 mesi -->
+                    <div v-if="getPrepaidOptionsForPlan(plan.Name).length" class="prepaid-options-block mb-3">
+                      <div class="prepaid-options-label text-muted small mb-1">Prepagare</div>
+                      <div class="prepaid-options-row d-flex flex-wrap gap-2 justify-content-center">
+                        <span v-for="opt in getPrepaidOptionsForPlan(plan.Name)" :key="opt.months" class="prepaid-option-badge">
+                          {{ opt.months }} mesi €{{ opt.price }} <span class="text-success">-{{ opt.discountPercent }}%</span>
+                        </span>
+                      </div>
+                    </div>
                     <button 
                       @click="selectPlan(plan.Name.toLowerCase())"
-                      class="btn btn-lg w-100 pricing-btn"
+                      class="btn btn-sm w-100 pricing-btn"
                       :class="index === 1 ? 'btn-primary' : 'btn-light-primary'"
                     >
                       <span class="fw-bold">Seleziona {{ plan.Name }}</span>
@@ -407,6 +414,23 @@ export default defineComponent({
                (baseName === 'pro' && planName.startsWith('pro') && !planName.startsWith('premium')) ||
                (baseName === 'premium' && planName.startsWith('premium'));
       });
+    };
+
+    // Opzioni prepagate per un piano base (da mostrare sotto ogni card)
+    const getPrepaidOptionsForPlan = (basePlanName: string): Array<{ months: number; price: number; discountPercent: number }> => {
+      const relatedPlans = getRelatedPlans(basePlanName);
+      const basePlan = relatedPlans.find(p => p.Name.toLowerCase() === basePlanName.toLowerCase() && p.BillingPeriod === 'monthly');
+      if (!basePlan) return [];
+      const monthlyPrice = basePlan.Price;
+      const PREPAID_DISCOUNTS = { months3: 5, months6: 10, months12: 15 } as const;
+      const result: Array<{ months: number; price: number; discountPercent: number }> = [];
+      const plan3 = relatedPlans.find(p => p.Name.toLowerCase().includes('3 months') || (p.BillingPeriod === 'quarterly' && p.Name.toLowerCase().startsWith(basePlanName.toLowerCase())));
+      const plan6 = relatedPlans.find(p => p.Name.toLowerCase().includes('6 months') || (p.BillingPeriod === 'semiannual' && p.Name.toLowerCase().startsWith(basePlanName.toLowerCase())));
+      const plan12 = relatedPlans.find(p => p.Name.toLowerCase().includes('12 months') || ((p.BillingPeriod === 'annual' || p.BillingPeriod === 'yearly') && p.Name.toLowerCase().startsWith(basePlanName.toLowerCase())));
+      if (plan3) result.push({ months: 3, price: Math.round(plan3.Price * 100) / 100, discountPercent: PREPAID_DISCOUNTS.months3 });
+      if (plan6) result.push({ months: 6, price: Math.round(plan6.Price * 100) / 100, discountPercent: PREPAID_DISCOUNTS.months6 });
+      if (plan12) result.push({ months: 12, price: Math.round(plan12.Price * 100) / 100, discountPercent: PREPAID_DISCOUNTS.months12 });
+      return result;
     };
 
     // Prepara i piani multi-mese per la griglia
@@ -1261,6 +1285,7 @@ export default defineComponent({
       getPlanById,
       getPlanByName,
       handleSubmit,
+      getPrepaidOptionsForPlan,
     };
   },
 });

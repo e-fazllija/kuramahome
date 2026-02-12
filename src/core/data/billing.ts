@@ -68,6 +68,20 @@ export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
 };
 
 /**
+ * Recupera i piani per la landing: solo Basic, Pro, Premium mensili
+ * @returns Lista dei 3 piani base (esclude Free e varianti prepagate)
+ */
+export const getLandingPlans = async (): Promise<SubscriptionPlan[]> => {
+  try {
+    const response = await ApiService.get("/billing/landing-plans", "json");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching landing plans:", error);
+    throw error;
+  }
+};
+
+/**
  * Recupera lo stato dell'abbonamento corrente dell'utente
  * @returns Stato dell'abbonamento (usa il token JWT per identificare l'utente)
  */
