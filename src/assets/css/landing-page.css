@@ -290,6 +290,10 @@
 
 /* Hero Section - palette blu e nero dal logo */
 .hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 120px 0 80px;
   /* Default light: sfumature blu chiare */
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
@@ -297,20 +301,13 @@
   overflow: hidden;
 }
 
-/* Logo come sfondo decorativo */
-.hero-logo-bg {
-  position: absolute;
-  top: 100px;
-  left: 2%;
-  width: 55%;
-  max-width: 520px;
-  height: 220px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: left top;
-  opacity: 0.35;
-  pointer-events: none;
-  z-index: 0;
+/* Logo sopra il titolo nella hero */
+.hero-content-logo {
+  display: block;
+  max-width: 800px;
+  height: auto;
+  margin-bottom: 1.5rem;
+  object-fit: contain;
 }
 
 /* Light mode: gradiente blu chiaro */
@@ -318,18 +315,12 @@
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
 }
 
-[data-bs-theme="light"] .hero-logo-bg {
-  opacity: 0.35;
-}
 
 /* Dark mode: nero e blu come nel logo */
 [data-bs-theme="dark"] .hero-section {
   background: linear-gradient(145deg, #0a0a0a 0%, #0d1520 30%, #0f1a28 100%);
 }
 
-[data-bs-theme="dark"] .hero-logo-bg {
-  opacity: 0.3;
-}
 
 /* Hero decorative elements - blu e nero */
 .hero-section::before {
@@ -532,7 +523,11 @@
 
 /* Featured Properties Section - banner come altre sezioni */
 .featured-properties-section {
-  padding: 80px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 80px;
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
 }
 
@@ -583,7 +578,7 @@
 
 @media (max-width: 768px) {
   .featured-properties-section {
-    padding: 60px 0;
+    padding: 100px 0 60px;
   }
   .featured-properties-banner {
     padding: 1.5rem;
@@ -593,7 +588,11 @@
 /* Features Section */
 /* Features - stesso sfondo della landing (blu e nero) */
 .features-section {
-  padding: 100px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 80px;
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
 }
 
@@ -661,7 +660,11 @@
 
 /* Benefits Section */
 .benefits-section {
-  padding: 100px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 80px;
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
 }
 
@@ -751,7 +754,11 @@
 
 /* CTA Section */
 .cta-section {
-  padding: 100px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 80px;
   background: linear-gradient(145deg, #3699FF 0%, #0d4a8a 50%, #0a3d6d 100%);
   position: relative;
   overflow: hidden;
@@ -822,13 +829,12 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-section {
-    padding: 100px 0 60px;
+    padding: 110px 0 70px;
   }
 
-  .hero-logo-bg {
-    width: 65%;
-    height: 180px;
-    top: 100px;
+  .hero-content-logo {
+    max-width: 320px;
+    margin-bottom: 1rem;
   }
   
   .hero-title {
@@ -838,7 +844,7 @@
   .features-section,
   .benefits-section,
   .cta-section {
-    padding: 60px 0;
+    padding: 100px 0 60px;
   }
   
   .section-title {
@@ -963,7 +969,11 @@ html {
 }
 
 .pricing-section {
-  padding: 100px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 80px;
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
   position: relative;
 }
@@ -1979,7 +1989,11 @@ html {
    ======================================== */
 
 .how-it-works-section {
-  padding: 100px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 80px;
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
 }
 
@@ -2144,7 +2158,11 @@ html {
    ======================================== */
 
 .faq-section {
-  padding: 100px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 80px;
   background: linear-gradient(145deg, #f0f6fc 0%, #e8f2fe 25%, #dbeafe 45%, #eff6ff 100%);
 }
 
@@ -2276,7 +2294,7 @@ html {
   .how-it-works-section,
   .testimonials-section,
   .faq-section {
-    padding: 60px 0;
+    padding: 100px 0 60px;
   }
   
   .pricing-card-featured-landing {

@@ -6,12 +6,15 @@
 
     <!--begin::Hero Section-->
     <section class="hero-section">
-      <!-- Logo decorativo in sfondo -->
-      <div class="hero-logo-bg" :style="{ backgroundImage: `url('${getAssetPath('media/logos/kurama-home-logos/logo-menu.png')}')` }"></div>
       <div class="container">
-        <div class="row align-items-center min-vh-100">
+        <div class="row align-items-center hero-row">
           <div class="col-lg-6">
             <div class="hero-content">
+              <img 
+                :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" 
+                alt="MiraiHome" 
+                class="hero-content-logo"
+              />
               <h1 class="hero-title">
                 Gestisci la tua Agenzia Immobiliare con 
                 <span class="text-primary">MiraiHome</span>
@@ -244,11 +247,21 @@
                             <img :src="property.MainPhotoUrl || placeholderImage" :alt="property.Title" />
                             <span class="badge badge-primary property-badge" v-if="property.Highlighted">In evidenza</span>
                             <span class="badge badge-warning property-badge" v-if="property.Auction">Asta</span>
+                            <span class="badge badge-info property-badge" v-if="property.Negotiation">In trattativa</span>
                           </div>
                           <div class="property-card-body">
                             <div class="property-card-header">
                               <h4 class="property-card-title">{{ property.Title }}</h4>
-                              <div class="property-price">{{ formatPrice(property.Price) }}</div>
+                              <div class="property-price d-flex align-items-center gap-2 flex-wrap">
+                                <span v-if="property.PriceReduced && property.PriceReduced > 0 && property.PriceReduced < property.Price" class="d-flex flex-column gap-1">
+                                  <span class="text-decoration-line-through text-danger small">{{ formatPrice(property.Price) }}</span>
+                                  <span class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold">{{ formatPrice(property.PriceReduced) }}</span>
+                                    <span class="text-success fw-semibold small">-{{ Math.round(((property.Price - property.PriceReduced) / property.Price) * 100) }}%</span>
+                                  </span>
+                                </span>
+                                <span v-else>{{ formatPrice(property.Price) }}</span>
+                              </div>
                             </div>
                             <div class="property-location text-muted mb-2">
                               <i class="ki-duotone ki-geolocation me-2">

@@ -27,6 +27,11 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="#featured-properties" @click="handleAnchorClick">
+              <span class="nav-link-text">Scopri gli immobili disponibili</span>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="#features" @click="handleAnchorClick">
               <span class="nav-link-text">Funzionalità</span>
             </a>

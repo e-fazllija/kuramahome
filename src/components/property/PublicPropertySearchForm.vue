@@ -139,7 +139,7 @@
 import { defineComponent, reactive, ref, watch, onMounted, computed, type PropType } from "vue";
 import type { PublicPropertySearchFilters } from "@/core/data/properties";
 import { useProvinces } from "@/composables/useProvinces";
-import { getProvinceCities, getProvinceCodeByName, getProvinceNameByCode, type CityWithCAP } from "@/core/data/italian-geographic-data-loader";
+import { getProvinceCities, getProvinceNameByCode, type CityWithCAP } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "public-property-search-form",
@@ -295,11 +295,13 @@ export default defineComponent({
       formFilters.city = initial?.city || "";
       formFilters.priceMin = initial?.priceMin ?? null;
       formFilters.priceMax = initial?.priceMax ?? null;
-      formFilters.province = initial?.province || "";
 
-      selectedProvinceName.value = initial?.province
-        ? getProvinceNameByCode(initial.province) || ""
+      // Province: il backend usa il NOME in State (es. "Roma"). Supportiamo sia codice (RM) che nome nelle initial
+      const provinceVal = initial?.province || "";
+      selectedProvinceName.value = provinceVal
+        ? (getProvinceNameByCode(provinceVal) || provinceVal)
         : "";
+      formFilters.province = selectedProvinceName.value || provinceVal;
 
       if (selectedProvinceName.value) {
         loadCitiesForProvince(selectedProvinceName.value).then(() => {
@@ -331,7 +333,8 @@ export default defineComponent({
         return;
       }
 
-      formFilters.province = getProvinceCodeByName(newProvince) || newProvince;
+      // Il backend RealEstateProperty.State contiene il NOME della provincia (es. "Roma"), non il codice
+      formFilters.province = newProvince;
       formFilters.city = "";
       await loadCitiesForProvince(newProvince);
     });
