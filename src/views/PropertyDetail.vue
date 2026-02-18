@@ -45,12 +45,12 @@
           <div v-if="property.Photos && property.Photos.length > 0" class="row g-0">
             <!-- Main Photo -->
             <div class="col-12">
-              <div class="position-relative" style="height: 60vh; min-height: 500px; overflow: hidden;">
+              <div class="position-relative property-detail-hero">
                 <img 
                   :src="currentPhoto.Url" 
                   :alt="property.Title" 
                   class="w-100 h-100"
-                  style="object-fit: cover;"
+                  style="object-fit: contain;"
                 />
                 <div class="position-absolute top-0 end-0 p-3 d-flex gap-2">
                   <span v-if="property.Highlighted" class="badge bg-primary fs-6 px-3 py-2">
@@ -98,7 +98,7 @@
                         :src="photo.Url" 
                         :alt="`Foto ${index + 1}`"
                         class="w-100 h-100"
-                        style="object-fit: cover;"
+                        style="object-fit: contain;"
                       />
                       <div v-if="currentPhotoIndex === index" class="position-absolute top-0 start-0 w-100 h-100 bg-primary bg-opacity-25"></div>
                     </div>
@@ -575,6 +575,17 @@ export default defineComponent({
 .property-detail-page {
   min-height: 100vh;
   background: var(--bs-body-bg);
+}
+
+.property-detail-hero {
+  height: 60vh;
+  min-height: 500px;
+  overflow: hidden;
+  background: var(--bs-gray-100, #f8f9fa);
+}
+
+[data-bs-theme="dark"] .property-detail-hero {
+  background: #2c2c2c;
 }
 
 .thumbnail-wrapper {

@@ -709,8 +709,8 @@ export default defineComponent({
         { FeatureName: "storage_limit", FeatureValue: "10", Description: "10 GB storage" },
       ]},
       { Name: "Premium", Features: [
-        { FeatureName: "max_agencies", FeatureValue: "unlimited", Description: "Agenzie illimitate" },
-        { FeatureName: "max_agents", FeatureValue: "unlimited", Description: "Agenti illimitati" },
+        { FeatureName: "max_agencies", FeatureValue: "10", Description: "Massimo 10 agenzie" },
+        { FeatureName: "max_agents", FeatureValue: "50", Description: "Massimo 50 agenti" },
         { FeatureName: "max_properties", FeatureValue: "unlimited", Description: "Immobili illimitati" },
         { FeatureName: "max_customers", FeatureValue: "unlimited", Description: "Clienti illimitati" },
         { FeatureName: "max_requests", FeatureValue: "unlimited", Description: "Richieste illimitate" },

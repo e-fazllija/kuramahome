@@ -176,6 +176,27 @@ export function getProvinceNameByCode(provinceCode: string): string | undefined 
 }
 
 /**
+ * Restituisce tutti i comuni che condividono lo stesso CAP in una provincia
+ * @param provinceName - Nome della provincia
+ * @param cap - CAP del comune
+ * @returns Array di nomi comuni (può essere vuoto o con più elementi)
+ */
+function getCitiesByCAPInternal(provinceName: string, cap: string): string[] {
+  if (!provinceName || !cap) {
+    return [];
+  }
+  const normalizedCAP = cap.toString().padStart(5, '0');
+  let cities: CityWithCAP[] = [];
+  if (provinceCitiesCache?.[provinceName]) {
+    cities = provinceCitiesCache[provinceName];
+  } else if (provinceCities[provinceName]) {
+    cities = provinceCities[provinceName];
+  }
+  if (!cities.length) return [];
+  return cities.filter(c => c.CAP === normalizedCAP).map(c => c.Name);
+}
+
+/**
  * Funzione per ottenere il comune dato provincia e CAP
  * Se ci sono più comuni con lo stesso CAP, restituisce il primo trovato
  * @param provinceName - Nome della provincia
@@ -183,22 +204,14 @@ export function getProvinceNameByCode(provinceCode: string): string | undefined 
  * @returns Il nome del comune o undefined se non trovato
  */
 export function getCityByCAP(provinceName: string, cap: string): string | undefined {
-  if (!provinceName || !cap) {
-    return undefined;
-  }
+  const matches = getCitiesByCAPInternal(provinceName, cap);
+  return matches[0];
+}
 
-  // Normalizza il CAP a 5 cifre
-  const normalizedCAP = cap.toString().padStart(5, '0');  // Se i dati sono già in cache, usali direttamente
-  if (provinceCitiesCache && provinceCitiesCache[provinceName]) {
-    const cities = provinceCitiesCache[provinceName];
-    const city = cities.find(c => c.CAP === normalizedCAP);
-    return city?.Name;
-  }
-  
-  // Altrimenti prova con i dati sincroni (potrebbero essere ancora in caricamento)
-  const cities = provinceCities[provinceName];
-  if (!cities) return undefined;
-  
-  const city = cities.find(c => c.CAP === normalizedCAP);
-  return city?.Name;
+/**
+ * Restituisce tutti i comuni con un dato CAP. Utile per verificare ambiguità
+ * (es. Gallicano nel Lazio e Casape hanno entrambi CAP 00010)
+ */
+export function getAllCitiesByCAP(provinceName: string, cap: string): string[] {
+  return getCitiesByCAPInternal(provinceName, cap);
 }

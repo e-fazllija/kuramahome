@@ -64,9 +64,9 @@
                   <span class="path5"></span>
                 </i>
               </div>
-              <div class="fs-5 fw-bold text-primary mb-2">Funzione Premium</div>
+              <div class="fs-5 fw-bold text-primary mb-2">Funzione Pro</div>
               <p class="text-muted mb-4">
-                <span v-if="isAdmin">Contenuto disponibile con piano Premium.</span>
+                <span v-if="isAdmin">Contenuto disponibile con piano Pro.</span>
                 <span v-else>La possibilità di aggiornare o fare l'upgrade è disponibile solo per l'amministratore.</span>
               </p>
               <router-link v-if="isAdmin" to="/dashboard/subscription/manage" class="btn btn-primary">
@@ -220,7 +220,7 @@
         
         <!--begin::Support Link-->
         <div class="mt-8">
-          <a href="mailto:support@kurama.com" class="text-gray-600 text-hover-primary fs-6 fw-semibold">
+          <a href="mailto:support@miraihome.it" class="text-gray-600 text-hover-primary fs-6 fw-semibold">
             <i class="ki-duotone ki-message-text-2 fs-5 me-2">
               <span class="path1"></span>
               <span class="path2"></span>

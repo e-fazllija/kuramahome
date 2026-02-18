@@ -429,7 +429,7 @@ const createRealEstateProperty = async (form: any) => {
   const formData = new FormData();
 
   // Campi da ignorare (non inviati al backend)
-  const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label', 'EffectiveCommission'];
+  const ignoreFields = ['Files', 'Photos', 'User', 'Customer', 'RealEstatePropertyNotes', 'UpdateDate', 'CreationDate', 'Id', 'label'];
 
   for (const key in cleanedValues) {
     if (ignoreFields.includes(key) || cleanedValues[key as keyof RealEstateProperty] === undefined) {
