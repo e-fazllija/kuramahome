@@ -67,6 +67,9 @@
                     </i>
                     Asta
                   </span>
+                  <span v-if="property.Negotiation" class="badge bg-info fs-6 px-3 py-2">
+                    In trattativa
+                  </span>
                 </div>
                 <!-- Photo Counter -->
                 <div v-if="property.Photos.length > 1" class="position-absolute bottom-0 end-0 p-3">
@@ -141,6 +144,7 @@
               <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
                   <div class="d-flex align-items-baseline flex-wrap gap-3 mb-3">
+                    <span v-if="property.Negotiation" class="badge bg-info fs-6">In trattativa</span>
                     <span class="display-4 fw-bold text-primary">{{ formatPrice(property.Price) }}</span>
                     <span v-if="property.PriceReduced > 0" class="text-muted text-decoration-line-through fs-4">
                       {{ formatPrice(property.PriceReduced) }}

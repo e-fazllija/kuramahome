@@ -151,11 +151,13 @@ export interface PublicPropertyCard {
   City: string;
   State: string;
   Price: number;
+  PriceReduced?: number;
   CommercialSurfaceate: number;
   Bedrooms: number;
   Bathrooms: number;
   Highlighted: boolean;
   Auction: boolean;
+  Negotiation?: boolean;
   Status: string;
   MainPhotoUrl?: string | null;
 }
@@ -634,6 +636,7 @@ export interface PublicPropertyDetail {
   VideoUrl?: string;
   Highlighted: boolean;
   Auction: boolean;
+  Negotiation: boolean;
   CreationDate: string;
   Photos: Array<{ Url: string; Position: number }>;
   Agency?: {
