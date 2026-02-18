@@ -743,7 +743,7 @@ export default defineComponent({
         `Cordiali saluti`
       );
 
-      window.location.href = `mailto:support@kurama.com?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:support@miraihome.it?subject=${subject}&body=${body}`;
     };
 
     onMounted(() => {

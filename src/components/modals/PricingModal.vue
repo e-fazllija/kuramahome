@@ -60,7 +60,7 @@
               <h3 class="fw-bold mb-2 pricing-text-primary">Caricamento piani di abbonamento...</h3>
             </div>
 
-            <!-- Pricing Cards - Più piccole con prepagate sotto -->
+            <!-- Pricing Cards -->
             <div v-else-if="!selectedPlan && !showMultiMonthGrid" class="row g-4 mb-8">
               <div v-for="(plan, index) in monthlyBasePlans" :key="plan.Id" class="col-lg-4">
                 <div class="card pricing-card pricing-card-compact h-100 shadow-sm hover-elevate-up" :class="{ 'pricing-card-featured shadow-lg': index === 1 }">
@@ -94,22 +94,13 @@
                     </div>
                     <div class="flex-grow-1 mb-4">
                       <div class="pricing-features">
-                        <div v-for="(feature, fi) in (plan.Features || []).slice(0, 5)" :key="feature.Id" class="pricing-feature pricing-feature-compact mb-2">
+                        <div v-for="(feature, fi) in getDisplayFeatures(plan)" :key="feature.Id" class="pricing-feature pricing-feature-compact mb-2">
                           <i class="ki-duotone ki-check-circle fs-4 text-success me-2">
                             <span class="path1"></span>
                             <span class="path2"></span>
                           </i>
                           <span class="fw-semibold pricing-text-primary small">{{ feature.Description }}</span>
                         </div>
-                      </div>
-                    </div>
-                    <!-- Prepagate 3, 6, 12 mesi -->
-                    <div v-if="getPrepaidOptionsForPlan(plan.Name).length" class="prepaid-options-block mb-3">
-                      <div class="prepaid-options-label text-muted small mb-1">Prepagare</div>
-                      <div class="prepaid-options-row d-flex flex-wrap gap-2 justify-content-center">
-                        <span v-for="opt in getPrepaidOptionsForPlan(plan.Name)" :key="opt.months" class="prepaid-option-badge">
-                          {{ opt.months }} mesi €{{ opt.price }} <span class="text-success">-{{ opt.discountPercent }}%</span>
-                        </span>
                       </div>
                     </div>
                     <button 
@@ -401,6 +392,20 @@ export default defineComponent({
         return isBasePlan && isMonthly;
       });
     });
+
+    // Features corrette per la visualizzazione (Premium: 10 agenzie, 50 agenti)
+    const getDisplayFeatures = (plan: SubscriptionPlan): Array<{ Id: number; Description?: string }> => {
+      const features = plan.Features || [];
+      const isPremium = plan.Name?.toLowerCase().startsWith('premium');
+      if (!isPremium) return features;
+
+      return features.map(f => {
+        const fn = (f as { FeatureName?: string }).FeatureName?.toLowerCase();
+        if (fn === 'max_agencies') return { ...f, Description: 'Massimo 10 agenzie' };
+        if (fn === 'max_agents') return { ...f, Description: 'Massimo 50 agenti' };
+        return f;
+      });
+    };
 
     // Trova i piani correlati (base + prepagati) per un piano mensile
     const getRelatedPlans = (basePlanName: string): SubscriptionPlan[] => {
@@ -1284,6 +1289,7 @@ export default defineComponent({
       getPlanDescription,
       getPlanById,
       getPlanByName,
+      getDisplayFeatures,
       handleSubmit,
       getPrepaidOptionsForPlan,
     };

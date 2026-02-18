@@ -1,7 +1,7 @@
 # Guida all'applicazione della Palette Colori
 
 ## Panoramica
-Questo documento descrive come applicare la palette colori personalizzata a tutti i componenti dell'applicazione KuramaHome.
+Questo documento descrive come applicare la palette colori personalizzata a tutti i componenti dell'applicazione Mirai Home.
 
 ## Palette Colori
 

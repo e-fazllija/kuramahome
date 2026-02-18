@@ -649,7 +649,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import { updateAgency, getAgency, deleteAgency } from "@/core/data/agencies";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useProvinces } from "@/composables/useProvinces";
-import { getCAPByCity, getCityByCAP, provinceCities } from "@/core/data/italian-geographic-data-loader";
+import { getCAPByCity, getAllCitiesByCAP, provinceCities } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "update-agency-modal",
@@ -765,13 +765,14 @@ export default defineComponent({
     );
 
     // Watcher per auto-compilare il comune quando si modifica il CAP
+    // Se più comuni condividono lo stesso CAP, NON sovrascrivere City
     watch(
       () => formData.value.ZipCode,
       (newCAP) => {
         if (newCAP && formData.value.Province) {
-          const city = getCityByCAP(formData.value.Province, newCAP);
-          if (city && formData.value.City !== city) {
-            formData.value.City = city;
+          const citiesWithCAP = getAllCitiesByCAP(formData.value.Province, newCAP);
+          if (citiesWithCAP.length === 1 && formData.value.City !== citiesWithCAP[0]) {
+            formData.value.City = citiesWithCAP[0];
           }
         }
       }
