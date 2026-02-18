@@ -452,7 +452,7 @@
               autocomplete="off"
               maxlength="16"
               placeholder="16 caratteri"
-              @input="formData.fiscalCode = formData.fiscalCode.toUpperCase()"
+              @input="(e) => { formData.fiscalCode = (e.target?.value || '').toUpperCase() }"
               style="text-transform: uppercase;"
             />
             <div class="fv-plugins-message-container">
@@ -813,7 +813,11 @@ export default defineComponent({
       zipCode: Yup.string().required("Il CAP è obbligatorio").label("CAP"),
       province: Yup.string().nullable().label("Provincia"),
       // Campi fiscali opzionali
-      fiscalCode: Yup.string().nullable().matches(/^[A-Z0-9]{0,16}$/, "Formato codice fiscale non valido").label("Codice Fiscale"),
+      fiscalCode: Yup.string()
+        .nullable()
+        .transform((v) => (v ? String(v).toUpperCase() : v))
+        .matches(/^[A-Z0-9]{0,16}$/, "Formato codice fiscale non valido")
+        .label("Codice Fiscale"),
       vatNumber: Yup.string().nullable().matches(/^(\d{11})?$/, "La partita IVA deve contenere 11 cifre").label("Partita IVA"),
       pec: Yup.string().nullable().email("Inserisci una PEC valida").label("PEC"),
       sdiCode: Yup.string().nullable().matches(/^[A-Z0-9]{0,7}$/, "Il codice SDI deve contenere max 7 caratteri").label("Codice SDI"),

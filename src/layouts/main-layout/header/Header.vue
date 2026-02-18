@@ -137,6 +137,39 @@
           </template>
         </nav>
         <!--end::Mobile Menu Content-->
+
+        <!--begin::Mobile Menu Footer - Impostazioni, Gestisci Abbonamento (Admin), Logout-->
+        <div class="mobile-menu-footer border-top p-3 d-flex flex-column gap-2">
+          <router-link
+            v-if="authStore.user?.Id"
+            :to="{ name: 'profile_details', params: { id: authStore.user.Id } }"
+            class="mobile-menu-item d-flex align-items-center justify-content-center text-decoration-none rounded py-3"
+            active-class="active"
+            @click="closeMobileMenu"
+          >
+            <KTIcon icon-name="setting-2" icon-class="fs-3 me-2" />
+            <span class="mobile-menu-title fw-semibold">Impostazioni</span>
+          </router-link>
+          <router-link
+            v-if="authStore.user?.Role === 'Admin'"
+            :to="{ name: 'manage-subscription' }"
+            class="mobile-menu-item d-flex align-items-center justify-content-center text-decoration-none rounded py-3"
+            active-class="active"
+            @click="closeMobileMenu"
+          >
+            <KTIcon icon-name="credit-cart" icon-class="fs-3 me-2" />
+            <span class="mobile-menu-title fw-semibold">Gestisci Abbonamento</span>
+          </router-link>
+          <button
+            type="button"
+            class="mobile-menu-item d-flex align-items-center justify-content-center text-decoration-none rounded py-3 border-0 bg-transparent w-100"
+            @click="signOut"
+          >
+            <KTIcon icon-name="exit-right" icon-class="fs-3 me-2" />
+            <span class="mobile-menu-title fw-semibold">Esci</span>
+          </button>
+        </div>
+        <!--end::Mobile Menu Footer-->
       </aside>
     </Transition>
   </Teleport>
@@ -146,6 +179,7 @@
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
 import { defineComponent, computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import KTHeaderMenu from "@/layouts/main-layout/header/menu/Menu.vue";
 import KTHeaderNavbar from "@/layouts/main-layout/header/Navbar.vue";
 import {
@@ -170,6 +204,7 @@ export default defineComponent({
     KTHeaderNavbar,
   },
   setup() {
+    const router = useRouter();
     const authStore = useAuthStore();
     const { t, te } = useI18n();
     const isMobileMenuOpen = ref(false);
@@ -217,6 +252,12 @@ export default defineComponent({
       document.body.style.overflow = '';
     };
 
+    const signOut = () => {
+      closeMobileMenu();
+      authStore.logout();
+      router.push({ name: "sign-in" });
+    };
+
     // Theme mode management
     const currentThemeMode = computed(() => {
       if (storeTheme.mode === "system") {
@@ -256,8 +297,10 @@ export default defineComponent({
       translate,
       toggleMobileMenu,
       closeMobileMenu,
+      signOut,
       currentThemeMode,
       toggleTheme,
+      authStore,
     };
   },
 });

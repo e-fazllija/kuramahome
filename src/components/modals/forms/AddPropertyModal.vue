@@ -1217,7 +1217,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import { createRealEstateProperty, RealEstateProperty, getToInsert, InsertModel } from "@/core/data/properties";
 import { useAuthStore } from "@/stores/auth";
 import Multiselect from '@vueform/multiselect'
-import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getCityByCAP } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getAllCitiesByCAP } from "@/core/data/italian-geographic-data-loader";
 
 export default defineComponent({
   name: "add-property-modal",
@@ -1466,15 +1466,18 @@ export default defineComponent({
         );
 
         // Watcher per auto-compilare il comune quando si modifica il CAP
+        // Se più comuni condividono lo stesso CAP (es. Gallicano nel Lazio e Casape = 00010),
+        // NON sovrascrivere City per evitare di sostituire il comune selezionato dall'utente
         watch(
           () => formData.value.PostCode,
           (newCAP) => {
             if (newCAP && formData.value.State) {
-              const cityName = getCityByCAP(formData.value.State, newCAP);
-              if (cityName && formData.value.City !== cityName) {
-                formData.value.City = cityName;
+              const citiesWithCAP = getAllCitiesByCAP(formData.value.State, newCAP);
+              if (citiesWithCAP.length === 1 && formData.value.City !== citiesWithCAP[0]) {
+                formData.value.City = citiesWithCAP[0];
                 clearFieldError("City");
               }
+              // Se length > 1 (CAP ambiguo): non modificare City, rispetta la selezione dell'utente
             }
             if (newCAP) {
               clearFieldError("PostCode");
@@ -1945,6 +1948,24 @@ export default defineComponent({
           formData.value.Exposure = selectedExposures.value.length > 0 
             ? selectedExposures.value.join('-') 
             : '';
+
+          // Calcola e assegna EffectiveCommission prima dell'invio (come in Update.vue)
+          let grossCommission = 0;
+          const agreedCommission = Number(formData.value.AgreedCommission);
+          const flatRateCommission = Number(formData.value.FlatRateCommission);
+          const price = Number(formData.value.Price);
+          const priceReduced = Number(formData.value.PriceReduced);
+          const storno = Number(formData.value.CommissionReversal) || 0;
+
+          const priceToUse = (price === -1) ? 0 : ((priceReduced && !Number.isNaN(priceReduced) && priceReduced > 0) ? priceReduced : price);
+
+          if (agreedCommission && !Number.isNaN(agreedCommission) && agreedCommission > 0 && priceToUse > 0) {
+            grossCommission = (priceToUse * agreedCommission) / 100;
+          } else if (flatRateCommission && !Number.isNaN(flatRateCommission) && flatRateCommission > 0) {
+            grossCommission = flatRateCommission;
+          }
+
+          formData.value.EffectiveCommission = Math.max(0, grossCommission - storno);
           
           try {
           const result = await createRealEstateProperty(formData.value);

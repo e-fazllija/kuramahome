@@ -1025,7 +1025,7 @@
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Modal } from "bootstrap";
-import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getCityByCAP } from "@/core/data/italian-geographic-data-loader";
+import { getAllProvinceNames, getCitiesByProvince, getCAPByCity, getAllCitiesByCAP } from "@/core/data/italian-geographic-data-loader";
 import {
   updateRealEstateProperty,
   RealEstateProperty,
@@ -1680,13 +1680,14 @@ export default defineComponent({
     );
 
     // Watcher per auto-compilare il comune quando si modifica il CAP
+    // Se più comuni condividono lo stesso CAP, NON sovrascrivere City
     watch(
       () => formData.value.PostCode,
       (newCAP) => {
         if (!firtLoad.value && newCAP && formData.value.State) {
-          const cityName = getCityByCAP(formData.value.State, newCAP);
-          if (cityName && formData.value.City !== cityName) {
-            formData.value.City = cityName;
+          const citiesWithCAP = getAllCitiesByCAP(formData.value.State, newCAP);
+          if (citiesWithCAP.length === 1 && formData.value.City !== citiesWithCAP[0]) {
+            formData.value.City = citiesWithCAP[0];
           }
         }
       }
