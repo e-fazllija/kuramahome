@@ -64,11 +64,23 @@
                 <span class="badge badge-warning property-badge" v-if="property.Auction">
                   Asta
                 </span>
+                <span class="badge badge-info property-badge" v-if="property.Negotiation">
+                  In trattativa
+                </span>
               </div>
               <div class="property-card-body">
                 <div class="property-card-header">
                   <h4 class="property-card-title">{{ property.Title }}</h4>
-                  <div class="property-price">{{ formatPrice(property.Price) }}</div>
+                  <div class="property-price d-flex align-items-center gap-2 flex-wrap">
+                    <span v-if="property.PriceReduced && property.PriceReduced > 0 && property.PriceReduced < property.Price" class="d-flex flex-column gap-1">
+                      <span class="text-decoration-line-through text-danger small">{{ formatPrice(property.Price) }}</span>
+                      <span class="d-flex align-items-center gap-2">
+                        <span class="fw-bold">{{ formatPrice(property.PriceReduced) }}</span>
+                        <span class="text-success fw-semibold small">-{{ Math.round(((property.Price - property.PriceReduced) / property.Price) * 100) }}%</span>
+                      </span>
+                    </span>
+                    <span v-else>{{ formatPrice(property.Price) }}</span>
+                  </div>
                 </div>
                 <div class="property-location text-muted mb-3">
                   <i class="ki-duotone ki-geolocation me-2">
@@ -262,8 +274,13 @@ export default defineComponent({
       isLoading.value = true;
       errorMessage.value = null;
       try {
+        // Normalizza provincia: il backend State usa il NOME (es. "Roma"), non il codice
+        const provinceForApi = currentFilters.province
+          ? (getProvinceNameByCode(currentFilters.province) || currentFilters.province)
+          : undefined;
         const payload: PublicPropertySearchFilters = {
           ...currentFilters,
+          province: provinceForApi,
           page: pagination.page,
           pageSize: pagination.pageSize,
         };
