@@ -22,7 +22,60 @@
       <!-- Menu Items from MainMenuConfig -->
       <template v-for="(item, i) in MainMenuConfig" :key="i">
         <template v-for="(menuItem, j) in item.pages" :key="j">
-          <div v-if="menuItem.heading" class="menu-item">
+
+          <!-- Dropdown group (Anagrafiche) -->
+          <div v-if="menuItem.heading && menuItem.sub" class="menu-item menu-item-dropdown">
+            <a class="menu-link py-3 menu-link-dropdown" href="#" @click.prevent>
+              <span v-if="menuItem.keenthemesIcon" class="menu-icon me-2">
+                <KTIcon :icon-name="menuItem.keenthemesIcon" icon-class="fs-3" />
+              </span>
+              <span class="menu-title">{{ translate(menuItem.heading) }}</span>
+              <span class="menu-dropdown-arrow ms-1">
+                <KTIcon icon-name="down" icon-class="fs-7" />
+              </span>
+            </a>
+            <div class="menu-sub-dropdown">
+              <template v-for="(subItem, k) in filteredSubItems(menuItem.sub)" :key="k">
+                <div v-if="subItem.heading" class="menu-item">
+                  <router-link
+                    v-if="subItem.route && !isSubscriptionRequired(subItem.route)"
+                    class="menu-link py-2"
+                    active-class="active"
+                    :to="subItem.route"
+                  >
+                    <span v-if="subItem.keenthemesIcon" class="menu-icon me-2">
+                      <KTIcon :icon-name="subItem.keenthemesIcon" icon-class="fs-4" />
+                    </span>
+                    <span class="menu-title">{{ translate(subItem.heading) }}</span>
+                  </router-link>
+                  <div
+                    v-else-if="subItem.route && isSubscriptionRequired(subItem.route) && subscriptionExpired"
+                    class="menu-link py-2 disabled subscription-expired"
+                    @click="handleSubscriptionExpiredClick"
+                  >
+                    <span v-if="subItem.keenthemesIcon" class="menu-icon me-2">
+                      <KTIcon :icon-name="subItem.keenthemesIcon" icon-class="fs-4" />
+                    </span>
+                    <span class="menu-title">{{ translate(subItem.heading) }}</span>
+                  </div>
+                  <router-link
+                    v-else-if="subItem.route"
+                    class="menu-link py-2"
+                    active-class="active"
+                    :to="subItem.route"
+                  >
+                    <span v-if="subItem.keenthemesIcon" class="menu-icon me-2">
+                      <KTIcon :icon-name="subItem.keenthemesIcon" icon-class="fs-4" />
+                    </span>
+                    <span class="menu-title">{{ translate(subItem.heading) }}</span>
+                  </router-link>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- Regular item -->
+          <div v-else-if="menuItem.heading" class="menu-item">
             <router-link 
               v-if="menuItem.route && !isSubscriptionRequired(menuItem.route)" 
               class="menu-link py-3" 
@@ -59,6 +112,7 @@
               <span class="menu-title">{{ translate(menuItem.heading) }}</span>
             </router-link>
           </div>
+
         </template>
       </template>
     </div>
@@ -74,6 +128,7 @@ import KTMenuPages from "@/layouts/main-layout/header/menu/MenuPages.vue";
 import { version } from "@/core/helpers/documentation";
 import { headerMenuDisplay } from "@/core/helpers/config";
 import MainMenuConfig from "@/core/config/MainMenuConfig";
+import type { MenuItem } from "@/core/config/MainMenuConfig";
 import { useAuthStore } from "@/stores/auth";
 import { useI18n } from "vue-i18n";
 
@@ -86,8 +141,16 @@ export default defineComponent({
     const { t, te } = useI18n();
     const authStore = useAuthStore();
 
-    // Filter menu items based on user role
-    MainMenuConfig[0].pages = MainMenuConfig[0].pages.filter(x => x.roleEnabled.includes(authStore.user.Role))
+    // Filter menu items based on user role (keep groups with at least one accessible sub-item)
+    MainMenuConfig[0].pages = MainMenuConfig[0].pages.filter(x =>
+      x.roleEnabled?.includes(authStore.user.Role) ||
+      x.sub?.some(subItem => subItem.roleEnabled?.includes(authStore.user.Role))
+    );
+
+    // Filter sub-items by user role
+    const filteredSubItems = (subItems: MenuItem[]) => {
+      return subItems.filter(x => x.roleEnabled?.includes(authStore.user.Role));
+    };
 
     // Controllo se l'abbonamento è scaduto
     const subscriptionExpired = computed(() => authStore.isSubscriptionExpired);
@@ -110,7 +173,6 @@ export default defineComponent({
     
     // Gestisce il click su menu item quando abbonamento scaduto
     const handleSubscriptionExpiredClick = () => {
-      // Reindirizza alla pagina abbonamento
       window.location.href = '/subscription';
     };
 
@@ -128,6 +190,7 @@ export default defineComponent({
       getAssetPath,
       MainMenuConfig,
       translate,
+      filteredSubItems,
       subscriptionExpired,
       isSubscriptionRequired,
       handleSubscriptionExpiredClick,

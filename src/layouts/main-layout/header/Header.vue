@@ -124,8 +124,38 @@
         <nav class="mobile-menu-content flex-grow-1 overflow-auto">
           <template v-for="(item, i) in filteredMenuConfig" :key="i">
             <template v-for="(menuItem, j) in item.pages" :key="j">
-              <router-link 
-                v-if="menuItem.heading && menuItem.route" 
+
+              <!-- Accordion group (es. Anagrafiche) -->
+              <template v-if="menuItem.heading && menuItem.sub">
+                <button
+                  class="mobile-menu-item mobile-menu-group-header d-flex align-items-center text-decoration-none rounded border-0 w-100"
+                  :class="{ 'active': openMobileGroup === menuItem.heading }"
+                  @click="toggleMobileGroup(menuItem.heading)"
+                >
+                  <span class="mobile-menu-title fw-semibold flex-grow-1 text-start">{{ translate(menuItem.heading) }}</span>
+                  <KTIcon
+                    :icon-name="openMobileGroup === menuItem.heading ? 'up' : 'down'"
+                    icon-class="fs-6"
+                  />
+                </button>
+                <div v-if="openMobileGroup === menuItem.heading" class="mobile-menu-sub-group">
+                  <template v-for="(subItem, k) in menuItem.sub" :key="k">
+                    <router-link
+                      v-if="subItem.heading && subItem.route"
+                      :to="subItem.route"
+                      class="mobile-menu-item mobile-menu-sub-item d-flex align-items-center justify-content-center text-decoration-none rounded"
+                      active-class="active"
+                      @click="closeMobileMenu"
+                    >
+                      <span class="mobile-menu-title fw-semibold">{{ translate(subItem.heading) }}</span>
+                    </router-link>
+                  </template>
+                </div>
+              </template>
+
+              <!-- Regular link (skip items moved to footer) -->
+              <router-link
+                v-else-if="menuItem.heading && menuItem.route && !menuItem.mobileInFooter"
                 :to="menuItem.route"
                 class="mobile-menu-item d-flex align-items-center justify-content-center text-decoration-none rounded"
                 active-class="active"
@@ -133,13 +163,23 @@
               >
                 <span class="mobile-menu-title fw-semibold">{{ translate(menuItem.heading) }}</span>
               </router-link>
+
             </template>
           </template>
         </nav>
         <!--end::Mobile Menu Content-->
 
-        <!--begin::Mobile Menu Footer - Impostazioni, Gestisci Abbonamento (Admin), Logout-->
+        <!--begin::Mobile Menu Footer - Archivio, Impostazioni, Gestisci Abbonamento (Admin), Logout-->
         <div class="mobile-menu-footer border-top p-3 d-flex flex-column gap-2">
+          <router-link
+            to="/dashboard/documentations"
+            class="mobile-menu-item d-flex align-items-center justify-content-center text-decoration-none rounded py-3"
+            active-class="active"
+            @click="closeMobileMenu"
+          >
+            <KTIcon icon-name="document" icon-class="fs-3 me-2" />
+            <span class="mobile-menu-title fw-semibold">Archivio</span>
+          </router-link>
           <router-link
             v-if="authStore.user?.Id"
             :to="{ name: 'profile_details', params: { id: authStore.user.Id } }"
@@ -178,7 +218,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent, computed, ref, type Ref } from "vue";
 import { useRouter } from "vue-router";
 import KTHeaderMenu from "@/layouts/main-layout/header/menu/Menu.vue";
 import KTHeaderNavbar from "@/layouts/main-layout/header/Navbar.vue";
@@ -208,6 +248,7 @@ export default defineComponent({
     const authStore = useAuthStore();
     const { t, te } = useI18n();
     const isMobileMenuOpen = ref(false);
+    const openMobileGroup: Ref<string | null> = ref(null);
     const storeTheme = useThemeStore();
     const storeConfig = useConfigStore();
     
@@ -219,13 +260,19 @@ export default defineComponent({
       return user?.FirstName || user?.LastName || "Utente";
     });
 
-    // Filter menu items based on user role
+    // Filter menu items (and sub-items) based on user role
     const filteredMenuConfig = computed(() => {
       return MainMenuConfig.map(section => ({
         ...section,
-        pages: section.pages?.filter(item => 
-          item.roleEnabled?.includes(authStore.user.Role)
-        ) || []
+        pages: section.pages
+          ?.filter(item =>
+            item.roleEnabled?.includes(authStore.user.Role) ||
+            item.sub?.some(sub => sub.roleEnabled?.includes(authStore.user.Role))
+          )
+          .map(item => ({
+            ...item,
+            sub: item.sub?.filter(sub => sub.roleEnabled?.includes(authStore.user.Role)),
+          })) || [],
       }));
     });
 
@@ -249,7 +296,12 @@ export default defineComponent({
 
     const closeMobileMenu = () => {
       isMobileMenuOpen.value = false;
+      openMobileGroup.value = null;
       document.body.style.overflow = '';
+    };
+
+    const toggleMobileGroup = (heading: string) => {
+      openMobileGroup.value = openMobileGroup.value === heading ? null : heading;
     };
 
     const signOut = () => {
@@ -293,10 +345,12 @@ export default defineComponent({
       headerMobileFixed,
       userFullName,
       isMobileMenuOpen,
+      openMobileGroup,
       filteredMenuConfig,
       translate,
       toggleMobileMenu,
       closeMobileMenu,
+      toggleMobileGroup,
       signOut,
       currentThemeMode,
       toggleTheme,

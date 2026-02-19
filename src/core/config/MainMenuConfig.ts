@@ -7,38 +7,39 @@ export interface MenuItem {
   bootstrapIcon?: string;
   roleEnabled?: string[];
   sub?: Array<MenuItem>;
+  mobileInFooter?: boolean;
 }
 
 const MainMenuConfig: Array<MenuItem> = [
   {
     pages: [
-      // {
-      //   heading: "dashboard",
-      //   route: "/dashboard",
-      //   keenthemesIcon: "element-11",
-      //   bootstrapIcon: "bi-app-indicator",
-      //   roleEnabled: ["Admin", "Agenzia", "Agente"],
-      // },
       {
-        heading: "Agenzie",
-        route: "/dashboard/agencies",
-        keenthemesIcon: "briefcase",
-        bootstrapIcon: "bi-briefcase",
-        roleEnabled: ["Admin"],
-      },
-      {
-        heading: "Agenti",
-        route: "/dashboard/agents",
-        keenthemesIcon: "profile-user",
-        bootstrapIcon: "bi-person",
-        roleEnabled: ["Admin", "Agency"],
-      },
-      {
-        heading: "Clienti",
-        route: "/dashboard/clients",
-        keenthemesIcon: "user-square",
-        bootstrapIcon: "bi-people",
+        heading: "Anagrafiche",
+        keenthemesIcon: "people",
         roleEnabled: ["Admin", "Agency", "Agent"],
+        sub: [
+          {
+            heading: "Agenzie",
+            route: "/dashboard/agencies",
+            keenthemesIcon: "briefcase",
+            bootstrapIcon: "bi-briefcase",
+            roleEnabled: ["Admin"],
+          },
+          {
+            heading: "Agenti",
+            route: "/dashboard/agents",
+            keenthemesIcon: "profile-user",
+            bootstrapIcon: "bi-person",
+            roleEnabled: ["Admin", "Agency"],
+          },
+          {
+            heading: "Clienti",
+            route: "/dashboard/clients",
+            keenthemesIcon: "user-square",
+            bootstrapIcon: "bi-people",
+            roleEnabled: ["Admin", "Agency", "Agent"],
+          },
+        ],
       },
       {
         heading: "Archivio",
@@ -46,6 +47,7 @@ const MainMenuConfig: Array<MenuItem> = [
         keenthemesIcon: "document",
         bootstrapIcon: "bi-file-text",
         roleEnabled: ["Admin", "Agency", "Agent"],
+        mobileInFooter: true,
       },
       {
         heading: "Richieste",
@@ -67,6 +69,13 @@ const MainMenuConfig: Array<MenuItem> = [
         keenthemesIcon: "calendar",
         bootstrapIcon: "bi-calendar",
         roleEnabled: ["Admin", "Agency", "Agent"],
+      },
+      {
+        heading: "Monitoraggio Chat",
+        route: "/dashboard/chat/monitoring",
+        keenthemesIcon: "eye",
+        bootstrapIcon: "bi-eye",
+        roleEnabled: ["Admin", "Agency"],
       },
     ],
   }

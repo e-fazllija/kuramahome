@@ -172,6 +172,16 @@ const routes: Array<RouteRecordRaw> = [
           breadcrumbs: ["Abbonamento"],
         },
       },
+      {
+        path: "chat/monitoring",
+        name: "chat-monitoring",
+        component: () => import("@/views/pages/chat/ChatMonitoring.vue"),
+        meta: {
+          pageTitle: "Monitoraggio Chat",
+          breadcrumbs: ["Chat", "Monitoraggio"],
+          requiresAdminOrAgency: true,
+        },
+      },
     ],
   },
   {
