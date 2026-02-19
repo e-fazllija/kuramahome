@@ -12,6 +12,7 @@ export class Documentation {
   IsPrivate?: boolean;
   ParentPath?: string;
   DisplayName?: string;
+  FileSizeBytes?: number;
   AgencyId?: string;
   UserId?: string;
   CreationDate?: Date;
@@ -26,12 +27,25 @@ export class CreateFolderRequest {
   ParentPath?: string;
 }
 
-const getDocumentations = (parentPath?: string): Promise<Array<Documentation>> => {
+export interface GetDocumentsResponse {
+  Documents: Documentation[];
+  TotalStorageUsedBytes: number;
+  LimitBytes: number | null;
+}
+
+const getDocumentations = (parentPath?: string): Promise<GetDocumentsResponse> => {
   const params = parentPath ? `?parentPath=${encodeURIComponent(parentPath)}` : "";
   return ApiService.get(`BlobStorage/GetDocuments${params}`, "")
     .then(({ data }) => {
-      const result = data as Partial<Array<Documentation>>;
-      return result;
+      const raw = data as any;
+      if (raw?.Documents) {
+        return {
+          Documents: raw.Documents,
+          TotalStorageUsedBytes: raw.TotalStorageUsedBytes ?? 0,
+          LimitBytes: raw.LimitBytes ?? null,
+        };
+      }
+      return { Documents: raw ?? [], TotalStorageUsedBytes: 0, LimitBytes: null };
     })
     .catch(({ response }) => {
       const errorMessage = response?.data?.Message || "Errore durante il caricamento dei documenti";
@@ -67,7 +81,12 @@ const uploadFile = async (file: File, parentPath?: string, isPrivate: boolean = 
       return result;
     })
     .catch(({ response }) => {
-      const errorMessage = response?.data?.Message || "Errore durante l'upload del file";
+      let errorMessage = response?.data?.Message;
+      if (!errorMessage && response?.status === 400) {
+        // Errore validazione ASP.NET (es. file troppo grande, form non parsabile)
+        errorMessage = "È stato superato il limite. Puoi caricare un solo file alla volta con dimensione massima di 30 MB.";
+      }
+      errorMessage = errorMessage || "Errore durante l'upload del file";
       store.setError(errorMessage, response?.status);
       throw new Error(errorMessage);
     });

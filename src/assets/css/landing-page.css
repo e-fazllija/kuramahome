@@ -60,11 +60,26 @@
   gap: 0.75rem;
 }
 
+/* Logo theme switching: light/dark mode */
+.logo-light {
+  display: block !important;
+}
+.logo-dark {
+  display: none !important;
+}
+html[data-bs-theme="dark"] .logo-light {
+  display: none !important;
+}
+html[data-bs-theme="dark"] .logo-dark {
+  display: block !important;
+}
+
 .navbar-logo {
   height: 40px;
   width: auto;
   transition: all 0.3s ease;
   filter: drop-shadow(0 1px 3px rgba(54, 153, 255, 0.2));
+  background: transparent;
 }
 
 .navbar-scrolled .navbar-logo {
@@ -308,6 +323,7 @@
   height: auto;
   margin-bottom: 1.5rem;
   object-fit: contain;
+  background: transparent;
 }
 
 /* Light mode: gradiente blu chiaro */
@@ -817,6 +833,10 @@
   align-items: center;
 }
 
+.footer-brand img {
+  background: transparent;
+}
+
 .footer-links a {
   text-decoration: none;
   transition: color 0.3s ease;
@@ -1007,9 +1027,9 @@ html {
 }
 
 
-/* Corner: icona prezzi */
+/* Corner: logo prezzi – stesso stile del logo hero (nessuno sfondo distinto) */
 .pricing-table-corner {
-  background: linear-gradient(145deg, var(--bs-bg-secondary) 0%, rgba(54, 153, 255, 0.06) 100%);
+  background: transparent;
   padding: 0.5rem 0.65rem;
   display: flex;
   align-items: center;
@@ -1019,16 +1039,18 @@ html {
 }
 
 [data-bs-theme="dark"] .pricing-table-corner {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(54, 153, 255, 0.08) 100%);
+  background: transparent;
   border-right-color: rgba(255, 255, 255, 0.08);
 }
 
 .pricing-corner-logo {
+  display: block;
   max-height: 32px;
   max-width: 70px;
   width: auto;
+  height: auto;
   object-fit: contain;
-  opacity: 0.9;
+  background: transparent;
 }
 
 [data-bs-theme="dark"] .pricing-corner-logo {

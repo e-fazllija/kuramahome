@@ -2,6 +2,147 @@
    Documentations Page - Breadcrumb & Modals
    ======================================== */
 
+/* Storage indicator */
+.storage-indicator {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-bs-theme="dark"] .storage-indicator {
+  background-color: var(--bs-gray-800) !important;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.storage-indicator-text {
+  white-space: nowrap;
+}
+
+/* === BOTTONI AZIONI TABELLA DOCUMENTI === */
+.doc-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.doc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100px;
+  min-width: 100px;
+  height: 36px;
+}
+
+.doc-btn i {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Apri cartella - blu */
+.doc-btn-open {
+  background-color: #3699ff;
+  color: #fff;
+  border-color: #3699ff;
+}
+
+.doc-btn-open:hover {
+  background-color: #2684e8;
+  border-color: #2684e8;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(54, 153, 255, 0.35);
+}
+
+.doc-btn-open:active {
+  transform: translateY(0);
+}
+
+/* Scarica - verde */
+.doc-btn-download {
+  background-color: #0bb783;
+  color: #fff;
+  border-color: #0bb783;
+}
+
+.doc-btn-download:hover {
+  background-color: #0a9d6f;
+  border-color: #0a9d6f;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(11, 183, 131, 0.35);
+}
+
+.doc-btn-download:active {
+  transform: translateY(0);
+}
+
+/* Elimina - rosso */
+.doc-btn-delete {
+  background-color: #f64e60;
+  color: #fff;
+  border-color: #f64e60;
+}
+
+.doc-btn-delete:hover {
+  background-color: #e83e50;
+  border-color: #e83e50;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(246, 78, 96, 0.35);
+}
+
+.doc-btn-delete:active {
+  transform: translateY(0);
+}
+
+/* Dark mode */
+[data-bs-theme="dark"] .doc-btn-open {
+  background-color: #3699ff;
+  color: #fff;
+  border-color: #3699ff;
+}
+
+[data-bs-theme="dark"] .doc-btn-open:hover {
+  background-color: #5ab3ff;
+  border-color: #5ab3ff;
+  box-shadow: 0 3px 12px rgba(54, 153, 255, 0.45);
+}
+
+[data-bs-theme="dark"] .doc-btn-download {
+  background-color: #0bb783;
+  color: #fff;
+  border-color: #0bb783;
+}
+
+[data-bs-theme="dark"] .doc-btn-download:hover {
+  background-color: #1cd99a;
+  border-color: #1cd99a;
+  box-shadow: 0 3px 12px rgba(11, 183, 131, 0.45);
+}
+
+[data-bs-theme="dark"] .doc-btn-delete {
+  background-color: #f64e60;
+  color: #fff;
+  border-color: #f64e60;
+}
+
+[data-bs-theme="dark"] .doc-btn-delete:hover {
+  background-color: #ff6b7a;
+  border-color: #ff6b7a;
+  box-shadow: 0 3px 12px rgba(246, 78, 96, 0.45);
+}
+
 /* Breadcrumb Navigation */
 .breadcrumb-custom {
   display: flex;

@@ -20,7 +20,32 @@
         </div>
       </div>
       <div class="card-toolbar">
-        <div class="d-flex gap-2">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <!-- Indicatore utilizzo storage -->
+          <div 
+            v-if="storageUsage !== null" 
+            class="storage-indicator d-flex align-items-center gap-2 px-3 py-2 rounded bg-light"
+          >
+            <div 
+              v-if="storageUsage?.limitBytes != null" 
+              class="storage-indicator-bar-wrapper flex-grow-1" 
+              style="min-width: 80px; max-width: 120px;"
+            >
+              <div 
+                class="storage-indicator-bar bg-secondary rounded overflow-hidden" 
+                style="height: 6px;"
+              >
+                <div 
+                  class="storage-indicator-fill h-100 rounded transition-all"
+                  :class="storageFillClass"
+                  :style="{ width: storagePercent + '%' }"
+                />
+              </div>
+            </div>
+            <span class="storage-indicator-text text-muted small fw-semibold">
+              {{ storageDisplayText }}
+            </span>
+          </div>
           <button 
             @click="showCreateFolderModal = true" 
             class="btn btn-sm btn-success"
@@ -250,49 +275,57 @@
             </div>
           </div>
         </template>
+        <template v-slot:FileSizeBytes="{ row: documentations }">
+          <span class="text-muted fs-7">
+            {{ documentations.IsFolder || documentations.FileSizeBytes == null ? '—' : formatBytes(documentations.FileSizeBytes) }}
+          </span>
+        </template>
         <template v-slot:Actions="{ row: documentations }">
-          <div class="d-flex gap-2 justify-content-center action-buttons">
+          <div class="doc-actions">
             <!-- Apri cartella -->
             <button 
               v-if="documentations.IsFolder"
               @click="navigateToFolder(getCurrentPath(documentations))"
-              class="btn btn-action btn-action-info"
+              class="doc-btn doc-btn-open"
               title="Apri cartella"
             >
-              <i class="ki-duotone ki-folder-open fs-4">
+              <i class="ki-duotone ki-folder-open fs-5">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
+              <span>Apri</span>
             </button>
             
             <!-- Scarica (solo per file) -->
             <a 
               v-if="!documentations.IsFolder"
-              class="btn btn-action btn-action-info" 
+              class="doc-btn doc-btn-download" 
               download 
               :href="documentations.FileUrl"
               title="Scarica documento"
             >
-              <i class="ki-duotone ki-file-down fs-4">
+              <i class="ki-duotone ki-file-down fs-5">
                 <span class="path1"></span>
                 <span class="path2"></span>
               </i>
+              <span>Scarica</span>
             </a>
             
             <!-- Elimina (solo se ha i permessi) -->
             <button 
               v-if="documentations.CanModify"
               @click="deleteItem(documentations.Id)" 
-              class="btn btn-action btn-action-danger"
+              class="doc-btn doc-btn-delete"
               :title="documentations.IsFolder ? 'Elimina cartella' : 'Elimina documento'"
             >
-            <i class="ki-duotone ki-trash fs-4">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                  <span class="path4"></span>
-                  <span class="path5"></span>
-                </i>
+              <i class="ki-duotone ki-trash fs-5">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
+              </i>
+              <span>Elimina</span>
             </button>
           </div>
         </template>
@@ -398,6 +431,38 @@ export default defineComponent({
     const showUploadModal = ref<boolean>(false);
     const newFolderName = ref<string>("");
 
+    // Storage usage per indicatore
+    const storageUsage = ref<{ usedBytes: number; limitBytes: number | null } | null>(null);
+
+    const formatBytes = (bytes: number): string => {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+      return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
+    };
+
+    const storageDisplayText = computed(() => {
+      const s = storageUsage.value;
+      if (!s) return "";
+      const used = formatBytes(s.usedBytes);
+      if (s.limitBytes == null) return `${used} utilizzati`;
+      const limit = formatBytes(s.limitBytes);
+      return `${used} / ${limit}`;
+    });
+
+    const storagePercent = computed(() => {
+      const s = storageUsage.value;
+      if (!s?.limitBytes || s.limitBytes <= 0) return 0;
+      return Math.min(100, Math.round((s.usedBytes / s.limitBytes) * 100));
+    });
+
+    const storageFillClass = computed(() => {
+      const p = storagePercent.value;
+      if (p >= 90) return "bg-danger";
+      if (p >= 70) return "bg-warning";
+      return "bg-success";
+    });
+
     const tableHeader = ref([
       {
         columnName: "Nome",
@@ -406,10 +471,16 @@ export default defineComponent({
         columnWidth: 175,
       },
       {
+        columnName: "Dimensione",
+        columnLabel: "FileSizeBytes",
+        sortEnabled: true,
+        columnWidth: 100,
+      },
+      {
         columnName: "Azioni",
         columnLabel: "Actions",
         sortEnabled: false,
-        columnWidth: 135,
+        columnWidth: 220,
       },
     ]);
 
@@ -469,14 +540,18 @@ export default defineComponent({
     const getItems = async () => {
       try {
         loading.value = true;
-        // Passa il path al backend (con agencyId se presente)
         const result = await getDocumentations(currentPath.value || undefined);
-        tableData.value = result || [];
+        tableData.value = result.Documents || [];
         initItems.value = [...tableData.value];
+        storageUsage.value = {
+          usedBytes: result.TotalStorageUsedBytes ?? 0,
+          limitBytes: result.LimitBytes ?? null,
+        };
       } catch (error) {
         console.error('Error fetching documentations:', error);
         tableData.value = [];
         initItems.value = [];
+        storageUsage.value = null;
       } finally {
         loading.value = false;
       }
@@ -690,6 +765,10 @@ export default defineComponent({
       showCreateFolderModal,
       showUploadModal,
       newFolderName,
+      storageUsage,
+      storageDisplayText,
+      storagePercent,
+      storageFillClass,
       
       // Funzioni
       navigateToFolder,
@@ -704,7 +783,8 @@ export default defineComponent({
       onItemSelect,
       deleteItem,
       clearAllFilters,
-      getSymbolVariant
+      getSymbolVariant,
+      formatBytes
     };
   },
 });

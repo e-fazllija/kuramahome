@@ -4,7 +4,8 @@
       <div class="row align-items-center">
         <div class="col-md-6">
           <div class="footer-brand">
-            <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="MiraiHome" height="30" />
+            <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="MiraiHome" height="30" class="logo-light" />
+            <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')" alt="MiraiHome" height="30" class="logo-dark" />
             <span class="ms-2 text-muted">© 2024 MiraiHome. Tutti i diritti riservati.</span>
           </div>
         </div>

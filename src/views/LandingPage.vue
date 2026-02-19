@@ -13,7 +13,12 @@
               <img 
                 :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" 
                 alt="MiraiHome" 
-                class="hero-content-logo"
+                class="hero-content-logo logo-light"
+              />
+              <img 
+                :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')" 
+                alt="MiraiHome" 
+                class="hero-content-logo logo-dark"
               />
               <h1 class="hero-title">
                 Gestisci la tua Agenzia Immobiliare con 
@@ -423,7 +428,8 @@
           <div class="pricing-table-grid">
             <!-- Riga header: corner con logo + 3 piani -->
             <div class="pricing-table-corner">
-              <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="MiraiHome" class="pricing-corner-logo" />
+              <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="MiraiHome" class="pricing-corner-logo logo-light" />
+              <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')" alt="MiraiHome" class="pricing-corner-logo logo-dark" />
             </div>
             <div 
               v-for="(plan, index) in pricingPlans" 
