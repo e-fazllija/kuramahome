@@ -24,7 +24,7 @@
             </div>
             <div>
               <h2 class="fw-bold m-0 text-gray-900 fs-3">📤 Carica File</h2>
-              <span class="text-muted fs-7 fw-semibold">Seleziona un file da caricare</span>
+              <span class="text-muted fs-7 fw-semibold">Un file alla volta, massimo 30 MB</span>
             </div>
           </div>
           <!--end::Modal title-->
@@ -64,6 +64,7 @@
                 accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.xls,.xlsx"
                 class="form-control form-control-lg"
               />
+              <div class="form-text mt-1">Dimensione massima: 30 MB. Un solo file per volta.</div>
               <!--end::Input-->
             </div>
             <!--end::Input group-->
@@ -151,8 +152,12 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, nextTick } from "vue";
-import { hideModal, showModal } from "@/core/helpers/dom";
+import { hideModal } from "@/core/helpers/dom";
 import { Modal } from "bootstrap";
+import Swal from "sweetalert2";
+
+const MAX_FILE_SIZE_BYTES = 30 * 1024 * 1024; // 30 MB
+const LIMIT_ERROR_MSG = "È stato superato il limite. Puoi caricare un solo file alla volta con dimensione massima di 30 MB.";
 
 export default defineComponent({
   name: "upload-file-modal",
@@ -212,16 +217,38 @@ export default defineComponent({
 
     const handleFileSelect = (event: Event) => {
       const input = event.target as HTMLInputElement;
-      if (input?.files && input.files.length > 0) {
-        selectedFile.value = input.files[0];
-      } else {
+      if (!input?.files || input.files.length === 0) {
         selectedFile.value = null;
+        return;
       }
+      const file = input.files[0];
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        selectedFile.value = null;
+        input.value = "";
+        Swal.fire({
+          text: LIMIT_ERROR_MSG,
+          icon: "error",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: { confirmButton: "btn btn-primary" },
+        });
+        return;
+      }
+      selectedFile.value = file;
     };
 
     const handleUpload = () => {
       if (!selectedFile.value) return;
-      
+      if (selectedFile.value.size > MAX_FILE_SIZE_BYTES) {
+        Swal.fire({
+          text: LIMIT_ERROR_MSG,
+          icon: "error",
+          confirmButtonText: "Ok",
+          buttonsStyling: false,
+          customClass: { confirmButton: "btn btn-primary" },
+        });
+        return;
+      }
       emit("upload", {
         file: selectedFile.value,
         isPrivate: isPrivateFile.value,

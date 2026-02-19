@@ -49,6 +49,23 @@ export const checkFeatureLimit = async (
   }
 };
 
+export interface StorageUsageResponse {
+  usedBytes: number;
+  limitBytes: number | null;
+}
+
+/**
+ * Recupera l'utilizzo storage in bytes e il limite del piano (null se illimitato)
+ */
+export const getStorageUsage = async (): Promise<StorageUsageResponse> => {
+  const response = await ApiService.get("SubscriptionLimit/storage-usage", "json");
+  const data = response.data;
+  return {
+    usedBytes: data.UsedBytes ?? data.usedBytes ?? 0,
+    limitBytes: data.LimitBytes ?? data.limitBytes ?? null,
+  };
+};
+
 /**
  * Recupera tutti i limiti dello stato per l'utente corrente
  * @returns Dictionary con tutti i limiti (chiave = featureName)
