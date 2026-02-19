@@ -11,9 +11,11 @@
         </div>
         <div class="col-md-6 text-md-end">
           <div class="footer-links">
+            <a href="https://www.iubenda.com/privacy-policy/35616219" target="_blank" class="text-muted me-3">Privacy Policy</a>
+            <a href="https://www.iubenda.com/privacy-policy/35616219/cookie-policy" target="_blank" class="text-muted me-3">Cookie Policy</a>
             <router-link to="/sign-in" class="text-muted me-3">Accedi</router-link>
             <router-link to="/sign-up" class="text-muted">Registrati</router-link>
-          </div>
+            </div>
         </div>
       </div>
     </div>

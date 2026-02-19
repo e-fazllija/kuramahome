@@ -992,7 +992,7 @@ export default defineComponent({
 
     const initializeStripe = async () => {
       try {
-        const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51SHzsSAgB3yYA7UTCqLukEvta52GEgLfLrtBk0b2EpSOaGfSvJq3Fxt0s92TvNOBuzZV6UamEf6oEOOsvploebJW00BXjVNBBL';
+        const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_live_51SI3wjBABjQkweDbsjBEbAE9UcpDGRwzSBj1Khfx6qYsbDNR1qFU29lsojCuZZx0EYjhc3Vz3DwoG9QZPszFdmhK00HtDpubDe';
         
         stripe = await loadStripe(publishableKey);
 

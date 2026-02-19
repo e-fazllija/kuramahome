@@ -23,18 +23,10 @@
       <!--begin::Menu-->
       <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
         <li class="menu-item">
-          <router-link
-            to="/privacy-policy"
-            target="_blank"
-            class="menu-link px-2"
-            >Privacy Policy</router-link>
+          <a href="https://www.iubenda.com/privacy-policy/35616219" target="_blank" class="text-muted me-3">Privacy Policy</a>
         </li>
         <li class="menu-item">
-          <router-link
-            to="/cookie-policy"
-            target="_blank"
-            class="menu-link px-2"
-            >Cookie Policy</router-link>
+          <a href="https://www.iubenda.com/privacy-policy/35616219/cookie-policy" target="_blank" class="text-muted me-3">Cookie Policy</a>
         </li>
         <li class="menu-item">
           <router-link
