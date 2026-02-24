@@ -179,7 +179,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Monitoraggio Chat",
           breadcrumbs: ["Chat", "Monitoraggio"],
-          requiresAdminOrAgency: true,
+          requiresAdmin: true,
         },
       },
     ],

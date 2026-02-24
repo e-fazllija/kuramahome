@@ -75,7 +75,7 @@ const MainMenuConfig: Array<MenuItem> = [
         route: "/dashboard/chat/monitoring",
         keenthemesIcon: "eye",
         bootstrapIcon: "bi-eye",
-        roleEnabled: ["Admin", "Agency"],
+        roleEnabled: ["Admin"],
       },
     ],
   }
