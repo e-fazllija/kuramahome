@@ -28,6 +28,7 @@
   <!--end::App-->
 
   <KTScrollTop />
+  <ChatPanel />
 </template>
 
 <script lang="ts">
@@ -44,6 +45,7 @@ import KTContent from "@/layouts/main-layout/content/Content.vue";
 import KTToolbar from "@/layouts/main-layout/toolbar/Toolbar.vue";
 import KTFooter from "@/layouts/main-layout/footer/Footer.vue";
 import KTScrollTop from "@/layouts/main-layout/extras/ScrollTop.vue";
+import ChatPanel from "@/components/chat/ChatPanel.vue";
 import { useRoute } from "vue-router";
 import { reinitializeComponents } from "@/core/plugins/keenthemes";
 import LayoutService from "@/core/services/LayoutService";
@@ -58,7 +60,8 @@ export default defineComponent({
     KTContent,
     KTToolbar,
     KTFooter,
-    KTScrollTop
+    KTScrollTop,
+    ChatPanel,
   },
   setup() {
     const route = useRoute();

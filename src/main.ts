@@ -23,6 +23,8 @@ import "@/core/plugins/prismjs";
 import "@/assets/css/palette-variables.css";
 // Import datatable styles
 import "@/assets/css/datatable.css";
+// Import chat styles
+import "@/assets/css/chat.css";
 
 const app = createApp(App);
 
