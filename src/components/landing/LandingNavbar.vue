@@ -3,7 +3,8 @@
     <div class="container">
       <router-link class="navbar-brand" to="/">
         <div class="navbar-brand-wrapper">
-          <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="MiraiHome" class="navbar-logo" />
+          <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')" alt="MiraiHome" class="navbar-logo logo-light" />
+          <img :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')" alt="MiraiHome" class="navbar-logo logo-dark" />
         </div>
       </router-link>
       
