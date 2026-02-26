@@ -35,6 +35,16 @@
 
       <!-- Subscription Management Layout -->
       <div>
+        <div v-if="subscription?.IsInGracePeriod" class="alert alert-warning d-flex align-items-center mb-5" role="alert">
+          <i class="ki-duotone ki-information-5 fs-2x me-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+            <span class="path3"></span>
+          </i>
+          <div>
+            <strong>Pagamento non riuscito.</strong> Stripe riproverà nei prossimi giorni. Per cambiare metodo di pagamento contatta l'assistenza: <a :href="`mailto:${subscription?.SupportEmail || 'info@miraihome.it'}`" class="alert-link">{{ subscription?.SupportEmail || 'info@miraihome.it' }}</a>
+          </div>
+        </div>
         <div class="row g-5">
           <!-- Left Sidebar - Countdown Banner Vertical -->
           <div class="col-lg-3">
@@ -121,9 +131,10 @@
 
                 <div class="separator separator-dashed my-5"></div>
 
-                <!-- Pulsante Rinnova (non mostrato per piano Free) -->
+                <!-- Pulsante Rinnova (non mostrato per piano Free; disabilitato in grazia) -->
                 <div v-if="!isFreePlan" class="text-center">
                   <button 
+                    v-if="!subscription?.IsInGracePeriod"
                     @click="renewSubscription" 
                     class="btn w-100"
                     :class="!subscription ? 'btn-primary' : daysRemaining <= 7 ? 'btn-danger' : daysRemaining <= 15 ? 'btn-warning' : 'btn-primary'"
@@ -135,6 +146,10 @@
                     </i>
                     {{ !subscription ? 'Scegli un Piano' : daysRemaining <= 7 ? 'Rinnova Ora!' : daysRemaining <= 15 ? 'Rinnova Presto' : 'Rinnova Abbonamento' }}
                   </button>
+                  <div v-else class="text-muted fs-5 p-3 bg-light-warning rounded">
+                    <i class="ki-duotone ki-information-5 fs-2 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                    Pagamento in sospeso. Contatta l'assistenza.
+                  </div>
                   <p class="text-muted fs-9 mt-3 mb-0">
                     {{ !subscription ? 'Sottoscrivi il tuo primo abbonamento' : `Prolunga il tuo piano ${subscription.SubscriptionPlan?.Name || ''}` }}
                   </p>
@@ -433,6 +448,8 @@ export default defineComponent({
       switch (status.toLowerCase()) {
         case 'active':
           return 'badge-light-success';
+        case 'past_due':
+          return 'badge-light-warning';
         case 'expired':
           return 'badge-light-danger';
         case 'cancelled':
@@ -447,6 +464,8 @@ export default defineComponent({
       switch (status.toLowerCase()) {
         case 'active':
           return '✓ Attivo';
+        case 'past_due':
+          return 'Pagamento in sospeso';
         case 'expired':
           return 'Scaduto';
         case 'cancelled':
@@ -481,17 +500,17 @@ export default defineComponent({
     };
 
     const daysRemaining = computed(() => {
-      if (!subscription.value?.EndDate) return 0;
+      const sub = subscription.value;
+      const refDate = sub?.IsInGracePeriod && sub?.GracePeriodEndsAt ? sub.GracePeriodEndsAt : sub?.EndDate;
+      if (!refDate) return 0;
       
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      const targetDate = new Date(refDate);
+      targetDate.setHours(0, 0, 0, 0);
       
-      const endDate = new Date(subscription.value.EndDate);
-      endDate.setHours(0, 0, 0, 0);
-      
-      const diffTime = endDate.getTime() - today.getTime();
+      const diffTime = targetDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
       return diffDays > 0 ? diffDays : 0;
     });
 

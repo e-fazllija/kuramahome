@@ -34,6 +34,9 @@ export interface UserSubscription {
   LastPaymentId?: number;
   CreationDate: string;
   UpdateDate: string;
+  IsInGracePeriod?: boolean;
+  GracePeriodEndsAt?: string;
+  SupportEmail?: string;
 }
 
 /**

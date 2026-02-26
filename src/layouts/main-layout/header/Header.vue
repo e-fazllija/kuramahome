@@ -11,11 +11,16 @@
     >
       <!--begin::Logo-->
       <div class="d-none d-lg-flex align-items-center me-4">
-        <router-link to="/dashboard" class="text-decoration-none">
+        <router-link to="/dashboard" class="text-decoration-none position-relative">
           <img
             alt="Logo"
             :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-            class="header-logo"
+            class="header-logo logo-light"
+          />
+          <img
+            alt="Logo"
+            :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')"
+            class="header-logo logo-dark"
           />
         </router-link>
       </div>
@@ -23,11 +28,16 @@
 
       <!--begin::Mobile logo-->
       <div class="d-flex d-lg-none align-items-center me-3">
-        <router-link to="/" class="text-decoration-none">
+        <router-link to="/" class="text-decoration-none position-relative">
           <img
             alt="Logo"
             :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-            class="header-logo-mobile"
+            class="header-logo-mobile logo-light"
+          />
+          <img
+            alt="Logo"
+            :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')"
+            class="header-logo-mobile logo-dark"
           />
         </router-link>
       </div>
@@ -102,11 +112,16 @@
       >
         <!--begin::Mobile Menu Header-->
         <div class="mobile-menu-header d-flex align-items-center justify-content-between border-bottom">
-          <router-link to="/dashboard" class="text-decoration-none" @click="closeMobileMenu">
+          <router-link to="/dashboard" class="text-decoration-none position-relative" @click="closeMobileMenu">
             <img
               alt="Logo"
               :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
-              class="header-logo"
+              class="header-logo logo-light"
+            />
+            <img
+              alt="Logo"
+              :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')"
+              class="header-logo logo-dark"
             />
           </router-link>
           <button 

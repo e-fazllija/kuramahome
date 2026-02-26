@@ -9,6 +9,51 @@
   <div v-if="!subscriptionExpired">
      <!--begin::Subscription Expiry Banner (Fixed Left)-->
   <SubscriptionExpiryBanner v-if="!loading && !isAgent" />
+  <!--begin::Grace Period Modal (pagamento fallito, 3 giorni grazia)-->
+  <div
+    v-if="subscription?.IsInGracePeriod && !graceModalDismissed"
+    class="modal d-block"
+    tabindex="-1"
+    style="background: rgba(0,0,0,0.5);"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold text-warning">
+            <i class="ki-duotone ki-information-5 fs-2 me-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+            </i>
+            Pagamento non riuscito
+          </h5>
+          <button type="button" class="btn-close" @click="graceModalDismissed = true" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body pt-2">
+          <p class="mb-3">
+            Stripe non è riuscito ad addebitare il rinnovo del tuo abbonamento. Hai <strong>3 giorni</strong> di grazia per regolarizzare.
+          </p>
+          <p class="mb-3">
+            Se hai cambiato carta, l'hai smarrita o devi aggiornare il metodo di pagamento, <strong>contatta direttamente l'assistenza</strong>:
+          </p>
+          <p class="mb-3">
+            <a :href="`mailto:${subscription?.SupportEmail || 'info@miraihome.it'}`" class="fw-bold text-primary">
+              {{ subscription?.SupportEmail || 'info@miraihome.it' }}
+            </a>
+          </p>
+          <p class="text-muted mb-0 fs-7">
+            Se non fai nulla, Stripe riproverà automaticamente nei prossimi giorni. Se il pagamento va a buon fine, tutto tornerà alla normalità. Se non va a buon fine entro i 3 giorni, l'abbonamento verrà chiuso.
+          </p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-primary" @click="graceModalDismissed = true">
+            Ho capito
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Grace Period Modal-->
   <!--end::Subscription Expiry Banner-->
   
   <!--begin::Agencies Map-->
@@ -188,7 +233,12 @@
             <img 
               :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
               alt="MiraiHome Logo"
-              class="subscription-logo"
+              class="subscription-logo logo-light"
+            />
+            <img 
+              :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')"
+              alt="MiraiHome Logo"
+              class="subscription-logo logo-dark"
             />
           </div>
         </div>
@@ -284,6 +334,7 @@ export default defineComponent({
         // Verifica se l'utente ha piano premium
         const subscription = ref<any>(null);
         const isLoadingSubscription = ref<boolean>(true);
+        const graceModalDismissed = ref<boolean>(false);
         // Helper: ricava il tier dal nome piano (stessa logica di PricingModal, così ricorrenti e prepagati hanno le stesse regole)
         const getPlanTierFromName = (name: string): 'basic' | 'pro' | 'premium' | null => {
           const n = (name || '').toLowerCase();
@@ -353,25 +404,21 @@ export default defineComponent({
             
             // Controlla se l'abbonamento è scaduto basandosi su EndDate e Status
             if (!sub) {
-              // Nessun abbonamento trovato = scaduto
               store.setSubscriptionExpired(true);
+            } else if (sub.IsInGracePeriod) {
+              // In grazia (past_due + AutoRenew): accesso consentito fino a GracePeriodEndsAt
+              store.setSubscriptionExpired(false);
             } else {
               const status = sub.Status?.toLowerCase() || '';
               const isExpiredByStatus = status === 'expired' || status === 'cancelled';
-              
-              // Verifica se la data di scadenza è passata
               let isExpiredByDate = false;
               if (sub.EndDate) {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                
                 const endDate = new Date(sub.EndDate);
                 endDate.setHours(0, 0, 0, 0);
-                
                 isExpiredByDate = endDate < today;
               }
-              
-              // Imposta isSubscriptionExpired solo se effettivamente scaduto
               store.setSubscriptionExpired(isExpiredByStatus || isExpiredByDate);
             }
           } catch (error) {
@@ -922,6 +969,8 @@ export default defineComponent({
       allPropertiesData,
       allSoldPropertiesData,
       subscriptionExpired,
+      subscription,
+      graceModalDismissed,
       isAgent,
       isAdmin,
       isAgency,
