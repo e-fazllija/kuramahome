@@ -67,9 +67,14 @@
         <!-- Logo al centro in alto -->
         <div class="property-flyer-logo">
           <img
-            :src="logoPath"
+            :src="getAssetPath('media/logos/kurama-home-logos/logo-menu.png')"
             alt="Logo"
-            class="flyer-logo-img"
+            class="flyer-logo-img logo-light"
+          />
+          <img
+            :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')"
+            alt="Logo"
+            class="flyer-logo-img logo-dark"
           />
         </div>
 
@@ -255,7 +260,6 @@ export default defineComponent({
       Users: [],
     });
     const flyerData = ref<FlyerData | null>(null);
-    const logoPath = ref<string>(getAssetPath('media/logos/kurama-home-logos/logo-menu.png'));
 
     onMounted(async () => {
       // Carica i dati
@@ -479,7 +483,7 @@ export default defineComponent({
     return {
       loading,
       flyerData,
-      logoPath,
+      getAssetPath,
       handlePrint,
       handleShare,
       handleDownloadPDF,

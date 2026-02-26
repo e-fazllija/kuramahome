@@ -12,7 +12,7 @@
             !isSidebarMinimized
           "
           alt="MiraiHome Logo"
-          :src="getAssetPath('media/logos/TH-6.jpg')"
+          :src="getAssetPath('media/logos/kurama-home-logos/logo-menu-bianco.png')"
           class="logo-image logo-default"
         />
         <!-- Logo per light theme -->

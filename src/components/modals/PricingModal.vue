@@ -712,6 +712,28 @@ export default defineComponent({
         await loadCurrentSubscription();
       }
 
+      if (currentSubscription.value?.IsInGracePeriod) {
+        Swal.fire({
+          title: '<div class="text-warning"><i class="ki-duotone ki-information-5 fs-2x me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> Pagamento in sospeso</div>',
+          html: `
+            <div class="text-start">
+              <p class="mb-3 pricing-text-primary">
+                Hai un pagamento in sospeso. Per cambiare metodo di pagamento contatta l'assistenza:
+              </p>
+              <p class="mb-0">
+                <a href="mailto:${currentSubscription.value?.SupportEmail || 'info@miraihome.it'}" class="fw-bold text-primary">${currentSubscription.value?.SupportEmail || 'info@miraihome.it'}</a>
+              </p>
+            </div>
+          `,
+          icon: 'warning',
+          confirmButtonText: 'Ho capito',
+          buttonsStyling: false,
+          heightAuto: false,
+          customClass: { confirmButton: 'btn btn-primary fw-bold' },
+        });
+        return;
+      }
+
       // Se l'utente ha AutoRenew = true (pagamento ricorrente attivo), non permettere il rinnovo manuale
       // Permettere solo upgrade (piano diverso)
       if (currentSubscription.value?.AutoRenew === true) {
