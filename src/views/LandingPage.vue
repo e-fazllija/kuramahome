@@ -260,7 +260,7 @@
                               <div class="property-price d-flex align-items-center gap-2 flex-wrap">
                                 <span v-if="property.PriceReduced && property.PriceReduced > 0 && property.PriceReduced < property.Price" class="d-flex flex-column gap-1">
                                   <span class="text-decoration-line-through text-danger small">{{ formatPrice(property.Price) }}</span>
-                                  <span class="d-flex align-items-center gap-2">
+                                  <span class="d-flex align-items-center gap-2 property-price-discount-row">
                                     <span class="fw-bold">{{ formatPrice(property.PriceReduced) }}</span>
                                     <span class="text-success fw-semibold small">-{{ Math.round(((property.Price - property.PriceReduced) / property.Price) * 100) }}%</span>
                                   </span>

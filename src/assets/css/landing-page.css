@@ -583,6 +583,27 @@ html[data-bs-theme="dark"] .logo-dark {
   height: 100%;
 }
 
+/* Prezzo e percentuale sconto sempre sulla stessa riga e visibili */
+.featured-properties-carousel .property-card-header {
+  overflow: visible;
+  min-width: 0;
+}
+.featured-properties-carousel .property-card-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.featured-properties-carousel .property-card-header .property-price {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+/* Riga prezzo scontato + percentuale: sempre affiancati, non tagliati */
+.featured-properties-carousel .property-price-discount-row {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .carousel-fade-enter-active,
 .carousel-fade-leave-active {
   transition: opacity 0.4s ease;
